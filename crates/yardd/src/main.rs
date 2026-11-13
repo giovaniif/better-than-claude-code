@@ -4,6 +4,7 @@
 mod claude;
 mod codex;
 mod git;
+mod handoff;
 mod hosts;
 mod pr;
 mod pty;

@@ -148,6 +148,8 @@ h1, h2, h3, p { margin: 0; }
 .approval-title { font-weight: 500; }
 .approval-what { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .error-line { color: var(--bad-ink); overflow-wrap: anywhere; }
+.note { align-self: center; font-size: 12px; color: var(--muted); text-align: center; }
+.bubble-toggle { display: block; height: 24px; margin: 6px 0 0 -10px; font-size: 12px; }
 
 /* composer */
 .composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px 16px; border: 1px solid var(--line-strong); border-radius: 16px; background: var(--bg); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); }
@@ -166,6 +168,9 @@ h1, h2, h3, p { margin: 0; }
 .picker-group { display: flex; flex-direction: column; gap: 2px; }
 .picker-head { display: flex; justify-content: space-between; gap: 8px; padding: 6px 8px 4px; font-size: 12px; color: var(--muted); }
 .picker-empty { padding: 4px 8px; font-size: 12px; color: var(--muted); }
+.picker-note { padding: 0 8px 4px; font-size: 12px; color: var(--muted); }
+.picker-item:disabled { color: var(--muted); cursor: default; background: transparent; }
+.handoff-confirm { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; line-height: 1.5; }
 .picker-item { height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; }
 .picker-item:hover { background: var(--fill); }
 .picker-item.active { background: var(--fill-strong); font-weight: 500; }

@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    claude, codex, git, pr, pty, sessions,
+    claude, codex, git, handoff, pr, pty, sessions,
     state::{App, Worktree},
 };
 
@@ -101,6 +101,9 @@ fn dim(msg: &Value, key: &str, fallback: u16) -> u16 {
 async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
     if msg["op"].as_str().is_some_and(|op| op.starts_with("pr.")) {
         return pr::handle(app, direct, msg).await;
+    }
+    if msg["op"].as_str().is_some_and(|op| op.starts_with("session.handoff")) {
+        return handoff::handle(app, direct, msg).await;
     }
     match msg["op"].as_str().unwrap_or("") {
         "session.create" => {

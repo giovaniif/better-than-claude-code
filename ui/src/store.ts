@@ -167,6 +167,8 @@ export interface Actions {
   onTerm(listener: (msg: any) => void): () => void;
   send(sessionId: string, text: string): void;
   setModel(sessionId: string, model: string, effort: string): void;
+  /** New session on the other engine, same folder, seeded with a brief. */
+  handoff(sessionId: string, engine: Engine, model: string, effort: string): void;
   interrupt(sessionId: string): void;
   approve(sessionId: string, requestId: string, decision: Decision): void;
   loadChanges(sessionId: string): void;
@@ -249,6 +251,7 @@ export function useYard(): { state: State; actions: Actions } {
       },
       send: (sessionId, text) => post({ op: "session.send", sessionId, text }),
       setModel: (sessionId, model, effort) => post({ op: "session.setModel", sessionId, model, effort }),
+      handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
       approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),
       loadChanges: (sessionId) => post({ op: "changes.get", sessionId }),

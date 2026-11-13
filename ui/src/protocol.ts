@@ -16,6 +16,8 @@ export interface SessionMeta {
   /** Set when yardd made a worktree for the session. */
   branch?: string | null;
   repo?: string | null;
+  /** The session this one was handed off from. */
+  parent?: string | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -122,7 +124,9 @@ export type AgentEvent =
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
   | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string }
+  /** A quiet line from yardd itself, such as a hand-off. Changes no status. */
+  | { type: "note"; text: string };
 
 /** What the thread renders. Built from events by `applyEvent`. */
 export type Item =
@@ -131,7 +135,8 @@ export type Item =
   | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
   | { kind: "diff"; key: string; files: ChangedFile[] }
   | { kind: "approval"; key: string; requestId: string; approvalKind: string; title: string; detail: string; decision: Decision | null }
-  | { kind: "error"; key: string; message: string };
+  | { kind: "error"; key: string; message: string }
+  | { kind: "note"; key: string; text: string };
 
 export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
   const key = `e${seq}`;
@@ -185,6 +190,8 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       });
     case "error":
       return [...items, { kind: "error", key, message: ev.message }];
+    case "note":
+      return [...items, { kind: "note", key, text: ev.text }];
     default:
       return items;
   }

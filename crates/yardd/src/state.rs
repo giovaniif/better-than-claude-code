@@ -34,6 +34,10 @@ pub struct Meta {
     pub branch: Option<String>,
     /// The checkout the worktree was cut from.
     pub repo: Option<String>,
+    /// The session this one was handed off from. Rows saved before hand-off
+    /// existed have no such key.
+    #[serde(default)]
+    pub parent: Option<String>,
     pub created_at: u64,
     pub updated_at: u64,
 }
@@ -136,6 +140,7 @@ impl App {
             host: "local".to_string(),
             branch,
             repo,
+            parent: None,
             created_at: now,
             updated_at: now,
         };

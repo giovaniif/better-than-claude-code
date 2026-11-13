@@ -148,13 +148,20 @@ function ModelPicker(props: {
   value: Choice;
   engines: Engine[];
   onChange(next: Choice): void;
+  /** In a session, a model of the other engine means a hand-off, never a silent switch. */
+  handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
-  const { models, usage, value, engines, onChange } = props;
+  const { models, usage, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState<Choice | null>(null);
   const current = models[value.engine]?.find((m) => m.id === value.model);
+  const close = () => {
+    setOpen(false);
+    setConfirm(null);
+  };
   return (
     <div className="picker">
-      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
         <span>{current?.name ?? value.model}</span>
         <span className="muted">{capitalize(value.effort)}</span>
         <span className="muted">
@@ -163,29 +170,69 @@ function ModelPicker(props: {
       </button>
       {open && (
         <>
-          <div className="scrim" onClick={() => setOpen(false)} />
+          <div className="scrim" onClick={close} />
           <div className="popover">
-            {engines.map((engine) => (
-              <div key={engine} className="picker-group">
-                <div className="picker-head">
-                  <span>{ENGINE_NAME[engine]}</span>
-                  <span>{usageText(engine, usage)}</span>
+            {confirm && handoff && (
+              <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
+                <div>
+                  <strong>Hand off to {ENGINE_NAME[confirm.engine]}</strong>: starts a new session in this folder with a summary of this one.
                 </div>
-                {models[engine].length === 0 && <div className="picker-empty">Not available</div>}
-                {models[engine].map((m) => (
+                <div className="muted small">
+                  {modelName(models, confirm.engine, confirm.model)} · {capitalize(confirm.effort)}
+                </div>
+                <div className="row">
                   <button
-                    key={m.id}
-                    className={`picker-item ${engine === value.engine && m.id === value.model ? "active" : ""}`}
+                    className="btn-primary"
+                    disabled={handoff.blocked}
                     onClick={() => {
-                      onChange({ engine, model: m.id, effort: effortFor(m, value.effort) });
-                      setOpen(false);
+                      handoff.onConfirm(confirm);
+                      close();
                     }}
                   >
-                    {m.name}
+                    Hand off
                   </button>
-                ))}
+                  <button className="btn-text" onClick={() => setConfirm(null)}>
+                    Cancel
+                  </button>
+                </div>
               </div>
-            ))}
+            )}
+            {engines.map((engine) => {
+              const isHandoff = !!handoff && engine !== value.engine;
+              const disabled = isHandoff && handoff.blocked;
+              return (
+                <div key={engine} className="picker-group">
+                  <div className="picker-head">
+                    <span>{ENGINE_NAME[engine]}</span>
+                    <span>{usageText(engine, usage)}</span>
+                  </div>
+                  {isHandoff && (
+                    <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
+                  )}
+                  {models[engine].length === 0 && <div className="picker-empty">Not available</div>}
+                  {models[engine].map((m) => (
+                    <button
+                      key={m.id}
+                      disabled={disabled}
+                      className={`picker-item ${engine === value.engine && m.id === value.model ? "active" : ""} ${
+                        confirm?.engine === engine && confirm.model === m.id ? "active" : ""
+                      }`}
+                      onClick={() => {
+                        const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
+                        if (isHandoff) {
+                          setConfirm(next);
+                          return;
+                        }
+                        onChange(next);
+                        close();
+                      }}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              );
+            })}
             {current && current.efforts.length > 0 && (
               <div className="picker-group">
                 <div className="picker-head">
@@ -413,8 +460,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               models={state.models}
               usage={state.usage}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
-              engines={[meta.engine]}
+              engines={meta.engine === "claude" ? ["claude", "codex"] : ["codex", "claude"]}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
+              handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
             <span className="muted small">{PERMISSION_NOTE[meta.engine]}</span>
           </Composer>
@@ -440,11 +488,30 @@ function DeleteButton({ onConfirm }: { onConfirm(): void }) {
   );
 }
 
+/** A hand-off brief can run to hundreds of lines; fold long messages. */
+const FOLD_LINES = 12;
+
+function UserBubble({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const lines = text.split("\n");
+  if (lines.length <= FOLD_LINES) return <div className="bubble">{text}</div>;
+  return (
+    <div className="bubble">
+      {expanded ? text : lines.slice(0, FOLD_LINES).join("\n")}
+      <button className="btn-text bubble-toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+        {expanded ? "Show less" : `Show more (${lines.length - FOLD_LINES} lines)`}
+      </button>
+    </div>
+  );
+}
+
 function ItemView({ item, onDecide }: { item: Item; onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void }) {
   const [open, setOpen] = useState(false);
   switch (item.kind) {
     case "user":
-      return <div className="bubble">{item.text}</div>;
+      return <UserBubble text={item.text} />;
+    case "note":
+      return <div className="note">{item.text}</div>;
     case "assistant":
       return <Markdown text={item.text} />;
     case "tool": {
