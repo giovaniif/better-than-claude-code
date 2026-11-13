@@ -127,6 +127,35 @@ impl App {
         title: &str,
         worktree: Option<Worktree>,
     ) -> String {
+        self.insert_session(engine, model, effort, cwd, title, worktree, false)
+            .expect("a non-exclusive insert cannot be refused")
+    }
+
+    /// Like `new_session`, but refused while another session in the same
+    /// folder is working. The check and the insert share one lock, so two
+    /// creates at once cannot both get in.
+    pub fn new_session_exclusive(
+        &self,
+        engine: &str,
+        model: &str,
+        effort: &str,
+        cwd: &str,
+        title: &str,
+    ) -> anyhow::Result<String> {
+        self.insert_session(engine, model, effort, cwd, title, None, true)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn insert_session(
+        &self,
+        engine: &str,
+        model: &str,
+        effort: &str,
+        cwd: &str,
+        title: &str,
+        worktree: Option<Worktree>,
+        exclusive: bool,
+    ) -> anyhow::Result<String> {
         let id = self.id("s");
         let now = now_ms();
         let (branch, repo) = match worktree {
@@ -150,6 +179,16 @@ impl App {
         };
         {
             let mut map = self.sessions.lock().unwrap();
+            if exclusive {
+                let here = same_folder_key(cwd);
+                let busy = map.values().any(|s| {
+                    matches!(s.meta.status.as_str(), "running" | "needs_approval" | "queued")
+                        && same_folder_key(&s.meta.cwd) == here
+                });
+                if busy {
+                    anyhow::bail!("Another session is working in this folder. Stop it first, or tick New worktree.");
+                }
+            }
             self.store.meta(&meta);
             map.insert(
                 id.clone(),
@@ -162,7 +201,7 @@ impl App {
             );
         }
         self.broadcast(json!({ "op": "session", "session": meta }));
-        id
+        Ok(id)
     }
 
     pub fn meta(&self, sid: &str) -> Option<Meta> {
@@ -329,6 +368,12 @@ impl App {
             "hosts": self.remotes.list(),
         })
     }
+}
+
+/// One spelling per folder, so `~/x`, `~/x/` and a symlinked path compare equal.
+fn same_folder_key(cwd: &str) -> std::path::PathBuf {
+    let p = std::path::Path::new(cwd);
+    std::fs::canonicalize(p).unwrap_or_else(|_| p.components().collect())
 }
 
 /// The reason and prompt a queued session recorded when it was queued.

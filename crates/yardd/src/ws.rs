@@ -145,18 +145,34 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             }
             let title: String = text.lines().next().unwrap_or("").chars().take(60).collect();
 
-            // The worktree comes first: if it cannot be made, no session exists.
-            let (cwd, worktree) = if msg["worktree"].as_bool().unwrap_or(false) {
+            // The worktree (and its setup) comes first: if it cannot be made,
+            // no session exists. Without one, the folder must be free.
+            let (sid, setup) = if msg["worktree"].as_bool().unwrap_or(false) {
                 let unique = app.id("");
                 let suffix = &unique[unique.len().saturating_sub(4)..];
-                let wt = git::add_worktree(cwd, msg["branch"].as_str(), &title, suffix).await?;
-                (wt.cwd, Some(Worktree { branch: wt.branch, repo: wt.repo }))
+                let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
+                let worktree = Worktree { branch: wt.branch, repo: wt.repo };
+                (app.new_session(engine, model, effort, &wt.cwd, &title, Some(worktree)), wt.setup)
             } else {
-                (cwd.to_string(), None)
+                (app.new_session_exclusive(engine, model, effort, cwd, &title)?, None)
             };
-            let sid = app.new_session(engine, model, effort, &cwd, &title, worktree);
+            if let Some(script) = setup {
+                app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
+            }
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
             sessions::begin(app, &sid, text).await;
+        }
+        "git.branches" => {
+            let cwd = str_field(msg, "cwd")?;
+            let reply = match git::branches(cwd).await {
+                Ok(mut v) => {
+                    v["op"] = json!("git.branches");
+                    v["cwd"] = json!(cwd);
+                    v
+                }
+                Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
+            };
+            let _ = direct.send(reply.to_string());
         }
         "session.open" => {
             let sid = str_field(msg, "sessionId")?;
@@ -224,13 +240,39 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "session.delete" => {
             let sid = str_field(msg, "sessionId")?;
             let meta = app.meta(sid).context("no such session")?;
-            // A queued session has no engine yet: this just drops it from the queue.
-            app.guard.forget(sid);
-            if meta.engine == "codex" {
-                codex::forget(app, sid).await;
+            if !msg["removeWorktree"].as_bool().unwrap_or(false) {
+                delete_session(app, sid, &meta).await;
+                return Ok(());
             }
-            pty::close_session(app, sid);
-            app.remove_session(sid);
+            // Everything that could refuse runs before anything is deleted.
+            let (Some(branch), Some(repo)) = (meta.branch.clone(), meta.repo.clone()) else {
+                bail!("this session has no worktree that yardd made");
+            };
+            let top = git::removable_worktree(&meta.cwd, &repo).await?;
+            // git prints the real path; a session may hold a symlinked spelling.
+            let real = |p: &str| std::fs::canonicalize(p).unwrap_or_else(|_| p.into());
+            let top_real = real(&top);
+            let others = app
+                .sessions
+                .lock()
+                .unwrap()
+                .values()
+                .filter(|s| s.meta.id != sid && real(&s.meta.cwd).starts_with(&top_real))
+                .count();
+            if others > 0 {
+                bail!("Another session still uses this worktree. Delete it first, or keep the worktree.");
+            }
+            delete_session(app, sid, &meta).await;
+            let removed = git::remove_worktree(&repo, &top, &branch).await;
+            let _ = direct.send(
+                json!({
+                    "op": "worktree.removed",
+                    "sessionId": sid,
+                    "branchDeleted": removed.branch_deleted,
+                    "message": removed.message,
+                })
+                .to_string(),
+            );
         }
         "changes.get" => {
             let sid = str_field(msg, "sessionId")?;
@@ -254,4 +296,15 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         other => bail!("unknown op `{other}`"),
     }
     Ok(())
+}
+
+/// Stop the session's engine and terminal and forget it.
+async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
+    // A queued session has no engine yet: this just drops it from the queue.
+    app.guard.forget(sid);
+    if meta.engine == "codex" {
+        codex::forget(app, sid).await;
+    }
+    pty::close_session(app, sid);
+    app.remove_session(sid);
 }

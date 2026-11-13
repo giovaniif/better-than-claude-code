@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
-import { homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State } from "./store";
+import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State } from "./store";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 
@@ -64,6 +64,14 @@ export function App() {
         {state.error && (
           <div className="banner banner-error">
             <span>{state.error}</span>
+            <button className="btn-text" onClick={actions.dismissError}>
+              Dismiss
+            </button>
+          </div>
+        )}
+        {state.notice && !state.error && (
+          <div className="banner banner-notice">
+            <span>{state.notice}</span>
             <button className="btn-text" onClick={actions.dismissError}>
               Dismiss
             </button>
@@ -370,6 +378,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const [cwd, setCwd] = useState(() => localStorage.getItem("yard.cwd") ?? "");
   const [worktree, setWorktree] = useState(() => localStorage.getItem("yard.worktree") === "1");
   const [branch, setBranch] = useState("");
+  // What the worktree is cut from; empty means the folder's current branch.
+  const [base, setBase] = useState("");
   // From send until yardd answers. On success this page is replaced by the
   // session; on failure the task stays in the box so nothing is retyped.
   const [pending, setPending] = useState(false);
@@ -388,8 +398,24 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     [state.sessions, target],
   );
 
+  // Branches for the From picker, asked for once typing in the folder settles.
+  const folderNow = cwd.trim().replace(/^~(?=\/|$)/, home);
+  const branchList = state.branches[branchKey(target, folderNow)];
+  useEffect(() => {
+    if (!worktree || !folderNow || !state.connected) return;
+    const timer = setTimeout(() => actions.loadBranches(folderNow, target), 400);
+    return () => clearTimeout(timer);
+  }, [worktree, folderNow, target, state.connected]);
+  // A pick from another folder means nothing here.
+  useEffect(() => setBase(""), [folderNow, target]);
+  const baseOptions = useMemo(() => {
+    if (!branchList?.current) return branchList?.branches ?? [];
+    const rest = (branchList.branches ?? []).filter((b) => b !== branchList.current);
+    return [branchList.current, ...rest];
+  }, [branchList]);
+
   const start = (text: string) => {
-    const folder = cwd.trim().replace(/^~(?=\/|$)/, home);
+    const folder = folderNow;
     if (target === "local") {
       localStorage.setItem("yard.choice", JSON.stringify(choice));
       localStorage.setItem("yard.cwd", folder);
@@ -402,6 +428,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
       text,
       worktree,
       branch: branch.trim() || undefined,
+      base: worktree && base ? base : undefined,
       host: target === "local" ? undefined : target,
     });
   };
@@ -458,6 +485,23 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
                 onChange={(e) => setBranch(e.target.value)}
                 spellCheck={false}
               />
+              <label htmlFor="base" className="muted">
+                From
+              </label>
+              <select
+                id="base"
+                value={base || branchList?.current || ""}
+                disabled={!baseOptions.length}
+                title={branchList?.error ?? undefined}
+                onChange={(e) => setBase(e.target.value === branchList?.current ? "" : e.target.value)}
+              >
+                {!baseOptions.length && <option value="">{branchList?.error ? "Not a repository" : "Current branch"}</option>}
+                {baseOptions.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
             </>
           )}
         </div>
@@ -514,7 +558,13 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               Stop
             </button>
           )}
-          {online && <DeleteButton key={meta.id} onConfirm={() => actions.remove(meta.id)} />}
+          {online && (
+            <DeleteButton
+              key={meta.id}
+              worktree={!!(meta.branch && meta.repo)}
+              onConfirm={(removeWorktree) => actions.remove(meta.id, removeWorktree)}
+            />
+          )}
         </header>
         <div
           className="scroll"
@@ -562,14 +612,27 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   );
 }
 
-/** Deleting asks for a second click; the ask lapses after a few seconds. */
-function DeleteButton({ onConfirm }: { onConfirm(): void }) {
+/** Deleting asks for a second click; the ask lapses after a few seconds. A
+ *  session in a worktree yardd made can take its worktree with it. */
+function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(removeWorktree: boolean): void }) {
   const [armed, setArmed] = useState(false);
   useEffect(() => {
     if (!armed) return;
-    const timer = setTimeout(() => setArmed(false), 3000);
+    const timer = setTimeout(() => setArmed(false), worktree ? 5000 : 3000);
     return () => clearTimeout(timer);
   }, [armed]);
+  if (worktree && armed) {
+    return (
+      <>
+        <button className="btn-text" onClick={() => onConfirm(false)}>
+          Delete session
+        </button>
+        <button className="btn-text" onClick={() => onConfirm(true)}>
+          Delete and remove worktree
+        </button>
+      </>
+    );
+  }
   return (
     <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
       {armed ? "Delete session?" : "Delete"}

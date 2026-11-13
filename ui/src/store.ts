@@ -2,6 +2,7 @@ import { useEffect, useMemo, useReducer, useRef } from "react";
 import {
   applyEvent,
   type AgentEvent,
+  type BranchList,
   type Changes,
   type Decision,
   type Engine,
@@ -42,9 +43,13 @@ export interface State {
   linkDown: Record<string, boolean>;
   /** Goes up whenever a host's sessions are reloaded, so open threads refetch. */
   hostEpoch: number;
+  /** `git.branches` replies, by `branchKey(host, cwd)`. */
+  branches: Record<string, BranchList>;
   error: string | null;
   /** Goes up on every error, including a repeat of the same message. */
   errorCount: number;
+  /** A quiet outcome worth showing once, such as a removed worktree. */
+  notice: string | null;
 }
 
 type Action =
@@ -69,8 +74,10 @@ const initial: State = {
   home: {},
   linkDown: {},
   hostEpoch: 0,
+  branches: {},
   error: null,
   errorCount: 0,
+  notice: null,
 };
 
 function reduce(state: State, action: Action): State {
@@ -81,7 +88,7 @@ function reduce(state: State, action: Action): State {
     case "route":
       return { ...state, route: action.route };
     case "dismiss":
-      return { ...state, error: null };
+      return { ...state, error: null, notice: null };
     case "server":
       return reduceServer(state, action.msg);
   }
@@ -89,6 +96,8 @@ function reduce(state: State, action: Action): State {
 
 const EMPTY_MODELS: Models = { claude: [], codex: [] };
 const NO_USAGE: Usage = {};
+
+export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
 
 /** The host a session runs on, `local` for this machine. */
 export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
@@ -200,6 +209,13 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, pr: { ...state.pr, [msg.sessionId]: msg.pr } };
     case "error":
       return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
+    case "git.branches": {
+      const reply = msg as BranchList;
+      return { ...state, branches: { ...state.branches, [branchKey(reply.hostId ?? "local", reply.cwd)]: reply } };
+    }
+    case "worktree.removed":
+      // A kept branch is the user's to deal with, so the outcome is shown.
+      return { ...state, notice: msg.message };
     case "history": {
       const prev = state.threads[msg.sessionId] ?? emptyThread();
       const events = msg.events as AgentEvent[];
@@ -242,6 +258,8 @@ export interface Actions {
     text: string;
     worktree: boolean;
     branch?: string;
+    /** Branch or ref the worktree is cut from; the folder's HEAD when left out. */
+    base?: string;
     /** A remote host id; this machine when left out. */
     host?: string;
   }): void;
@@ -258,8 +276,10 @@ export interface Actions {
   loadChanges(sessionId: string): void;
   /** Start a queued session even though the host is under pressure. */
   startNow(sessionId: string): void;
-  /** Stops the session and removes it everywhere. Its worktree stays. */
-  remove(sessionId: string): void;
+  /** Stops the session and removes it everywhere. Its worktree stays unless
+   *  `removeWorktree`, which yardd refuses for a worktree with changes. */
+  remove(sessionId: string, removeWorktree?: boolean): void;
+  loadBranches(cwd: string, host: string): void;
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
@@ -349,7 +369,10 @@ export function useYard(): { state: State; actions: Actions } {
       approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),
       loadChanges: (sessionId) => post({ op: "changes.get", sessionId }),
       startNow: (sessionId) => post({ op: "session.startNow", sessionId }),
-      remove: (sessionId) => post({ op: "session.delete", sessionId }),
+      remove: (sessionId, removeWorktree) =>
+        post(removeWorktree ? { op: "session.delete", sessionId, removeWorktree: true } : { op: "session.delete", sessionId }),
+      loadBranches: (cwd, host) =>
+        post(host === "local" ? { op: "git.branches", cwd } : { op: "git.branches", cwd, host }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),

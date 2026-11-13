@@ -1,12 +1,23 @@
-//! Git: working-tree changes for the Changes pane, and session worktrees.
+//! Git: working-tree changes for the Changes pane, branches, and session
+//! worktrees with their setup and removal.
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    process::Stdio,
+    time::Duration,
+};
 
 use anyhow::{bail, Context, Result};
 use serde_json::{json, Value};
-use tokio::process::Command;
+use tokio::{io::AsyncReadExt, process::Command};
 
 const MAX_DIFF_BYTES: usize = 400_000;
+const MAX_BRANCHES: usize = 200;
+/// Setup scripts may install dependencies, but not forever.
+const SETUP_TIMEOUT: Duration = Duration::from_secs(300);
+/// The tail of a setup script's output that is kept for the error message.
+const SETUP_OUTPUT_CAP: usize = 16_000;
+const SETUP_ERROR_LINES: usize = 20;
 
 pub struct NewWorktree {
     /// Where the session runs: the worktree, or the same subfolder inside it.
@@ -14,6 +25,13 @@ pub struct NewWorktree {
     pub branch: String,
     /// The checkout it was cut from.
     pub repo: String,
+    /// The setup script that ran in it, if any.
+    pub setup: Option<String>,
+}
+
+/// Where yardd puts the worktrees it makes: `<data dir>/wt`.
+pub fn worktree_root() -> PathBuf {
+    crate::store::data_dir().join("wt")
 }
 
 /// `Fix the add function!` -> `fix-the-add-function`
@@ -32,11 +50,18 @@ fn slug(text: &str) -> String {
     if out.is_empty() { "session".to_string() } else { out }
 }
 
-/// Cut a new branch and worktree from the folder's current HEAD, under
-/// `~/.yard/wt/<repo>/<branch>`. Nothing in the original checkout is touched,
-/// and a failed `git worktree add` stops here: the caller must not go on to
-/// set anything up.
-pub async fn add_worktree(folder: &str, branch: Option<&str>, title: &str, suffix: &str) -> Result<NewWorktree> {
+/// Cut a new branch and worktree from `base` (the folder's current HEAD when
+/// unset), under `<data dir>/wt/<repo>/<branch>`, then run the repo's setup
+/// script in it. Nothing in the original checkout is touched. A failed
+/// `git worktree add` stops here, before any setup; a failed setup removes
+/// the worktree and branch it just made.
+pub async fn add_worktree(
+    folder: &str,
+    branch: Option<&str>,
+    base: Option<&str>,
+    title: &str,
+    suffix: &str,
+) -> Result<NewWorktree> {
     let (is_repo, top) = git(folder, &["rev-parse", "--show-toplevel"]).await?;
     if !is_repo {
         bail!("{folder} is not a git repository, so it cannot have a worktree");
@@ -46,6 +71,12 @@ pub async fn add_worktree(folder: &str, branch: Option<&str>, title: &str, suffi
     if !has_head {
         bail!("the repository has no commits yet, so there is nothing to branch from");
     }
+    // Resolved to a commit id up front, so the name can never be read as an
+    // option and `worktree add` gets exactly what was checked.
+    let start = match base.map(str::trim).filter(|b| !b.is_empty()) {
+        Some(b) => resolve_base(&top, b).await?,
+        None => "HEAD".to_string(),
+    };
     // The subfolder the session was pointed at, e.g. `apps/web/`.
     let (_, prefix) = git(folder, &["rev-parse", "--show-prefix"]).await?;
 
@@ -54,7 +85,7 @@ pub async fn add_worktree(folder: &str, branch: Option<&str>, title: &str, suffi
         None => format!("yard/{}-{suffix}", slug(title)),
     };
     let (valid, _) = git(&top, &["check-ref-format", "--branch", &branch]).await?;
-    if !valid {
+    if !valid || branch.starts_with('-') {
         bail!("`{branch}` is not a valid branch name");
     }
     let (exists, _) = git(&top, &["show-ref", "--verify", "--quiet", &format!("refs/heads/{branch}")]).await?;
@@ -62,13 +93,12 @@ pub async fn add_worktree(folder: &str, branch: Option<&str>, title: &str, suffi
         bail!("branch `{branch}` already exists");
     }
 
-    let home = std::env::var("HOME").context("HOME is not set")?;
     let repo_name = Path::new(&top)
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("repo")
         .to_string();
-    let path: PathBuf = [&home, ".yard", "wt", &repo_name, &branch.replace('/', "-")].iter().collect();
+    let path: PathBuf = worktree_root().join(&repo_name).join(branch.replace('/', "-"));
     if path.exists() {
         bail!("{} already exists", path.display());
     }
@@ -80,19 +110,224 @@ pub async fn add_worktree(folder: &str, branch: Option<&str>, title: &str, suffi
     let out = Command::new("git")
         .arg("-C")
         .arg(&top)
-        .args(["worktree", "add", "-b", &branch, path_str, "HEAD"])
+        .args(["worktree", "add", "-b", &branch, path_str, &start])
         .output()
         .await?;
     if !out.status.success() {
         bail!("git worktree add failed: {}", String::from_utf8_lossy(&out.stderr).trim());
     }
 
+    let setup = match run_setup(&top, &path, &repo_name).await {
+        Ok(script) => script,
+        Err(e) => {
+            discard_worktree(&top, path_str, &branch).await;
+            return Err(e);
+        }
+    };
+
     let cwd = path.join(prefix.trim());
     Ok(NewWorktree {
         cwd: cwd.to_str().unwrap_or(path_str).trim_end_matches('/').to_string(),
         branch,
         repo: top,
+        setup,
     })
+}
+
+async fn resolve_base(top: &str, base: &str) -> Result<String> {
+    if base.starts_with('-') {
+        bail!("the base `{base}` cannot start with `-`");
+    }
+    let spec = format!("{base}^{{commit}}");
+    let (ok, sha) = git(top, &["rev-parse", "--verify", "--quiet", "--end-of-options", &spec]).await?;
+    if !ok || sha.trim().is_empty() {
+        bail!("`{base}` is not a branch or commit in this repository");
+    }
+    Ok(sha.trim().to_string())
+}
+
+/// Undo a worktree whose setup failed: exactly the path and branch just made.
+async fn discard_worktree(top: &str, path: &str, branch: &str) {
+    for args in [["worktree", "remove", "--force", path], ["branch", "-D", "--", branch]] {
+        if !matches!(git(top, &args).await, Ok((true, _))) {
+            eprintln!("yardd: cleanup `git {}` failed in {top}", args.join(" "));
+        }
+    }
+}
+
+/// The setup script for a new worktree, if the user or the repo has one: a
+/// user-level `<data dir>/setup/<repo>.sh` first, for repos where nothing may
+/// be committed, then the repo's own `.yard/worktree-setup.sh`.
+fn setup_script(worktree: &Path, repo_name: &str) -> Option<PathBuf> {
+    let user = crate::store::data_dir().join("setup").join(format!("{repo_name}.sh"));
+    let tracked = worktree.join(".yard").join("worktree-setup.sh");
+    [user, tracked].into_iter().find(|p| p.is_file())
+}
+
+/// Run the setup script inside the new worktree. Returns the script's path
+/// when one ran. It never runs in the original checkout: a setup that once ran
+/// there after a failed `worktree add` clobbered it.
+async fn run_setup(top: &str, worktree: &Path, repo_name: &str) -> Result<Option<String>> {
+    let Some(script) = setup_script(worktree, repo_name) else {
+        return Ok(None);
+    };
+    if !worktree.starts_with(worktree_root()) || Path::new(top) == worktree || !worktree.is_dir() {
+        bail!("refusing to run worktree setup outside {}", worktree_root().display());
+    }
+    let shown = script.display().to_string();
+
+    let mut child = Command::new("bash")
+        // stderr joins stdout so the tail shows both in order.
+        .args(["-c", "exec bash -- \"$0\" 2>&1"])
+        .arg(&script)
+        .current_dir(worktree)
+        .env("YARD_REPO", top)
+        .env("YARD_WORKTREE", worktree)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        // Its own process group, so a timeout can stop everything it started.
+        .process_group(0)
+        .kill_on_drop(true)
+        .spawn()
+        .with_context(|| format!("could not run {shown}"))?;
+    let pid = child.id();
+    let mut stdout = child.stdout.take().context("no output pipe")?;
+    let reader = tokio::spawn(async move {
+        let mut tail: Vec<u8> = Vec::new();
+        let mut buf = [0u8; 8192];
+        while let Ok(n) = stdout.read(&mut buf).await {
+            if n == 0 {
+                break;
+            }
+            tail.extend_from_slice(&buf[..n]);
+            if tail.len() > SETUP_OUTPUT_CAP * 2 {
+                tail.drain(..tail.len() - SETUP_OUTPUT_CAP);
+            }
+        }
+        tail
+    });
+
+    let status = tokio::time::timeout(SETUP_TIMEOUT, child.wait()).await;
+    if status.is_err() {
+        if let Some(pid) = pid {
+            let _ = std::process::Command::new("kill").args(["-KILL", "--", &format!("-{pid}")]).status();
+        }
+        let _ = child.kill().await;
+    }
+    // A background process left holding the pipe must not hold us up.
+    let tail = match tokio::time::timeout(Duration::from_secs(5), reader).await {
+        Ok(Ok(t)) => t,
+        _ => Vec::new(),
+    };
+    let output = last_lines(&String::from_utf8_lossy(&tail), SETUP_ERROR_LINES);
+    let failure = match status {
+        Err(_) => Some(format!("timed out after {} minutes", SETUP_TIMEOUT.as_secs() / 60)),
+        Ok(Err(e)) => Some(format!("could not be waited on: {e}")),
+        Ok(Ok(s)) if !s.success() => Some(format!("failed ({s})")),
+        Ok(Ok(_)) => None,
+    };
+    match failure {
+        None => Ok(Some(shown)),
+        Some(why) if output.is_empty() => bail!("worktree setup {shown} {why}; the worktree was removed"),
+        Some(why) => bail!("worktree setup {shown} {why}; the worktree was removed. Last output:\n{output}"),
+    }
+}
+
+fn last_lines(text: &str, n: usize) -> String {
+    let lines: Vec<&str> = text.lines().filter(|l| !l.trim().is_empty()).collect();
+    lines[lines.len().saturating_sub(n)..].join("\n")
+}
+
+/// Local branches and `origin/*`, most recently committed first.
+pub async fn branches(cwd: &str) -> Result<Value> {
+    let (is_repo, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
+    if !is_repo {
+        bail!("{cwd} is not a git repository");
+    }
+    let top = top.trim();
+    let (_, current) = git(top, &["branch", "--show-current"]).await?;
+    let current = match current.trim() {
+        "" => git(top, &["rev-parse", "--short", "HEAD"]).await?.1.trim().to_string(),
+        name => name.to_string(),
+    };
+    let (_, list) = git(
+        top,
+        &["for-each-ref", "--sort=-committerdate", "--format=%(refname:short)", "refs/heads", "refs/remotes/origin"],
+    )
+    .await?;
+    let branches: Vec<&str> = list
+        .lines()
+        .map(str::trim)
+        // `origin/HEAD` is a pointer, not a branch.
+        .filter(|b| !b.is_empty() && *b != "origin" && !b.ends_with("/HEAD"))
+        .take(MAX_BRANCHES)
+        .collect();
+    Ok(json!({ "current": current, "branches": branches }))
+}
+
+/// What removing a session's worktree did.
+pub struct Removed {
+    pub branch_deleted: bool,
+    pub message: String,
+}
+
+fn canon(p: &Path) -> PathBuf {
+    std::fs::canonicalize(p).unwrap_or_else(|_| p.to_path_buf())
+}
+
+/// The top of the worktree a session runs in, checked to be one yardd made
+/// and safe to remove: inside the worktree root, not the original checkout,
+/// and with nothing uncommitted or untracked.
+pub async fn removable_worktree(cwd: &str, repo: &str) -> Result<String> {
+    let (ok, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
+    if !ok {
+        bail!("{cwd} is no longer a git worktree");
+    }
+    let top = top.trim().to_string();
+    let root = canon(&worktree_root());
+    let at = canon(Path::new(&top));
+    if !at.starts_with(&root) || at == root || at == canon(Path::new(repo)) {
+        bail!("{top} is not a worktree yardd made, so it is not removed");
+    }
+    if !Path::new(repo).is_dir() {
+        bail!("the original checkout {repo} is gone, so the worktree cannot be removed from it");
+    }
+    let (ok, status) = git(&top, &["status", "--porcelain"]).await?;
+    if !ok {
+        bail!("could not read the worktree's status");
+    }
+    let dirty = status.lines().filter(|l| !l.trim().is_empty()).count();
+    if dirty > 0 {
+        bail!(
+            "The worktree has uncommitted or untracked changes ({dirty} file{}). Commit or discard them first. Nothing was deleted.",
+            if dirty == 1 { "" } else { "s" }
+        );
+    }
+    Ok(top)
+}
+
+/// `git worktree remove` (never forced), then `git branch -d`, which itself
+/// keeps a branch with unmerged commits.
+pub async fn remove_worktree(repo: &str, path: &str, branch: &str) -> Removed {
+    let kept = |why: String| Removed { branch_deleted: false, message: why };
+    match git_err(repo, &["worktree", "remove", "--", path]).await {
+        Ok(()) => {}
+        Err(e) => return kept(format!("Session deleted, but the worktree was kept: {e}")),
+    }
+    match git_err(repo, &["branch", "-d", "--", branch]).await {
+        Ok(()) => Removed { branch_deleted: true, message: format!("Worktree removed and branch {branch} deleted.") },
+        Err(e) => kept(format!("Worktree removed. Branch {branch} was kept: {e}")),
+    }
+}
+
+/// Run git; an error carries its stderr.
+async fn git_err(cwd: &str, args: &[&str]) -> Result<()> {
+    let out = Command::new("git").arg("-C").arg(cwd).args(args).output().await?;
+    if !out.status.success() {
+        bail!("{}", String::from_utf8_lossy(&out.stderr).trim());
+    }
+    Ok(())
 }
 
 async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
@@ -147,4 +382,15 @@ pub async fn changes(cwd: &str) -> Result<Value> {
         "truncated": truncated,
         "branch": branch.trim(),
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn keeps_the_last_non_empty_lines() {
+        assert_eq!(last_lines("a\n\nb\nc\n", 2), "b\nc");
+        assert_eq!(last_lines("", 3), "");
+    }
 }

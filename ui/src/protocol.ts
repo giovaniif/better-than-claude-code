@@ -132,6 +132,28 @@ export interface PullRequest {
   threadsError?: string;
 }
 
+/** Reply to `git.branches { cwd, host? }`: where a new worktree can be cut from. */
+export interface BranchList {
+  op: "git.branches";
+  cwd: string;
+  /** Set when the reply came from a remote host. */
+  hostId?: string;
+  /** The checked-out branch, or a short commit id when detached. */
+  current?: string;
+  /** Local and `origin/*` branches, most recently committed first, at most 200. */
+  branches?: string[];
+  error?: string;
+}
+
+/** Reply to `session.delete { removeWorktree: true }` once the session is gone. */
+export interface WorktreeRemoved {
+  op: "worktree.removed";
+  sessionId: string;
+  /** False when `git branch -d` kept a branch with unmerged commits. */
+  branchDeleted: boolean;
+  message: string;
+}
+
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
 export type PrResult =
   | PullRequest
@@ -151,7 +173,7 @@ export type AgentEvent =
   | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
   | { type: "error"; message: string }
-  /** A quiet line from yardd itself, such as a hand-off. Changes no status. */
+  /** A quiet line from yardd itself, such as a hand-off or a worktree setup. Changes no status. */
   | { type: "note"; text: string }
   /** The session is waiting for the host to have room. Carries its prompt. */
   | { type: "queued"; reason: string; text?: string };

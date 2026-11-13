@@ -91,6 +91,7 @@ h1, h2, h3, p { margin: 0; }
 
 .banner { display: flex; align-items: center; gap: 12px; padding: 8px 24px; background: var(--fill); font-size: 12px; color: var(--muted); }
 .banner-error { color: var(--bad-ink); justify-content: space-between; }
+.banner-notice { color: var(--ink); justify-content: space-between; }
 
 /* buttons */
 .btn-primary, .btn, .btn-text, .btn-quiet, .btn-icon { height: 32px; border-radius: 8px; }
@@ -187,6 +188,7 @@ h1, h2, h3, p { margin: 0; }
 .new h1 { margin-bottom: 10px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; text-align: center; }
 .new-options { display: flex; align-items: center; gap: 10px; padding: 0 6px; }
 .new-options input[type="text"] { flex: 1 1 0; min-width: 0; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-family: var(--mono); font-size: 12px; }
+.new-options select { flex: 0 1 180px; min-width: 0; height: 30px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: inherit; font-family: var(--mono); font-size: 12px; }
 
 .new-options { min-height: 30px; }
 .check { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
