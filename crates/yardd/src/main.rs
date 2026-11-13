@@ -27,9 +27,10 @@ use state::App;
 /// loopback bind next to it succeeds silently.
 const DEFAULT_PORT: u16 = 47717;
 
-/// Lets the shell tell yardd apart from anything else on the port.
+/// Lets the shell tell yardd apart from anything else on the port, and an
+/// older yardd from the one it bundles: `yardd <version> <build id>`.
 async fn health() -> &'static str {
-    concat!("yardd ", env!("CARGO_PKG_VERSION"))
+    concat!("yardd ", env!("CARGO_PKG_VERSION"), " ", env!("YARD_BUILD_ID"))
 }
 
 #[tokio::main]

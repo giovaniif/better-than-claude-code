@@ -21,13 +21,19 @@ Limits, all optional: `YARD_SESSION_MEM_CAP_GB` (default 8, `0` off) stops a ses
 ## Desktop app
 
 ```bash
-(cd app && bun install && bun run build)
-open target/debug/bundle/macos/Switchyard.app
+app/build.sh
+open target/release/bundle/macos/Switchyard.app
 ```
 
-The app starts yardd if it is not running and opens a window on its UI. Closing the app leaves yardd and its sessions running; `pkill -x yardd` stops them. yardd logs to `~/.yard/yardd.log` when the app starts it.
+`app/build.sh` (also `bun run build` in `app`) builds the UI, compiles the Claude sidecar to a binary with `bun build --compile`, builds yardd in release and bundles all three into `Switchyard.app/Contents/Resources/yard`. It caps Cargo at `CARGO_BUILD_JOBS=2` unless you set it. The `.app` runs anywhere on the Mac, without the repo, Bun or Rust; it still needs `codex` and `claude` installed and logged in. It is unsigned.
 
-This is a personal build. The app finds yardd, the UI and the Claude sidecar in the repo it was compiled from, so it only works on this machine and needs `cargo build -p yardd` and the UI build first.
+The app starts its bundled yardd if none is running and opens a window on its UI. Closing the app leaves yardd and its sessions running; `pkill -x yardd` stops them. yardd logs to `~/.yard/yardd.log` when the app starts it.
+
+`/health` reports yardd's build id. If a yardd from another build is already running, the app does not stop it (it may hold live sessions): the title says an older daemon is running and the window uses it. Quit that yardd and reopen the app to update.
+
+`SWITCHYARD_PORT` and `YARD_DATA_DIR` run a second copy next to the real one, for example `SWITCHYARD_PORT=47728 YARD_DATA_DIR=/tmp/yard-test Switchyard.app/Contents/MacOS/switchyard`; that copy logs to its data folder.
+
+`cargo run -p switchyard` from the repo has no bundled files and falls back to the repo's `target/{release,debug}/yardd`, `ui/dist` and `bun run` of the sidecar script.
 
 `bun run icon` in `app` redraws the icon set.
 

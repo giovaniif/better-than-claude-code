@@ -20,15 +20,21 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
 /// Start the sidecar. `resume` is a Claude Code session id to continue.
 fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
-    let script = app.root.join("sidecar/yard-claude/src/main.ts");
-    if !script.exists() {
-        bail!("sidecar not found at {}", script.display());
-    }
-
-    let mut cmd = Command::new("bun");
-    cmd.arg("run")
-        .arg(&script)
-        .stdin(Stdio::piped())
+    // The desktop app bundles a compiled sidecar and points YARD_SIDECAR at
+    // it, so it needs no Bun. Without it, run the script from the repo.
+    let mut cmd = match std::env::var_os("YARD_SIDECAR").filter(|s| !s.is_empty()) {
+        Some(binary) => Command::new(binary),
+        None => {
+            let script = app.root.join("sidecar/yard-claude/src/main.ts");
+            if !script.exists() {
+                bail!("sidecar not found at {}", script.display());
+            }
+            let mut cmd = Command::new("bun");
+            cmd.arg("run").arg(&script);
+            cmd
+        }
+    };
+    cmd.stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
         .kill_on_drop(true);
@@ -38,7 +44,9 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             cmd.env_remove(key);
         }
     }
-    let mut child = cmd.spawn().context("could not start the Claude sidecar (is `bun` on PATH?)")?;
+    let mut child = cmd
+        .spawn()
+        .context("could not start the Claude sidecar (YARD_SIDECAR unset: is `bun` on PATH?)")?;
     // The sidecar's tree (sidecar, CLI, tool commands) is this session's usage.
     let pid = child.id();
     if let Some(pid) = pid {

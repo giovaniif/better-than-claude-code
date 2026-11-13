@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "resources": {
+      "../../target/release/yardd": "yard/bin/yardd",
+      "../../target/sidecar/yard-claude": "yard/bin/yard-claude",
+      "../../ui/dist/": "yard/ui/dist/"
+    }
+  }
+}
