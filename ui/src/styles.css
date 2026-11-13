@@ -84,6 +84,7 @@ h1, h2, h3, p { margin: 0; }
 
 .dot { flex: none; width: 7px; height: 7px; border-radius: 50%; }
 .dot-idle { border: 1.5px solid #9a9a9a; }
+.dot-queued { border: 1.5px solid var(--warn); }
 .dot-running { background: var(--ok); }
 .dot-needs_approval { background: var(--warn); }
 .dot-error { background: var(--bad-ink); }
@@ -148,6 +149,8 @@ h1, h2, h3, p { margin: 0; }
 .approval-title { font-weight: 500; }
 .approval-what { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .error-line { color: var(--bad-ink); overflow-wrap: anywhere; }
+.queued-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); overflow-wrap: anywhere; }
+.queued-line .btn { height: 28px; }
 
 /* composer */
 .composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px 16px; border: 1px solid var(--line-strong); border-radius: 16px; background: var(--bg); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); }
@@ -242,3 +245,13 @@ h1, h2, h3, p { margin: 0; }
 .fill { display: block; height: 4px; border-radius: 2px; background: var(--ink); }
 .fill-warn { background: var(--warn); }
 .spark { width: 100%; height: 36px; color: #9a9a9a; }
+
+/* per-session usage */
+.usage { display: flex; flex-direction: column; gap: 8px; margin-top: 28px; }
+.usage h2 { font-size: 14px; font-weight: 600; }
+.usage table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.usage th { padding: 0 2px 6px; font-weight: 500; color: var(--muted); text-align: left; }
+.usage td { padding: 6px 2px; border-top: 1px solid var(--line); vertical-align: baseline; }
+.usage th.num, .usage td.num { text-align: right; white-space: nowrap; font-family: var(--mono); }
+.usage-title { max-width: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usage td.reason { text-align: right; color: var(--warn-ink); }

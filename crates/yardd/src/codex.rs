@@ -40,6 +40,9 @@ impl Client {
             .kill_on_drop(true)
             .spawn()
             .context("could not start `codex app-server`")?;
+        if let Some(pid) = child.id() {
+            app.guard.set_codex_server(pid);
+        }
         let mut stdin = child.stdin.take().context("codex stdin")?;
         let stdout = child.stdout.take().context("codex stdout")?;
 
@@ -208,6 +211,7 @@ impl Client {
             "item/completed" => on_item(app, &sid, false, &p["item"]),
             "turn/completed" => {
                 set_turn(app, &sid, None);
+                app.guard.turn_done(&sid);
                 let turn = &p["turn"];
                 if !turn["error"].is_null() {
                     let message = turn["error"]["message"]
@@ -246,6 +250,16 @@ fn on_item(app: &Arc<App>, sid: &str, started: bool, item: &Value) {
             json!({ "type": "assistant_message", "itemId": id, "text": item["text"] }),
         ),
         "commandExecution" => {
+            // Lets the resource guard tell this session's commands apart
+            // among the app-server's children (see `guard::sample`).
+            let item_id = id.as_str().unwrap_or("");
+            if started {
+                let cwd = item["cwd"].as_str().map(str::to_string);
+                let cwd = cwd.or_else(|| app.meta(sid).map(|m| m.cwd)).unwrap_or_default();
+                app.guard.command_started(sid, item_id, &cwd);
+            } else {
+                app.guard.command_done(sid, item_id);
+            }
             if started {
                 app.emit(
                     sid,

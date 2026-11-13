@@ -1,7 +1,7 @@
 // Shapes shared with yardd (crates/yardd). Keep the two in step.
 
 export type Engine = "claude" | "codex";
-export type Status = "idle" | "running" | "needs_approval" | "error";
+export type Status = "idle" | "queued" | "running" | "needs_approval" | "error";
 export type Decision = "allow" | "allow_always" | "deny";
 
 export interface SessionMeta {
@@ -41,6 +41,19 @@ export interface Host {
   diskUsed: number;
   diskTotal: number;
   cpuHistory: number[];
+  /** Why new sessions are being queued; null when the host has room. */
+  pressure?: string | null;
+  /** Sessions with live processes, by memory, largest first. */
+  sessions?: SessionUsage[];
+  /** Sessions waiting to start, oldest first. */
+  queued?: { id: string; reason: string }[];
+  limits?: { memCapBytes: number; minFreeBytes: number; forced: boolean };
+}
+
+export interface SessionUsage {
+  id: string;
+  cpuCores: number;
+  memBytes: number;
 }
 
 export interface Usage {
@@ -122,7 +135,8 @@ export type AgentEvent =
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
   | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string }
+  | { type: "queued"; reason: string; text?: string };
 
 /** What the thread renders. Built from events by `applyEvent`. */
 export type Item =
@@ -131,7 +145,8 @@ export type Item =
   | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
   | { kind: "diff"; key: string; files: ChangedFile[] }
   | { kind: "approval"; key: string; requestId: string; approvalKind: string; title: string; detail: string; decision: Decision | null }
-  | { kind: "error"; key: string; message: string };
+  | { kind: "error"; key: string; message: string }
+  | { kind: "queued"; key: string; reason: string };
 
 export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
   const key = `e${seq}`;
@@ -185,6 +200,8 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       });
     case "error":
       return [...items, { kind: "error", key, message: ev.message }];
+    case "queued":
+      return [...items, { kind: "queued", key, reason: ev.reason }];
     default:
       return items;
   }

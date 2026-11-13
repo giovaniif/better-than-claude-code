@@ -147,6 +147,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if meta.status == "running" || meta.status == "needs_approval" {
                 bail!("a turn is already running");
             }
+            if meta.status == "queued" {
+                bail!("this session is queued; start it first");
+            }
             sessions::send_turn(app, sid, text).await;
         }
         "session.setModel" => {
@@ -154,7 +157,8 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let model = str_field(msg, "model")?;
             let effort = str_field(msg, "effort")?;
             let meta = app.meta(sid).context("no such session")?;
-            if meta.engine == "claude" && meta.model != model {
+            // A queued Claude session has no sidecar yet; it starts on the new model.
+            if meta.engine == "claude" && meta.model != model && meta.status != "queued" {
                 claude::set_model(app, sid, model)?;
             }
             app.update_meta(sid, |m| {
@@ -184,9 +188,19 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 json!({ "type": "approval_resolved", "requestId": request_id, "decision": decision }),
             );
         }
+        "session.startNow" => {
+            let sid = str_field(msg, "sessionId")?;
+            app.meta(sid).context("no such session")?;
+            if !app.guard.take(sid) {
+                bail!("this session is not queued");
+            }
+            sessions::start_queued(app, sid).await;
+        }
         "session.delete" => {
             let sid = str_field(msg, "sessionId")?;
             let meta = app.meta(sid).context("no such session")?;
+            // A queued session has no engine yet: this just drops it from the queue.
+            app.guard.forget(sid);
             if meta.engine == "codex" {
                 codex::forget(app, sid).await;
             }

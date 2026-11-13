@@ -1,9 +1,10 @@
-//! Host stats: CPU, load, memory and disk, sampled every few seconds.
+//! Host stats: CPU, load, memory and disk, sampled every few seconds, plus
+//! what each session uses (see `guard`).
 
 use std::{sync::Arc, time::Duration};
 
 use serde_json::json;
-use sysinfo::{Disks, System};
+use sysinfo::{Disks, ProcessRefreshKind, System, UpdateKind};
 
 use crate::state::App;
 
@@ -18,6 +19,14 @@ pub async fn run(app: Arc<App>) {
         tokio::time::sleep(Duration::from_secs(SAMPLE_SECS)).await;
         sys.refresh_cpu();
         sys.refresh_memory();
+        // The folder is read once per process; `guard` uses it to attribute
+        // Codex commands.
+        sys.refresh_processes_specifics(
+            ProcessRefreshKind::new()
+                .with_cpu()
+                .with_memory()
+                .with_cwd(UpdateKind::OnlyIfNotSet),
+        );
 
         let cpu = sys.global_cpu_info().cpu_usage();
         let cores = sys.cpus().len();
@@ -45,7 +54,7 @@ pub async fn run(app: Arc<App>) {
             h.iter().copied().collect()
         };
 
-        let host = json!({
+        let mut host = json!({
             "id": "local",
             "name": "This Mac",
             "cpu": cpu,
@@ -57,6 +66,10 @@ pub async fn run(app: Arc<App>) {
             "diskTotal": disk_total,
             "cpuHistory": history,
         });
+        let guarded = crate::guard::sample(&app, &sys, load, cores, mem_total - mem_used);
+        if let (Some(host), Some(extra)) = (host.as_object_mut(), guarded.as_object()) {
+            host.extend(extra.clone());
+        }
         *app.host.lock().unwrap() = host.clone();
         app.broadcast(json!({ "op": "host", "host": host }));
     }

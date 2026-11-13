@@ -39,6 +39,11 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
         }
     }
     let mut child = cmd.spawn().context("could not start the Claude sidecar (is `bun` on PATH?)")?;
+    // The sidecar's tree (sidecar, CLI, tool commands) is this session's usage.
+    let pid = child.id();
+    if let Some(pid) = pid {
+        app.guard.set_sidecar(sid, pid);
+    }
     let mut stdin = child.stdin.take().context("sidecar stdin")?;
     let stdout = child.stdout.take().context("sidecar stdout")?;
 
@@ -86,6 +91,9 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             }
         }
         let _ = child.wait().await;
+        if let Some(pid) = pid {
+            reader_app.guard.clear_sidecar(&reader_sid, pid);
+        }
         // The sidecar is gone: close out whatever turn was open.
         let running = reader_app
             .meta(&reader_sid)

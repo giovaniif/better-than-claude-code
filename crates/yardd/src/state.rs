@@ -77,6 +77,7 @@ pub struct App {
     pub host: Mutex<Value>,
     pub cpu_history: Mutex<VecDeque<f32>>,
     pub terms: crate::pty::Terms,
+    pub guard: crate::guard::Guard,
     pub store: crate::store::Store,
     next: AtomicU64,
 }
@@ -95,6 +96,7 @@ impl App {
             host: Mutex::new(Value::Null),
             cpu_history: Mutex::new(VecDeque::new()),
             terms: crate::pty::Terms::default(),
+            guard: crate::guard::Guard::default(),
             store,
             next: AtomicU64::new(1),
         }
@@ -179,6 +181,7 @@ impl App {
         let status = match event["type"].as_str() {
             Some("turn_started") | Some("approval_resolved") => Some("running"),
             Some("approval_request") => Some("needs_approval"),
+            Some("queued") => Some("queued"),
             Some("turn_completed") => Some("idle"),
             Some("fatal") => Some("error"),
             _ => None,
@@ -232,13 +235,17 @@ impl App {
     }
 
     /// Put sessions read from disk back in memory. A turn that was open when
-    /// yardd died can never finish, so it is closed out as failed.
+    /// yardd died can never finish, so it is closed out as failed. A queued
+    /// session never started, so it goes back in the queue.
     pub fn restore(&self, loaded: Vec<crate::store::Loaded>) {
         let mut interrupted = Vec::new();
+        let mut queued = Vec::new();
         {
             let mut map = self.sessions.lock().unwrap();
             for l in loaded {
-                if l.meta.status != "idle" {
+                if l.meta.status == "queued" {
+                    queued.push((l.meta.created_at, l.meta.id.clone(), queued_reason(&l.events)));
+                } else if l.meta.status != "idle" {
                     interrupted.push(l.meta.id.clone());
                 }
                 map.insert(
@@ -251,6 +258,10 @@ impl App {
                     },
                 );
             }
+        }
+        queued.sort();
+        for (_, sid, reason) in queued {
+            self.guard.enqueue(&sid, &reason);
         }
         for sid in interrupted {
             self.emit(&sid, json!({ "type": "error", "message": "yardd restarted during this turn." }));
@@ -310,6 +321,18 @@ impl App {
             "home": std::env::var("HOME").unwrap_or_default(),
         })
     }
+}
+
+/// The reason and prompt a queued session recorded when it was queued.
+pub fn queued_event(events: &[Value]) -> Option<&Value> {
+    events.iter().rev().find(|e| e["type"] == "queued")
+}
+
+fn queued_reason(events: &[Value]) -> String {
+    queued_event(events)
+        .and_then(|e| e["reason"].as_str())
+        .unwrap_or("waiting for room on the host")
+        .to_string()
 }
 
 fn claude_models() -> Value {
