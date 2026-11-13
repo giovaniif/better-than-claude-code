@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import type { ChangedFile, Changes, Engine, Host, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { useYard, type Actions, type State } from "./store";
 import { TerminalPane } from "./TerminalPane";
+import { PrPane } from "./PrPane";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** What each engine does before acting, as yardd starts it today. */
@@ -418,7 +419,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane sessionId={meta.id} changes={changes} connected={state.connected} actions={actions} />
+      <WorkPane sessionId={meta.id} changes={changes} connected={state.connected} actions={actions} meta={meta} state={state} />
     </div>
   );
 }
@@ -527,9 +528,10 @@ function splitDiff(diff: string): { path: string; body: string }[] {
 }
 
 /** The right-hand pane: what changed, and a shell in the same folder. */
-function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions }) {
+function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State }) {
   const { sessionId, changes, connected, actions } = props;
-  const [tab, setTab] = useState<"changes" | "terminal">("changes");
+  const [tab, setTab] = useState<"changes" | "terminal" | "pr">("changes");
+  const [prUsed, setPrUsed] = useState(false);
   // The shell starts the first time the tab is opened, then stays mounted.
   const [terminalUsed, setTerminalUsed] = useState(false);
   const parts = useMemo(() => splitDiff(changes?.diff ?? ""), [changes?.diff]);
@@ -550,14 +552,29 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         >
           Terminal
         </button>
+        <button
+          className={`tab ${tab === "pr" ? "active" : ""}`}
+          aria-pressed={tab === "pr"}
+          onClick={() => {
+            setTab("pr");
+            setPrUsed(true);
+          }}
+        >
+          Pull request
+        </button>
         <span className="spacer" />
-        {tab === "changes" && (
-          <button className="btn-icon" aria-label="Refresh changes" onClick={() => actions.loadChanges(sessionId)}>
+        {tab !== "terminal" && (
+          <button
+            className="btn-icon"
+            aria-label={tab === "pr" ? "Refresh pull request" : "Refresh changes"}
+            onClick={() => (tab === "pr" ? actions.loadPr(sessionId) : actions.loadChanges(sessionId))}
+          >
             <Icon d={REFRESH} />
           </button>
         )}
       </header>
       {terminalUsed && <TerminalPane sessionId={sessionId} connected={connected} visible={tab === "terminal"} actions={actions} />}
+      {prUsed && <PrPane meta={props.meta} state={props.state} actions={actions} visible={tab === "pr"} />}
       <div className="scroll pane-body" style={{ display: tab === "changes" ? "flex" : "none" }}>
         {changes?.error && <div className="muted">{capitalize(changes.error)}.</div>}
         {changes && !changes.error && files.length === 0 && <div className="muted">No changes in this folder.</div>}

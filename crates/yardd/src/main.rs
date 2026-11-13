@@ -5,6 +5,7 @@ mod claude;
 mod codex;
 mod git;
 mod hosts;
+mod pr;
 mod pty;
 mod state;
 mod ws;

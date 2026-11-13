@@ -8,6 +8,7 @@ import {
   type Host,
   type Item,
   type Models,
+  type PrResult,
   type SessionMeta,
   type Usage,
 } from "./protocol";
@@ -28,6 +29,7 @@ export interface State {
   sessions: Record<string, SessionMeta>;
   threads: Record<string, Thread>;
   changes: Record<string, Changes>;
+  pr: Record<string, PrResult>;
   models: Models;
   usage: Usage;
   host: Host | null;
@@ -51,6 +53,7 @@ const initial: State = {
   sessions: {},
   threads: {},
   changes: {},
+  pr: {},
   models: { claude: [], codex: [] },
   usage: {},
   host: null,
@@ -103,6 +106,8 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, host: msg.host };
     case "changes":
       return { ...state, changes: { ...state.changes, [msg.sessionId]: msg.changes } };
+    case "pr":
+      return { ...state, pr: { ...state.pr, [msg.sessionId]: msg.pr } };
     case "error":
       return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
     case "history": {
@@ -157,6 +162,7 @@ export interface Actions {
   interrupt(sessionId: string): void;
   approve(sessionId: string, requestId: string, decision: Decision): void;
   loadChanges(sessionId: string): void;
+  loadPr(sessionId: string): void;
 }
 
 function socketUrl(): string {
@@ -236,6 +242,7 @@ export function useYard(): { state: State; actions: Actions } {
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
       approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),
       loadChanges: (sessionId) => post({ op: "changes.get", sessionId }),
+      loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
     }),
     [],
   );

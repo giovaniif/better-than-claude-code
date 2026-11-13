@@ -65,6 +65,51 @@ export interface Changes {
   error?: string;
 }
 
+export interface PrCheck {
+  name: string;
+  workflow?: string | null;
+  result: "passed" | "failed" | "running" | "skipped" | "neutral";
+  url?: string | null;
+}
+
+export interface PrComment {
+  author: string;
+  /** From GitHub, untrusted: render as text. */
+  body: string;
+  url?: string | null;
+}
+
+export interface PrThread {
+  path: string;
+  line: number | null;
+  resolved: boolean;
+  outdated: boolean;
+  comments: PrComment[];
+}
+
+export interface PullRequest {
+  number: number;
+  title: string;
+  url: string;
+  state: "OPEN" | "CLOSED" | "MERGED";
+  isDraft: boolean;
+  base: string;
+  head: string;
+  reviewDecision?: string | null;
+  mergeable?: string | null;
+  mergeState?: string | null;
+  checks: PrCheck[];
+  checksTruncated?: boolean;
+  threads: PrThread[];
+  threadsError?: string;
+}
+
+/** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
+export type PrResult =
+  | PullRequest
+  | { none: true; branch: string; defaultBranch?: string | null }
+  | { error: string };
+
 /** Normalized session events. Both engines produce exactly these. */
 export type AgentEvent =
   | { type: "user_message"; text: string }
