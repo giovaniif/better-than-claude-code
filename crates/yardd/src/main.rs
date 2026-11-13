@@ -7,6 +7,7 @@ mod git;
 mod hosts;
 mod pr;
 mod pty;
+mod sessions;
 mod state;
 mod store;
 mod ws;

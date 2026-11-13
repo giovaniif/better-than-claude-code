@@ -13,7 +13,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 - `CARGO_BUILD_JOBS=2 cargo build -p yardd`. Keep the job cap: the machine has 8 cores, 16 GB and other work running.
 - UI: `cd ui && bun install && bunx vite build`. Sidecar: `cd sidecar/yard-claude && bun install`.
 - Use Bun. `pnpm` is broken here. Never run `tsc` in any form.
-- Test daemon, from the repo root: `YARD_PORT=<port> ./target/debug/yardd`. It serves `ui/dist` and finds the sidecar relative to the current directory (`YARD_ROOT` overrides).
+- Test daemon, from the repo root: `YARD_PORT=<port> YARD_DATA_DIR=<temp folder> ./target/debug/yardd`. It serves `ui/dist` and finds the sidecar relative to the current directory (`YARD_ROOT` overrides). Without `YARD_DATA_DIR` it would open the user's real database in `~/.yard`.
 - `/bin/bash` is 3.2. Put multi-step shell logic in a script file, not a long one-liner.
 
 ## Hard rules

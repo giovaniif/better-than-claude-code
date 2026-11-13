@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    claude, codex, git, pr, pty,
+    claude, codex, git, pr, pty, sessions,
     state::{App, Worktree},
 };
 
@@ -131,17 +131,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             let sid = app.new_session(engine, model, effort, &cwd, &title, worktree);
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
-
-            let started = match engine {
-                "codex" => codex::create(app, &sid).await,
-                _ => claude::create(app, &sid).await,
-            };
-            if let Err(e) = started {
-                app.emit(&sid, json!({ "type": "user_message", "text": text }));
-                fail_turn(app, &sid, &e);
-                return Ok(());
-            }
-            send_turn(app, &sid, text).await;
+            sessions::begin(app, &sid, text).await;
         }
         "session.open" => {
             let sid = str_field(msg, "sessionId")?;
@@ -157,7 +147,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if meta.status == "running" || meta.status == "needs_approval" {
                 bail!("a turn is already running");
             }
-            send_turn(app, sid, text).await;
+            sessions::send_turn(app, sid, text).await;
         }
         "session.setModel" => {
             let sid = str_field(msg, "sessionId")?;
@@ -223,22 +213,4 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         other => bail!("unknown op `{other}`"),
     }
     Ok(())
-}
-
-async fn send_turn(app: &Arc<App>, sid: &str, text: &str) {
-    app.emit(sid, json!({ "type": "user_message", "text": text }));
-    app.emit(sid, json!({ "type": "turn_started" }));
-    let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
-    let sent = match engine.as_str() {
-        "codex" => codex::send(app, sid, text).await,
-        _ => claude::send(app, sid, text),
-    };
-    if let Err(e) = sent {
-        fail_turn(app, sid, &e);
-    }
-}
-
-fn fail_turn(app: &Arc<App>, sid: &str, error: &anyhow::Error) {
-    app.emit(sid, json!({ "type": "error", "message": format!("{error:#}") }));
-    app.emit(sid, json!({ "type": "turn_completed", "status": "failed" }));
 }
