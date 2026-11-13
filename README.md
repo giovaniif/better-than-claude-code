@@ -18,6 +18,15 @@ Then open http://127.0.0.1:47717.
 
 Limits, all optional: `YARD_SESSION_MEM_CAP_GB` (default 8, `0` off) stops a session whose processes use more; `YARD_MIN_FREE_GB` (default 2) is the free memory below which new sessions queue.
 
+## Tests
+
+```bash
+CARGO_BUILD_JOBS=2 cargo test -p yardd   # unit tests and the daemon integration suite
+(cd ui && bun install && bun test)       # applyEvent and the store reducer
+```
+
+The integration tests in `crates/yardd/tests` start the built `yardd` on free ports with temp data dirs and drive it over its WebSocket. They put `crates/yardd/tests/fake-codex` first on `PATH`: a scripted `codex app-server` (Bun) whose turns are picked by markers in the prompt (`[cmd]`, `[edit]`, `[slow]`, `[fail]`), and a `claude` that only fails. No real engine runs, nothing needs a login or the network, and the suite is safe next to a running yardd. Needs `bun` and `git`.
+
 ## Desktop app
 
 ```bash

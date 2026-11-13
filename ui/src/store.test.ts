@@ -1,0 +1,152 @@
+import { describe, expect, test } from "bun:test";
+import type { AgentEvent, SessionMeta } from "./protocol";
+import { initial, reduce, type State } from "./store";
+
+const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
+const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
+const history = (sessionId: string, events: AgentEvent[]) => ({ op: "history", sessionId, events });
+
+const log: AgentEvent[] = [
+  { type: "user_message", text: "hi" },
+  { type: "turn_started" },
+  { type: "assistant_delta", itemId: "m", text: "Hel" },
+  { type: "assistant_delta", itemId: "m", text: "lo" },
+  { type: "assistant_message", itemId: "m", text: "Hello" },
+  { type: "turn_completed", status: "completed" },
+];
+
+const meta = (id: string, host = "local", status: SessionMeta["status"] = "idle"): SessionMeta => ({
+  id,
+  title: id,
+  engine: "codex",
+  model: "m",
+  effort: "low",
+  cwd: "/w",
+  status,
+  host,
+  createdAt: 1,
+  updatedAt: 1,
+});
+
+const texts = (state: State, sid: string) =>
+  state.threads[sid].items.map((i) => (i.kind === "user" || i.kind === "note" ? i.text : i.kind === "assistant" ? i.text : i.kind));
+
+describe("thread loading", () => {
+  test("history alone builds the thread", () => {
+    const s = server(initial, history("s1", log));
+    expect(s.threads.s1.next).toBe(6);
+    expect(texts(s, "s1")).toEqual(["hi", "Hello"]);
+    expect(s.threads.s1.items[1]).toMatchObject({ streaming: false });
+  });
+
+  test("events before the history wait, then only the new ones apply, in order", () => {
+    let s = initial;
+    // Arrive out of order and before the history; seq 1 is also in the history.
+    s = server(s, event("s1", 3, { type: "note", text: "third" }));
+    s = server(s, event("s1", 1, { type: "turn_started" }));
+    s = server(s, event("s1", 2, { type: "note", text: "second" }));
+    expect(s.threads.s1.next).toBe(-1);
+    expect(s.threads.s1.items).toEqual([]);
+    expect(s.threads.s1.early).toHaveLength(3);
+
+    s = server(s, history("s1", [{ type: "user_message", text: "hi" }, { type: "turn_started" }]));
+    expect(texts(s, "s1")).toEqual(["hi", "second", "third"]);
+    expect(s.threads.s1.next).toBe(4);
+    expect(s.threads.s1.early).toEqual([]);
+  });
+
+  test("an early event already covered by the history is not applied twice", () => {
+    let s = server(initial, event("s1", 0, { type: "user_message", text: "hi" }));
+    s = server(s, history("s1", [{ type: "user_message", text: "hi" }]));
+    expect(texts(s, "s1")).toEqual(["hi"]);
+    expect(s.threads.s1.next).toBe(1);
+  });
+
+  test("live events apply once each; repeats and old seqs are dropped", () => {
+    let s = server(initial, history("s1", log.slice(0, 2)));
+    s = server(s, event("s1", 2, log[2]));
+    s = server(s, event("s1", 2, log[2])); // duplicate
+    s = server(s, event("s1", 1, log[1])); // already in history
+    s = server(s, event("s1", 3, log[3]));
+    expect(texts(s, "s1")).toEqual(["hi", "Hello"]);
+    expect(s.threads.s1.items[1]).toMatchObject({ streaming: true });
+    expect(s.threads.s1.next).toBe(4);
+
+    const same = server(s, event("s1", 3, log[3]));
+    expect(same).toBe(s);
+  });
+
+  test("an event from the future is not applied out of order", () => {
+    let s = server(initial, history("s1", log.slice(0, 2)));
+    const skipped = server(s, event("s1", 5, log[5]));
+    expect(skipped).toBe(s);
+  });
+
+  test("threads are per session", () => {
+    let s = server(initial, history("a", log));
+    s = server(s, event("b", 0, { type: "user_message", text: "other" }));
+    expect(s.threads.a.next).toBe(6);
+    expect(s.threads.b.next).toBe(-1);
+  });
+
+  test("losing the socket drops threads so they reload", () => {
+    let s = server(initial, history("s1", log));
+    s = reduce(s, { t: "socket", connected: false });
+    expect(s.threads).toEqual({});
+    expect(s.connected).toBe(false);
+    s = reduce(s, { t: "socket", connected: true });
+    expect(s.connected).toBe(true);
+  });
+});
+
+describe("sessions", () => {
+  test("snapshot, update and delete", () => {
+    let s = server(initial, {
+      op: "snapshot",
+      sessions: [meta("s1"), meta("s2")],
+      models: { claude: [], codex: [{ id: "x", name: "X", efforts: ["low"] }] },
+      usage: {},
+      host: null,
+      home: "/home/me",
+      hosts: [],
+    });
+    expect(Object.keys(s.sessions).sort()).toEqual(["s1", "s2"]);
+    expect(s.models.local.codex[0].id).toBe("x");
+    expect(s.home.local).toBe("/home/me");
+
+    s = server(s, { op: "session", session: meta("s1", "local", "running") });
+    expect(s.sessions.s1.status).toBe("running");
+
+    s = server(s, { op: "created", sessionId: "s2" });
+    expect(s.route).toEqual({ page: "session", id: "s2" });
+    s = server(s, history("s2", log));
+    s = server(s, { op: "session.deleted", sessionId: "s2" });
+    expect(s.sessions.s2).toBeUndefined();
+    expect(s.threads.s2).toBeUndefined();
+    expect(s.route).toEqual({ page: "new" });
+  });
+
+  test("a host snapshot replaces only that host's sessions and drops their threads", () => {
+    let s = server(initial, { op: "snapshot", sessions: [meta("s1")], hosts: [{ id: "h1", name: "box", kind: "direct", status: "connected" }] });
+    s = server(s, { op: "host.snapshot", hostId: "h1", sessions: [meta("h1~a", "h1")], models: null, usage: {}, host: null, home: "/r" });
+    s = server(s, history("h1~a", log));
+    s = server(s, history("s1", log));
+    s = server(s, { op: "host.snapshot", hostId: "h1", sessions: [meta("h1~b", "h1")], home: "/r" });
+    expect(Object.keys(s.sessions).sort()).toEqual(["h1~b", "s1"]);
+    expect(s.threads["h1~a"]).toBeUndefined();
+    expect(s.threads.s1).toBeDefined();
+
+    // The host removed: its sessions go too.
+    s = server(s, { op: "hosts", hosts: [] });
+    expect(Object.keys(s.sessions)).toEqual(["s1"]);
+  });
+
+  test("errors count up even when the message repeats", () => {
+    let s = server(initial, { op: "error", message: "nope" });
+    s = server(s, { op: "error", message: "nope" });
+    expect(s.error).toBe("nope");
+    expect(s.errorCount).toBe(2);
+    s = reduce(s, { t: "dismiss" });
+    expect(s.error).toBeNull();
+  });
+});
