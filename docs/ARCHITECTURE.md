@@ -103,12 +103,16 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 
 ## Worktrees
 
-"New worktree" on the new-session page makes yardd cut a branch and worktree from the folder's current HEAD, at `~/.yard/wt/<repo>/<branch>`, and run the session there. Both engines share this layout.
+"New worktree" on the new-session page makes yardd cut a branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default) and run the session there. Both engines share this layout.
 
 - The branch is named from the task (`yard/<first words>-<4 hex>`) unless I type one.
+- **Base:** the "From" select lists local and `origin/*` branches, newest first (`git.branches`). The default is the current branch.
 - The worktree is made before the session. If `git worktree add` fails, nothing else runs and no session exists.
+- **Setup:** after a successful add, yardd runs `<data dir>/setup/<repo>.sh` if it exists, else `.yard/worktree-setup.sh` from the repo, with bash in the new worktree (`YARD_REPO`, `YARD_WORKTREE`, 5 minute limit). This is where `node_modules` and `.env` get linked. If it fails, yardd removes that worktree and branch and creates no session. It never runs in the original checkout.
+- **Removal:** deleting a worktree session offers "Delete and remove worktree". It runs `git worktree remove`, never forced, and is refused if anything is uncommitted or untracked, or another session still uses the folder. The branch goes with `git branch -d`, which keeps unmerged branches.
+- **One writer per folder:** a session without a new worktree is refused while another session in the same folder is running, waiting for approval or queued.
 - Uncommitted changes in the original checkout are not carried over.
-- Not built: picking a base branch, removing a worktree when its session is done, one writer per worktree, and per-repo setup (symlinking `node_modules`, `.env`).
+- Files a setup script creates count as untracked unless gitignored, so they block removal.
 
 ## Terminal
 
@@ -164,15 +168,19 @@ Not checked:
 
 Codex sessions run with `approvalPolicy: on-request` in a workspace-write sandbox. `untrusted` asked before every `cat`.
 
-The app is a personal build: it finds yardd, the UI and the sidecar in the repo it was compiled from. It asks the login shell for `PATH`, because an app opened from Finder cannot see `codex`, `claude` or `bun` otherwise.
+The app is self-contained. `app/build.sh` compiles the sidecar with `bun build --compile`, builds a release yardd, and bundles both with `ui/dist` under `Switchyard.app/Contents/Resources/yard` (78 MB, most of it the sidecar's Bun runtime).
+
+- The shell starts that yardd with `YARD_ROOT` set to that folder and `YARD_SIDECAR` set to the compiled sidecar, so neither Bun nor the repo is needed at run time. The sidecar uses my installed `claude`.
+- It asks the login shell for `PATH`, because an app opened from Finder cannot see `codex` or `claude` otherwise.
+- `/health` returns `yardd <version> <build id>`. If a yardd with another build id is already running, the shell leaves it alone and says so in the title, because it may hold live sessions.
+- With no bundled files (`cargo run`), the shell falls back to the repo builds.
+- Unsigned, no auto-update.
 
 Next:
 
-1. Bundle yardd, the UI and a compiled sidecar into the app so it runs outside this repo.
-2. Try a real box over Tailscale SSH, and the Claude paths listed above.
-3. Worktree cleanup, base branch, and per-repo setup.
-4. Creating a PR and replying to review threads from the pane.
-5. Tests. Only the hand-off brief and the hub's id rewriting have any.
+1. Try a real box over Tailscale SSH, and the Claude paths listed above.
+2. Creating a PR and replying to review threads from the pane.
+3. Claude: effort changes mid-session, and showing Claude's questions as question cards.
 
 ## Risks
 
