@@ -121,7 +121,15 @@ The right pane has a Terminal tab next to Changes.
 - yardd owns one PTY per session (`portable-pty`), running my login shell in the session folder. The UI renders it with xterm.js.
 - yardd keeps 256 KB of output per terminal. Every chunk carries its byte offset, so a tab switch, page reload or reconnect replays the scrollback without gaps or repeats.
 - The shell starts the first time the tab is opened and stays alive after the app closes.
-- Not built: more than one terminal per session, splits, and a way to send a selection to the agent.
+- A session can have several terminals, shown as tabs ("1", "2", ...) above the terminal. Numbers are not reused while the session lives. `term.list`, `term.new` and `term.attach` sit beside `term.open`, which attaches to the first live terminal or starts one. An exited shell stays listed until closed.
+- **Add to message** appends the selected terminal text to the reply box as a fenced block, capped at 20,000 characters. It does not send.
+- Not built: splits.
+
+## Tests
+
+- `CARGO_BUILD_JOBS=2 cargo test -p yardd`: 19 integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. Unit tests cover the hand-off brief and the hub's id rewriting.
+- `cd ui && bun test`: 20 tests for `applyEvent` and the store reducer.
+- Not covered: anything that needs Claude, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
 
 ## PR pane
 
@@ -158,6 +166,9 @@ Built and checked in the browser on 2026-11-13:
 - PR pane: rendered a real open PR from a public repo, with checks and review threads.
 - Hand-off: Codex received a hand-off brief and answered from the earlier work. The picker's confirmation was checked in the UI.
 - Resource guard: per-session CPU and memory in the Hosts table, the memory cap killing an over-cap process, and the queue with "Start anyway".
+- Worktrees: the "From" select, and "Delete and remove worktree" removing a clean worktree and its merged branch.
+- Terminal tabs: a second terminal running its own command, and a selection added to the reply box.
+- Self-contained app: a copy of the release bundle outside the repo started its own bundled yardd on a test port and ran a Codex turn.
 - Remote hosts: a second local yardd added as a `direct` host. A session created on it from the UI ran there, with its terminal and Changes pane working through the hub, and came back after the remote restarted.
 
 Not checked:
