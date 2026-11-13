@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hosts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+code,pre{font-family:'JetBrains Mono',ui-monospace,monospace}
+a{color:#1A1A1A}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 900px; background: #FFFFFF; color: #1A1A1A; font-family: Inter, system-ui, sans-serif; font-size: 13px; line-height: 1.45">
+
+<nav aria-label="Sessions" style="flex: 1 1 240px; display: flex; flex-direction: column; background: #FAFAFA; border-right: 1px solid #EBEBEB">
+<div style="padding: 18px 18px 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em">Harness</div>
+<div style="padding: 0 8px 8px">
+<a href="NewSession.dc.html" style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border-radius: 8px; color: #1A1A1A; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+New session
+</a>
+</div>
+
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 2px; padding: 4px 8px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #D99A00"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Fix invoice rounding</span>
+<span style="font-size: 12px; color: #666666">Opus 5.5 · Needs approval</span>
+</span>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1F9D55"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Migrate webhook retries</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Running</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1F9D55"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Flaky e2e triage</span>
+<span style="font-size: 12px; color: #666666">Sonnet 5.5 · Running</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #D99A00"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Upgrade ORM</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Queued</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #9A9A9A"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Sidebar keyboard nav</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Idle</span>
+</span>
+</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 8px; border-top: 1px solid #EBEBEB">
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 8px; background: #F0F0F0; color: #1A1A1A; font-size: 12px; text-decoration: none">
+<span>This Mac</span><span style="flex: 1 1 0"></span><code style="font-size: 11px; color: #666666">CPU 38% · Mem 61%</code>
+</a>
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 8px; background: #F0F0F0; color: #1A1A1A; font-size: 12px; text-decoration: none">
+<span>devbox</span>
+<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+<span style="flex: 1 1 0"></span><code style="font-size: 11px; color: #8A5A00">CPU 72% · Mem 85%</code>
+</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; align-items: center; min-height: 52px; padding: 8px 32px; border-bottom: 1px solid #EBEBEB">
+<h1 style="margin: 0; font-size: 14px; font-weight: 600">Hosts</h1>
+</header>
+
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; padding: 28px 32px">
+<div style="display: flex; flex-direction: column; gap: 32px; max-width: 1040px; margin: 0 auto">
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px">
+<section aria-label="This Mac" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid #EBEBEB; border-radius: 14px">
+<div style="display: flex; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">This Mac</h2>
+<span style="margin-left: auto; font-size: 12px; color: #666666">Healthy</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>CPU</span><code style="font-size: 12px; color: #666666">38% · load 3.8 of 10</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 38%; height: 4px; border-radius: 2px; background: #1A1A1A"></span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>Memory</span><code style="font-size: 12px; color: #666666">19.5 of 32 GB</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 61%; height: 4px; border-radius: 2px; background: #1A1A1A"></span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>Disk</span><code style="font-size: 12px; color: #666666">412 of 994 GB</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 41%; height: 4px; border-radius: 2px; background: #1A1A1A"></span></span>
+</div>
+<svg role="img" aria-label="CPU over the last hour, steady around 40 percent" viewBox="0 0 300 36" preserveAspectRatio="none" style="width: 100%; height: 36px"><polyline points="0,24 20,22 40,25 60,21 80,23 100,20 120,24 140,22 160,23 180,19 200,22 220,24 240,21 260,23 280,22 300,23" fill="none" stroke="#9A9A9A" stroke-width="1.5"></polyline></svg>
+</section>
+
+<section aria-label="devbox" style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid #EBEBEB; border-radius: 14px">
+<div style="display: flex; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">devbox</h2>
+<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="align-self: center"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+<span style="font-size: 12px; color: #666666">Tailscale · 23 ms</span>
+<span style="margin-left: auto; font-size: 12px; font-weight: 500; color: #8A5A00">Low on memory</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>CPU</span><code style="font-size: 12px; color: #666666">72% · load 6.9 of 8</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 72%; height: 4px; border-radius: 2px; background: #1A1A1A"></span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>Memory</span><code style="font-size: 12px; color: #8A5A00">27.1 of 32 GB</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 85%; height: 4px; border-radius: 2px; background: #D99A00"></span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span>Disk</span><code style="font-size: 12px; color: #8A5A00">162 of 200 GB</code></div>
+<span aria-hidden="true" style="display: block; height: 4px; border-radius: 2px; background: #EBEBEB"><span style="display: block; width: 81%; height: 4px; border-radius: 2px; background: #D99A00"></span></span>
+</div>
+<svg role="img" aria-label="CPU over the last hour, climbing from 30 to 72 percent" viewBox="0 0 300 36" preserveAspectRatio="none" style="width: 100%; height: 36px"><polyline points="0,28 20,27 40,28 60,25 80,26 100,22 120,23 140,18 160,19 180,15 200,16 220,12 240,13 260,10 280,11 300,9" fill="none" stroke="#9A9A9A" stroke-width="1.5"></polyline></svg>
+</section>
+</div>
+
+<section aria-label="Sessions by resource use" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">Sessions</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 640px; border-collapse: collapse; text-align: left">
+<thead>
+<tr style="font-size: 12px; color: #666666">
+<th style="padding: 8px 12px 8px 0; font-weight: 400; border-bottom: 1px solid #EBEBEB">Session</th>
+<th style="padding: 8px 12px; font-weight: 400; border-bottom: 1px solid #EBEBEB">CPU</th>
+<th style="padding: 8px 12px; font-weight: 400; border-bottom: 1px solid #EBEBEB">Memory</th>
+<th style="padding: 8px 12px; font-weight: 400; border-bottom: 1px solid #EBEBEB">Worktree</th>
+<th style="padding: 8px 0; font-weight: 400; border-bottom: 1px solid #EBEBEB"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">Actions</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 10px 12px 10px 0; border-bottom: 1px solid #EBEBEB"><span style="display: flex; align-items: center; gap: 8px"><span style="font-weight: 500">Flaky e2e triage</span><svg role="img" aria-label="Runs on devbox" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg></span></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">1.8 cores</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px; color: #8A5A00">11.8 of 12 GB</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">4.6 GB</code></td>
+<td style="padding: 10px 0; border-bottom: 1px solid #EBEBEB; text-align: right"><button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #666666">Stop</button></td>
+</tr>
+<tr>
+<td style="padding: 10px 12px 10px 0; border-bottom: 1px solid #EBEBEB"><span style="display: flex; align-items: center; gap: 8px"><span style="font-weight: 500">Migrate webhook retries</span><svg role="img" aria-label="Runs on devbox" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg></span></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">3.1 cores</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">9.4 of 12 GB</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">3.1 GB</code></td>
+<td style="padding: 10px 0; border-bottom: 1px solid #EBEBEB; text-align: right"><button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #666666">Stop</button></td>
+</tr>
+<tr>
+<td style="padding: 10px 12px 10px 0; border-bottom: 1px solid #EBEBEB"><span style="font-weight: 500">Fix invoice rounding</span></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">0.9 cores</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">3.2 GB</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">2.8 GB</code></td>
+<td style="padding: 10px 0; border-bottom: 1px solid #EBEBEB; text-align: right"><button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #666666">Stop</button></td>
+</tr>
+<tr>
+<td style="padding: 10px 12px 10px 0; border-bottom: 1px solid #EBEBEB"><span style="font-weight: 500">Sidebar keyboard nav</span></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><span style="font-size: 12px; color: #666666">Idle</span></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">0.6 GB</code></td>
+<td style="padding: 10px 12px; border-bottom: 1px solid #EBEBEB"><code style="font-size: 12px">2.4 GB</code></td>
+<td style="padding: 10px 0; border-bottom: 1px solid #EBEBEB; text-align: right"><button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #666666">Stop</button></td>
+</tr>
+<tr>
+<td style="padding: 10px 12px 10px 0"><span style="display: flex; align-items: center; gap: 8px"><span style="font-weight: 500">Upgrade ORM</span><svg role="img" aria-label="Runs on devbox" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg></span></td>
+<td colspan="3" style="padding: 10px 12px"><span style="font-size: 12px; color: #8A5A00">Queued: 4.9 GB free, starts at 6 GB</span></td>
+<td style="padding: 10px 0; text-align: right; white-space: nowrap"><button style="height: 28px; padding: 0 10px; border: 1px solid #DCDCDC; border-radius: 6px; background: #FFFFFF">Run on This Mac</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-label="Disk on devbox" style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">Disk on devbox</h2>
+<span style="flex: 1 1 0"></span>
+<button style="height: 32px; padding: 0 12px; border: 1px solid #DCDCDC; border-radius: 8px; background: #FFFFFF">Remove 3 finished worktrees · 11.2 GB</button>
+</div>
+<div style="display: flex; flex-direction: column">
+<span style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EBEBEB"><span>Docker images and volumes</span><code style="font-size: 12px">64.0 GB</code></span>
+<span style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EBEBEB"><span>Repositories and other</span><code style="font-size: 12px">43.8 GB</code></span>
+<span style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EBEBEB"><span>Worktrees · 7</span><code style="font-size: 12px">31.4 GB</code></span>
+<span style="display: flex; justify-content: space-between; padding: 8px 0"><span>Package store</span><code style="font-size: 12px">22.8 GB</code></span>
+</div>
+</section>
+
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

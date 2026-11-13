@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Session</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+code,pre{font-family:'JetBrains Mono',ui-monospace,monospace}
+a{color:#1A1A1A}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 900px; background: #FFFFFF; color: #1A1A1A; font-family: Inter, system-ui, sans-serif; font-size: 13px; line-height: 1.45">
+
+<nav aria-label="Sessions" style="flex: 1 1 240px; display: flex; flex-direction: column; background: #FAFAFA; border-right: 1px solid #EBEBEB">
+<div style="padding: 18px 18px 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em">Harness</div>
+<div style="padding: 0 8px 8px">
+<a href="NewSession.dc.html" style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border-radius: 8px; color: #1A1A1A; font-weight: 500; text-decoration: none">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+New session
+</a>
+</div>
+
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 2px; padding: 4px 8px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: #F0F0F0; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #D99A00"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Fix invoice rounding</span>
+<span style="font-size: 12px; color: #666666">Opus 5.5 · Needs approval</span>
+</span>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1F9D55"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Migrate webhook retries</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Running</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; background: #1F9D55"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Flaky e2e triage</span>
+<span style="font-size: 12px; color: #666666">Sonnet 5.5 · Running</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #D99A00"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Upgrade ORM</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Queued</span>
+</span>
+<svg role="img" aria-label="Runs on devbox" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+</a>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: #1A1A1A; text-decoration: none">
+<span aria-hidden="true" style="flex: none; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #9A9A9A"></span>
+<span style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column">
+<span style="font-weight: 500">Sidebar keyboard nav</span>
+<span style="font-size: 12px; color: #666666">gpt-5-codex · Idle</span>
+</span>
+</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 8px; border-top: 1px solid #EBEBEB">
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 8px; color: #1A1A1A; font-size: 12px; text-decoration: none">
+<span>This Mac</span><span style="flex: 1 1 0"></span><code style="font-size: 11px; color: #666666">CPU 38% · Mem 61%</code>
+</a>
+<a href="Hosts.dc.html" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 8px; color: #1A1A1A; font-size: 12px; text-decoration: none">
+<span>devbox</span>
+<svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+<span style="flex: 1 1 0"></span><code style="font-size: 11px; color: #8A5A00">CPU 72% · Mem 85%</code>
+</a>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap">
+
+<main style="flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-height: 52px; padding: 8px 24px; border-bottom: 1px solid #EBEBEB">
+<h1 style="margin: 0; font-size: 14px; font-weight: 600">Fix invoice rounding</h1>
+<code style="font-size: 12px; color: #666666">fix/invoice-rounding</code>
+<span style="flex: 1 1 0"></span>
+<button style="height: 30px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #666666">Stop</button>
+</header>
+
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; padding: 28px 24px">
+<div style="display: flex; flex-direction: column; gap: 18px; max-width: 680px; margin: 0 auto">
+
+<div style="align-self: flex-end; max-width: 85%; padding: 10px 14px; border-radius: 16px; background: #F3F3F3; font-size: 14px; line-height: 1.55">Line totals are still a cent off when a quantity has three decimals. Fix it and update the PR.</div>
+
+<p style="margin: 0; font-size: 14px; line-height: 1.65">I'll reproduce it with a failing test first, then trace where the rounding happens.</p>
+
+<div style="display: flex; flex-direction: column; gap: 2px">
+<button aria-expanded="false" style="display: flex; align-items: center; gap: 8px; padding: 3px 0; border: 0; background: transparent; color: #666666; text-align: left">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+<span>Read</span><code style="font-size: 12px">src/billing/totals.ts</code>
+</button>
+<button aria-expanded="false" style="display: flex; align-items: center; gap: 8px; padding: 3px 0; border: 0; background: transparent; color: #666666; text-align: left">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+<span>Searched</span><code style="font-size: 12px">roundCurrency</code><span>· 6 matches</span>
+</button>
+<button aria-expanded="false" style="display: flex; align-items: center; gap: 8px; padding: 3px 0; border: 0; background: transparent; color: #666666; text-align: left">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+<span>Ran</span><code style="font-size: 12px">pnpm test totals</code><span style="color: #B42318">· 1 failed</span>
+</button>
+</div>
+
+<p style="margin: 0; font-size: 14px; line-height: 1.65">Each line is rounded before the lines are summed, so three-decimal quantities drift by a cent. Rounding once after the sum fixes it.</p>
+
+<div style="border: 1px solid #EBEBEB; border-radius: 12px; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #EBEBEB; font-size: 12px; color: #666666">
+<code>src/billing/totals.ts</code><code style="margin-left: auto">+2 −2</code>
+</div>
+<pre style="margin: 0; padding: 8px 0; font-size: 12px; line-height: 1.7; overflow-x: auto"><span style="display: block; padding: 0 12px; color: #666666">  const lineTotals = lines.map((l) =&gt;</span><span style="display: block; padding: 0 12px; background: #FCEBEA">−   roundCurrency(l.quantity * l.unitPrice)</span><span style="display: block; padding: 0 12px; background: #E8F5EC">+   l.quantity * l.unitPrice</span><span style="display: block; padding: 0 12px; color: #666666">  );</span><span style="display: block; padding: 0 12px; background: #FCEBEA">− const subtotal = sum(lineTotals);</span><span style="display: block; padding: 0 12px; background: #E8F5EC">+ const subtotal = roundCurrency(sum(lineTotals));</span></pre>
+</div>
+
+<button aria-expanded="false" style="display: flex; align-items: center; gap: 8px; padding: 3px 0; border: 0; background: transparent; color: #666666; text-align: left">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+<span>Ran</span><code style="font-size: 12px">pnpm test totals</code><span style="color: #17803D">· 14 passed</span>
+</button>
+
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border: 1px solid #DCDCDC; border-radius: 12px">
+<span style="font-weight: 500">Allow this command?</span>
+<code style="font-size: 12px">git push origin fix/invoice-rounding</code>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button style="height: 32px; padding: 0 14px; border: 0; border-radius: 8px; background: #1A1A1A; color: #FFFFFF; font-weight: 500">Allow once</button>
+<button style="height: 32px; padding: 0 12px; border: 1px solid #DCDCDC; border-radius: 8px; background: #FFFFFF">Always allow</button>
+<button style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #666666">Deny</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<div style="position: relative; padding: 0 24px 20px">
+<sc-if value="{{pickerOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; left: 24px; bottom: 100%; z-index: 2; width: 300px; display: flex; flex-direction: column; gap: 2px; padding: 8px; border: 1px solid #EBEBEB; border-radius: 12px; background: #FFFFFF; box-shadow: 0 8px 28px rgba(0,0,0,0.12)">
+<span style="display: flex; justify-content: space-between; padding: 6px 8px 4px; font-size: 12px; color: #666666"><span>Claude</span><span>42% of 5-hour window</span></span>
+<sc-for list="{{claudeModels}}" as="m" hint-placeholder-count="3">
+<button onClick="{{m.pick}}" style="display: flex; align-items: center; width: 100%; height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: {{m.bg}}; text-align: left">{{m.name}}</button>
+</sc-for>
+<span style="display: flex; justify-content: space-between; padding: 10px 8px 4px; font-size: 12px; color: #666666"><span>Codex</span><span>31% of weekly limit</span></span>
+<sc-for list="{{codexModels}}" as="m" hint-placeholder-count="2">
+<button onClick="{{m.pick}}" style="display: flex; align-items: center; width: 100%; height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: {{m.bg}}; text-align: left">{{m.name}}</button>
+</sc-for>
+<span style="padding: 10px 8px 4px; font-size: 12px; color: #666666">Effort</span>
+<div style="display: flex; gap: 4px; padding: 0 4px 4px">
+<sc-for list="{{efforts}}" as="e" hint-placeholder-count="4">
+<button onClick="{{e.pick}}" style="flex: 1 1 0; height: 30px; border: 0; border-radius: 6px; background: {{e.bg}}; color: {{e.fg}}">{{e.name}}</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 680px; margin: 0 auto; padding: 12px 12px 10px 16px; border: 1px solid #DCDCDC; border-radius: 16px; background: #FFFFFF; box-shadow: 0 2px 12px rgba(0,0,0,0.05)">
+<label for="reply" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">Message</label>
+<textarea id="reply" rows="2" placeholder="Reply" style="width: 100%; border: 0; outline: 0; resize: none; background: transparent; font-size: 14px"></textarea>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px">
+<button onClick="{{togglePicker}}" aria-haspopup="true" style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px; margin-left: -8px; border: 0; border-radius: 8px; background: transparent">
+<span>{{modelLabel}}</span><span style="color: #666666">{{effort}}</span>
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<button style="height: 30px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: #666666">Ask before commands</button>
+<span style="flex: 1 1 0"></span>
+<button aria-label="Send message" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: #1A1A1A; color: #FFFFFF">
+<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</main>
+
+<section aria-label="Workspace" style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; border-left: 1px solid #EBEBEB">
+<div style="display: flex; gap: 4px; min-height: 52px; padding: 0 16px; border-bottom: 1px solid #EBEBEB">
+<button onClick="{{showChanges}}" style="padding: 0 8px; border: 0; border-bottom: 2px solid {{changesLine}}; background: transparent; color: {{changesColor}}; font-weight: 500">Changes</button>
+<button onClick="{{showTerminal}}" style="padding: 0 8px; border: 0; border-bottom: 2px solid {{terminalLine}}; background: transparent; color: {{terminalColor}}; font-weight: 500">Terminal</button>
+<button onClick="{{showPr}}" style="padding: 0 8px; border: 0; border-bottom: 2px solid {{prLine}}; background: transparent; color: {{prColor}}; font-weight: 500">Pull request</button>
+</div>
+
+<sc-if value="{{isChanges}}" hint-placeholder-val="{{true}}">
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<button style="display: flex; align-items: center; width: 100%; height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: #F3F3F3; text-align: left"><code style="font-size: 12px">src/billing/totals.ts</code><code style="margin-left: auto; font-size: 12px; color: #666666">+2 −2</code></button>
+<button style="display: flex; align-items: center; width: 100%; height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; text-align: left"><code style="font-size: 12px">src/billing/totals.test.ts</code><code style="margin-left: auto; font-size: 12px; color: #666666">+18 −0</code></button>
+</div>
+<div style="border: 1px solid #EBEBEB; border-radius: 12px; overflow: hidden">
+<pre style="margin: 0; padding: 8px 0; font-size: 12px; line-height: 1.7; overflow-x: auto"><span style="display: block; padding: 0 12px; color: #666666">40    const lineTotals = lines.map((l) =&gt;</span><span style="display: block; padding: 0 12px; background: #FCEBEA">41 −    roundCurrency(l.quantity * l.unitPrice)</span><span style="display: block; padding: 0 12px; background: #E8F5EC">41 +    l.quantity * l.unitPrice</span><span style="display: block; padding: 0 12px; color: #666666">42    );</span><span style="display: block; padding: 0 12px; background: #FCEBEA">43 −  const subtotal = sum(lineTotals);</span><span style="display: block; padding: 0 12px; background: #E8F5EC">43 +  const subtotal = roundCurrency(sum(lineTotals));</span><span style="display: block; padding: 0 12px; color: #666666">44    const tax = roundCurrency(subtotal * taxRate);</span></pre>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-top: 1px solid #EBEBEB">
+<label for="linecomment" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">Comment on line 43</label>
+<input id="linecomment" type="text" value="Is tax still rounded separately on purpose?" style="flex: 1 1 200px; height: 32px; padding: 0 10px; border: 1px solid #DCDCDC; border-radius: 8px; background: #FFFFFF">
+<button style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #1A1A1A; color: #FFFFFF; font-weight: 500">Send to session</button>
+</div>
+</div>
+<button style="align-self: flex-start; height: 32px; padding: 0 12px; margin-top: auto; border: 1px solid #DCDCDC; border-radius: 8px; background: #FFFFFF">Review with Codex</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isTerminal}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1 1 0; min-height: 320px; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 4px; padding: 10px 16px 0">
+<button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: #F3F3F3"><code style="font-size: 12px">zsh</code></button>
+<button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #666666"><code style="font-size: 12px">dev server</code></button>
+<button aria-label="New terminal tab" style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #666666">
+<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+</button>
+</div>
+<pre style="flex: 1 1 0; margin: 0; padding: 16px; overflow: auto; font-size: 12px; line-height: 1.7"><span style="color: #666666">~/worktrees/api-fix-invoice-rounding  fix/invoice-rounding</span>
+$ pnpm test totals
+
+ <span style="color: #17803D">✓</span> src/billing/totals.test.ts (14)
+   <span style="color: #17803D">✓</span> rounds once after summing lines
+   <span style="color: #17803D">✓</span> handles three-decimal quantities
+   <span style="color: #17803D">✓</span> handles negative quantities
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Duration  1.82s
+
+<span style="color: #666666">~/worktrees/api-fix-invoice-rounding  fix/invoice-rounding</span>
+$ <span style="background: #1A1A1A; color: #FFFFFF"> </span></pre>
+</div>
+</sc-if>
+
+<sc-if value="{{isPr}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1 1 0; min-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 20px; padding: 20px 16px 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">Round invoice totals once</h2>
+<span style="font-size: 12px; color: #666666">#128 · Open · into <code>main</code></span>
+</div>
+
+<div style="display: flex; flex-direction: column">
+<span style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EBEBEB"><span>lint</span><span style="color: #17803D">Passed</span></span>
+<span style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #EBEBEB"><span>unit</span><span style="color: #17803D">Passed</span></span>
+<span style="display: flex; justify-content: space-between; padding: 8px 0"><span>e2e</span><span style="color: #8A5A00">Running · 3 min</span></span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #666666">Review comment · <code>totals.ts:43</code></span>
+<p style="margin: 0; font-size: 14px; line-height: 1.55">Should credit notes with negative quantities round the same way?</p>
+<div style="display: flex; gap: 8px">
+<button style="height: 30px; padding: 0 12px; border: 0; border-radius: 8px; background: #1A1A1A; color: #FFFFFF; font-weight: 500">Send to session</button>
+<button style="height: 30px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #666666">Resolve</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 20px; border-top: 1px solid #EBEBEB">
+<span style="font-size: 12px; color: #666666">Codex review · <code>totals.test.ts</code></span>
+<p style="margin: 0; font-size: 14px; line-height: 1.55">No test covers a zero-quantity line, which now skips the per-line rounding it used to get.</p>
+<div style="display: flex; gap: 8px">
+<button style="height: 30px; padding: 0 12px; border: 1px solid #DCDCDC; border-radius: 8px; background: #FFFFFF">Send to session</button>
+<button style="height: 30px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: #666666">Dismiss</button>
+</div>
+</div>
+
+<button disabled style="align-self: flex-start; height: 32px; padding: 0 12px; margin-top: auto; border: 1px solid #EBEBEB; border-radius: 8px; background: #FAFAFA; color: #666666; cursor: default">Merge when checks pass</button>
+</div>
+</sc-if>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"pane":{"editor":"enum","options":["changes","terminal","pr"],"default":"changes"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  state = { pane: null, pickerOpen: false, model: 'opus', effort: 'High' };
+  renderVals() {
+    const s = this.state || {};
+    const pane = s.pane || this.props.pane || 'changes';
+    const model = s.model || 'opus';
+    const effort = s.effort || 'High';
+    const on = (id) => (pane === id ? '#1A1A1A' : '#666666');
+    const line = (id) => (pane === id ? '#1A1A1A' : 'transparent');
+    const mk = (m) => ({
+      ...m,
+      bg: m.id === model ? '#F0F0F0' : 'transparent',
+      pick: () => this.setState({ model: m.id, pickerOpen: false }),
+    });
+    const claude = [
+      { id: 'opus', name: 'Opus 5.5' },
+      { id: 'sonnet', name: 'Sonnet 5.5' },
+      { id: 'haiku', name: 'Haiku 5.5' },
+    ];
+    const codex = [
+      { id: 'gpt5codex', name: 'gpt-5-codex' },
+      { id: 'gpt5', name: 'gpt-5' },
+    ];
+    const cur = claude.concat(codex).find((m) => m.id === model) || claude[0];
+    return {
+      isChanges: pane === 'changes',
+      isTerminal: pane === 'terminal',
+      isPr: pane === 'pr',
+      changesColor: on('changes'), changesLine: line('changes'),
+      terminalColor: on('terminal'), terminalLine: line('terminal'),
+      prColor: on('pr'), prLine: line('pr'),
+      showChanges: () => this.setState({ pane: 'changes' }),
+      showTerminal: () => this.setState({ pane: 'terminal' }),
+      showPr: () => this.setState({ pane: 'pr' }),
+      pickerOpen: !!s.pickerOpen,
+      togglePicker: () => this.setState({ pickerOpen: !s.pickerOpen }),
+      claudeModels: claude.map(mk),
+      codexModels: codex.map(mk),
+      efforts: ['Low', 'Medium', 'High', 'Max'].map((name) => ({
+        name,
+        bg: name === effort ? '#1A1A1A' : '#F3F3F3',
+        fg: name === effort ? '#FFFFFF' : '#1A1A1A',
+        pick: () => this.setState({ effort: name }),
+      })),
+      modelLabel: cur.name,
+      effort,
+    };
+  }
+}
+</script>
+</body>
+</html>

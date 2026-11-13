@@ -1,0 +1,12 @@
+{
+  "name": "switchyard-app",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri",
+    "icon": "bun src-tauri/icons/make-icon.ts src-tauri/icons/source.png && tauri icon src-tauri/icons/source.png",
+    "build": "tauri build --debug --bundles app"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
