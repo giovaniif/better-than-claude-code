@@ -288,6 +288,20 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let opened = pty::open(app, sid, dim(msg, "cols", 80), dim(msg, "rows", 24))?;
             let _ = direct.send(opened.to_string());
         }
+        "term.new" => {
+            let sid = str_field(msg, "sessionId")?;
+            let opened = pty::new(app, sid, dim(msg, "cols", 80), dim(msg, "rows", 24))?;
+            let _ = direct.send(opened.to_string());
+        }
+        "term.attach" => {
+            let opened = pty::attach(app, str_field(msg, "termId")?, dim(msg, "cols", 80), dim(msg, "rows", 24))?;
+            let _ = direct.send(opened.to_string());
+        }
+        "term.list" => {
+            let sid = str_field(msg, "sessionId")?;
+            app.meta(sid).context("no such session")?;
+            let _ = direct.send(pty::list(app, sid).to_string());
+        }
         "term.input" => pty::input(app, str_field(msg, "termId")?, str_field(msg, "data")?)?,
         "term.resize" => pty::resize(app, str_field(msg, "termId")?, dim(msg, "cols", 80), dim(msg, "rows", 24))?,
         "term.close" => pty::close(app, str_field(msg, "termId")?)?,

@@ -1,6 +1,6 @@
-//! Terminals: one PTY per session, running the user's login shell in the
-//! session folder. Output is kept in a ring buffer so a client that attaches
-//! later (or reconnects) gets the scrollback.
+//! Terminals: any number of PTYs per session, each running the user's login
+//! shell in the session folder. Output is kept in a ring buffer so a client
+//! that attaches later (or reconnects) gets the scrollback.
 
 use std::{
     collections::{HashMap, VecDeque},
@@ -26,6 +26,11 @@ struct Scroll {
 
 struct Term {
     session_id: String,
+    title: String,
+    /// Creation order across all sessions, for listing.
+    seq: u64,
+    /// The shell is gone but the tab stays, with its output, until closed.
+    exited: bool,
     writer: Box<dyn Write + Send>,
     master: Box<dyn MasterPty + Send>,
     child: Box<dyn Child + Send + Sync>,
@@ -33,8 +38,16 @@ struct Term {
 }
 
 #[derive(Default)]
+struct Inner {
+    map: HashMap<String, Term>,
+    seq: u64,
+    /// Last title number handed out per session, so titles are not reused.
+    titles: HashMap<String, u32>,
+}
+
+#[derive(Default)]
 pub struct Terms {
-    map: Mutex<HashMap<String, Term>>,
+    inner: Mutex<Inner>,
 }
 
 fn size(cols: u16, rows: u16) -> PtySize {
@@ -50,28 +63,44 @@ fn b64(bytes: &[u8]) -> String {
     base64::engine::general_purpose::STANDARD.encode(bytes)
 }
 
-fn opened(session_id: &str, term_id: &str, scroll: &Arc<Mutex<Scroll>>) -> Value {
-    let s = scroll.lock().unwrap();
+fn opened(term_id: &str, term: &Term) -> Value {
+    let s = term.scroll.lock().unwrap();
     let bytes: Vec<u8> = s.buf.iter().copied().collect();
     json!({
         "op": "term.opened",
-        "sessionId": session_id,
+        "sessionId": term.session_id,
         "termId": term_id,
+        "title": term.title,
+        "exited": term.exited,
         "offset": s.total - bytes.len() as u64,
         "data": b64(&bytes),
     })
 }
 
-/// Open the session's terminal, or attach to the one it already has.
+fn list_changed(app: &App, session_id: &str) {
+    app.broadcast(json!({ "op": "term.listChanged", "sessionId": session_id }));
+}
+
+/// Attach to the session's first live terminal, or start one. Kept for
+/// clients that know only one terminal per session.
 pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Value> {
     {
-        let map = app.terms.map.lock().unwrap();
-        if let Some((id, term)) = map.iter().find(|(_, t)| t.session_id == session_id) {
+        let inner = app.terms.inner.lock().unwrap();
+        let first = inner
+            .map
+            .iter()
+            .filter(|(_, t)| t.session_id == session_id && !t.exited)
+            .min_by_key(|(_, t)| t.seq);
+        if let Some((id, term)) = first {
             let _ = term.master.resize(size(cols, rows));
-            return Ok(opened(session_id, id, &term.scroll));
+            return Ok(opened(id, term));
         }
     }
+    new(app, session_id, cols, rows)
+}
 
+/// Start another terminal in the session.
+pub fn new(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Value> {
     let meta = app.meta(session_id).context("no such session")?;
     let pair = native_pty_system().openpty(size(cols, rows))?;
 
@@ -97,21 +126,31 @@ pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Va
         buf: VecDeque::new(),
         total: 0,
     }));
-    app.terms.map.lock().unwrap().insert(
-        term_id.clone(),
-        Term {
+    let reply = {
+        let mut inner = app.terms.inner.lock().unwrap();
+        inner.seq += 1;
+        let seq = inner.seq;
+        let n = inner.titles.entry(session_id.to_string()).or_insert(0);
+        *n += 1;
+        let term = Term {
             session_id: session_id.to_string(),
+            title: n.to_string(),
+            seq,
+            exited: false,
             writer,
             master: pair.master,
             child,
             scroll: scroll.clone(),
-        },
-    );
+        };
+        let reply = opened(&term_id, &term);
+        inner.map.insert(term_id.clone(), term);
+        reply
+    };
+    list_changed(app, session_id);
 
     // PTY reads block, so they get a plain thread.
     let reader_app = app.clone();
     let reader_id = term_id.clone();
-    let reader_scroll = scroll.clone();
     std::thread::spawn(move || {
         let mut chunk = [0u8; 8192];
         loop {
@@ -120,7 +159,7 @@ pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Va
                 Ok(n) => n,
             };
             let offset = {
-                let mut s = reader_scroll.lock().unwrap();
+                let mut s = scroll.lock().unwrap();
                 let offset = s.total;
                 s.buf.extend(&chunk[..n]);
                 s.total += n as u64;
@@ -135,52 +174,113 @@ pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Va
                 "data": b64(&chunk[..n]),
             }));
         }
-        // The shell exited (or the PTY closed).
-        if let Some(mut term) = reader_app.terms.map.lock().unwrap().remove(&reader_id) {
-            let _ = term.child.kill();
-            let _ = term.child.wait();
-        }
+        // The shell exited (or the PTY closed). A closed terminal is already
+        // gone from the map; an exited one stays listed until closed.
+        let session = {
+            let mut inner = reader_app.terms.inner.lock().unwrap();
+            inner.map.get_mut(&reader_id).map(|term| {
+                term.exited = true;
+                let _ = term.child.kill();
+                let _ = term.child.wait();
+                term.session_id.clone()
+            })
+        };
         reader_app.broadcast(json!({ "op": "term.exit", "termId": reader_id }));
+        if let Some(sid) = session {
+            list_changed(&reader_app, &sid);
+        }
     });
 
-    Ok(opened(session_id, &term_id, &scroll))
+    Ok(reply)
+}
+
+/// The session's terminals, oldest first.
+pub fn list(app: &Arc<App>, session_id: &str) -> Value {
+    let inner = app.terms.inner.lock().unwrap();
+    let mut terms: Vec<(&String, &Term)> = inner.map.iter().filter(|(_, t)| t.session_id == session_id).collect();
+    terms.sort_by_key(|(_, t)| t.seq);
+    let terms: Vec<Value> = terms
+        .into_iter()
+        .map(|(id, t)| json!({ "termId": id, "title": t.title, "exited": t.exited }))
+        .collect();
+    json!({ "op": "term.list", "sessionId": session_id, "terms": terms })
+}
+
+/// Scrollback for one terminal, sized to the client that attaches.
+pub fn attach(app: &Arc<App>, term_id: &str, cols: u16, rows: u16) -> Result<Value> {
+    let inner = app.terms.inner.lock().unwrap();
+    let term = inner.map.get(term_id).context("terminal is closed")?;
+    if !term.exited {
+        let _ = term.master.resize(size(cols, rows));
+    }
+    Ok(opened(term_id, term))
 }
 
 pub fn input(app: &Arc<App>, term_id: &str, data: &str) -> Result<()> {
-    let mut map = app.terms.map.lock().unwrap();
-    let term = map.get_mut(term_id).context("terminal is closed")?;
+    let mut inner = app.terms.inner.lock().unwrap();
+    let term = inner.map.get_mut(term_id).filter(|t| !t.exited).context("terminal is closed")?;
     term.writer.write_all(data.as_bytes())?;
     term.writer.flush()?;
     Ok(())
 }
 
 pub fn resize(app: &Arc<App>, term_id: &str, cols: u16, rows: u16) -> Result<()> {
-    let map = app.terms.map.lock().unwrap();
-    let term = map.get(term_id).context("terminal is closed")?;
+    let inner = app.terms.inner.lock().unwrap();
+    let term = inner.map.get(term_id).filter(|t| !t.exited).context("terminal is closed")?;
     term.master.resize(size(cols, rows))?;
     Ok(())
 }
 
+/// Kill a terminal's shell (if it still runs) and drop its tab.
 pub fn close(app: &Arc<App>, term_id: &str) -> Result<()> {
-    let mut map = app.terms.map.lock().unwrap();
-    let term = map.get_mut(term_id).context("terminal is closed")?;
-    // The reader thread sees EOF, removes the entry and announces the exit.
-    term.child.kill()?;
+    let term = app.terms.inner.lock().unwrap().map.remove(term_id).context("terminal is closed")?;
+    let session_id = term.session_id.clone();
+    reap(term);
+    list_changed(app, &session_id);
     Ok(())
 }
 
-/// Each terminal's session and shell process, for per-session usage.
+/// Killing waits out a grace period after SIGHUP, so it runs off the caller's
+/// thread. Dropping the master ends the reader thread.
+fn reap(mut term: Term) {
+    if term.exited {
+        return;
+    }
+    std::thread::spawn(move || {
+        let _ = term.child.kill();
+        let _ = term.child.wait();
+    });
+}
+
+/// Each live terminal's session and shell process, for per-session usage.
 pub fn shell_pids(app: &Arc<App>) -> Vec<(String, u32)> {
-    let map = app.terms.map.lock().unwrap();
-    map.values()
+    let inner = app.terms.inner.lock().unwrap();
+    inner
+        .map
+        .values()
+        .filter(|t| !t.exited)
         .filter_map(|t| Some((t.session_id.clone(), t.child.process_id()?)))
         .collect()
 }
 
-/// Kill the session's terminal, if it has one.
+/// Kill every terminal of the session.
 pub fn close_session(app: &Arc<App>, session_id: &str) {
-    let mut map = app.terms.map.lock().unwrap();
-    for term in map.values_mut().filter(|t| t.session_id == session_id) {
-        let _ = term.child.kill();
+    let gone: Vec<Term> = {
+        let mut inner = app.terms.inner.lock().unwrap();
+        inner.titles.remove(session_id);
+        let ids: Vec<String> = inner
+            .map
+            .iter()
+            .filter(|(_, t)| t.session_id == session_id)
+            .map(|(id, _)| id.clone())
+            .collect();
+        ids.iter().filter_map(|id| inner.map.remove(id)).collect()
+    };
+    if gone.is_empty() {
+        return;
     }
+    for term in gone {
+        reap(term);
+    }
+    list_changed(app, session_id);
 }

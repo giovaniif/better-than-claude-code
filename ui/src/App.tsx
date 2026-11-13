@@ -3,6 +3,7 @@ import type { ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Mo
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State } from "./store";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
+import { onAppend } from "./compose";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** What each engine does before acting, as yardd starts it today. */
@@ -307,12 +308,28 @@ function Composer(props: {
   busy?: boolean;
   /** Keep the text after sending, for a submit that can still fail. */
   keepText?: boolean;
+  /** Session whose terminal can add text here (see compose.ts). */
+  appendFor?: string;
   onSubmit(text: string): void;
   children: ReactNode;
 }) {
   const [text, setText] = useState("");
   // Start one line tall and grow with the text, up to a cap.
   const area = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!props.appendFor) return;
+    return onAppend(props.appendFor, (added) => {
+      setText((t) => (t && !t.endsWith("\n") ? t + "\n" : t) + added);
+      const el = area.current;
+      if (!el) return;
+      el.focus();
+      // After React writes the new value, put the caret at the end.
+      requestAnimationFrame(() => {
+        el.selectionStart = el.selectionEnd = el.value.length;
+        el.scrollTop = el.scrollHeight;
+      });
+    });
+  }, [props.appendFor]);
   useEffect(() => {
     const el = area.current;
     if (!el) return;
@@ -593,6 +610,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             placeholder={online ? "Reply" : "Offline"}
             rows={1}
             busy={busy || meta.status === "queued" || !online}
+            appendFor={meta.id}
             onSubmit={(text) => actions.send(meta.id, text)}
           >
             <ModelPicker
