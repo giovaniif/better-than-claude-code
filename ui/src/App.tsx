@@ -389,6 +389,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               Stop
             </button>
           )}
+          <DeleteButton key={meta.id} onConfirm={() => actions.remove(meta.id)} />
         </header>
         <div
           className="scroll"
@@ -420,6 +421,21 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
       </main>
       <WorkPane sessionId={meta.id} changes={changes} connected={state.connected} actions={actions} />
     </div>
+  );
+}
+
+/** Deleting asks for a second click; the ask lapses after a few seconds. */
+function DeleteButton({ onConfirm }: { onConfirm(): void }) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const timer = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(timer);
+  }, [armed]);
+  return (
+    <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
+      {armed ? "Delete session?" : "Delete"}
+    </button>
   );
 }
 

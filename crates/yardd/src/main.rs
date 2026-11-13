@@ -7,9 +7,10 @@ mod git;
 mod hosts;
 mod pty;
 mod state;
+mod store;
 mod ws;
 
-use std::{path::PathBuf, sync::Arc};
+use std::{path::PathBuf, sync::Arc, time::Duration};
 
 use axum::{routing::get, Router};
 use tower_http::services::ServeDir;
@@ -37,7 +38,22 @@ async fn main() -> anyhow::Result<()> {
         Err(_) => std::env::current_dir()?,
     };
 
-    let app = Arc::new(App::new(root.clone(), port));
+    let (store, loaded) = store::open(&store::data_dir())?;
+    let app = Arc::new(App::new(root.clone(), port, store));
+    app.restore(loaded);
+
+    // On a normal stop, let the writer finish what is queued before exiting.
+    let stopping = app.clone();
+    tokio::spawn(async move {
+        use tokio::signal::unix::{signal, SignalKind};
+        let Ok(mut term) = signal(SignalKind::terminate()) else { return };
+        tokio::select! {
+            _ = term.recv() => {}
+            _ = tokio::signal::ctrl_c() => {}
+        }
+        stopping.store.flush(Duration::from_secs(2));
+        std::process::exit(0);
+    });
 
     tokio::spawn(hosts::run(app.clone()));
 

@@ -402,11 +402,50 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
         .as_str()
         .context("thread/start returned no thread id")?
         .to_string();
+    attach(app, &c, sid, thread_id);
+    Ok(())
+}
+
+fn attach(app: &Arc<App>, c: &Client, sid: &str, thread_id: String) {
     c.threads.lock().unwrap().insert(thread_id.clone(), sid.to_string());
+    app.set_engine_ref(sid, &thread_id);
     if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
         s.backend = Backend::Codex { thread_id, turn_id: None };
     }
+}
+
+/// Reopen the saved thread of a session restored after a yardd restart.
+async fn resume(app: &Arc<App>, sid: &str, thread_id: String) -> Result<()> {
+    let meta = app.meta(sid).context("no such session")?;
+    let c = client(app).await?;
+    c.request(
+        "thread/resume",
+        json!({
+            "threadId": thread_id,
+            "cwd": meta.cwd,
+            "model": meta.model,
+            "sandbox": "workspace-write",
+            "approvalPolicy": "on-request",
+            // We have our own copy of the history.
+            "excludeTurns": true,
+        }),
+    )
+    .await?;
+    attach(app, &c, sid, thread_id);
     Ok(())
+}
+
+/// Detach a session that is being deleted: stop its turn and drop its thread
+/// mapping, so late notifications go nowhere.
+pub async fn forget(app: &Arc<App>, sid: &str) {
+    let Ok((thread_id, turn_id)) = thread_of(app, sid) else { return };
+    let Some(c) = app.codex.get().cloned() else { return };
+    if let Some(turn_id) = turn_id {
+        let _ = c
+            .request("turn/interrupt", json!({ "threadId": thread_id, "turnId": turn_id }))
+            .await;
+    }
+    c.threads.lock().unwrap().remove(&thread_id);
 }
 
 fn thread_of(app: &Arc<App>, sid: &str) -> Result<(String, Option<String>)> {
@@ -418,6 +457,9 @@ fn thread_of(app: &Arc<App>, sid: &str) -> Result<(String, Option<String>)> {
 }
 
 pub async fn send(app: &Arc<App>, sid: &str, text: &str) -> Result<()> {
+    if let Some(thread_id) = app.resumable(sid) {
+        resume(app, sid, thread_id).await?;
+    }
     let meta = app.meta(sid).context("no such session")?;
     let (thread_id, _) = thread_of(app, sid)?;
     let c = client(app).await?;

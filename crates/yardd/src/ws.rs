@@ -191,6 +191,15 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 json!({ "type": "approval_resolved", "requestId": request_id, "decision": decision }),
             );
         }
+        "session.delete" => {
+            let sid = str_field(msg, "sessionId")?;
+            let meta = app.meta(sid).context("no such session")?;
+            if meta.engine == "codex" {
+                codex::forget(app, sid).await;
+            }
+            pty::close_session(app, sid);
+            app.remove_session(sid);
+        }
         "changes.get" => {
             let sid = str_field(msg, "sessionId")?;
             let meta = app.meta(sid).context("no such session")?;

@@ -168,3 +168,11 @@ pub fn close(app: &Arc<App>, term_id: &str) -> Result<()> {
     term.child.kill()?;
     Ok(())
 }
+
+/// Kill the session's terminal, if it has one.
+pub fn close_session(app: &Arc<App>, session_id: &str) {
+    let mut map = app.terms.map.lock().unwrap();
+    for term in map.values_mut().filter(|t| t.session_id == session_id) {
+        let _ = term.child.kill();
+    }
+}

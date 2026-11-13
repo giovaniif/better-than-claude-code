@@ -8,12 +8,17 @@ use serde_json::{json, Value};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     process::Command,
-    sync::mpsc,
+    sync::{mpsc, oneshot},
 };
 
 use crate::state::{App, Backend};
 
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
+    spawn(app, sid, None)
+}
+
+/// Start the sidecar. `resume` is a Claude Code session id to continue.
+fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
     let script = app.root.join("sidecar/yard-claude/src/main.ts");
     if !script.exists() {
@@ -50,18 +55,33 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
         }
     });
 
+    let (stop, mut stopped) = oneshot::channel::<()>();
     let reader_app = app.clone();
     let reader_sid = sid.to_string();
     tokio::spawn(async move {
         let mut child = child;
         let mut lines = BufReader::new(stdout).lines();
-        while let Ok(Some(line)) = lines.next_line().await {
+        loop {
+            let line = tokio::select! {
+                line = lines.next_line() => line,
+                // The session was deleted.
+                _ = &mut stopped => {
+                    let _ = child.kill().await;
+                    break;
+                }
+            };
+            let Ok(Some(line)) = line else { break };
             let Ok(msg) = serde_json::from_str::<Value>(&line) else {
                 continue;
             };
             match msg["type"].as_str() {
                 Some("event") => reader_app.emit(&reader_sid, msg["event"].clone()),
                 Some("usage") => reader_app.set_usage("claude", msg["usage"].clone()),
+                Some("session") => {
+                    if let Some(id) = msg["claudeSessionId"].as_str() {
+                        reader_app.set_engine_ref(&reader_sid, id);
+                    }
+                }
                 _ => {}
             }
         }
@@ -86,11 +106,12 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
             "cwd": meta.cwd,
             "model": meta.model,
             "effort": meta.effort,
+            "resume": resume,
         })
         .to_string(),
     );
     if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
-        s.backend = Backend::Claude { tx };
+        s.backend = Backend::Claude { tx, _stop: stop };
     }
     Ok(())
 }
@@ -98,7 +119,7 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
 fn line(app: &Arc<App>, sid: &str, msg: Value) -> Result<()> {
     let map = app.sessions.lock().unwrap();
     match map.get(sid).map(|s| &s.backend) {
-        Some(Backend::Claude { tx }) => tx
+        Some(Backend::Claude { tx, .. }) => tx
             .send(msg.to_string())
             .map_err(|_| anyhow::anyhow!("the Claude sidecar is not running")),
         _ => bail!("session has no Claude sidecar"),
@@ -106,6 +127,11 @@ fn line(app: &Arc<App>, sid: &str, msg: Value) -> Result<()> {
 }
 
 pub fn send(app: &Arc<App>, sid: &str, text: &str) -> Result<()> {
+    // A session restored after a restart gets a fresh sidecar that resumes
+    // the saved Claude Code session.
+    if let Some(claude_session) = app.resumable(sid) {
+        spawn(app, sid, Some(claude_session))?;
+    }
     line(app, sid, json!({ "type": "user", "text": text }))
 }
 

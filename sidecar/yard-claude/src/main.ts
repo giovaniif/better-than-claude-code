@@ -2,6 +2,10 @@
 //
 // stdin  (JSON lines): start | user | set_model | interrupt | permission
 // stdout (JSON lines): { type: "event", event } | { type: "usage", usage }
+//                      | { type: "session", claudeSessionId }
+//
+// `start` may carry `resume`: a Claude Code session id to continue after a
+// yardd restart. yardd learns that id from the `session` line.
 //
 // Events are already in yardd's normalized shape, so yardd only relays them.
 // Nothing else may write to stdout.
@@ -123,7 +127,7 @@ function resultText(content: unknown): string {
   return "";
 }
 
-async function run(start: { cwd: string; model: string; effort?: string }) {
+async function run(start: { cwd: string; model: string; effort?: string; resume?: string | null }) {
   cwd = start.cwd;
 
   // Keep the parent session's markers out of the child Claude Code process.
@@ -164,6 +168,7 @@ async function run(start: { cwd: string; model: string; effort?: string }) {
     },
   };
   if (start.effort && efforts.includes(start.effort)) options.effort = start.effort;
+  if (start.resume) options.resume = start.resume;
   const claudeBin = Bun.which("claude");
   if (claudeBin) options.pathToClaudeCodeExecutable = claudeBin;
 
@@ -220,6 +225,11 @@ async function run(start: { cwd: string; model: string; effort?: string }) {
           output: short(resultText(block.content), 4000),
         });
       }
+      continue;
+    }
+
+    if (m.type === "system" && m.subtype === "init" && typeof m.session_id === "string") {
+      out({ type: "session", claudeSessionId: m.session_id });
       continue;
     }
 

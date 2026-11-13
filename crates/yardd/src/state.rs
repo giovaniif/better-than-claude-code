@@ -8,9 +8,9 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use tokio::sync::{broadcast, mpsc, OnceCell};
+use tokio::sync::{broadcast, mpsc, oneshot, OnceCell};
 
 pub fn now_ms() -> u64 {
     SystemTime::now()
@@ -19,7 +19,7 @@ pub fn now_ms() -> u64 {
         .unwrap_or(0)
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Meta {
     pub id: String,
@@ -52,6 +52,8 @@ pub enum Backend {
     },
     Claude {
         tx: mpsc::UnboundedSender<String>,
+        /// Dropping this (with the session) kills the sidecar.
+        _stop: oneshot::Sender<()>,
     },
 }
 
@@ -59,6 +61,9 @@ pub struct Session {
     pub meta: Meta,
     pub events: Vec<Value>,
     pub backend: Backend,
+    /// The engine's own id for this conversation (Codex thread id, Claude Code
+    /// session id). Saved so a session restored after a restart can resume.
+    pub engine_ref: Option<String>,
 }
 
 pub struct App {
@@ -72,11 +77,12 @@ pub struct App {
     pub host: Mutex<Value>,
     pub cpu_history: Mutex<VecDeque<f32>>,
     pub terms: crate::pty::Terms,
+    pub store: crate::store::Store,
     next: AtomicU64,
 }
 
 impl App {
-    pub fn new(root: PathBuf, port: u16) -> Self {
+    pub fn new(root: PathBuf, port: u16, store: crate::store::Store) -> Self {
         let (tx, _) = broadcast::channel(2048);
         App {
             root,
@@ -89,6 +95,7 @@ impl App {
             host: Mutex::new(Value::Null),
             cpu_history: Mutex::new(VecDeque::new()),
             terms: crate::pty::Terms::default(),
+            store,
             next: AtomicU64::new(1),
         }
     }
@@ -132,14 +139,19 @@ impl App {
             created_at: now,
             updated_at: now,
         };
-        self.sessions.lock().unwrap().insert(
-            id.clone(),
-            Session {
-                meta: meta.clone(),
-                events: Vec::new(),
-                backend: Backend::Pending,
-            },
-        );
+        {
+            let mut map = self.sessions.lock().unwrap();
+            self.store.meta(&meta);
+            map.insert(
+                id.clone(),
+                Session {
+                    meta: meta.clone(),
+                    events: Vec::new(),
+                    backend: Backend::Pending,
+                    engine_ref: None,
+                },
+            );
+        }
         self.broadcast(json!({ "op": "session", "session": meta }));
         id
     }
@@ -155,6 +167,7 @@ impl App {
             let Some(s) = map.get_mut(sid) else { return };
             f(&mut s.meta);
             s.meta.updated_at = now_ms();
+            self.store.meta(&s.meta);
             s.meta.clone()
         };
         self.broadcast(json!({ "op": "session", "session": meta }));
@@ -174,12 +187,15 @@ impl App {
             let mut map = self.sessions.lock().unwrap();
             let Some(s) = map.get_mut(sid) else { return };
             let seq = s.events.len();
+            // Sent under the lock so the disk sees events in log order.
+            self.store.event(sid, &event);
             s.events.push(event.clone());
             s.meta.updated_at = now_ms();
             let mut changed = None;
             if let Some(st) = status {
                 if s.meta.status != st {
                     s.meta.status = st.to_string();
+                    self.store.meta(&s.meta);
                     changed = Some(s.meta.clone());
                 }
             }
@@ -192,6 +208,73 @@ impl App {
         if let Some(meta) = changed {
             self.broadcast(json!({ "op": "session", "session": meta }));
         }
+    }
+
+    /// Remember the engine's id for this session, here and on disk.
+    pub fn set_engine_ref(&self, sid: &str, engine_ref: &str) {
+        let mut map = self.sessions.lock().unwrap();
+        let Some(s) = map.get_mut(sid) else { return };
+        if s.engine_ref.as_deref() != Some(engine_ref) {
+            s.engine_ref = Some(engine_ref.to_string());
+            self.store.engine_ref(sid, engine_ref);
+        }
+    }
+
+    /// The saved engine id, but only while no engine is attached: that is a
+    /// session restored from disk that has not resumed yet.
+    pub fn resumable(&self, sid: &str) -> Option<String> {
+        let map = self.sessions.lock().unwrap();
+        let s = map.get(sid)?;
+        match s.backend {
+            Backend::Pending => s.engine_ref.clone(),
+            _ => None,
+        }
+    }
+
+    /// Put sessions read from disk back in memory. A turn that was open when
+    /// yardd died can never finish, so it is closed out as failed.
+    pub fn restore(&self, loaded: Vec<crate::store::Loaded>) {
+        let mut interrupted = Vec::new();
+        {
+            let mut map = self.sessions.lock().unwrap();
+            for l in loaded {
+                if l.meta.status != "idle" {
+                    interrupted.push(l.meta.id.clone());
+                }
+                map.insert(
+                    l.meta.id.clone(),
+                    Session {
+                        meta: l.meta,
+                        events: l.events,
+                        backend: Backend::Pending,
+                        engine_ref: l.engine_ref,
+                    },
+                );
+            }
+        }
+        for sid in interrupted {
+            self.emit(&sid, json!({ "type": "error", "message": "yardd restarted during this turn." }));
+            self.emit(&sid, json!({ "type": "turn_completed", "status": "failed" }));
+        }
+    }
+
+    /// Forget a session here and on disk. Dropping its backend stops a Claude
+    /// sidecar; the caller handles Codex and the terminal.
+    pub fn remove_session(&self, sid: &str) -> bool {
+        let removed = {
+            let mut map = self.sessions.lock().unwrap();
+            let removed = map.remove(sid);
+            if removed.is_some() {
+                self.store.delete(sid);
+            }
+            removed
+        };
+        if removed.is_none() {
+            return false;
+        }
+        drop(removed);
+        self.broadcast(json!({ "op": "session.deleted", "sessionId": sid }));
+        true
     }
 
     pub fn history(&self, sid: &str) -> Value {
