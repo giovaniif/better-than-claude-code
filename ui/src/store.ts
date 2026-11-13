@@ -60,7 +60,7 @@ type Action =
 
 const emptyThread = (): Thread => ({ next: -1, items: [], early: [] });
 
-const initial: State = {
+export const initial: State = {
   connected: false,
   route: { page: "new" },
   sessions: {},
@@ -80,7 +80,7 @@ const initial: State = {
   notice: null,
 };
 
-function reduce(state: State, action: Action): State {
+export function reduce(state: State, action: Action): State {
   switch (action.t) {
     case "socket":
       // A reconnect means a new yardd may be on the other end: reload threads.

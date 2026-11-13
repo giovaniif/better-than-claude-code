@@ -35,4 +35,5 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 ## Verifying
 
 - Compiling is not proof. Drive the feature through the WebSocket with a Bun script (`new WebSocket("ws://127.0.0.1:<port>/ws")`, no `Origin` header is sent, which yardd allows) and check the messages that come back.
+- Run the tests: `CARGO_BUILD_JOBS=2 cargo test -p yardd` (daemon suite on a fake Codex, no real turns) and `cd ui && bun test`.
 - Say plainly what you did not verify.

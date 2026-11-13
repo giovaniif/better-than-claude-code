@@ -1,0 +1,9 @@
+#!/bin/sh
+# Shadows the real `claude` (and the Claude sidecar, through YARD_SIDECAR) in
+# yardd's integration tests, so a test can never start a Claude turn. Any run
+# is recorded, and it always fails.
+if [ -n "$FAKE_CODEX_DIR" ]; then
+  echo "claude pid=$$ args=$*" >> "$FAKE_CODEX_DIR/claude.log"
+fi
+echo "fake claude: Claude turns are not allowed in tests" >&2
+exit 1
