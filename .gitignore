@@ -4,3 +4,4 @@ ui/dist/
 app/src-tauri/gen/
 .DS_Store
 *.log
+.claude/worktrees/
