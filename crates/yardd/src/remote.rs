@@ -630,6 +630,14 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             msg["hostId"] = json!(host);
         }
         "models" | "usage" | "error" | "git.branches" => msg["hostId"] = json!(host),
+        "term.list" => {
+            prefix(host, &mut msg, "sessionId");
+            if let Some(terms) = msg["terms"].as_array_mut() {
+                for t in terms {
+                    prefix(host, t, "termId");
+                }
+            }
+        }
         _ => {
             prefix(host, &mut msg, "sessionId");
             prefix(host, &mut msg, "termId");
@@ -668,6 +676,21 @@ mod tests {
         assert_eq!(route(&json!({ "op": "git.branches", "cwd": "/x" })), None);
         let reply = rewrite_incoming("h1", "box", r#"{"op":"git.branches","cwd":"/x","branches":[]}"#).unwrap();
         assert_eq!(serde_json::from_str::<Value>(&reply).unwrap()["hostId"], "h1");
+    }
+
+    #[test]
+    fn terminal_ids_are_prefixed_inside_a_term_list() {
+        let text = r#"{"op":"term.list","sessionId":"s1","terms":[{"termId":"t1","title":"1"},{"termId":"t4","title":"2"}]}"#;
+        let v: Value = serde_json::from_str(&rewrite_incoming("h1", "box", text).unwrap()).unwrap();
+        assert_eq!(v["sessionId"], "h1~s1");
+        assert_eq!(v["terms"][0]["termId"], "h1~t1");
+        assert_eq!(v["terms"][1]["termId"], "h1~t4");
+        assert_eq!(v["terms"][1]["title"], "2");
+        let changed = rewrite_incoming("h1", "box", r#"{"op":"term.listChanged","sessionId":"s1"}"#).unwrap();
+        assert_eq!(serde_json::from_str::<Value>(&changed).unwrap()["sessionId"], "h1~s1");
+        assert_eq!(route(&json!({ "op": "term.new", "sessionId": "h1~s1" })).as_deref(), Some("h1"));
+        assert_eq!(route(&json!({ "op": "term.attach", "termId": "h1~t1" })).as_deref(), Some("h1"));
+        assert_eq!(outgoing(json!({ "op": "term.list", "sessionId": "h1~s1" }))["sessionId"], "s1");
     }
 
     #[test]

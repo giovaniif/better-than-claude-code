@@ -154,6 +154,27 @@ export interface WorktreeRemoved {
   message: string;
 }
 
+/** One of a session's terminals, from `term.list` (oldest first). Titles are
+ *  "1", "2", ... per session and not reused. A terminal whose shell exited
+ *  stays listed until `term.close`. */
+export interface TermInfo {
+  termId: string;
+  title: string;
+  exited?: boolean;
+}
+
+/** Reply to `term.open`, `term.new` and `term.attach`: the scrollback from `offset`. */
+export interface TermOpened {
+  op: "term.opened";
+  sessionId: string;
+  termId: string;
+  title: string;
+  exited?: boolean;
+  offset: number;
+  /** Base64. */
+  data: string;
+}
+
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
 export type PrResult =
   | PullRequest

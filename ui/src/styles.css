@@ -199,6 +199,17 @@ h1, h2, h3, p { margin: 0; }
 .tab { padding: 0 8px; border: 0; border-bottom: 2px solid transparent; border-top: 2px solid transparent; background: transparent; color: var(--muted); font-weight: 500; }
 .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
 .tabs .btn-icon { align-self: center; }
+.term-pane { flex: 1 1 0; min-height: 0; flex-direction: column; }
+.term-strip { display: flex; align-items: center; gap: 2px; flex: none; height: 30px; padding: 0 8px 0 10px; border-bottom: 1px solid var(--line); }
+.term-tab { display: flex; align-items: center; gap: 2px; height: 22px; padding: 0 6px; border-radius: 6px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.term-tab > button:first-child { min-width: 10px; height: 22px; padding: 0; border: 0; background: transparent; color: inherit; }
+.term-tab:hover { background: var(--fill); }
+.term-tab.active { background: var(--fill); color: var(--ink); }
+.term-tab.exited { font-style: italic; }
+.term-x { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-right: -3px; border: 0; border-radius: 4px; padding: 0; background: transparent; color: var(--muted); }
+.term-x:hover { background: var(--line-strong); color: var(--ink); }
+.term-strip .btn-icon { width: 22px; height: 22px; border-radius: 6px; }
+.term-strip .btn-text { height: 22px; padding: 0 8px; border-radius: 6px; font-size: 12px; }
 .term { flex: 1 1 0; min-height: 0; padding: 12px 4px 8px 14px; overflow: hidden; }
 .term-host { flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; }
 .term .xterm { height: 100%; }
