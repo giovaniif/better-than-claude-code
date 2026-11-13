@@ -40,8 +40,20 @@ Both engines are normalized to one event list per session. The UI replays it on 
 | `file_change` | Edited files with diffs |
 | `approval_request`, `approval_resolved` | A command or edit waiting on me |
 | `error` | Engine error text |
+| `queued` | The session is waiting for the host to have room. Carries its prompt |
+| `note` | A quiet line from yardd, such as a hand-off. Changes no status |
 
-Session status (`idle`, `running`, `needs_approval`, `error`) is derived from these.
+Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is derived from these.
+
+## Persistence
+
+yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard` when that is unset.
+
+- One writer thread takes writes from a channel and saves them in batches, so emitting an event never waits on the disk.
+- Streamed `assistant_delta`s are not saved. The final `assistant_message` has the full text.
+- On startup yardd loads every session. One that was mid-turn gets an `error` ("yardd restarted during this turn.") and a failed `turn_completed`.
+- A restored session resumes on its next message. Codex: `thread/resume` with the saved thread id. Claude: a new sidecar started with the SDK `resume` option and the saved Claude Code session id.
+- `session.delete` stops the session's engine and terminal and removes it from memory and the database. Git worktrees are kept.
 
 ## Engines
 
@@ -61,12 +73,33 @@ Session status (`idle`, `running`, `needs_approval`, `error`) is derived from th
 - It runs on the CLI's own login (`apiKeySource: none`).
 - Never parse `~/.claude/projects/*.jsonl`. Use the SDK's `listSessions` and `getSessionMessages`.
 
-**Switching engine inside a session** cannot share a thread. It will be a hand-off: a new session on the other engine, same worktree, seeded with a summary. Not built yet.
+**Switching engine** cannot share a thread, so it is a hand-off. Picking a model of the other engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch and title and a `parent` pointing back.
+
+- yardd builds the first message from the source session's event log, with no model call, because the source is usually out of quota.
+- The brief holds the original task, each later prompt, each turn's final answer, the uncommitted changed files and any unresolved state. It is capped at 12,000 characters, keeping the task and the most recent turns.
+- Agent text is quoted in `<earlier-work>` blocks marked as a record, not instructions.
+- Refused for the same engine, and while a turn is running: two agents must not write to one folder at once.
 
 ## Resources
 
 - yardd samples CPU, load, memory and disk every 3 s with `sysinfo` and keeps an hour of CPU history in memory.
-- Planned: per-session usage from the process tree, a cgroup per session on Linux with a memory cap, admission control (queue when load is above the core count or free memory is under a limit), worktree disk sizes with cleanup.
+- **Per session:** the same sample sums CPU and memory over each session's processes: the Claude sidecar tree, the terminal shell tree, and for Codex the app-server's children matched by command folder and start time. Codex runs as one shared app-server, so two Codex sessions running commands in the same folder at the same moment can be mixed up.
+- **Memory cap:** `YARD_SESSION_MEM_CAP_GB` (default 8, 0 off). Over it, yardd reports an error in the session, interrupts the turn and kills the command and terminal trees. For Claude it kills only what runs below the CLI, so the conversation survives. It is a polling soft cap, not a cgroup.
+- **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
+- Not built: worktree disk sizes with cleanup, cgroups on Linux.
+
+## Remote hosts
+
+The local yardd is a hub. The UI keeps its one WebSocket to it.
+
+- Each UI client gets its own connection from the hub to every remote yardd, piped both ways, so replies go back to the client that asked.
+- Session and terminal ids that cross the hub are written `<hostId>~<remoteId>`. An op with such an id, or a `session.create` with `host`, goes to that host with the prefix removed.
+- A remote `snapshot` arrives as `host.snapshot`; its `host`, `models` and `usage` messages carry a `hostId`. Models, usage and the home folder are kept per host.
+- Hosts are saved in `hosts.json` in the data dir and changed with `host.add` and `host.remove`. Status (`connecting`, `connected`, `error` with a message) is broadcast as `hosts`.
+- An `ssh` host gets one `ssh -N -L` tunnel shared by all clients, on a free loopback port, restarted with backoff up to 30 s and killed when the host is removed or yardd stops. The destination is passed after `--` and may not start with `-`.
+- A `direct` host is a plain `ws://` URL, for local testing.
+- Remote sessions stay listed but offline while their host is down.
+- Preparing the box is in the README.
 
 ## Worktrees
 
@@ -88,7 +121,13 @@ The right pane has a Terminal tab next to Changes.
 
 ## PR pane
 
-Not built yet. `gh pr view --json`, `gh pr diff`, `gh api` for threads. A comment on a line becomes a prompt to the session. One button asks the other engine to review the diff.
+The right pane has a Pull request tab.
+
+- yardd runs `gh pr view --json` and `gh api graphql` (review threads) in the session folder through my own `gh` login. It holds no token and only reads.
+- It shows the branch's PR: state, base and head, review decision, checks and review threads, unresolved first. It loads when first opened, refreshes when a turn ends, and polls every 60 s while visible.
+- **Send to session** turns a review thread into a normal prompt quoting the comment with its file and line.
+- **Review with the other engine** starts a new session on the other engine in the same folder, asking for a review of `git diff <base>...HEAD` and no file changes. The prompt leaves out the PR title and comments, because they are untrusted text.
+- Not built: creating a PR, pushing, replying to or resolving threads.
 
 ## Policy and cost
 
@@ -111,7 +150,17 @@ Built and checked in the browser on 2026-11-13:
 - The terminal ran commands in the worktree, fit the pane, and showed its earlier output again after a page reload.
 - The desktop app starts yardd, loads the UI, and leaves yardd running when it quits.
 
-Not checked: Stop and a mid-session model switch on Claude, to save weekly usage. Both passed in the script spike.
+- Persistence: a session survived a restart with its history, and a follow-up after the restart used the earlier conversation (Codex).
+- PR pane: rendered a real open PR from a public repo, with checks and review threads.
+- Hand-off: Codex received a hand-off brief and answered from the earlier work. The picker's confirmation was checked in the UI.
+- Resource guard: per-session CPU and memory in the Hosts table, the memory cap killing an over-cap process, and the queue with "Start anyway".
+- Remote hosts: a second local yardd added as a `direct` host. A session created on it from the UI ran there, with its terminal and Changes pane working through the hub, and came back after the remote restarted.
+
+Not checked:
+
+- A real SSH tunnel. This Mac has no SSH server to tunnel to, so only the failure and retry paths ran.
+- Anything that needs a Claude turn in the newer features: Claude resume after a restart, hand-off into Claude, and Claude's per-session usage and cap. Claude weekly usage was nearly exhausted.
+- Stop and a mid-session model switch on Claude. Both passed in the script spike.
 
 Codex sessions run with `approvalPolicy: on-request` in a workspace-write sandbox. `untrusted` asked before every `cat`.
 
@@ -120,15 +169,14 @@ The app is a personal build: it finds yardd, the UI and the sidecar in the repo 
 Next:
 
 1. Bundle yardd, the UI and a compiled sidecar into the app so it runs outside this repo.
-2. Worktree cleanup, base branch, and per-repo setup.
-3. PR pane and cross-engine review.
-4. Persist sessions (SQLite) and resume engine threads after a yardd restart.
-5. Remote yardd over SSH and Tailscale, with the cloud icon.
-6. Per-session resource use, memory caps and the queue.
-7. Engine hand-off.
+2. Try a real box over Tailscale SSH, and the Claude paths listed above.
+3. Worktree cleanup, base branch, and per-repo setup.
+4. Creating a PR and replying to review threads from the pane.
+5. Tests. Only the hand-off brief and the hub's id rewriting have any.
 
 ## Risks
 
 - `codex app-server` is experimental and can change between CLI versions.
 - Two agents in one worktree will fight. Enforce one writer.
-- Sessions live in memory until step 4. Restarting yardd loses them.
+- If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
+- The memory cap on a Claude session kills everything below the CLI, MCP servers included.

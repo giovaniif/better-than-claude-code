@@ -184,6 +184,12 @@ function ModelPicker(props: {
   const { models, usage, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
+  // The confirmation sits at the top of the list, which is usually scrolled
+  // down to the model that was just clicked. Bring it into view.
+  const popover = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (confirm) popover.current?.scrollTo({ top: 0 });
+  }, [confirm]);
   const current = models[value.engine]?.find((m) => m.id === value.model);
   const close = () => {
     setOpen(false);
@@ -201,7 +207,7 @@ function ModelPicker(props: {
       {open && (
         <>
           <div className="scrim" onClick={close} />
-          <div className="popover">
+          <div className="popover" ref={popover}>
             {confirm && handoff && (
               <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
                 <div>

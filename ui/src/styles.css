@@ -257,7 +257,7 @@ h1, h2, h3, p { margin: 0; }
 .usage table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .usage th { padding: 0 2px 6px; font-weight: 500; color: var(--muted); text-align: left; }
 .usage td { padding: 6px 2px; border-top: 1px solid var(--line); vertical-align: baseline; }
-.usage th.num, .usage td.num { text-align: right; white-space: nowrap; font-family: var(--mono); }
+.usage th.num, .usage td.num { padding-left: 20px; text-align: right; white-space: nowrap; font-family: var(--mono); }
 .usage-title { max-width: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .usage td.reason { text-align: right; color: var(--warn-ink); }
 

@@ -14,7 +14,9 @@ cargo run -p yardd
 
 Then open http://127.0.0.1:47717.
 
-`YARD_PORT` changes the port. Sessions live in memory: restarting yardd drops them.
+`YARD_PORT` changes the port. Sessions are saved in `~/.yard/yard.db` (`YARD_DATA_DIR` moves it) and survive a restart.
+
+Limits, all optional: `YARD_SESSION_MEM_CAP_GB` (default 8, `0` off) stops a session whose processes use more; `YARD_MIN_FREE_GB` (default 2) is the free memory below which new sessions queue.
 
 ## Desktop app
 
