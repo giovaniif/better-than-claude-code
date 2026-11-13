@@ -83,6 +83,7 @@ pub struct App {
     pub terms: crate::pty::Terms,
     pub guard: crate::guard::Guard,
     pub store: crate::store::Store,
+    pub remotes: crate::remote::Remotes,
     next: AtomicU64,
 }
 
@@ -102,6 +103,7 @@ impl App {
             terms: crate::pty::Terms::default(),
             guard: crate::guard::Guard::default(),
             store,
+            remotes: crate::remote::Remotes::new(crate::store::data_dir()),
             next: AtomicU64::new(1),
         }
     }
@@ -324,6 +326,7 @@ impl App {
             "usage": self.usage.lock().unwrap().clone(),
             "host": self.host.lock().unwrap().clone(),
             "home": std::env::var("HOME").unwrap_or_default(),
+            "hosts": self.remotes.list(),
         })
     }
 }

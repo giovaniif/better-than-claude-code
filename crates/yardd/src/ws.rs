@@ -1,6 +1,6 @@
 //! WebSocket API for the UI.
 
-use std::{path::Path, sync::Arc};
+use std::{collections::HashMap, path::Path, sync::Arc};
 
 use anyhow::{bail, Context, Result};
 use axum::{
@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    claude, codex, git, handoff, pr, pty, sessions,
+    claude, codex, git, handoff, pr, pty, remote, sessions,
     state::{App, Worktree},
 };
 
@@ -54,6 +54,11 @@ async fn client(socket: WebSocket, app: Arc<App>) {
     // Replies meant for this client only.
     let (direct, mut direct_rx) = mpsc::unbounded_channel::<String>();
     let _ = direct.send(app.snapshot().to_string());
+    // This client's own connection to each remote host.
+    let mut pipes: HashMap<String, remote::Pipe> = HashMap::new();
+    let mut host_ids = app.remotes.ids();
+    let ids = host_ids.borrow_and_update().clone();
+    remote::sync_pipes(&app, &mut pipes, &ids, &direct);
 
     loop {
         tokio::select! {
@@ -70,12 +75,29 @@ async fn client(socket: WebSocket, app: Arc<App>) {
             Some(text) = direct_rx.recv() => {
                 if sink.send(Message::Text(text)).await.is_err() { break; }
             }
+            Ok(()) = host_ids.changed() => {
+                let ids = host_ids.borrow_and_update().clone();
+                remote::sync_pipes(&app, &mut pipes, &ids, &direct);
+            }
             incoming = stream.next() => match incoming {
                 Some(Ok(Message::Text(text))) => {
+                    let msg: Value = serde_json::from_str(&text).unwrap_or(Value::Null);
+                    // An op for a session on another host goes to that host.
+                    if let Some(host) = remote::route(&msg) {
+                        let sent = match pipes.get(&host) {
+                            Some(pipe) => pipe.send(msg.clone()),
+                            None => Err(anyhow::anyhow!("no such host")),
+                        };
+                        if let Err(e) = sent {
+                            let _ = direct.send(
+                                json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] }).to_string(),
+                            );
+                        }
+                        continue;
+                    }
                     let app = app.clone();
                     let direct = direct.clone();
                     tokio::spawn(async move {
-                        let msg: Value = serde_json::from_str(&text).unwrap_or(Value::Null);
                         if let Err(e) = handle(&app, &direct, &msg).await {
                             let _ = direct.send(
                                 json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] }).to_string(),
@@ -227,6 +249,8 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "term.input" => pty::input(app, str_field(msg, "termId")?, str_field(msg, "data")?)?,
         "term.resize" => pty::resize(app, str_field(msg, "termId")?, dim(msg, "cols", 80), dim(msg, "rows", 24))?,
         "term.close" => pty::close(app, str_field(msg, "termId")?)?,
+        "host.add" => remote::add(app, msg)?,
+        "host.remove" => remote::remove(app, str_field(msg, "hostId")?)?,
         other => bail!("unknown op `{other}`"),
     }
     Ok(())

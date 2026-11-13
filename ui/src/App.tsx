@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import type { ChangedFile, Changes, Engine, Host, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
-import { useYard, type Actions, type State } from "./store";
+import type { ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import { homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State } from "./store";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 
@@ -37,6 +37,19 @@ const CHEVRON_RIGHT = "M9 6l6 6-6 6";
 const CHEVRON_DOWN = "M6 9l6 6 6-6";
 const ARROW_UP = "M12 19V5M5 12l7-7 7 7";
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
+const CLOUD = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
+
+/** Marks something on a remote host. Labelled when it is the only sign of it. */
+const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
+  label ? (
+    <svg className="cloud" role="img" aria-label={label} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d={CLOUD} />
+    </svg>
+  ) : (
+    <span className="cloud">
+      <Icon d={CLOUD} size={size} />
+    </span>
+  );
 
 /* ---------- app shell ---------- */
 
@@ -57,7 +70,7 @@ export function App() {
           </div>
         )}
         {route.page === "new" && <NewSession state={state} actions={actions} />}
-        {route.page === "hosts" && <Hosts host={state.host} sessions={state.sessions} />}
+        {route.page === "hosts" && <Hosts state={state} actions={actions} />}
         {route.page === "session" && state.sessions[route.id] && (
           <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
         )}
@@ -68,7 +81,7 @@ export function App() {
 
 function Sidebar({ state, actions }: { state: State; actions: Actions }) {
   const sessions = Object.values(state.sessions).sort((a, b) => b.createdAt - a.createdAt);
-  const { route, host } = state;
+  const { route } = state;
   return (
     <nav className="sidebar" aria-label="Sessions">
       <div className="brand">Switchyard</div>
@@ -79,33 +92,48 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         </button>
       </div>
       <div className="session-list">
-        {sessions.map((s) => (
-          <button
-            key={s.id}
-            className={`session-row ${route.page === "session" && route.id === s.id ? "active" : ""}`}
-            onClick={() => actions.go({ page: "session", id: s.id })}
-          >
-            <span className={`dot dot-${s.status}`} aria-hidden="true" />
-            <span className="session-text">
-              <span className="session-title">{s.title}</span>
-              <span className="session-sub">
-                {modelName(state.models, s.engine, s.model)} · {STATUS_LABEL[s.status]}
+        {sessions.map((s) => {
+          const host = hostOf(s);
+          const online = host === "local" || hostOnline(state, host);
+          return (
+            <button
+              key={s.id}
+              className={`session-row ${route.page === "session" && route.id === s.id ? "active" : ""} ${online ? "" : "offline"}`}
+              onClick={() => actions.go({ page: "session", id: s.id })}
+            >
+              <span className={`dot ${online ? `dot-${s.status}` : "dot-offline"}`} aria-hidden="true" />
+              <span className="session-text">
+                <span className="session-title">{s.title}</span>
+                <span className="session-sub">
+                  {modelName(modelsOn(state, host), s.engine, s.model)} · {online ? STATUS_LABEL[s.status] : "Offline"}
+                </span>
               </span>
-            </span>
-          </button>
-        ))}
+              {host !== "local" && <Cloud size={14} label={`Runs on ${hostName(state, host)}`} />}
+            </button>
+          );
+        })}
         {sessions.length === 0 && <div className="empty">No sessions yet.</div>}
       </div>
       <div className="sidebar-bottom">
-        <button className={`host-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}>
-          <span>{host?.name ?? "This Mac"}</span>
-          <span className="spacer" />
-          {host && (
-            <code className={hostPressure(host) ? "warn" : ""}>
-              CPU {pct(host.cpu)} · Mem {pct((host.memUsed / host.memTotal) * 100)}
-            </code>
-          )}
-        </button>
+        {["local", ...state.hosts.map((h) => h.id)].map((id) => {
+          const stats = state.host[id];
+          const entry = state.hosts.find((h) => h.id === id);
+          const online = hostOnline(state, id);
+          return (
+            <button key={id} className={`host-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}>
+              <span className="host-name">{hostName(state, id)}</span>
+              {id !== "local" && <Cloud size={13} />}
+              <span className="spacer" />
+              {stats && online ? (
+                <code className={hostPressure(stats) ? "warn" : ""}>
+                  CPU {pct(stats.cpu)} · Mem {pct((stats.memUsed / stats.memTotal) * 100)}
+                </code>
+              ) : (
+                entry && <code className={entry.status === "error" ? "bad" : ""}>{entry.status === "error" ? "Offline" : "Connecting"}</code>
+              )}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );
@@ -326,7 +354,13 @@ function loadChoice(models: Models): Choice {
 }
 
 function NewSession({ state, actions }: { state: State; actions: Actions }) {
-  const [choice, setChoice] = useState<Choice>(() => loadChoice(state.models));
+  // Where the session runs. Remote hosts are offered only while connected.
+  const [host, setHost] = useState("local");
+  const remotes = state.hosts.filter((h) => hostOnline(state, h.id));
+  const target = host === "local" || remotes.some((h) => h.id === host) ? host : "local";
+  const models = modelsOn(state, target);
+  const home = homeOn(state, target);
+  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
   const [cwd, setCwd] = useState(() => localStorage.getItem("yard.cwd") ?? "");
   const [worktree, setWorktree] = useState(() => localStorage.getItem("yard.worktree") === "1");
   const [branch, setBranch] = useState("");
@@ -334,26 +368,36 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // session; on failure the task stays in the box so nothing is retyped.
   const [pending, setPending] = useState(false);
   useEffect(() => setPending(false), [state.errorCount, state.connected]);
-  // Models and the home folder arrive after the first render.
+  // Models and the home folder arrive after the first render, and differ per host.
   useEffect(() => {
-    if (!choice.model) setChoice(loadChoice(state.models));
-  }, [state.models]);
+    if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
+  }, [models, target]);
   useEffect(() => {
-    if (!cwd && state.home) setCwd(state.home);
-  }, [state.home]);
+    // Only this Mac's folder is remembered; a remote host starts at its home.
+    setCwd(target === "local" ? localStorage.getItem("yard.cwd") || home : home);
+  }, [target, home]);
 
   const recent = useMemo(
-    () => [...new Set(Object.values(state.sessions).map((s) => s.cwd))].slice(0, 8),
-    [state.sessions],
+    () => [...new Set(Object.values(state.sessions).filter((s) => hostOf(s) === target).map((s) => s.cwd))].slice(0, 8),
+    [state.sessions, target],
   );
 
   const start = (text: string) => {
-    const folder = cwd.trim().replace(/^~(?=\/|$)/, state.home);
-    localStorage.setItem("yard.choice", JSON.stringify(choice));
-    localStorage.setItem("yard.cwd", folder);
+    const folder = cwd.trim().replace(/^~(?=\/|$)/, home);
+    if (target === "local") {
+      localStorage.setItem("yard.choice", JSON.stringify(choice));
+      localStorage.setItem("yard.cwd", folder);
+    }
     localStorage.setItem("yard.worktree", worktree ? "1" : "0");
     setPending(true);
-    actions.create({ ...choice, cwd: folder, text, worktree, branch: branch.trim() || undefined });
+    actions.create({
+      ...choice,
+      cwd: folder,
+      text,
+      worktree,
+      branch: branch.trim() || undefined,
+      host: target === "local" ? undefined : target,
+    });
   };
 
   return (
@@ -361,9 +405,24 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
       <div className="new-inner">
         <h1>What should we work on?</h1>
         <Composer placeholder="Describe the task" rows={1} large keepText onSubmit={start} busy={pending || !state.connected || !choice.model}>
-          <ModelPicker models={state.models} usage={state.usage} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
+          <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
           <span className="muted small">{PERMISSION_NOTE[choice.engine]}</span>
         </Composer>
+        {remotes.length > 0 && (
+          <div className="new-options">
+            <div className="segmented" role="group" aria-label="Run on">
+              <button aria-pressed={target === "local"} onClick={() => setHost("local")}>
+                This Mac
+              </button>
+              {remotes.map((h) => (
+                <button key={h.id} aria-pressed={target === h.id} onClick={() => setHost(h.id)}>
+                  <Icon d={CLOUD} size={14} />
+                  {h.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="new-options">
           <label htmlFor="cwd" className="muted">
             Folder
@@ -408,6 +467,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   const items = thread?.items ?? [];
   const changes = state.changes[meta.id];
   const busy = meta.status === "running" || meta.status === "needs_approval";
+  const host = hostOf(meta);
+  const online = hostOnline(state, host);
+  const models = modelsOn(state, host);
 
   // Stick to the bottom while new items arrive, unless the user scrolled up.
   const scroller = useRef<HTMLDivElement>(null);
@@ -432,14 +494,21 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
       <main className="thread">
         <header className="bar">
           <h1>{meta.title}</h1>
-          <code className="muted">{meta.branch || changes?.branch || tilde(meta.cwd, state.home)}</code>
+          <code className="muted">{meta.branch || changes?.branch || tilde(meta.cwd, homeOn(state, host))}</code>
+          {host !== "local" && (
+            <span className="muted small bar-host">
+              <Cloud size={13} />
+              {hostName(state, host)}
+              {!online && " · offline"}
+            </span>
+          )}
           <span className="spacer" />
-          {busy && (
+          {busy && online && (
             <button className="btn-text" onClick={() => actions.interrupt(meta.id)}>
               Stop
             </button>
           )}
-          <DeleteButton key={meta.id} onConfirm={() => actions.remove(meta.id)} />
+          {online && <DeleteButton key={meta.id} onConfirm={() => actions.remove(meta.id)} />}
         </header>
         <div
           className="scroll"
@@ -463,10 +532,16 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </div>
         </div>
         <div className="dock">
-          <Composer placeholder="Reply" rows={1} busy={busy || meta.status === "queued" || !state.connected} onSubmit={(text) => actions.send(meta.id, text)}>
+          {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
+          <Composer
+            placeholder={online ? "Reply" : "Offline"}
+            rows={1}
+            busy={busy || meta.status === "queued" || !online}
+            onSubmit={(text) => actions.send(meta.id, text)}
+          >
             <ModelPicker
-              models={state.models}
-              usage={state.usage}
+              models={models}
+              usage={usageOn(state, host)}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
               engines={meta.engine === "claude" ? ["claude", "codex"] : ["codex", "claude"]}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
@@ -476,7 +551,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane sessionId={meta.id} changes={changes} connected={state.connected} actions={actions} meta={meta} state={state} />
+      <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} />
     </div>
   );
 }
@@ -865,7 +940,135 @@ function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, S
   );
 }
 
-function Hosts({ host, sessions }: { host: Host | null; sessions: Record<string, SessionMeta> }) {
+function HostCard({ name, remote, entry, host, sessions, onRemove }: {
+  name: string;
+  remote: boolean;
+  entry?: HostEntry;
+  host: Host | undefined;
+  sessions: Record<string, SessionMeta>;
+  onRemove?(): void;
+}) {
+  const connected = !entry || entry.status === "connected";
+  const where = entry ? (entry.kind === "ssh" ? `ssh ${entry.destination}:${entry.remotePort ?? 47717}` : `Direct, for testing · ${entry.url}`) : "";
+  return (
+    <div className="host-block">
+      <section className="host-card" aria-label={name}>
+        <div className="host-head">
+          <h2>{name}</h2>
+          {remote && <Cloud size={15} />}
+          {where && <code className="muted small host-where">{where}</code>}
+          <span className="spacer" />
+          {!connected ? (
+            <span className={entry?.status === "error" ? "bad" : "muted"}>{entry?.status === "error" ? "Offline" : "Connecting"}</span>
+          ) : host ? (
+            <span className={hostPressure(host) ? "warn" : "muted"}>{hostPressure(host) ? "Under pressure" : "Healthy"}</span>
+          ) : null}
+        </div>
+        {entry?.error && entry.status !== "connected" && <div className="error-line small">{entry.error}</div>}
+        {connected && !host && <div className="muted">Waiting for the first sample.</div>}
+        {connected && host && (
+          <>
+            <Meter label="CPU" value={host.cpu} detail={`${pct(host.cpu)} · load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
+            <Meter
+              label="Memory"
+              value={(host.memUsed / host.memTotal) * 100}
+              detail={`${gb(host.memUsed)} of ${gb(host.memTotal)} GB`}
+              warn={host.memUsed / host.memTotal > 0.9}
+            />
+            <Meter
+              label="Disk"
+              value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
+              detail={`${gb(host.diskUsed)} of ${gb(host.diskTotal)} GB`}
+              warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
+            />
+            <Sparkline values={host.cpuHistory ?? []} />
+          </>
+        )}
+        {onRemove && <RemoveHost onConfirm={onRemove} />}
+      </section>
+      {connected && host && <SessionUse host={host} sessions={sessions} />}
+    </div>
+  );
+}
+
+/** Removing asks for a second click, like deleting a session. */
+function RemoveHost({ onConfirm }: { onConfirm(): void }) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const timer = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(timer);
+  }, [armed]);
+  return (
+    <div className="row">
+      <button className="btn" onClick={() => (armed ? onConfirm() : setArmed(true))}>
+        {armed ? "Remove host?" : "Remove"}
+      </button>
+      <span className="muted small">Its sessions keep running there.</span>
+    </div>
+  );
+}
+
+function AddHost({ actions, errorCount }: { actions: Actions; errorCount: number }) {
+  const [name, setName] = useState("");
+  const [kind, setKind] = useState<"ssh" | "direct">("ssh");
+  const [destination, setDestination] = useState("");
+  const [port, setPort] = useState("47717");
+  const [url, setUrl] = useState("");
+  const [sent, setSent] = useState(false);
+  // An error from yardd keeps the fields so nothing is retyped.
+  useEffect(() => setSent(false), [errorCount]);
+  const ready = name.trim() && (kind === "ssh" ? destination.trim() : url.trim());
+  const submit = () => {
+    if (!ready) return;
+    actions.addHost(
+      kind === "ssh"
+        ? { name: name.trim(), kind, destination: destination.trim(), remotePort: Number(port) || 47717 }
+        : { name: name.trim(), kind, url: url.trim() },
+    );
+    setSent(true);
+    setName("");
+    setDestination("");
+    setUrl("");
+  };
+  return (
+    <section className="host-card add-host" aria-label="Add host">
+      <h2>Add host</h2>
+      <div className="muted small">Another machine running yardd, reached over SSH. yardd starts the tunnel itself.</div>
+      <div className="form-grid">
+        <label htmlFor="host-name">Name</label>
+        <input id="host-name" type="text" placeholder="devbox" value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
+        <label htmlFor="host-kind">Connection</label>
+        <select id="host-kind" value={kind} onChange={(e) => setKind(e.target.value as "ssh" | "direct")}>
+          <option value="ssh">SSH</option>
+          <option value="direct">Direct, for testing</option>
+        </select>
+        {kind === "ssh" ? (
+          <>
+            <label htmlFor="host-dest">SSH destination</label>
+            <input id="host-dest" type="text" placeholder="devbox or user@100.x.y.z" value={destination} onChange={(e) => setDestination(e.target.value)} spellCheck={false} />
+            <label htmlFor="host-port">Remote port</label>
+            <input id="host-port" type="text" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value.replace(/\D/g, ""))} />
+          </>
+        ) : (
+          <>
+            <label htmlFor="host-url">URL</label>
+            <input id="host-url" type="text" placeholder="ws://127.0.0.1:47726/ws" value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false} />
+          </>
+        )}
+      </div>
+      <div className="row">
+        <button className="btn-primary" disabled={!ready} onClick={submit}>
+          Add host
+        </button>
+        {sent && <span className="muted small">Added. Connecting.</span>}
+      </div>
+    </section>
+  );
+}
+
+function Hosts({ state, actions }: { state: State; actions: Actions }) {
+  const sessionsOn = (id: string) => Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
   return (
     <div className="hosts">
       <header className="bar">
@@ -873,30 +1076,19 @@ function Hosts({ host, sessions }: { host: Host | null; sessions: Record<string,
       </header>
       <div className="scroll">
         <div className="hosts-inner">
-          {!host && <div className="muted">Waiting for the first sample.</div>}
-          {host && (
-            <section className="host-card" aria-label={host.name}>
-              <div className="host-head">
-                <h2>{host.name}</h2>
-                <span className={hostPressure(host) ? "warn" : "muted"}>{hostPressure(host) ? "Under pressure" : "Healthy"}</span>
-              </div>
-              <Meter label="CPU" value={host.cpu} detail={`${pct(host.cpu)} · load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
-              <Meter
-                label="Memory"
-                value={(host.memUsed / host.memTotal) * 100}
-                detail={`${gb(host.memUsed)} of ${gb(host.memTotal)} GB`}
-                warn={host.memUsed / host.memTotal > 0.9}
-              />
-              <Meter
-                label="Disk"
-                value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
-                detail={`${gb(host.diskUsed)} of ${gb(host.diskTotal)} GB`}
-                warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
-              />
-              <Sparkline values={host.cpuHistory} />
-            </section>
-          )}
-          {host && <SessionUse host={host} sessions={sessions} />}
+          <HostCard name="This Mac" remote={false} host={state.host.local} sessions={sessionsOn("local")} />
+          {state.hosts.map((h) => (
+            <HostCard
+              key={h.id}
+              name={h.name}
+              remote
+              entry={h}
+              host={hostOnline(state, h.id) ? state.host[h.id] : undefined}
+              sessions={sessionsOn(h.id)}
+              onRemove={() => actions.removeHost(h.id)}
+            />
+          ))}
+          <AddHost actions={actions} errorCount={state.errorCount} />
         </div>
       </div>
     </div>

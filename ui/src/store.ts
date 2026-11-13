@@ -6,6 +6,7 @@ import {
   type Decision,
   type Engine,
   type Host,
+  type HostEntry,
   type Item,
   type Models,
   type PrResult,
@@ -30,10 +31,17 @@ export interface State {
   threads: Record<string, Thread>;
   changes: Record<string, Changes>;
   pr: Record<string, PrResult>;
-  models: Models;
-  usage: Usage;
-  host: Host | null;
-  home: string;
+  /** Remote hosts and their connection state. This Mac is not in the list. */
+  hosts: HostEntry[];
+  /** Per host id; `local` is this machine. */
+  models: Record<string, Models>;
+  usage: Record<string, Usage>;
+  host: Record<string, Host>;
+  home: Record<string, string>;
+  /** Hosts whose connection on this socket dropped, until their next snapshot. */
+  linkDown: Record<string, boolean>;
+  /** Goes up whenever a host's sessions are reloaded, so open threads refetch. */
+  hostEpoch: number;
   error: string | null;
   /** Goes up on every error, including a repeat of the same message. */
   errorCount: number;
@@ -54,10 +62,13 @@ const initial: State = {
   threads: {},
   changes: {},
   pr: {},
-  models: { claude: [], codex: [] },
+  hosts: [],
+  models: {},
   usage: {},
-  host: null,
-  home: "",
+  host: {},
+  home: {},
+  linkDown: {},
+  hostEpoch: 0,
   error: null,
   errorCount: 0,
 };
@@ -76,22 +87,93 @@ function reduce(state: State, action: Action): State {
   }
 }
 
+const EMPTY_MODELS: Models = { claude: [], codex: [] };
+const NO_USAGE: Usage = {};
+
+/** The host a session runs on, `local` for this machine. */
+export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
+export const modelsOn = (state: State, host: string): Models => state.models[host] ?? EMPTY_MODELS;
+export const usageOn = (state: State, host: string): Usage => state.usage[host] ?? NO_USAGE;
+export const homeOn = (state: State, host: string): string => state.home[host] ?? "";
+export const hostName = (state: State, host: string): string =>
+  host === "local" ? "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
+/** A remote host's sessions are offline while the hub cannot reach it. */
+export const hostOnline = (state: State, host: string): boolean =>
+  host === "local"
+    ? state.connected
+    : state.connected && !state.linkDown[host] && state.hosts.some((h) => h.id === host && h.status === "connected");
+
+function without<T>(rec: Record<string, T>, drop: (key: string) => boolean): Record<string, T> {
+  return Object.fromEntries(Object.entries(rec).filter(([k]) => !drop(k)));
+}
+
+/** Replace one host's sessions, keeping everyone else's. */
+function replaceHostSessions(state: State, host: string, list: SessionMeta[]): State {
+  const gone = (id: string) => hostOf(state.sessions[id]) === host;
+  const sessions = without(state.sessions, gone);
+  for (const s of list) sessions[s.id] = s;
+  // Events may have been missed while away: drop the threads so they reload from history.
+  const threads = without(state.threads, gone);
+  // The session we were looking at may be gone after a restart.
+  const route =
+    state.route.page === "session" && !sessions[state.route.id] ? ({ page: "new" } as Route) : state.route;
+  return { ...state, sessions, threads, route, hostEpoch: state.hostEpoch + 1 };
+}
+
 function reduceServer(state: State, msg: any): State {
   switch (msg.op) {
     case "snapshot": {
-      const sessions: Record<string, SessionMeta> = {};
-      for (const s of msg.sessions as SessionMeta[]) sessions[s.id] = s;
-      // The session we were looking at may be gone after a yardd restart.
+      const hosts = (msg.hosts ?? []) as HostEntry[];
+      const known = new Set(hosts.map((h) => h.id));
+      // Remote sessions stay listed (offline) until their host snapshot comes
+      // in, unless their host was removed meanwhile.
+      const next = replaceHostSessions({ ...state, hosts }, "local", msg.sessions as SessionMeta[]);
+      const sessions = without(next.sessions, (id) => {
+        const h = hostOf(next.sessions[id]);
+        return h !== "local" && !known.has(h);
+      });
+      const route =
+        next.route.page === "session" && !sessions[next.route.id] ? ({ page: "new" } as Route) : next.route;
+      return {
+        ...next,
+        sessions,
+        route,
+        linkDown: {},
+        models: { ...state.models, local: msg.models ?? EMPTY_MODELS },
+        usage: { ...state.usage, local: msg.usage ?? {} },
+        host: msg.host ? { ...state.host, local: msg.host } : state.host,
+        home: { ...state.home, local: msg.home ?? "" },
+      };
+    }
+    case "host.snapshot": {
+      const id = msg.hostId as string;
+      const next = replaceHostSessions(state, id, msg.sessions as SessionMeta[]);
+      return {
+        ...next,
+        linkDown: { ...state.linkDown, [id]: false },
+        models: { ...state.models, [id]: msg.models ?? EMPTY_MODELS },
+        usage: { ...state.usage, [id]: msg.usage ?? {} },
+        host: msg.host ? { ...state.host, [id]: msg.host } : state.host,
+        home: { ...state.home, [id]: msg.home ?? "" },
+      };
+    }
+    case "host.down":
+      return { ...state, linkDown: { ...state.linkDown, [msg.hostId]: true } };
+    case "hosts": {
+      const hosts = msg.hosts as HostEntry[];
+      const known = new Set(["local", ...hosts.map((h) => h.id)]);
+      const gone = (id: string) => !known.has(hostOf(state.sessions[id]));
+      const sessions = without(state.sessions, gone);
       const route =
         state.route.page === "session" && !sessions[state.route.id] ? ({ page: "new" } as Route) : state.route;
       return {
         ...state,
+        hosts,
         sessions,
         route,
-        models: msg.models ?? state.models,
-        usage: msg.usage ?? {},
-        host: msg.host ?? state.host,
-        home: msg.home ?? "",
+        threads: without(state.threads, gone),
+        host: without(state.host, (h) => !known.has(h)),
+        models: without(state.models, (h) => !known.has(h)),
       };
     }
     case "session":
@@ -107,11 +189,11 @@ function reduceServer(state: State, msg: any): State {
     case "created":
       return { ...state, route: { page: "session", id: msg.sessionId } };
     case "models":
-      return { ...state, models: msg.models };
+      return { ...state, models: { ...state.models, [msg.hostId ?? "local"]: msg.models } };
     case "usage":
-      return { ...state, usage: msg.usage };
+      return { ...state, usage: { ...state.usage, [msg.hostId ?? "local"]: msg.usage } };
     case "host":
-      return { ...state, host: msg.host };
+      return { ...state, host: { ...state.host, [msg.hostId ?? "local"]: msg.host } };
     case "changes":
       return { ...state, changes: { ...state.changes, [msg.sessionId]: msg.changes } };
     case "pr":
@@ -160,6 +242,8 @@ export interface Actions {
     text: string;
     worktree: boolean;
     branch?: string;
+    /** A remote host id; this machine when left out. */
+    host?: string;
   }): void;
   /** Raw send, for the terminal's byte stream. */
   post(msg: object): void;
@@ -177,6 +261,8 @@ export interface Actions {
   /** Stops the session and removes it everywhere. Its worktree stays. */
   remove(sessionId: string): void;
   loadPr(sessionId: string): void;
+  addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
+  removeHost(hostId: string): void;
 }
 
 function socketUrl(): string {
@@ -233,13 +319,18 @@ export function useYard(): { state: State; actions: Actions } {
   };
 
   // Load a session's history the first time it is shown on this connection.
+  // A host snapshot drops that host's threads, so reload whatever is gone.
   const routeId = state.route.page === "session" ? state.route.id : null;
+  const routeHost = routeId ? hostOf(state.sessions[routeId]) : "local";
+  const online = routeId ? hostOnline(state, routeHost) : false;
+  const loaded = routeId ? !!state.threads[routeId] : false;
   useEffect(() => {
-    if (!routeId || !state.connected || opened.current.has(routeId)) return;
+    if (routeId && !loaded) opened.current.delete(routeId);
+    if (!routeId || !online || opened.current.has(routeId)) return;
     opened.current.add(routeId);
     post({ op: "session.open", sessionId: routeId });
     post({ op: "changes.get", sessionId: routeId });
-  }, [routeId, state.connected]);
+  }, [routeId, online, state.hostEpoch]);
 
   const actions = useMemo<Actions>(
     () => ({
@@ -260,6 +351,8 @@ export function useYard(): { state: State; actions: Actions } {
       startNow: (sessionId) => post({ op: "session.startNow", sessionId }),
       remove: (sessionId) => post({ op: "session.delete", sessionId }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
+      addHost: (input) => post({ op: "host.add", ...input }),
+      removeHost: (hostId) => post({ op: "host.remove", hostId }),
     }),
     [],
   );

@@ -1,0 +1,686 @@
+//! Remote hosts: other yardds whose sessions show up here as if they were local.
+//!
+//! This yardd is the hub. For each UI client it opens one connection to every
+//! remote yardd and pipes messages both ways, so replies meant for one client
+//! (`history`, `changes`, `created`, ...) reach the client that asked without
+//! any routing table. Every session and terminal id that crosses the hub
+//! carries the host id: `<hostId>~<remoteId>`.
+//!
+//! An `ssh` host is reached through `ssh -N -L`, one tunnel per host shared by
+//! every client. A `direct` host is a plain `ws://` URL, for testing only. The
+//! remote's origin check lets us in because a non-browser client sends no
+//! `Origin`.
+
+use std::{
+    collections::HashMap,
+    path::PathBuf,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Mutex,
+    },
+    time::{Duration, Instant},
+};
+
+use anyhow::{bail, Context, Result};
+use futures_util::{SinkExt, StreamExt};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    process::Command,
+    sync::{mpsc, watch},
+    task::JoinHandle,
+};
+use tokio_tungstenite::tungstenite::Message;
+
+use crate::state::App;
+
+/// Between the host id and the remote's own id. Local ids never contain it.
+pub const SEP: char = '~';
+const DEFAULT_REMOTE_PORT: u16 = 47717;
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HostConfig {
+    pub id: String,
+    pub name: String,
+    /// `ssh` or `direct`.
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub destination: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub remote_port: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Clone, PartialEq)]
+pub struct Conn {
+    /// The remote's WebSocket; `None` while an ssh tunnel is down.
+    pub url: Option<String>,
+    /// `connecting`, `connected` or `error`.
+    pub status: &'static str,
+    pub error: Option<String>,
+}
+
+struct Entry {
+    config: HostConfig,
+    conn: Arc<watch::Sender<Conn>>,
+    tasks: Vec<JoinHandle<()>>,
+    /// The running `ssh` process, so a stop can kill it: `process::exit`
+    /// skips the drops that would.
+    ssh_pid: Arc<Mutex<Option<u32>>>,
+}
+
+impl Drop for Entry {
+    fn drop(&mut self) {
+        // Aborting the tunnel task drops its `ssh` child, which kills it.
+        for task in &self.tasks {
+            task.abort();
+        }
+    }
+}
+
+pub struct Remotes {
+    file: PathBuf,
+    entries: Mutex<Vec<Entry>>,
+    /// Host ids, so each client can open and close its pipes as hosts come and go.
+    ids: watch::Sender<Vec<String>>,
+}
+
+impl Remotes {
+    pub fn new(dir: PathBuf) -> Self {
+        Remotes {
+            file: dir.join("hosts.json"),
+            entries: Mutex::new(Vec::new()),
+            ids: watch::Sender::new(Vec::new()),
+        }
+    }
+
+    pub fn ids(&self) -> watch::Receiver<Vec<String>> {
+        self.ids.subscribe()
+    }
+
+    /// Every remote host with its connection state, for the UI.
+    pub fn list(&self) -> Value {
+        let entries = self.entries.lock().unwrap();
+        let hosts: Vec<Value> = entries
+            .iter()
+            .map(|e| {
+                let conn = e.conn.borrow().clone();
+                let mut v = serde_json::to_value(&e.config).unwrap_or_else(|_| json!({}));
+                v["status"] = json!(conn.status);
+                if let Some(err) = conn.error {
+                    v["error"] = json!(err);
+                }
+                v
+            })
+            .collect();
+        Value::Array(hosts)
+    }
+
+    fn lookup(&self, id: &str) -> Option<(watch::Receiver<Conn>, String)> {
+        let entries = self.entries.lock().unwrap();
+        let e = entries.iter().find(|e| e.config.id == id)?;
+        Some((e.conn.subscribe(), e.config.name.clone()))
+    }
+
+    fn publish_ids(&self, entries: &[Entry]) {
+        self.ids.send_replace(entries.iter().map(|e| e.config.id.clone()).collect());
+    }
+
+    fn save(&self, entries: &[Entry]) -> Result<()> {
+        let configs: Vec<&HostConfig> = entries.iter().map(|e| &e.config).collect();
+        let tmp = self.file.with_extension("json.tmp");
+        std::fs::write(&tmp, serde_json::to_string_pretty(&configs)?)
+            .with_context(|| format!("could not write {}", tmp.display()))?;
+        std::fs::rename(&tmp, &self.file).with_context(|| format!("could not write {}", self.file.display()))?;
+        Ok(())
+    }
+
+    /// Kill every ssh tunnel. For the signal handler, which exits without drops.
+    pub fn shutdown(&self) {
+        let entries = self.entries.lock().unwrap();
+        for e in entries.iter() {
+            if let Some(pid) = *e.ssh_pid.lock().unwrap() {
+                let _ = std::process::Command::new("kill").arg(pid.to_string()).status();
+            }
+        }
+    }
+}
+
+fn broadcast_hosts(app: &App) {
+    app.broadcast(json!({ "op": "hosts", "hosts": app.remotes.list() }));
+}
+
+/// Change a host's connection state and tell every client when it moved.
+fn set(app: &App, conn: &watch::Sender<Conn>, f: impl FnOnce(&mut Conn)) {
+    let changed = conn.send_if_modified(|c| {
+        let before = c.clone();
+        f(c);
+        *c != before
+    });
+    if changed {
+        broadcast_hosts(app);
+    }
+}
+
+/// Read the saved hosts and start connecting to each.
+pub fn start(app: &Arc<App>) {
+    let configs: Vec<HostConfig> = match std::fs::read_to_string(&app.remotes.file) {
+        Ok(text) => match serde_json::from_str(&text) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("yardd: ignoring unreadable {}: {e}", app.remotes.file.display());
+                Vec::new()
+            }
+        },
+        Err(_) => Vec::new(),
+    };
+    let mut entries = app.remotes.entries.lock().unwrap();
+    for config in configs {
+        entries.push(spawn_host(app, config));
+    }
+    app.remotes.publish_ids(&entries);
+}
+
+fn spawn_host(app: &Arc<App>, config: HostConfig) -> Entry {
+    let conn = Arc::new(watch::Sender::new(Conn {
+        url: config.url.clone().filter(|_| config.kind == "direct"),
+        status: "connecting",
+        error: None,
+    }));
+    let ssh_pid = Arc::new(Mutex::new(None));
+    let mut tasks = Vec::new();
+    if config.kind == "ssh" {
+        let destination = config.destination.clone().unwrap_or_default();
+        let port = config.remote_port.unwrap_or(DEFAULT_REMOTE_PORT);
+        tasks.push(tokio::spawn(tunnel(app.clone(), conn.clone(), destination, port, ssh_pid.clone())));
+    }
+    tasks.push(tokio::spawn(monitor(app.clone(), conn.clone())));
+    Entry { config, conn, tasks, ssh_pid }
+}
+
+/// `host.add`: check the fields, save, and start connecting.
+pub fn add(app: &Arc<App>, msg: &Value) -> Result<()> {
+    let name = msg["name"].as_str().unwrap_or("").trim();
+    if name.is_empty() {
+        bail!("the host needs a name");
+    }
+    if name.chars().count() > 40 || name.chars().any(char::is_control) {
+        bail!("the host name must be at most 40 plain characters");
+    }
+    let id = app.id("h");
+    let config = match msg["kind"].as_str().unwrap_or("") {
+        "ssh" => {
+            let destination = msg["destination"].as_str().unwrap_or("").trim();
+            check_destination(destination)?;
+            let port = match &msg["remotePort"] {
+                Value::Null => DEFAULT_REMOTE_PORT,
+                Value::String(s) if s.trim().is_empty() => DEFAULT_REMOTE_PORT,
+                v => v
+                    .as_u64()
+                    .or_else(|| v.as_str().and_then(|s| s.trim().parse().ok()))
+                    .and_then(|n| u16::try_from(n).ok())
+                    .filter(|p| *p > 0)
+                    .context("the remote port must be a number from 1 to 65535")?,
+            };
+            HostConfig {
+                id,
+                name: name.to_string(),
+                kind: "ssh".into(),
+                destination: Some(destination.to_string()),
+                remote_port: Some(port),
+                url: None,
+            }
+        }
+        "direct" => {
+            let url = msg["url"].as_str().unwrap_or("").trim();
+            if !url.starts_with("ws://") || url.len() <= 5 || url.chars().any(|c| c.is_whitespace() || c.is_control()) {
+                bail!("a direct host needs a ws:// URL");
+            }
+            HostConfig {
+                id,
+                name: name.to_string(),
+                kind: "direct".into(),
+                destination: None,
+                remote_port: None,
+                url: Some(url.to_string()),
+            }
+        }
+        other => bail!("unknown host kind `{other}`"),
+    };
+    {
+        let mut entries = app.remotes.entries.lock().unwrap();
+        if name.eq_ignore_ascii_case("This Mac") || entries.iter().any(|e| e.config.name.eq_ignore_ascii_case(name)) {
+            bail!("a host named {name} already exists");
+        }
+        entries.push(spawn_host(app, config));
+        app.remotes.publish_ids(&entries);
+        if let Err(e) = app.remotes.save(&entries) {
+            eprintln!("yardd: {e:#}");
+        }
+    }
+    broadcast_hosts(app);
+    Ok(())
+}
+
+/// `host.remove`: stop its tunnel and forget it. Sessions on it are untouched.
+pub fn remove(app: &Arc<App>, host_id: &str) -> Result<()> {
+    let removed = {
+        let mut entries = app.remotes.entries.lock().unwrap();
+        let i = entries.iter().position(|e| e.config.id == host_id).context("no such host")?;
+        let removed = entries.remove(i);
+        app.remotes.publish_ids(&entries);
+        if let Err(e) = app.remotes.save(&entries) {
+            eprintln!("yardd: {e:#}");
+        }
+        removed
+    };
+    drop(removed);
+    broadcast_hosts(app);
+    Ok(())
+}
+
+/// The destination goes to ssh as one argument after `--`, and a leading `-`
+/// is refused too, so it can never be read as an option such as `-oProxyCommand`.
+fn check_destination(dest: &str) -> Result<()> {
+    if dest.is_empty() {
+        bail!("an SSH host needs a destination, such as devbox or user@100.x.y.z");
+    }
+    if dest.starts_with('-') {
+        bail!("the SSH destination cannot start with `-`");
+    }
+    if dest.len() > 255 || dest.chars().any(|c| c.is_whitespace() || c.is_control()) {
+        bail!("the SSH destination cannot contain spaces");
+    }
+    Ok(())
+}
+
+struct Backoff {
+    next: Duration,
+    max: Duration,
+}
+
+impl Backoff {
+    fn new(max: Duration) -> Self {
+        Backoff { next: Duration::from_secs(1), max }
+    }
+    fn reset(&mut self) {
+        self.next = Duration::from_secs(1);
+    }
+    async fn wait(&mut self) {
+        tokio::time::sleep(self.next).await;
+        self.next = (self.next * 2).min(self.max);
+    }
+}
+
+async fn connect(
+    url: &str,
+) -> Result<tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>> {
+    let (ws, _) = tokio::time::timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(url))
+        .await
+        .context("timed out")??;
+    Ok(ws)
+}
+
+/// The hub's own connection to a host. It only decides the status the UI
+/// shows; clients get their own connections in `pipe`.
+async fn monitor(app: Arc<App>, conn: Arc<watch::Sender<Conn>>) {
+    let mut rx = conn.subscribe();
+    let mut backoff = Backoff::new(Duration::from_secs(10));
+    loop {
+        let url = match rx.wait_for(|c| c.url.is_some()).await {
+            Ok(c) => c.url.clone().unwrap_or_default(),
+            Err(_) => return,
+        };
+        match connect(&url).await {
+            Ok(mut ws) => {
+                set(&app, &conn, |c| {
+                    c.status = "connected";
+                    c.error = None;
+                });
+                backoff.reset();
+                while let Some(Ok(_)) = ws.next().await {}
+                set(&app, &conn, |c| {
+                    c.status = "error";
+                    c.error = Some("Connection lost. Retrying.".into());
+                });
+            }
+            // The top error only: tungstenite repeats its source in its own text.
+            Err(e) => set(&app, &conn, |c| {
+                c.status = "error";
+                c.error = Some(format!("{e}"));
+            }),
+        }
+        backoff.wait().await;
+    }
+}
+
+/// Keep one `ssh -N -L` running for a host, restarting it with backoff.
+async fn tunnel(app: Arc<App>, conn: Arc<watch::Sender<Conn>>, destination: String, remote_port: u16, pid: Arc<Mutex<Option<u32>>>) {
+    let mut backoff = Backoff::new(Duration::from_secs(30));
+    loop {
+        set(&app, &conn, |c| {
+            c.url = None;
+            c.status = "connecting";
+        });
+        let started = Instant::now();
+        let error = run_ssh(&app, &conn, &destination, remote_port, &pid).await;
+        *pid.lock().unwrap() = None;
+        set(&app, &conn, |c| {
+            c.url = None;
+            c.status = "error";
+            c.error = Some(error);
+        });
+        if started.elapsed() > Duration::from_secs(60) {
+            backoff.reset();
+        }
+        backoff.wait().await;
+    }
+}
+
+/// A free loopback port, outside LocalStack's range and yardd's default.
+fn free_port() -> Result<u16> {
+    for _ in 0..20 {
+        let port = std::net::TcpListener::bind("127.0.0.1:0")?.local_addr()?.port();
+        if !(4510..=4559).contains(&port) && port != DEFAULT_REMOTE_PORT {
+            return Ok(port);
+        }
+    }
+    bail!("no free local port")
+}
+
+/// Run one ssh tunnel until it dies. Returns what to show as the error.
+async fn run_ssh(app: &App, conn: &watch::Sender<Conn>, destination: &str, remote_port: u16, pid: &Mutex<Option<u32>>) -> String {
+    let port = match free_port() {
+        Ok(p) => p,
+        Err(e) => return format!("{e:#}"),
+    };
+    let forward = format!("127.0.0.1:{port}:127.0.0.1:{remote_port}");
+    let spawned = Command::new("ssh")
+        .args([
+            "-N",
+            "-o",
+            "BatchMode=yes",
+            "-o",
+            "ExitOnForwardFailure=yes",
+            "-o",
+            "ServerAliveInterval=15",
+            "-o",
+            "ConnectTimeout=10",
+            "-L",
+            &forward,
+            "--",
+            destination,
+        ])
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::piped())
+        .kill_on_drop(true)
+        .spawn();
+    let mut child = match spawned {
+        Ok(c) => c,
+        Err(e) => return format!("could not run ssh: {e}"),
+    };
+    *pid.lock().unwrap() = child.id();
+
+    // Keep the last thing ssh said; that is the error to show.
+    let last = Arc::new(Mutex::new(String::new()));
+    if let Some(stderr) = child.stderr.take() {
+        let last = last.clone();
+        tokio::spawn(async move {
+            let mut lines = BufReader::new(stderr).lines();
+            while let Ok(Some(line)) = lines.next_line().await {
+                let line = line.trim();
+                if !line.is_empty() {
+                    *last.lock().unwrap() = line.chars().take(300).collect();
+                }
+            }
+        });
+    }
+    let exit_message = |status: std::io::Result<std::process::ExitStatus>, last: &Mutex<String>| {
+        let line = last.lock().unwrap().clone();
+        if !line.is_empty() {
+            return line;
+        }
+        match status {
+            Ok(s) => format!("ssh exited ({s})"),
+            Err(e) => format!("ssh failed: {e}"),
+        }
+    };
+
+    // The forward is up once its local port accepts a connection.
+    loop {
+        tokio::select! {
+            status = child.wait() => {
+                // Let the stderr reader catch the final line.
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                return exit_message(status, &last);
+            }
+            _ = tokio::time::sleep(Duration::from_millis(250)) => {
+                if tokio::net::TcpStream::connect(("127.0.0.1", port)).await.is_ok() {
+                    break;
+                }
+            }
+        }
+    }
+    set(app, conn, |c| c.url = Some(format!("ws://127.0.0.1:{port}/ws")));
+    let status = child.wait().await;
+    tokio::time::sleep(Duration::from_millis(100)).await;
+    exit_message(status, &last)
+}
+
+/// One client's connection to one host.
+pub struct Pipe {
+    tx: mpsc::UnboundedSender<Value>,
+    up: Arc<AtomicBool>,
+    task: JoinHandle<()>,
+}
+
+impl Drop for Pipe {
+    fn drop(&mut self) {
+        self.task.abort();
+    }
+}
+
+impl Pipe {
+    /// Forward an op to the host, or say why it cannot go.
+    pub fn send(&self, msg: Value) -> Result<()> {
+        if !self.up.load(Ordering::Relaxed) {
+            bail!("this host is not connected");
+        }
+        self.tx.send(outgoing(msg)).ok().context("this host is not connected")
+    }
+}
+
+/// Open (and keep reopening) a client's connection to a host. Everything the
+/// host sends goes to `direct`, with ids rewritten.
+pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>) -> Option<Pipe> {
+    let (mut conn, name) = app.remotes.lookup(host_id)?;
+    let (tx, mut rx) = mpsc::unbounded_channel::<Value>();
+    let up = Arc::new(AtomicBool::new(false));
+    let host = host_id.to_string();
+    let flag = up.clone();
+    let task = tokio::spawn(async move {
+        let mut backoff = Backoff::new(Duration::from_secs(10));
+        loop {
+            let url = match conn.wait_for(|c| c.url.is_some()).await {
+                Ok(c) => c.url.clone().unwrap_or_default(),
+                Err(_) => return,
+            };
+            if let Ok(ws) = connect(&url).await {
+                backoff.reset();
+                let (mut sink, mut stream) = ws.split();
+                flag.store(true, Ordering::Relaxed);
+                loop {
+                    tokio::select! {
+                        incoming = stream.next() => match incoming {
+                            Some(Ok(Message::Text(text))) => {
+                                if let Some(out) = rewrite_incoming(&host, &name, &text) {
+                                    if direct.send(out).is_err() { return; }
+                                }
+                            }
+                            Some(Ok(_)) => {}
+                            _ => break,
+                        },
+                        op = rx.recv() => match op {
+                            Some(op) => {
+                                if sink.send(Message::Text(op.to_string())).await.is_err() { break; }
+                            }
+                            None => return,
+                        },
+                    }
+                }
+                flag.store(false, Ordering::Relaxed);
+                let _ = direct.send(json!({ "op": "host.down", "hostId": host }).to_string());
+            }
+            backoff.wait().await;
+        }
+    });
+    Some(Pipe { tx, up, task })
+}
+
+/// Which host an op is for, when it is not for this yardd.
+pub fn route(msg: &Value) -> Option<String> {
+    if msg["op"] == "session.create" {
+        return msg["host"].as_str().filter(|h| !h.is_empty() && *h != "local").map(str::to_string);
+    }
+    ["sessionId", "termId"]
+        .iter()
+        .find_map(|key| msg[key].as_str().and_then(|s| s.split_once(SEP)).map(|(h, _)| h.to_string()))
+}
+
+/// Strip the host prefix from ids on an op headed for the host.
+fn outgoing(mut msg: Value) -> Value {
+    if let Some(obj) = msg.as_object_mut() {
+        obj.remove("host");
+        for key in ["sessionId", "termId"] {
+            if let Some(slot) = obj.get_mut(key) {
+                if let Some((_, rest)) = slot.as_str().and_then(|s| s.split_once(SEP)) {
+                    *slot = Value::String(rest.to_string());
+                }
+            }
+        }
+    }
+    msg
+}
+
+fn prefix(host: &str, obj: &mut Value, key: &str) {
+    if let Some(slot) = obj.get_mut(key) {
+        if let Some(id) = slot.as_str() {
+            *slot = Value::String(format!("{host}{SEP}{id}"));
+        }
+    }
+}
+
+fn rewrite_session(host: &str, s: &mut Value) {
+    prefix(host, s, "id");
+    prefix(host, s, "parent");
+    if let Some(obj) = s.as_object_mut() {
+        obj.insert("host".into(), json!(host));
+    }
+}
+
+fn rewrite_stats(host: &str, name: &str, stats: &mut Value) {
+    let Some(obj) = stats.as_object_mut() else { return };
+    obj.insert("id".into(), json!(host));
+    obj.insert("name".into(), json!(name));
+    for list in ["sessions", "queued"] {
+        if let Some(items) = obj.get_mut(list).and_then(Value::as_array_mut) {
+            for item in items {
+                prefix(host, item, "id");
+            }
+        }
+    }
+}
+
+/// Turn a message from a remote yardd into what the UI expects from a host.
+/// `None` drops it.
+pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
+    let mut msg: Value = serde_json::from_str(text).ok()?;
+    let op = msg["op"].as_str().unwrap_or("").to_string();
+    match op.as_str() {
+        "snapshot" => {
+            let mut sessions = msg["sessions"].take();
+            if let Some(list) = sessions.as_array_mut() {
+                for s in list {
+                    rewrite_session(host, s);
+                }
+            }
+            let mut stats = msg["host"].take();
+            rewrite_stats(host, name, &mut stats);
+            msg = json!({
+                "op": "host.snapshot",
+                "hostId": host,
+                "sessions": sessions,
+                "models": msg["models"].take(),
+                "usage": msg["usage"].take(),
+                "host": stats,
+                "home": msg["home"].take(),
+            });
+        }
+        // A remote's own remotes are not ours to show.
+        "hosts" | "host.snapshot" | "host.down" => return None,
+        "session" => rewrite_session(host, &mut msg["session"]),
+        "host" => {
+            rewrite_stats(host, name, &mut msg["host"]);
+            msg["hostId"] = json!(host);
+        }
+        "models" | "usage" | "error" => msg["hostId"] = json!(host),
+        _ => {
+            prefix(host, &mut msg, "sessionId");
+            prefix(host, &mut msg, "termId");
+        }
+    }
+    Some(msg.to_string())
+}
+
+/// Open pipes for hosts a client does not have yet and drop the ones removed.
+pub fn sync_pipes(app: &Arc<App>, pipes: &mut HashMap<String, Pipe>, ids: &[String], direct: &mpsc::UnboundedSender<String>) {
+    pipes.retain(|id, _| ids.contains(id));
+    for id in ids {
+        if !pipes.contains_key(id) {
+            if let Some(p) = pipe(app, id, direct.clone()) {
+                pipes.insert(id.clone(), p);
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ids_get_the_host_prefix_and_lose_it_on_the_way_back() {
+        let out = rewrite_incoming("h1", "box", r#"{"op":"event","sessionId":"s9","seq":0,"event":{}}"#).unwrap();
+        let v: Value = serde_json::from_str(&out).unwrap();
+        assert_eq!(v["sessionId"], "h1~s9");
+        let back = outgoing(json!({ "op": "term.input", "termId": "h1~t3", "data": "x" }));
+        assert_eq!(back["termId"], "t3");
+        assert_eq!(route(&json!({ "op": "session.send", "sessionId": "h1~s9" })).as_deref(), Some("h1"));
+        assert_eq!(route(&json!({ "op": "session.send", "sessionId": "s9" })), None);
+        assert_eq!(route(&json!({ "op": "session.create", "host": "local" })), None);
+    }
+
+    #[test]
+    fn a_snapshot_becomes_a_host_snapshot() {
+        let text = r#"{"op":"snapshot","sessions":[{"id":"s1","parent":"s0","host":"local"}],"models":{},"usage":{},"host":{"id":"local","name":"This Mac","sessions":[{"id":"s1"}]},"home":"/home/me"}"#;
+        let v: Value = serde_json::from_str(&rewrite_incoming("h1", "box", text).unwrap()).unwrap();
+        assert_eq!(v["op"], "host.snapshot");
+        assert_eq!(v["sessions"][0]["id"], "h1~s1");
+        assert_eq!(v["sessions"][0]["parent"], "h1~s0");
+        assert_eq!(v["sessions"][0]["host"], "h1");
+        assert_eq!(v["host"]["name"], "box");
+        assert_eq!(v["host"]["sessions"][0]["id"], "h1~s1");
+    }
+
+    #[test]
+    fn destinations_that_look_like_options_are_refused() {
+        assert!(check_destination("-oProxyCommand=evil").is_err());
+        assert!(check_destination("devbox -v").is_err());
+        assert!(check_destination("user@100.64.0.1").is_ok());
+    }
+}

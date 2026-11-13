@@ -5058,6 +5058,7 @@ dependencies = [
  "serde_json",
  "sysinfo",
  "tokio",
+ "tokio-tungstenite",
  "tower-http 0.5.2",
 ]
 

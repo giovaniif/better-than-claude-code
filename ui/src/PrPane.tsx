@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Engine, PrCheck, PrResult, PrThread, PullRequest, SessionMeta } from "./protocol";
-import type { Actions, State } from "./store";
+import { hostOf, hostOnline, modelsOn, type Actions, type State } from "./store";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 const RESULT_LABEL: Record<PrCheck["result"], string> = {
@@ -72,7 +72,7 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   const { meta, state, actions, visible } = props;
   const pr = state.pr[meta.id];
   const busy = meta.status === "running" || meta.status === "needs_approval";
-  const connected = state.connected;
+  const connected = hostOnline(state, hostOf(meta));
 
   // First time the tab is shown for this session.
   useEffect(() => {
@@ -94,7 +94,8 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   }, [meta.id, busy]);
 
   const other: Engine = meta.engine === "claude" ? "codex" : "claude";
-  const reviewModel = state.models[other].find((m) => m.isDefault) ?? state.models[other][0];
+  const models = modelsOn(state, hostOf(meta));
+  const reviewModel = models[other].find((m) => m.isDefault) ?? models[other][0];
   const review = () => {
     if (!reviewModel) return;
     actions.create({
@@ -104,6 +105,8 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
       cwd: meta.cwd,
       text: reviewPrompt(pr),
       worktree: false,
+      // The review runs where the code is.
+      host: hostOf(meta) === "local" ? undefined : hostOf(meta),
     });
   };
   const reviewButton = (

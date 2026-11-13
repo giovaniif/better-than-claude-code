@@ -12,6 +12,7 @@ export interface SessionMeta {
   effort: string;
   cwd: string;
   status: Status;
+  /** `local`, or the id of the remote host it runs on. */
   host: string;
   /** Set when yardd made a worktree for the session. */
   branch?: string | null;
@@ -50,6 +51,18 @@ export interface Host {
   /** Sessions waiting to start, oldest first. */
   queued?: { id: string; reason: string }[];
   limits?: { memCapBytes: number; minFreeBytes: number; forced: boolean };
+}
+
+/** A remote yardd this one reaches, as listed by the `hosts` message. */
+export interface HostEntry {
+  id: string;
+  name: string;
+  kind: "ssh" | "direct";
+  destination?: string;
+  remotePort?: number;
+  url?: string;
+  status: "connecting" | "connected" | "error";
+  error?: string;
 }
 
 export interface SessionUsage {
