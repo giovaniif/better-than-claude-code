@@ -172,6 +172,8 @@ export interface Actions {
   interrupt(sessionId: string): void;
   approve(sessionId: string, requestId: string, decision: Decision): void;
   loadChanges(sessionId: string): void;
+  /** Start a queued session even though the host is under pressure. */
+  startNow(sessionId: string): void;
   /** Stops the session and removes it everywhere. Its worktree stays. */
   remove(sessionId: string): void;
   loadPr(sessionId: string): void;
@@ -255,6 +257,7 @@ export function useYard(): { state: State; actions: Actions } {
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
       approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),
       loadChanges: (sessionId) => post({ op: "changes.get", sessionId }),
+      startNow: (sessionId) => post({ op: "session.startNow", sessionId }),
       remove: (sessionId) => post({ op: "session.delete", sessionId }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
     }),

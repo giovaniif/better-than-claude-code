@@ -169,6 +169,14 @@ pub fn close(app: &Arc<App>, term_id: &str) -> Result<()> {
     Ok(())
 }
 
+/// Each terminal's session and shell process, for per-session usage.
+pub fn shell_pids(app: &Arc<App>) -> Vec<(String, u32)> {
+    let map = app.terms.map.lock().unwrap();
+    map.values()
+        .filter_map(|t| Some((t.session_id.clone(), t.child.process_id()?)))
+        .collect()
+}
+
 /// Kill the session's terminal, if it has one.
 pub fn close_session(app: &Arc<App>, session_id: &str) {
     let mut map = app.terms.map.lock().unwrap();

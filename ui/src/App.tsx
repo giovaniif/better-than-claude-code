@@ -12,6 +12,7 @@ const PERMISSION_NOTE: Record<Engine, string> = {
 };
 const STATUS_LABEL: Record<Status, string> = {
   idle: "Idle",
+  queued: "Queued",
   running: "Running",
   needs_approval: "Needs approval",
   error: "Error",
@@ -56,7 +57,7 @@ export function App() {
           </div>
         )}
         {route.page === "new" && <NewSession state={state} actions={actions} />}
-        {route.page === "hosts" && <Hosts host={state.host} />}
+        {route.page === "hosts" && <Hosts host={state.host} sessions={state.sessions} />}
         {route.page === "session" && state.sessions[route.id] && (
           <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
         )}
@@ -110,8 +111,9 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
   );
 }
 
-/** Load above the core count or under 10% memory left. */
-const hostPressure = (h: Host) => h.load > h.cores || h.memUsed / h.memTotal > 0.9;
+/** yardd's own verdict (the one its queue uses) when it sends one. */
+const hostPressure = (h: Host) =>
+  h.pressure !== undefined ? !!h.pressure : h.load > h.cores || h.memUsed / h.memTotal > 0.9;
 
 /* ---------- model picker ---------- */
 
@@ -449,13 +451,19 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
         >
           <div className="column">
             {items.map((item) => (
-              <ItemView key={item.key} item={item} onDecide={(id, d) => actions.approve(meta.id, id, d)} />
+              <ItemView
+                key={item.key}
+                item={item}
+                queued={meta.status === "queued"}
+                onStart={() => actions.startNow(meta.id)}
+                onDecide={(id, d) => actions.approve(meta.id, id, d)}
+              />
             ))}
             {showWorking && <div className="working">Working</div>}
           </div>
         </div>
         <div className="dock">
-          <Composer placeholder="Reply" rows={1} busy={busy || !state.connected} onSubmit={(text) => actions.send(meta.id, text)}>
+          <Composer placeholder="Reply" rows={1} busy={busy || meta.status === "queued" || !state.connected} onSubmit={(text) => actions.send(meta.id, text)}>
             <ModelPicker
               models={state.models}
               usage={state.usage}
@@ -505,7 +513,14 @@ function UserBubble({ text }: { text: string }) {
   );
 }
 
-function ItemView({ item, onDecide }: { item: Item; onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void }) {
+function ItemView(props: {
+  item: Item;
+  /** The session is still waiting in the queue. */
+  queued: boolean;
+  onStart(): void;
+  onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
+}) {
+  const { item, onDecide } = props;
   const [open, setOpen] = useState(false);
   switch (item.kind) {
     case "user":
@@ -564,6 +579,17 @@ function ItemView({ item, onDecide }: { item: Item; onDecide(requestId: string, 
       );
     case "error":
       return <div className="error-line">{item.message}</div>;
+    case "queued":
+      return (
+        <div className="queued-line">
+          <span>{props.queued ? `Queued: ${item.reason}.` : `Was queued: ${item.reason}.`}</span>
+          {props.queued && (
+            <button className="btn" onClick={props.onStart}>
+              Start anyway
+            </button>
+          )}
+        </div>
+      );
   }
 }
 
@@ -777,7 +803,69 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-function Hosts({ host }: { host: Host | null }) {
+const size = (bytes: number) => (bytes < 1024 ** 3 ? `${Math.round(bytes / 1024 ** 2)} MB` : `${gb(bytes)} GB`);
+/** `8` or `0.2`, without a trailing `.0`. */
+const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1)));
+
+/** What each session's processes use, and the sessions waiting to start. */
+function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
+  const cap = host.limits?.memCapBytes ?? 0;
+  const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
+  const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
+  const queued = Object.values(sessions)
+    .filter((s) => s.status === "queued")
+    .sort((a, b) => a.createdAt - b.createdAt);
+  const limits = host.limits;
+  return (
+    <section className="usage" aria-label="Sessions">
+      <h2>Sessions</h2>
+      {rows.length === 0 && queued.length === 0 && <div className="muted small">No session is running anything.</div>}
+      {(rows.length > 0 || queued.length > 0) && (
+        <table>
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th className="num">CPU</th>
+              <th className="num">Memory</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((u) => {
+              const over = cap > 0 && u.memBytes > cap * 0.8;
+              return (
+                <tr key={u.id}>
+                  <td className="usage-title">{sessions[u.id].title}</td>
+                  <td className="num">{u.cpuCores.toFixed(1)} cores</td>
+                  <td className={`num ${over ? "warn" : ""}`}>
+                    {cap > 0 ? `${size(u.memBytes).replace(/ GB$/, "")} of ${gbLimit(cap)} GB` : size(u.memBytes)}
+                  </td>
+                </tr>
+              );
+            })}
+            {queued.map((s) => (
+              <tr key={s.id}>
+                <td className="usage-title">{s.title}</td>
+                <td className="reason" colSpan={2}>
+                  Queued: {reasons.get(s.id) ?? "waiting for room"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {limits && (
+        <div className="muted small">
+          {limits.forced
+            ? "New sessions are queued: pressure is forced on (YARD_FORCE_PRESSURE=1)."
+            : `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`}{" "}
+          {cap > 0 ? `A session's processes are stopped above ${gbLimit(cap)} GB.` : "No memory cap per session."}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Hosts({ host, sessions }: { host: Host | null; sessions: Record<string, SessionMeta> }) {
   return (
     <div className="hosts">
       <header className="bar">
@@ -808,6 +896,7 @@ function Hosts({ host }: { host: Host | null }) {
               <Sparkline values={host.cpuHistory} />
             </section>
           )}
+          {host && <SessionUse host={host} sessions={sessions} />}
         </div>
       </div>
     </div>
