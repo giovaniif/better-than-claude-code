@@ -349,6 +349,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "term.close" => pty::close(app, str_field(msg, "termId")?)?,
         "host.add" => remote::add(app, msg)?,
         "host.remove" => remote::remove(app, str_field(msg, "hostId")?)?,
+        "host.install" => remote::install(app, str_field(msg, "hostId")?)?,
         other => bail!("unknown op `{other}`"),
     }
     Ok(())

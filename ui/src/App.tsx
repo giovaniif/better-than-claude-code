@@ -1264,11 +1264,17 @@ const HOST_STATE_LABEL: Record<HostState, string> = { ok: "Healthy", busy: "Unde
 
 /** yardd passes on what ssh or the socket said; turn the usual ones into
  *  what to do about it. The raw text stays available under Details. */
-function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode } {
+function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode; install?: boolean } {
   const err = entry.error ?? "";
   const dest = entry.destination ?? "";
   const machine = dest.replace(/^.*@/, "");
   if (/Connection lost/i.test(err)) return { title: "Connection lost. Reconnecting…" };
+  if (entry.kind === "ssh" && entry.noDaemon)
+    return {
+      title: `SSH works, but Switchyard isn't running on ${machine} yet.`,
+      hint: "Install it from here: it downloads Switchyard for that machine and runs it as a service in your user account. Nothing else on the machine changes.",
+      install: true,
+    };
   if (entry.kind === "ssh") {
     if (/Could not resolve hostname/i.test(err))
       return { title: `Can't find ${machine}.`, hint: "Check the name. A Tailscale machine also answers to its full name, like box.tailnet.ts.net." };
@@ -1278,21 +1284,12 @@ function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode }
       return { title: "The host key is not trusted yet.", hint: <>Run <code>ssh {dest}</code> once in Terminal and accept the key.</> };
     if (/timed out|No route to host|Network is unreachable/i.test(err) && !/os error/i.test(err))
       return { title: `Can't reach ${machine}.`, hint: "Is it on, and on the same network or tailnet?" };
-    // ssh is up but nothing answers on the forwarded port: no yardd there.
-    if (/reset by peer|refused|os error|IO error|timed out/i.test(err))
-      return {
-        title: `SSH works, but Switchyard isn't running on ${machine}.`,
-        hint: (
-          <>
-            On that machine, clone the repo and run <code>scripts/install-host.sh</code>. It installs yardd as a service on port {entry.remotePort ?? 47717}.
-          </>
-        ),
-      };
   }
   return { title: err || "Not connected." };
 }
 
-function HostCard({ state, id, onRemove }: { state: State; id: string; onRemove?(): void }) {
+function HostCard({ state, id, onRemove, onInstall }: { state: State; id: string; onRemove?(): void; onInstall?(): void }) {
+  const install = state.installs[id];
   const entry = state.hosts.find((h) => h.id === id);
   const status = hostState(state, id);
   const host = status === "down" || status === "connecting" ? undefined : state.host[id];
@@ -1310,10 +1307,18 @@ function HostCard({ state, id, onRemove }: { state: State; id: string; onRemove?
         <span className="spacer" />
         <span className={`small host-state-${status}`}>{HOST_STATE_LABEL[status]}</span>
       </div>
-      {problem && (
+      {install && (install.running || !install.ok || status !== "ok") && <InstallLog install={install} machine={name} />}
+      {problem && !install?.running && !install?.ok && (
         <div className="host-problem">
           <div>{problem.title}</div>
           {problem.hint && <div className="muted small">{problem.hint}</div>}
+          {problem.install && onInstall && (
+            <div className="row">
+              <button className="btn-primary" onClick={onInstall}>
+                Install Switchyard on {name}
+              </button>
+            </div>
+          )}
           {entry?.error && problem.title !== entry.error && (
             <details className="small muted">
               <summary>Details</summary>
@@ -1347,8 +1352,56 @@ function HostCard({ state, id, onRemove }: { state: State; id: string; onRemove?
         </>
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
-      {onRemove && <RemoveHost onConfirm={onRemove} />}
+      {install?.ok && !install.running && <EngineSummary install={install} machine={name} />}
+      {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
     </section>
+  );
+}
+
+/** The installer's output while it runs, and its outcome when it failed. */
+function InstallLog({ install, machine }: { install: State["installs"][string]; machine: string }) {
+  const lines = install.lines.filter((l) => !l.startsWith("@@"));
+  const failure = install.lines.find((l) => l.startsWith("@@fail "))?.slice(7);
+  return (
+    <div className="host-problem">
+      <div>
+        {install.running ? `Installing Switchyard on ${machine}…` : install.ok ? `Installed. Connecting to ${machine}…` : `The install on ${machine} failed${failure ? `: ${failure}` : "."}`}
+      </div>
+      {lines.length > 0 && (
+        <pre className="install-log" aria-live="polite">
+          {lines.slice(-8).join("\n")}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+const ENGINE_LABEL: Record<string, string> = { claude: "Claude Code", codex: "Codex" };
+const ENGINE_LOGIN: Record<string, string> = { claude: "claude setup-token", codex: "codex login --device-auth" };
+const ENGINE_INSTALL: Record<string, string> = { claude: "npm i -g @anthropic-ai/claude-code", codex: "npm i -g @openai/codex" };
+
+/** What the installer found about the engines, with what to run for each that is not ready. */
+function EngineSummary({ install, machine }: { install: State["installs"][string]; machine: string }) {
+  const engines = install.lines
+    .filter((l) => l.startsWith("@@engine "))
+    .map((l) => l.split(" "))
+    .map(([, name, state]) => ({ name, state }));
+  const notReady = engines.filter((e) => e.state !== "ok");
+  if (!engines.length) return null;
+  return (
+    <div className="engines">
+      {engines.map((e) => (
+        <div key={e.name} className="engine-row">
+          <span className={`dot ${e.state === "ok" ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
+          <span>{ENGINE_LABEL[e.name] ?? e.name}</span>
+          <span className="muted small">{e.state === "ok" ? "ready" : e.state === "missing" ? "not installed" : "not logged in"}</span>
+          {e.state !== "ok" && (
+            <code className="engine-cmd">{e.state === "missing" ? ENGINE_INSTALL[e.name] : ENGINE_LOGIN[e.name]}</code>
+          )}
+        </div>
+      ))}
+      {notReady.length > 0 && <div className="muted small">Run the command on {machine} once, over SSH. Sessions with that engine work after that.</div>}
+    </div>
   );
 }
 
@@ -1366,7 +1419,7 @@ function Stat({ label, value, big, detail, warn }: { label: string; value: numbe
 }
 
 /** Removing asks for a second click, like deleting a session. */
-function RemoveHost({ onConfirm }: { onConfirm(): void }) {
+function RemoveHost({ onConfirm, onUpdate }: { onConfirm(): void; onUpdate?(): void }) {
   const [armed, setArmed] = useState(false);
   useEffect(() => {
     if (!armed) return;
@@ -1379,6 +1432,11 @@ function RemoveHost({ onConfirm }: { onConfirm(): void }) {
         {armed ? "Click again to remove" : "Remove host"}
       </button>
       {armed && <span className="muted small">Its sessions keep running there.</span>}
+      {onUpdate && !armed && (
+        <button className="btn-text" onClick={onUpdate} title="Install the latest Switchyard there and restart it">
+          Update Switchyard
+        </button>
+      )}
     </div>
   );
 }
@@ -1414,8 +1472,8 @@ function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount
     <section className="host-card add-host" aria-label="Add host">
       <h2>Add a host</h2>
       <div className="muted small">
-        Run sessions on another machine you can <code>ssh</code> into without a password. It needs Switchyard installed: clone the repo there and run{" "}
-        <code>scripts/install-host.sh</code>.
+        Run sessions on another machine you can <code>ssh</code> into without a password. If Switchyard isn't there yet, you can install it from
+        here next.
       </div>
       {!direct && (
         <input
@@ -1489,7 +1547,13 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
           {adding && <AddHost actions={actions} errorCount={state.errorCount} onDone={() => setAdding(false)} />}
           <HostCard state={state} id="local" />
           {state.hosts.map((h) => (
-            <HostCard key={h.id} state={state} id={h.id} onRemove={() => actions.removeHost(h.id)} />
+            <HostCard
+              key={h.id}
+              state={state}
+              id={h.id}
+              onRemove={() => actions.removeHost(h.id)}
+              onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
+            />
           ))}
           {state.hosts.length === 0 && !adding && (
             <button className="host-empty" onClick={() => setAdding(true)}>

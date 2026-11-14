@@ -625,3 +625,66 @@ async fn a_hub_runs_sessions_on_a_direct_host() {
     let kept: Vec<&str> = types(&history).into_iter().filter(|t| *t != "assistant_delta").collect();
     assert_eq!(kept, ["user_message", "turn_started", "assistant_message", "turn_completed"]);
 }
+
+#[tokio::test]
+async fn install_sets_up_yardd_on_an_ssh_host() {
+    let sb = Sandbox::new("install");
+    // A release folder in the shape CI publishes, holding this very yardd.
+    let release = sb.root.join("release");
+    let pkg = sb.root.join("pkg/switchyard");
+    fs::create_dir_all(pkg.join("bin")).unwrap();
+    fs::create_dir_all(pkg.join("ui/dist")).unwrap();
+    fs::copy(env!("CARGO_BIN_EXE_yardd"), pkg.join("bin/yardd")).unwrap();
+    fs::write(pkg.join("bin/yard-claude"), "#!/bin/sh\nexit 1\n").unwrap();
+    fs::write(pkg.join("VERSION"), "test-build\n").unwrap();
+    fs::create_dir_all(&release).unwrap();
+    let asset = if cfg!(target_arch = "aarch64") { "switchyard-linux-arm64.tar.gz" } else { "switchyard-linux-x64.tar.gz" };
+    let tar = std::process::Command::new("tar")
+        .args(["-czf", release.join(asset).to_str().unwrap(), "-C", sb.root.join("pkg").to_str().unwrap(), "switchyard"])
+        .status()
+        .unwrap();
+    assert!(tar.success());
+
+    // ssh that runs the remote command here, as the "remote" machine.
+    let fake_ssh = sb.root.join("fake-ssh");
+    fs::write(&fake_ssh, "#!/bin/bash\nwhile [ \"$1\" != -- ]; do shift; done\nshift 2\n[ $# -gt 0 ] || { echo 'fake ssh: no tunnels' >&2; exit 255; }\nexec bash -c \"$*\"\n").unwrap();
+    std::process::Command::new("chmod").args(["+x", fake_ssh.to_str().unwrap()]).status().unwrap();
+
+    let remote_port = free_port();
+    let release_url = format!("file://{}", release.display());
+    let d = sb.start_with(&[
+        ("YARD_SSH", fake_ssh.to_str().unwrap()),
+        ("YARD_RELEASE_URL", &release_url),
+        ("SWITCHYARD_NO_SYSTEMD", "1"),
+    ]);
+    let mut c = d.client().await;
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "ssh", "destination": "me@box", "remotePort": remote_port })).await;
+    let hosts = c.wait_for("the host", |m| m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| !h.is_empty())).await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+
+    c.send(json!({ "op": "host.install", "hostId": host })).await;
+    let done = c.wait_for("the install to finish", |m| m["op"] == "host.install" && m["done"] == true).await;
+    let lines: Vec<String> = c
+        .log
+        .iter()
+        .filter(|m| m["op"] == "host.install" && m["hostId"] == host.as_str())
+        .filter_map(|m| m["line"].as_str().map(str::to_string))
+        .collect();
+    let installed = sb.home().join(".local/share/switchyard");
+    let pid = fs::read_to_string(installed.join("yardd.pid")).unwrap_or_default();
+    let stop = || {
+        if !pid.trim().is_empty() {
+            let _ = std::process::Command::new("kill").arg(pid.trim()).status();
+        }
+    };
+    if done["ok"] != true {
+        stop();
+        panic!("install failed: {lines:#?}");
+    }
+    assert!(lines.iter().any(|l| l.starts_with("@@ok yardd ")), "{lines:#?}");
+    assert!(lines.iter().any(|l| l.starts_with("@@engine codex ")), "{lines:#?}");
+    assert!(lines.iter().any(|l| l == "Installed test-build"), "{lines:#?}");
+    let health = http_get(remote_port, "/health");
+    stop();
+    assert!(health.unwrap_or_default().contains("yardd "), "the installed yardd answers");
+}

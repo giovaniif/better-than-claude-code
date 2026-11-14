@@ -62,6 +62,9 @@ pub struct Conn {
     /// `connecting`, `connected` or `error`.
     pub status: &'static str,
     pub error: Option<String>,
+    /// The way there works (an ssh tunnel is up) but no yardd answered at the
+    /// end of it: the host needs Switchyard installed or started.
+    pub no_daemon: bool,
 }
 
 struct Entry {
@@ -87,6 +90,8 @@ pub struct Remotes {
     entries: Mutex<Vec<Entry>>,
     /// Host ids, so each client can open and close its pipes as hosts come and go.
     ids: watch::Sender<Vec<String>>,
+    /// Hosts with a `host.install` running, so a second click does not start another.
+    installing: Mutex<std::collections::HashSet<String>>,
 }
 
 impl Remotes {
@@ -95,6 +100,7 @@ impl Remotes {
             file: dir.join("hosts.json"),
             entries: Mutex::new(Vec::new()),
             ids: watch::Sender::new(Vec::new()),
+            installing: Mutex::new(Default::default()),
         }
     }
 
@@ -113,6 +119,9 @@ impl Remotes {
                 v["status"] = json!(conn.status);
                 if let Some(err) = conn.error {
                     v["error"] = json!(err);
+                }
+                if conn.no_daemon {
+                    v["noDaemon"] = json!(true);
                 }
                 v
             })
@@ -190,6 +199,7 @@ fn spawn_host(app: &Arc<App>, config: HostConfig) -> Entry {
         url: config.url.clone().filter(|_| config.kind == "direct"),
         status: "connecting",
         error: None,
+        no_daemon: false,
     }));
     let ssh_pid = Arc::new(Mutex::new(None));
     let mut tasks = Vec::new();
@@ -283,6 +293,91 @@ pub fn remove(app: &Arc<App>, host_id: &str) -> Result<()> {
     Ok(())
 }
 
+/// The installer the app runs on a host that has SSH but no yardd yet.
+const REMOTE_INSTALL: &str = include_str!("../../../scripts/remote-install.sh");
+
+/// `ssh`, or `YARD_SSH` so the tests can stand in a fake one.
+fn ssh_program() -> String {
+    std::env::var("YARD_SSH").ok().filter(|s| !s.is_empty()).unwrap_or_else(|| "ssh".to_string())
+}
+
+/// `host.install`: install or update yardd on an SSH host from the release,
+/// over its own ssh connection. Every output line goes to all clients as
+/// `host.install { hostId, line }`, then one `{ hostId, done, ok }`.
+pub fn install(app: &Arc<App>, host_id: &str) -> Result<()> {
+    let (destination, port) = {
+        let entries = app.remotes.entries.lock().unwrap();
+        let e = entries.iter().find(|e| e.config.id == host_id).context("no such host")?;
+        if e.config.kind != "ssh" {
+            bail!("only an SSH host can be set up from here");
+        }
+        let dest = e.config.destination.clone().unwrap_or_default();
+        (dest, e.config.remote_port.unwrap_or(DEFAULT_REMOTE_PORT))
+    };
+    check_destination(&destination)?;
+    if !app.remotes.installing.lock().unwrap().insert(host_id.to_string()) {
+        bail!("Switchyard is already being installed on that host");
+    }
+    // The remote command is one string for the remote shell: keep it to
+    // characters that need no quoting.
+    let mut remote = format!("bash -s -- {port}");
+    if let Ok(url) = std::env::var("YARD_RELEASE_URL") {
+        if !url.chars().all(|c| c.is_ascii_alphanumeric() || "/:._-~".contains(c)) {
+            app.remotes.installing.lock().unwrap().remove(host_id);
+            bail!("YARD_RELEASE_URL has characters that would need quoting");
+        }
+        remote = format!("SWITCHYARD_RELEASE_URL={url} {remote}");
+    }
+    let spawned = Command::new(ssh_program())
+        .args(["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "--", &destination, &remote])
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .kill_on_drop(true)
+        .spawn();
+    let mut child = match spawned {
+        Ok(c) => c,
+        Err(e) => {
+            app.remotes.installing.lock().unwrap().remove(host_id);
+            bail!("could not run ssh: {e}");
+        }
+    };
+    let app = app.clone();
+    let host = host_id.to_string();
+    tokio::spawn(async move {
+        use tokio::io::AsyncWriteExt;
+        if let Some(mut stdin) = child.stdin.take() {
+            let _ = stdin.write_all(REMOTE_INSTALL.as_bytes()).await;
+            // Closing stdin ends the script for `bash -s`.
+        }
+        let lines = |stream: Option<Box<dyn tokio::io::AsyncRead + Unpin + Send>>| {
+            let app = app.clone();
+            let host = host.clone();
+            tokio::spawn(async move {
+                let Some(stream) = stream else { return };
+                let mut lines = BufReader::new(stream).lines();
+                while let Ok(Some(line)) = lines.next_line().await {
+                    let line: String = line.chars().take(500).collect();
+                    app.broadcast(json!({ "op": "host.install", "hostId": host, "line": line }));
+                }
+            })
+        };
+        let out = lines(child.stdout.take().map(|s| Box::new(s) as _));
+        let err = lines(child.stderr.take().map(|s| Box::new(s) as _));
+        // Downloading and starting take seconds; a hung ssh should not
+        // leave the card spinning forever.
+        let status = tokio::time::timeout(Duration::from_secs(300), child.wait()).await;
+        let _ = tokio::join!(out, err);
+        let ok = matches!(status, Ok(Ok(s)) if s.success());
+        if status.is_err() {
+            app.broadcast(json!({ "op": "host.install", "hostId": host, "line": "Gave up after 5 minutes." }));
+        }
+        app.remotes.installing.lock().unwrap().remove(&host);
+        app.broadcast(json!({ "op": "host.install", "hostId": host, "done": true, "ok": ok }));
+    });
+    Ok(())
+}
+
 /// The destination goes to ssh as one argument after `--`, and a leading `-`
 /// is refused too, so it can never be read as an option such as `-oProxyCommand`.
 fn check_destination(dest: &str) -> Result<()> {
@@ -340,6 +435,7 @@ async fn monitor(app: Arc<App>, conn: Arc<watch::Sender<Conn>>) {
                 set(&app, &conn, |c| {
                     c.status = "connected";
                     c.error = None;
+                    c.no_daemon = false;
                 });
                 backoff.reset();
                 while let Some(Ok(_)) = ws.next().await {}
@@ -352,6 +448,7 @@ async fn monitor(app: Arc<App>, conn: Arc<watch::Sender<Conn>>) {
             Err(e) => set(&app, &conn, |c| {
                 c.status = "error";
                 c.error = Some(format!("{e}"));
+                c.no_daemon = true;
             }),
         }
         backoff.wait().await;
@@ -373,6 +470,7 @@ async fn tunnel(app: Arc<App>, conn: Arc<watch::Sender<Conn>>, destination: Stri
             c.url = None;
             c.status = "error";
             c.error = Some(error);
+            c.no_daemon = false;
         });
         if started.elapsed() > Duration::from_secs(60) {
             backoff.reset();
@@ -399,7 +497,7 @@ async fn run_ssh(app: &App, conn: &watch::Sender<Conn>, destination: &str, remot
         Err(e) => return format!("{e:#}"),
     };
     let forward = format!("127.0.0.1:{port}:127.0.0.1:{remote_port}");
-    let spawned = Command::new("ssh")
+    let spawned = Command::new(ssh_program())
         .args([
             "-N",
             "-o",

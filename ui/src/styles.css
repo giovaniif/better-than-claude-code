@@ -352,3 +352,7 @@ h1, h2, h3, p { margin: 0; }
 .host-empty:hover { background: var(--fill); }
 .host-empty > span { display: flex; flex-direction: column; gap: 3px; }
 .host-empty strong { color: var(--ink); font-weight: 500; }
+.install-log { margin: 0; padding: 8px 10px; max-height: 160px; overflow: auto; border-radius: 8px; background: var(--bg); font-family: var(--mono); font-size: 11.5px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--muted); }
+.engines { display: flex; flex-direction: column; gap: 8px; }
+.engine-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.engine-cmd { margin-left: auto; padding: 2px 6px; border-radius: 5px; background: var(--fill); font-family: var(--mono); font-size: 11.5px; user-select: all; }

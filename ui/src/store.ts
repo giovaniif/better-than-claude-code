@@ -4,6 +4,7 @@ import {
   type AgentEvent,
   type BranchList,
   type DirList,
+  type HostInstallMsg,
   type Changes,
   type Decision,
   type Engine,
@@ -48,6 +49,8 @@ export interface State {
   branches: Record<string, BranchList>;
   /** `fs.dirs` replies, by `branchKey(host, path)`. */
   dirs: Record<string, DirList>;
+  /** `host.install` progress by host id. */
+  installs: Record<string, { lines: string[]; running: boolean; ok?: boolean }>;
   error: string | null;
   /** Goes up on every error, including a repeat of the same message. */
   errorCount: number;
@@ -79,6 +82,7 @@ export const initial: State = {
   hostEpoch: 0,
   branches: {},
   dirs: {},
+  installs: {},
   error: null,
   errorCount: 0,
   notice: null,
@@ -217,6 +221,16 @@ function reduceServer(state: State, msg: any): State {
       const reply = msg as BranchList;
       return { ...state, branches: { ...state.branches, [branchKey(reply.hostId ?? "local", reply.cwd)]: reply } };
     }
+    case "host.install": {
+      const m = msg as HostInstallMsg;
+      const prev = state.installs[m.hostId];
+      // The first line of a new run starts a fresh log.
+      const base = prev?.running ? prev : { lines: [], running: true };
+      const next = m.done
+        ? { ...(prev ?? base), running: false, ok: !!m.ok }
+        : { ...base, running: true, ok: undefined, lines: [...base.lines, m.line ?? ""].slice(-200) };
+      return { ...state, installs: { ...state.installs, [m.hostId]: next } };
+    }
     case "fs.dirs": {
       const reply = msg as DirList;
       return { ...state, dirs: { ...state.dirs, [branchKey(reply.hostId ?? "local", reply.path)]: reply } };
@@ -294,6 +308,8 @@ export interface Actions {
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
+  /** Install or update yardd on an SSH host from the release, over SSH. */
+  installHost(hostId: string): void;
 }
 
 function socketUrl(): string {
@@ -388,6 +404,7 @@ export function useYard(): { state: State; actions: Actions } {
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
+      installHost: (hostId) => post({ op: "host.install", hostId }),
     }),
     [],
   );

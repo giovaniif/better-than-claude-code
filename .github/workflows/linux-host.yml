@@ -1,0 +1,79 @@
+# Builds the Linux package the app installs on remote hosts over SSH
+# (scripts/remote-install.sh): yardd, the compiled Claude sidecar and the UI.
+# Attached to the rolling "latest" release next to the macOS DMG.
+name: Linux host
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "design/**", "**.md"]
+
+permissions:
+  contents: write # upload to the "latest" release
+
+concurrency:
+  group: linux-host-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    strategy:
+      matrix:
+        include:
+          # 22.04 keeps the glibc requirement low enough for older servers.
+          - runner: ubuntu-22.04
+            arch: x64
+          - runner: ubuntu-22.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.arch }}
+
+      - name: Build
+        env:
+          CARGO_BUILD_JOBS: "4"
+        run: |
+          export YARD_BUILD_ID="$(git rev-parse --short HEAD)"
+          (cd ui && bun install --frozen-lockfile && bunx vite build)
+          (cd sidecar/yard-claude && bun install --frozen-lockfile \
+            && bun build --compile src/main.ts --outfile "$GITHUB_WORKSPACE/target/sidecar/yard-claude")
+          cargo build --release -p yardd
+
+      - name: Package
+        run: |
+          pkg="$RUNNER_TEMP/pkg/switchyard"
+          mkdir -p "$pkg/bin" "$pkg/ui"
+          cp target/release/yardd target/sidecar/yard-claude "$pkg/bin/"
+          cp -R ui/dist "$pkg/ui/dist"
+          git rev-parse --short HEAD > "$pkg/VERSION"
+          tar -czf "switchyard-linux-${{ matrix.arch }}.tar.gz" -C "$RUNNER_TEMP/pkg" switchyard
+          # Smoke test: the packaged yardd starts and answers.
+          YARD_PORT=47801 YARD_DATA_DIR="$RUNNER_TEMP/data" YARD_ROOT="$pkg" "$pkg/bin/yardd" &
+          for _ in $(seq 1 20); do curl -fsS http://127.0.0.1:47801/health && break; sleep 0.5; done
+          curl -fsS http://127.0.0.1:47801/health | grep -q "^yardd "
+          kill %1
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: switchyard-linux-${{ matrix.arch }}
+          path: switchyard-linux-${{ matrix.arch }}.tar.gz
+          retention-days: 14
+
+      - name: Attach to the "latest" release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The macOS workflow creates the release; wait for it on a first run.
+          for _ in $(seq 1 30); do gh release view latest >/dev/null 2>&1 && break; sleep 20; done
+          gh release upload latest "switchyard-linux-${{ matrix.arch }}.tar.gz" --clobber

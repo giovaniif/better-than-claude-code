@@ -63,6 +63,8 @@ export interface HostEntry {
   url?: string;
   status: "connecting" | "connected" | "error";
   error?: string;
+  /** SSH works but no yardd answered behind the tunnel: offer to install it. */
+  noDaemon?: boolean;
 }
 
 export interface SessionUsage {
@@ -143,6 +145,16 @@ export interface BranchList {
   /** Local and `origin/*` branches, most recently committed first, at most 200. */
   branches?: string[];
   error?: string;
+}
+
+/** Progress of `host.install { hostId }`: one message per output line, then one with `done`.
+ *  Lines starting with `@@` are for the app (`@@engine <name> ok|missing|logged-out`, `@@ok`, `@@fail`). */
+export interface HostInstallMsg {
+  op: "host.install";
+  hostId: string;
+  line?: string;
+  done?: boolean;
+  ok?: boolean;
 }
 
 /** Reply to `fs.dirs { path, host? }`: the subfolders the folder picker offers. */
