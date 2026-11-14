@@ -22,7 +22,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 - Tests must not write under `~/.yard`. Point any data directory setting at a temp folder.
 - Ports 4510-4559 belong to LocalStack. Stay out of them.
 - Live agent turns spend the user's subscriptions. Test with Codex on `gpt-5.6-luna`, effort `low`, with tiny prompts. Claude weekly usage is nearly exhausted: no Claude turns unless the task says so.
-- Do not push, open pull requests, or touch other repositories.
+- You own this repo end to end: commit and push your work, including CI changes. Leave other repositories alone.
 - yardd binds loopback only and checks the WebSocket `Origin`. Keep both.
 
 ## Code

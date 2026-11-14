@@ -1,0 +1,48 @@
+# Builds a Developer ID signed, notarized Switchyard.dmg on a macOS runner, so
+# the app runs on a Mac with no checkout, Rust or Bun. Download it from the
+# run's artifacts. Signing secrets: see .github/scripts/macos-sign.sh.
+name: macOS app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "design/**", "**.md"]
+
+concurrency:
+  group: macos-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dmg:
+    runs-on: macos-15 # Apple Silicon
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build Switchyard.app
+        env:
+          CARGO_BUILD_JOBS: "3"
+        run: app/build.sh
+
+      - name: Sign, notarize, make DMG
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+          MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+          MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
+        run: .github/scripts/macos-sign.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Switchyard-dmg
+          path: Switchyard-*.dmg
+          retention-days: 14
+          compression-level: 0
