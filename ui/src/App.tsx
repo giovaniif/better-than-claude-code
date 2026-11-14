@@ -532,14 +532,14 @@ function HostPicker(props: { state: State; value: string; onChange(host: string)
   return (
     <ChipMenu
       icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
-      label={remote ? remote.name : "This Mac"}
+      label={remote ? remote.name : hostName(state, "local")}
       title="Where the session runs"
       open={open}
       setOpen={setOpen}
     >
       <button className={`picker-item menu-item ${value === "local" ? "active" : ""}`} onClick={() => pick("local")}>
         <Icon d={LAPTOP} />
-        <span>This Mac</span>
+        <span>{hostName(state, "local")}</span>
       </button>
       {state.hosts.map((h) => {
         const online = hostOnline(state, h.id);
