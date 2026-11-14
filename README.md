@@ -52,31 +52,9 @@ Without building: every push to `main` that changes code (or a manual run of the
 
 Sessions can run on another machine, such as a Linux box on your Tailscale network. The same yardd runs there; the yardd on your Mac reaches it through an SSH tunnel it starts itself. The remote yardd stays on loopback, so nothing new is exposed.
 
-1. On the box, install `codex`, `claude`, Bun, Rust and git, clone this repo, and build:
+1. On the box, install `codex`, `claude`, Bun, Rust and git, and clone this repo.
 
-   ```bash
-   (cd sidecar/yard-claude && bun install)
-   (cd ui && bun install && bunx vite build)
-   cargo build --release -p yardd
-   ```
-
-2. Keep yardd running with a systemd user unit, `~/.config/systemd/user/yardd.service`:
-
-   ```ini
-   [Unit]
-   Description=Switchyard daemon
-
-   [Service]
-   WorkingDirectory=%h/switchyard
-   ExecStart=%h/switchyard/target/release/yardd
-   Environment=PATH=%h/.local/bin:%h/.bun/bin:%h/.cargo/bin:/usr/local/bin:/usr/bin:/bin
-   Restart=on-failure
-
-   [Install]
-   WantedBy=default.target
-   ```
-
-   Then `systemctl --user enable --now yardd` and `loginctl enable-linger $USER`, so it keeps running when you are logged out. Adjust the paths to where you cloned the repo and where `codex`, `claude` and `bun` live.
+2. Run `scripts/install-host.sh` from the clone. It builds yardd, the compiled Claude sidecar and the UI, copies them to `~/.local/share/switchyard` (so cleaning the checkout cannot break the service), writes a systemd user unit `yardd.service` with your login shell's `PATH`, enables lingering so it runs while you are logged out, and checks `/health` on `127.0.0.1:47717`. Rerun it to update. Logs: `journalctl --user -u yardd`.
 
 3. Log the engines in without a browser: `claude setup-token` and `codex login --device-auth`.
 
