@@ -545,7 +545,7 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
 /// Which host an op is for, when it is not for this yardd.
 pub fn route(msg: &Value) -> Option<String> {
     // Ops that name no session say which host they are for.
-    if msg["op"] == "session.create" || msg["op"] == "git.branches" {
+    if ["session.create", "git.branches", "fs.dirs"].iter().any(|op| msg["op"] == *op) {
         return msg["host"].as_str().filter(|h| !h.is_empty() && *h != "local").map(str::to_string);
     }
     ["sessionId", "termId"]
@@ -629,7 +629,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             rewrite_stats(host, name, &mut msg["host"]);
             msg["hostId"] = json!(host);
         }
-        "models" | "usage" | "error" | "git.branches" => msg["hostId"] = json!(host),
+        "models" | "usage" | "error" | "git.branches" | "fs.dirs" => msg["hostId"] = json!(host),
         "term.list" => {
             prefix(host, &mut msg, "sessionId");
             if let Some(terms) = msg["terms"].as_array_mut() {
@@ -674,6 +674,7 @@ mod tests {
         assert_eq!(route(&json!({ "op": "session.create", "host": "local" })), None);
         assert_eq!(route(&json!({ "op": "git.branches", "cwd": "/x", "host": "h1" })).as_deref(), Some("h1"));
         assert_eq!(route(&json!({ "op": "git.branches", "cwd": "/x" })), None);
+        assert_eq!(route(&json!({ "op": "fs.dirs", "path": "/x", "host": "h1" })).as_deref(), Some("h1"));
         let reply = rewrite_incoming("h1", "box", r#"{"op":"git.branches","cwd":"/x","branches":[]}"#).unwrap();
         assert_eq!(serde_json::from_str::<Value>(&reply).unwrap()["hostId"], "h1");
     }

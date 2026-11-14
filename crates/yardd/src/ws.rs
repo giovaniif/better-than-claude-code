@@ -120,6 +120,32 @@ fn dim(msg: &Value, key: &str, fallback: u16) -> u16 {
     msg[key].as_u64().and_then(|n| u16::try_from(n).ok()).unwrap_or(fallback)
 }
 
+/// Subfolders of `path` for the folder picker, which browses whichever host
+/// a session will run on. Symlinked folders count; hidden ones are included
+/// and the UI decides whether to show them.
+fn list_dirs(path: &str) -> Result<Vec<Value>> {
+    let dir = Path::new(path);
+    if !dir.is_absolute() {
+        bail!("{path} is not an absolute path");
+    }
+    let mut dirs: Vec<(String, bool)> = std::fs::read_dir(dir)
+        .with_context(|| format!("cannot read {path}"))?
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let full = entry.path();
+            if !full.is_dir() {
+                return None;
+            }
+            let name = entry.file_name().into_string().ok()?;
+            Some((name, full.join(".git").exists()))
+        })
+        .collect();
+    dirs.sort_by_key(|(name, _)| name.to_lowercase());
+    // A home folder with thousands of entries should not flood the socket.
+    dirs.truncate(2000);
+    Ok(dirs.into_iter().map(|(name, git)| json!({ "name": name, "git": git })).collect())
+}
+
 async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
     if msg["op"].as_str().is_some_and(|op| op.starts_with("pr.")) {
         return pr::handle(app, direct, msg).await;
@@ -147,7 +173,11 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
 
             // The worktree (and its setup) comes first: if it cannot be made,
             // no session exists. Without one, the folder must be free.
-            let (sid, setup) = if msg["worktree"].as_bool().unwrap_or(false) {
+            // `worktree` asks for one where possible: a folder outside a
+            // repository, or in one with no commits, runs in place.
+            let asked = msg["worktree"].as_bool().unwrap_or(false);
+            let in_place = asked && !git::can_branch(cwd).await?;
+            let (sid, setup) = if asked && !in_place {
                 let unique = app.id("");
                 let suffix = &unique[unique.len().saturating_sub(4)..];
                 let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
@@ -158,6 +188,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             if let Some(script) = setup {
                 app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
+            }
+            if in_place {
+                let text = "Not a git repository with commits, so this session works in the folder itself.";
+                app.emit(&sid, json!({ "type": "note", "text": text }));
             }
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
             sessions::begin(app, &sid, text).await;
@@ -171,6 +205,14 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                     v
                 }
                 Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
+            };
+            let _ = direct.send(reply.to_string());
+        }
+        "fs.dirs" => {
+            let path = str_field(msg, "path")?;
+            let reply = match list_dirs(path) {
+                Ok(dirs) => json!({ "op": "fs.dirs", "path": path, "dirs": dirs }),
+                Err(e) => json!({ "op": "fs.dirs", "path": path, "error": format!("{e:#}") }),
             };
             let _ = direct.send(reply.to_string());
         }

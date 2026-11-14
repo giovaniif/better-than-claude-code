@@ -3,6 +3,7 @@ import {
   applyEvent,
   type AgentEvent,
   type BranchList,
+  type DirList,
   type Changes,
   type Decision,
   type Engine,
@@ -45,6 +46,8 @@ export interface State {
   hostEpoch: number;
   /** `git.branches` replies, by `branchKey(host, cwd)`. */
   branches: Record<string, BranchList>;
+  /** `fs.dirs` replies, by `branchKey(host, path)`. */
+  dirs: Record<string, DirList>;
   error: string | null;
   /** Goes up on every error, including a repeat of the same message. */
   errorCount: number;
@@ -75,6 +78,7 @@ export const initial: State = {
   linkDown: {},
   hostEpoch: 0,
   branches: {},
+  dirs: {},
   error: null,
   errorCount: 0,
   notice: null,
@@ -213,6 +217,10 @@ function reduceServer(state: State, msg: any): State {
       const reply = msg as BranchList;
       return { ...state, branches: { ...state.branches, [branchKey(reply.hostId ?? "local", reply.cwd)]: reply } };
     }
+    case "fs.dirs": {
+      const reply = msg as DirList;
+      return { ...state, dirs: { ...state.dirs, [branchKey(reply.hostId ?? "local", reply.path)]: reply } };
+    }
     case "worktree.removed":
       // A kept branch is the user's to deal with, so the outcome is shown.
       return { ...state, notice: msg.message };
@@ -256,6 +264,7 @@ export interface Actions {
     effort: string;
     cwd: string;
     text: string;
+    /** A worktree when the folder is in a repository; otherwise it runs in place. */
     worktree: boolean;
     branch?: string;
     /** Branch or ref the worktree is cut from; the folder's HEAD when left out. */
@@ -280,6 +289,8 @@ export interface Actions {
    *  `removeWorktree`, which yardd refuses for a worktree with changes. */
   remove(sessionId: string, removeWorktree?: boolean): void;
   loadBranches(cwd: string, host: string): void;
+  /** Subfolders of an absolute path on a host, for the folder picker. */
+  listDirs(path: string, host: string): void;
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
@@ -373,6 +384,7 @@ export function useYard(): { state: State; actions: Actions } {
         post(removeWorktree ? { op: "session.delete", sessionId, removeWorktree: true } : { op: "session.delete", sessionId }),
       loadBranches: (cwd, host) =>
         post(host === "local" ? { op: "git.branches", cwd } : { op: "git.branches", cwd, host }),
+      listDirs: (path, host) => post(host === "local" ? { op: "fs.dirs", path } : { op: "fs.dirs", path, host }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),

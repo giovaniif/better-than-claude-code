@@ -103,10 +103,12 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 
 ## Worktrees
 
-"New worktree" on the new-session page makes yardd cut a branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default) and run the session there. Both engines share this layout.
+Every new session in a git repository with at least one commit gets its own branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default); there is no switch for it. A folder outside a repository, or in one with no commits, runs in place, and the session says so in a note. Both engines share this layout.
+
+- **Folder picker:** a button under the prompt box, next to the host and base branch buttons. It lists recent folders (recent picks, then sessions' repositories), browses the chosen host's folders as a path is typed (`fs.dirs`, routed through the hub like `git.branches`), and in the desktop app opens the Finder dialog (Tauri dialog plugin; the capability lets only the loopback page call `dialog:allow-open`).
 
 - The branch is named from the task (`yard/<first words>-<4 hex>`) unless I type one.
-- **Base:** the "From" select lists local and `origin/*` branches, newest first (`git.branches`). The default is the current branch.
+- **Base:** the branch button lists local and `origin/*` branches, newest first (`git.branches`). The default is the current branch. The branch name comes from the task.
 - The worktree is made before the session. If `git worktree add` fails, nothing else runs and no session exists.
 - **Setup:** after a successful add, yardd runs `<data dir>/setup/<repo>.sh` if it exists, else `.yard/worktree-setup.sh` from the repo, with bash in the new worktree (`YARD_REPO`, `YARD_WORKTREE`, 5 minute limit). This is where `node_modules` and `.env` get linked. If it fails, yardd removes that worktree and branch and creates no session. It never runs in the original checkout.
 - **Removal:** deleting a worktree session offers "Delete and remove worktree". It runs `git worktree remove`, never forced, and is refused if anything is uncommitted or untracked, or another session still uses the folder. The branch goes with `git branch -d`, which keeps unmerged branches.

@@ -178,6 +178,7 @@ fn ensure_yardd(resources: Option<PathBuf>, port: u16) -> Option<String> {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             let port = port();
             let problem = ensure_yardd(app.path().resource_dir().ok(), port);

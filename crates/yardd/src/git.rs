@@ -52,7 +52,10 @@ fn slug(text: &str) -> String {
 
 /// Cut a new branch and worktree from `base` (the folder's current HEAD when
 /// unset), under `<data dir>/wt/<repo>/<branch>`, then run the repo's setup
-/// script in it. Nothing in the original checkout is touched. A failed
+/// script in it. Nothing in the original checkout is touched.
+///
+/// Callers check [`can_branch`] first: every session in a repository gets
+/// its own worktree, and a folder that cannot have one runs in place. A failed
 /// `git worktree add` stops here, before any setup; a failed setup removes
 /// the worktree and branch it just made.
 pub async fn add_worktree(
@@ -240,6 +243,16 @@ fn last_lines(text: &str, n: usize) -> String {
 }
 
 /// Local branches and `origin/*`, most recently committed first.
+/// Whether `folder` is in a repository with at least one commit, so a
+/// worktree can be cut from it.
+pub async fn can_branch(folder: &str) -> Result<bool> {
+    let (is_repo, top) = git(folder, &["rev-parse", "--show-toplevel"]).await?;
+    if !is_repo {
+        return Ok(false);
+    }
+    Ok(git(top.trim(), &["rev-parse", "--verify", "--quiet", "HEAD"]).await?.0)
+}
+
 pub async fn branches(cwd: &str) -> Result<Value> {
     let (is_repo, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
     if !is_repo {

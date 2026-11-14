@@ -384,17 +384,30 @@ function loadChoice(models: Models): Choice {
   return { engine: "claude", model: first?.id ?? "", effort: first?.defaultEffort ?? "medium" };
 }
 
+/** Remembered per host: the folder last used there, and recent picks. */
+const cwdKey = (host: string) => (host === "local" ? "yard.cwd" : `yard.cwd.${host}`);
+const recentKey = (host: string) => `yard.recent.${host}`;
+function readRecent(host: string): string[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(recentKey(host)) ?? "[]");
+    return Array.isArray(list) ? list.filter((p) => typeof p === "string") : [];
+  } catch {
+    return [];
+  }
+}
+function remember(host: string, folder: string) {
+  localStorage.setItem(cwdKey(host), folder);
+  localStorage.setItem(recentKey(host), JSON.stringify([folder, ...readRecent(host).filter((p) => p !== folder)].slice(0, 12)));
+}
+
 function NewSession({ state, actions }: { state: State; actions: Actions }) {
-  // Where the session runs. Remote hosts are offered only while connected.
+  // Where the session runs. A remote host can be picked only while connected.
   const [host, setHost] = useState("local");
-  const remotes = state.hosts.filter((h) => hostOnline(state, h.id));
-  const target = host === "local" || remotes.some((h) => h.id === host) ? host : "local";
+  const target = host === "local" || state.hosts.some((h) => h.id === host && hostOnline(state, h.id)) ? host : "local";
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
-  const [cwd, setCwd] = useState(() => localStorage.getItem("yard.cwd") ?? "");
-  const [worktree, setWorktree] = useState(() => localStorage.getItem("yard.worktree") === "1");
-  const [branch, setBranch] = useState("");
+  const [cwd, setCwd] = useState("");
   // What the worktree is cut from; empty means the folder's current branch.
   const [base, setBase] = useState("");
   // From send until yardd answers. On success this page is replaced by the
@@ -406,46 +419,39 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
   }, [models, target]);
   useEffect(() => {
-    // Only this Mac's folder is remembered; a remote host starts at its home.
-    setCwd(target === "local" ? localStorage.getItem("yard.cwd") || home : home);
+    setCwd(localStorage.getItem(cwdKey(target)) || home);
   }, [target, home]);
 
-  const recent = useMemo(
-    () => [...new Set(Object.values(state.sessions).filter((s) => hostOf(s) === target).map((s) => s.cwd))].slice(0, 8),
-    [state.sessions, target],
-  );
+  // Recent picks first, then the folders of this host's sessions. A worktree
+  // session counts as the repository it was cut from.
+  const recent = useMemo(() => {
+    const fromSessions = Object.values(state.sessions)
+      .filter((s) => hostOf(s) === target)
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .map((s) => s.repo || s.cwd);
+    return [...new Set([...readRecent(target), ...fromSessions])].slice(0, 12);
+  }, [state.sessions, target]);
 
-  // Branches for the From picker, asked for once typing in the folder settles.
-  const folderNow = cwd.trim().replace(/^~(?=\/|$)/, home);
-  const branchList = state.branches[branchKey(target, folderNow)];
+  // Every session in a repository gets a worktree, so the branches tell
+  // whether this folder is one and what it can start from.
+  const branchList = state.branches[branchKey(target, cwd)];
   useEffect(() => {
-    if (!worktree || !folderNow || !state.connected) return;
-    const timer = setTimeout(() => actions.loadBranches(folderNow, target), 400);
-    return () => clearTimeout(timer);
-  }, [worktree, folderNow, target, state.connected]);
-  // A pick from another folder means nothing here.
-  useEffect(() => setBase(""), [folderNow, target]);
-  const baseOptions = useMemo(() => {
-    if (!branchList?.current) return branchList?.branches ?? [];
-    const rest = (branchList.branches ?? []).filter((b) => b !== branchList.current);
-    return [branchList.current, ...rest];
-  }, [branchList]);
+    if (!cwd || !state.connected) return;
+    actions.loadBranches(cwd, target);
+  }, [cwd, target, state.connected]);
+  useEffect(() => setBase(""), [cwd, target]);
+  const isRepo = !!branchList?.current;
 
   const start = (text: string) => {
-    const folder = folderNow;
-    if (target === "local") {
-      localStorage.setItem("yard.choice", JSON.stringify(choice));
-      localStorage.setItem("yard.cwd", folder);
-    }
-    localStorage.setItem("yard.worktree", worktree ? "1" : "0");
+    if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
+    remember(target, cwd);
     setPending(true);
     actions.create({
       ...choice,
-      cwd: folder,
+      cwd,
       text,
-      worktree,
-      branch: branch.trim() || undefined,
-      base: worktree && base ? base : undefined,
+      worktree: true,
+      base: base || undefined,
       host: target === "local" ? undefined : target,
     });
   };
@@ -454,76 +460,312 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     <div className="new">
       <div className="new-inner">
         <h1>What should we work on?</h1>
-        <Composer placeholder="Describe the task" rows={1} large keepText onSubmit={start} busy={pending || !state.connected || !choice.model}>
+        <Composer placeholder="Describe the task" rows={1} large keepText onSubmit={start} busy={pending || !state.connected || !choice.model || !cwd}>
           <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
           <span className="muted small">{PERMISSION_NOTE[choice.engine]}</span>
         </Composer>
-        {remotes.length > 0 && (
-          <div className="new-options">
-            <div className="segmented" role="group" aria-label="Run on">
-              <button aria-pressed={target === "local"} onClick={() => setHost("local")}>
-                This Mac
-              </button>
-              {remotes.map((h) => (
-                <button key={h.id} aria-pressed={target === h.id} onClick={() => setHost(h.id)}>
-                  <Icon d={CLOUD} size={14} />
-                  {h.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="new-options">
-          <label htmlFor="cwd" className="muted">
-            Folder
-          </label>
-          <input id="cwd" type="text" list="recent-folders" value={cwd} onChange={(e) => setCwd(e.target.value)} spellCheck={false} />
-          <datalist id="recent-folders">
-            {recent.map((r) => (
-              <option key={r} value={r} />
-            ))}
-          </datalist>
-        </div>
-        <div className="new-options">
-          <span className="check">
-            <input id="worktree" type="checkbox" checked={worktree} onChange={(e) => setWorktree(e.target.checked)} />
-            <label htmlFor="worktree">New worktree</label>
-          </span>
-          {worktree && (
-            <>
-              <label htmlFor="branch" className="muted">
-                Branch
-              </label>
-              <input
-                id="branch"
-                type="text"
-                placeholder="Named from the task if left empty"
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                spellCheck={false}
-              />
-              <label htmlFor="base" className="muted">
-                From
-              </label>
-              <select
-                id="base"
-                value={base || branchList?.current || ""}
-                disabled={!baseOptions.length}
-                title={branchList?.error ?? undefined}
-                onChange={(e) => setBase(e.target.value === branchList?.current ? "" : e.target.value)}
-              >
-                {!baseOptions.length && <option value="">{branchList?.error ? "Not a repository" : "Current branch"}</option>}
-                {baseOptions.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </>
+        <div className="new-chips">
+          <HostPicker state={state} value={target} onChange={setHost} onAddHost={() => actions.go({ page: "hosts" })} />
+          <FolderPicker
+            host={target}
+            home={home}
+            value={cwd}
+            recent={recent}
+            dirs={state.dirs}
+            listDirs={actions.listDirs}
+            onChange={setCwd}
+          />
+          {isRepo && (
+            <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />
+          )}
+          <span className="spacer" />
+          {cwd && branchList && (
+            <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+const FOLDER = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z";
+const BRANCH = "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM18 9a9 9 0 0 1-9 9";
+const LAPTOP = "M4 5h16v11H4ZM2 20h20";
+const CHECK = "M5 12l5 5 9-11";
+
+/** A button under the prompt box that opens a menu below it. */
+function ChipMenu(props: {
+  icon: ReactNode;
+  label: ReactNode;
+  title?: string;
+  open: boolean;
+  setOpen(open: boolean): void;
+  wide?: boolean;
+  children: ReactNode;
+}) {
+  const { open, setOpen } = props;
+  return (
+    <div className="picker">
+      <button className="chip" aria-haspopup="true" aria-expanded={open} title={props.title} onClick={() => setOpen(!open)}>
+        {props.icon}
+        <span className="chip-label">{props.label}</span>
+        <Icon d={CHEVRON_DOWN} size={12} />
+      </button>
+      {open && (
+        <>
+          <div className="scrim" onClick={() => setOpen(false)} />
+          <div className={`popover menu ${props.wide ? "menu-wide" : ""}`} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+            {props.children}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void }) {
+  const { state, value } = props;
+  const [open, setOpen] = useState(false);
+  const pick = (host: string) => {
+    props.onChange(host);
+    setOpen(false);
+  };
+  const remote = state.hosts.find((h) => h.id === value);
+  return (
+    <ChipMenu
+      icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
+      label={remote ? remote.name : "This Mac"}
+      title="Where the session runs"
+      open={open}
+      setOpen={setOpen}
+    >
+      <button className={`picker-item menu-item ${value === "local" ? "active" : ""}`} onClick={() => pick("local")}>
+        <Icon d={LAPTOP} />
+        <span>This Mac</span>
+      </button>
+      {state.hosts.map((h) => {
+        const online = hostOnline(state, h.id);
+        return (
+          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online} onClick={() => pick(h.id)}>
+            <Icon d={CLOUD} />
+            <span>{h.name}</span>
+            {!online && <span className="muted small menu-aside">{h.status === "error" ? "unreachable" : h.status}</span>}
+          </button>
+        );
+      })}
+      <div className="menu-divider" />
+      <button className="picker-item menu-item" onClick={props.onAddHost}>
+        <Icon d={PLUS} />
+        <span>Add a host…</span>
+      </button>
+    </ChipMenu>
+  );
+}
+
+/** The desktop app's window exposes Tauri's IPC; a plain browser does not. */
+const tauriInvoke = (): ((cmd: string, args: object) => Promise<unknown>) | undefined =>
+  (window as any).__TAURI__?.core?.invoke;
+
+const parentOf = (path: string) => (path.lastIndexOf("/") <= 0 ? "/" : path.slice(0, path.lastIndexOf("/")));
+const joinPath = (dir: string, name: string) => (dir.endsWith("/") ? dir + name : `${dir}/${name}`);
+const baseName = (path: string) => path.slice(path.lastIndexOf("/") + 1) || path;
+
+/** Recent folders, a search that browses the host's folders as a path is
+ *  typed, and the Finder dialog when the session runs on this Mac. */
+function FolderPicker(props: {
+  host: string;
+  home: string;
+  value: string;
+  recent: string[];
+  dirs: State["dirs"];
+  listDirs(path: string, host: string): void;
+  onChange(path: string): void;
+}) {
+  const { host, home, value, recent } = props;
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [cursor, setCursor] = useState(0);
+  const list = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (open) {
+      setQuery(recent.length ? "" : tilde(value || home, home).replace(/\/?$/, "/"));
+      setCursor(0);
+    }
+  }, [open]);
+
+  // A query starting with / or ~ is a path: list the folder it ends in and
+  // match the last segment against its subfolders.
+  const browsing = query.startsWith("/") || query.startsWith("~");
+  const expanded = query.replace(/^~(?=\/|$)/, home);
+  const dir = browsing ? (expanded.endsWith("/") ? expanded.replace(/(.)\/+$/, "$1") : parentOf(expanded)) : "";
+  const stem = browsing && !expanded.endsWith("/") ? baseName(expanded) : "";
+  const listing = browsing ? props.dirs[branchKey(host, dir)] : undefined;
+  useEffect(() => {
+    if (!open || !browsing || !dir) return;
+    const timer = setTimeout(() => props.listDirs(dir, host), 120);
+    return () => clearTimeout(timer);
+  }, [open, browsing, dir, host]);
+
+  type Row = { path: string; name: string; detail: string; git?: boolean; browse?: boolean };
+  const rows: Row[] = useMemo(() => {
+    if (browsing) {
+      const lower = stem.toLowerCase();
+      const children = (listing?.dirs ?? [])
+        .filter((d) => d.name.toLowerCase().startsWith(lower) && (lower.startsWith(".") || !d.name.startsWith(".")))
+        .slice(0, 200)
+        .map((d) => ({ path: joinPath(dir, d.name), name: d.name, detail: "", git: d.git, browse: true }));
+      // The folder typed so far is itself a choice.
+      const self = !stem && dir ? [{ path: dir, name: `Use ${tilde(dir, home)}`, detail: "" }] : [];
+      return [...self, ...children];
+    }
+    const lower = query.toLowerCase();
+    return recent
+      .filter((p) => p.toLowerCase().includes(lower))
+      .map((p) => ({ path: p, name: baseName(p), detail: tilde(p, home) }));
+  }, [browsing, stem, listing, dir, query, recent, home]);
+  useEffect(() => setCursor(0), [query]);
+  useEffect(() => {
+    list.current?.querySelector<HTMLElement>(`[data-row="${cursor}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [cursor]);
+
+  const pick = (path: string) => {
+    props.onChange(path);
+    setOpen(false);
+  };
+  const browseInto = (path: string) => setQuery(tilde(path, home) + "/");
+  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    const row = rows[cursor];
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setCursor((c) => Math.min(c + 1, rows.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setCursor((c) => Math.max(c - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (row) pick(row.path);
+    } else if (e.key === "Tab" && row?.browse) {
+      e.preventDefault();
+      browseInto(row.path);
+    }
+  };
+  const invoke = host === "local" ? tauriInvoke() : undefined;
+  const chooseInFinder = async () => {
+    setOpen(false);
+    try {
+      const picked = await invoke!("plugin:dialog|open", { options: { directory: true, multiple: false, defaultPath: value || home } });
+      if (typeof picked === "string") props.onChange(picked);
+    } catch (err) {
+      console.error("folder dialog failed", err);
+    }
+  };
+
+  return (
+    <ChipMenu icon={<Icon d={FOLDER} />} label={value ? baseName(value) : "Choose a folder"} title={value} open={open} setOpen={setOpen} wide>
+      <input
+        className="menu-search"
+        autoFocus
+        placeholder="Search recent folders, or type a path"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={onKey}
+        spellCheck={false}
+        aria-label="Folder"
+      />
+      <div className="menu-list" ref={list} role="listbox">
+        {!browsing && rows.length > 0 && <div className="picker-head">Recent</div>}
+        {rows.map((row, i) => (
+          <div
+            key={row.path + i}
+            data-row={i}
+            role="option"
+            aria-selected={i === cursor}
+            className={`picker-item menu-item folder-row ${i === cursor ? "cursor" : ""} ${row.path === value ? "active" : ""}`}
+            onMouseEnter={() => setCursor(i)}
+            onClick={() => pick(row.path)}
+          >
+            <Icon d={row.git ? BRANCH : FOLDER} />
+            <span className="folder-name">{row.name}</span>
+            {row.detail && <span className="muted small folder-detail">{row.detail}</span>}
+            {row.path === value && <Icon d={CHECK} />}
+            {row.browse && (
+              <button
+                className="btn-icon folder-open"
+                aria-label={`Open ${row.name}`}
+                title="Show the folders inside (Tab)"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  browseInto(row.path);
+                }}
+              >
+                <Icon d={CHEVRON_RIGHT} size={12} />
+              </button>
+            )}
+          </div>
+        ))}
+        {browsing && listing?.error && <div className="picker-empty">{listing.error}</div>}
+        {browsing && !listing && <div className="picker-empty">Loading…</div>}
+        {!browsing && rows.length === 0 && (
+          <div className="picker-empty">{query ? "No recent folder matches. Start with / or ~ to browse." : "No recent folders yet."}</div>
+        )}
+      </div>
+      {(!browsing || invoke) && <div className="menu-divider" />}
+      {!browsing && (
+        <button className="picker-item menu-item" onClick={() => browseInto(home || "/")}>
+          <Icon d={FOLDER} />
+          <span>Browse folders…</span>
+        </button>
+      )}
+      {invoke && (
+        <button className="picker-item menu-item" onClick={chooseInFinder}>
+          <Icon d={FOLDER} />
+          <span>Choose in Finder…</span>
+        </button>
+      )}
+    </ChipMenu>
+  );
+}
+
+/** What the new worktree is cut from. */
+function BranchPicker(props: { current: string; branches: string[]; value: string; onChange(base: string): void }) {
+  const { current, value } = props;
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    if (open) setQuery("");
+  }, [open]);
+  const options = useMemo(() => {
+    const all = [current, ...props.branches.filter((b) => b !== current)];
+    const lower = query.toLowerCase();
+    return all.filter((b) => b.toLowerCase().includes(lower)).slice(0, 200);
+  }, [current, props.branches, query]);
+  const pick = (b: string) => {
+    props.onChange(b === current ? "" : b);
+    setOpen(false);
+  };
+  const shown = value || current;
+  return (
+    <ChipMenu icon={<Icon d={BRANCH} />} label={shown} title="Branch the worktree starts from" open={open} setOpen={setOpen}>
+      <input
+        className="menu-search"
+        autoFocus
+        placeholder="Search branches"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && options[0] && pick(options[0])}
+        spellCheck={false}
+        aria-label="Base branch"
+      />
+      <div className="menu-list">
+        {options.map((b) => (
+          <button key={b} className={`picker-item menu-item ${b === shown ? "active" : ""}`} onClick={() => pick(b)}>
+            <span className="folder-name">{b}</span>
+            {b === current && <span className="muted small menu-aside">current</span>}
+          </button>
+        ))}
+        {options.length === 0 && <div className="picker-empty">No branch matches.</div>}
+      </div>
+    </ChipMenu>
   );
 }
 

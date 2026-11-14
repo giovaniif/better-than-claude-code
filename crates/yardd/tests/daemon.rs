@@ -372,6 +372,47 @@ async fn worktree_branches_and_a_session_from_a_base() {
 }
 
 #[tokio::test]
+async fn a_folder_outside_a_repository_runs_in_place() {
+    let sb = Sandbox::new("inplace");
+    let plain = sb.folder("plain");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    // The UI always asks for a worktree; a folder that cannot have one is
+    // not an error, it just runs there.
+    let sid = c.create(&plain, "no repo here", json!({ "worktree": true })).await;
+    let meta = c.wait_for("the session", |m| m["op"] == "session" && m["session"]["id"] == sid).await["session"].clone();
+    assert_eq!(meta["cwd"], plain);
+    assert!(meta["branch"].is_null(), "{meta}");
+    let note = c.wait_event(&sid, "note", 0).await;
+    assert!(note["text"].as_str().unwrap().contains("in the folder itself"), "{note}");
+    c.wait_turn_done(&sid, 0).await;
+}
+
+#[tokio::test]
+async fn folders_are_listed_for_the_picker() {
+    let sb = Sandbox::new("dirs");
+    let repo = make_repo(&sb, "repo");
+    let parent = Path::new(&repo).parent().unwrap().to_str().unwrap().to_string();
+    fs::create_dir_all(Path::new(&parent).join(".hidden")).unwrap();
+    fs::write(Path::new(&parent).join("a-file.txt"), "not a folder").unwrap();
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    c.send(json!({ "op": "fs.dirs", "path": parent })).await;
+    let reply = c.wait_for("fs.dirs", |m| m["op"] == "fs.dirs").await;
+    let dirs = reply["dirs"].as_array().unwrap();
+    let repo_entry = dirs.iter().find(|d| d["name"] == "repo").expect("the repo is listed");
+    assert_eq!(repo_entry["git"], true);
+    assert!(dirs.iter().any(|d| d["name"] == ".hidden"), "hidden folders are sent; the UI filters them");
+    assert!(!dirs.iter().any(|d| d["name"] == "a-file.txt"), "files are not folders");
+
+    c.send(json!({ "op": "fs.dirs", "path": "relative/path" })).await;
+    let refused = c.wait_for("fs.dirs refusal", |m| m["op"] == "fs.dirs" && m["path"] == "relative/path").await;
+    assert!(refused["error"].as_str().unwrap().contains("absolute"), "{refused}");
+}
+
+#[tokio::test]
 async fn a_failing_worktree_setup_makes_no_session() {
     let sb = Sandbox::new("setup");
     let repo = make_repo(&sb, "repo");
@@ -483,7 +524,10 @@ async fn terminal_runs_commands_and_replays_its_scrollback() {
     };
     loop {
         let (_, all) = output(&c);
-        if String::from_utf8_lossy(&all).lines().any(|l| l.trim_end_matches('\r') == "hi") {
+        // bash wraps each command in bracketed-paste toggles (`\e[?2004l\r`),
+        // so the last carriage-return segment of a line is what shows.
+        let text = String::from_utf8_lossy(&all).into_owned();
+        if text.lines().any(|l| l.trim_end_matches('\r').rsplit('\r').next() == Some("hi")) {
             break;
         }
         let from = c.mark();

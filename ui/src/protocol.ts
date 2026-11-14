@@ -145,6 +145,17 @@ export interface BranchList {
   error?: string;
 }
 
+/** Reply to `fs.dirs { path, host? }`: the subfolders the folder picker offers. */
+export interface DirList {
+  op: "fs.dirs";
+  path: string;
+  /** Set when the reply came from a remote host. */
+  hostId?: string;
+  /** Sorted by name, hidden ones included, at most 2000. `git` marks a repository root. */
+  dirs?: { name: string; git: boolean }[];
+  error?: string;
+}
+
 /** Reply to `session.delete { removeWorktree: true }` once the session is gone. */
 export interface WorktreeRemoved {
   op: "worktree.removed";
