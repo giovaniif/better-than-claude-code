@@ -4,6 +4,9 @@ export type Engine = "claude" | "codex";
 export type Status = "idle" | "queued" | "running" | "needs_approval" | "error";
 export type Decision = "allow" | "allow_always" | "deny";
 
+/** Permission modes, like Claude Code's: ask first, accept edits, plan only, full access. */
+export type Permission = "ask" | "acceptEdits" | "plan" | "full";
+
 export interface SessionMeta {
   id: string;
   title: string;
@@ -18,6 +21,8 @@ export interface SessionMeta {
   branch?: string | null;
   repo?: string | null;
   /** The session this one was handed off from. */
+  /** How much the engine may do unasked. Missing on sessions from an older yardd: `ask`. */
+  permission?: Permission;
   parent?: string | null;
   createdAt: number;
   updatedAt: number;

@@ -72,7 +72,10 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
         _ => None,
     };
     let new_sid = app.new_session(engine, model, effort, &source.cwd, &source.title, worktree);
-    app.update_meta(&new_sid, |m| m.parent = Some(sid.to_string()));
+    app.update_meta(&new_sid, |m| {
+        m.parent = Some(sid.to_string());
+        m.permission = source.permission.clone();
+    });
     app.emit(sid, json!({ "type": "note", "text": format!("Handed off to {}.", engine_name(engine)) }));
     app.emit(
         &new_sid,

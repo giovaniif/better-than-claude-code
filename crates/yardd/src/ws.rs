@@ -17,7 +17,7 @@ use tokio::sync::{broadcast, mpsc};
 
 use crate::{
     attachments, claude, codex, git, handoff, pr, pty, remote, sessions,
-    state::{App, Worktree},
+    state::{App, Worktree, PERMISSIONS},
 };
 
 pub async fn handler(ws: WebSocketUpgrade, headers: HeaderMap, State(app): State<Arc<App>>) -> Response {
@@ -194,6 +194,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if engine != "claude" && engine != "codex" {
                 bail!("unknown engine {engine}");
             }
+            let permission = msg["permission"].as_str().unwrap_or("ask");
+            if !PERMISSIONS.contains(&permission) {
+                bail!("unknown permission mode {permission}");
+            }
             let first = text.lines().next().filter(|l| !l.trim().is_empty());
             let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
             let title: String = first.chars().take(60).collect();
@@ -220,6 +224,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 let text = "Not a git repository with commits, so this session works in the folder itself.";
                 app.emit(&sid, json!({ "type": "note", "text": text }));
             }
+            app.update_meta(&sid, |m| m.permission = permission.to_string());
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
             sessions::begin(app, &sid, text, &files).await;
         }
@@ -293,6 +298,20 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 m.model = model.to_string();
                 m.effort = effort.to_string();
             });
+        }
+        "session.setPermission" => {
+            let sid = str_field(msg, "sessionId")?;
+            let permission = str_field(msg, "permission")?;
+            if !PERMISSIONS.contains(&permission) {
+                bail!("unknown permission mode {permission}");
+            }
+            let meta = app.meta(sid).context("no such session")?;
+            // Codex takes the mode with each turn; a running Claude sidecar
+            // switches now, a queued one starts in the new mode.
+            if meta.engine == "claude" && meta.status != "queued" {
+                claude::set_permission(app, sid, permission)?;
+            }
+            app.update_meta(sid, |m| m.permission = permission.to_string());
         }
         "session.interrupt" => {
             let sid = str_field(msg, "sessionId")?;

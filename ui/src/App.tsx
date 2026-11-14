@@ -7,11 +7,13 @@ import { PrPane } from "./PrPane";
 import { onAppend } from "./compose";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
-/** What each engine does before acting, as yardd starts it today. */
-const PERMISSION_NOTE: Record<Engine, string> = {
-  claude: "Asks before commands and edits",
-  codex: "Sandboxed to the folder, asks to go further",
-};
+/** Permission modes, as Claude Code names them, and what each means per engine. */
+const PERMISSIONS: { id: Permission; label: string; claude: string; codex: string }[] = [
+  { id: "ask", label: "Ask first", claude: "Asks before commands and edits", codex: "Sandboxed to the folder, asks to go further" },
+  { id: "acceptEdits", label: "Accept edits", claude: "Edits files freely, asks before commands", codex: "Edits in the folder freely, asks to go further" },
+  { id: "plan", label: "Plan only", claude: "Reads and plans, changes nothing", codex: "Read-only: looks, never changes" },
+  { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks" },
+];
 const STATUS_LABEL: Record<Status, string> = {
   idle: "Idle",
   queued: "Queued",
@@ -194,6 +196,51 @@ function effortFor(model: ModelInfo | undefined, wanted: string): string {
   if (!model) return wanted;
   if (model.efforts.includes(wanted)) return wanted;
   return model.defaultEffort ?? model.efforts[0] ?? wanted;
+}
+
+/** What the engine may do without asking. Changing it mid-session applies
+ *  to Claude at once and to Codex from its next turn. */
+function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: Permission; onChange(p: Permission): void }) {
+  const [open, setOpen] = useState(false);
+  const current = PERMISSIONS.find((p) => p.id === value) ?? PERMISSIONS[0];
+  return (
+    <div className="picker">
+      <button
+        className={`btn-quiet permission ${value === "full" ? "permission-full" : ""}`}
+        aria-haspopup="true"
+        aria-expanded={open}
+        title={current[engine]}
+        onClick={() => setOpen(!open)}
+      >
+        <span>{current.label}</span>
+        <span className="muted">
+          <Icon d={CHEVRON_DOWN} size={12} />
+        </span>
+      </button>
+      {open && (
+        <>
+          <div className="scrim" onClick={() => setOpen(false)} />
+          <div className="popover permission-menu" role="menu" onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+            {PERMISSIONS.map((p) => (
+              <button
+                key={p.id}
+                role="menuitemradio"
+                aria-checked={p.id === value}
+                className={`picker-item permission-item ${p.id === value ? "active" : ""}`}
+                onClick={() => {
+                  onChange(p.id);
+                  setOpen(false);
+                }}
+              >
+                <span className="permission-label">{p.label}</span>
+                <span className="muted small">{p[engine]}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 function ModelPicker(props: {
@@ -625,6 +672,10 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
+  const [permission, setPermission] = useState<Permission>(() => {
+    const saved = localStorage.getItem("yard.permission");
+    return PERMISSIONS.some((p) => p.id === saved) ? (saved as Permission) : "ask";
+  });
   const [cwd, setCwd] = useState("");
   // What the worktree is cut from; empty means the folder's current branch.
   const [base, setBase] = useState("");
@@ -662,10 +713,12 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
 
   const start = (text: string, attachments: Attachment[]) => {
     if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
+    localStorage.setItem("yard.permission", permission);
     remember(target, cwd);
     setPending(true);
     actions.create({
       ...choice,
+      permission,
       cwd,
       text,
       worktree: true,
@@ -691,7 +744,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           busy={pending || !state.connected || !choice.model || !cwd}
         >
           <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
-          <span className="muted small">{PERMISSION_NOTE[choice.engine]}</span>
+          <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
         <div className="new-chips">
           <HostPicker state={state} value={target} onChange={setHost} onAddHost={() => actions.go({ page: "hosts" })} />
@@ -1109,7 +1162,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
-            <span className="muted small">{PERMISSION_NOTE[meta.engine]}</span>
+            <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
         </div>
       </main>

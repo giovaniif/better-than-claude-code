@@ -232,7 +232,7 @@ async fn sessions_survive_a_restart_and_resume_their_thread() {
     assert_eq!(history[2]["text"], "Echo: remember me");
 
     // A follow-up reopens the saved thread on the (new) fake.
-    let thread = sb.codex_log().lines().find_map(|l| l.strip_prefix("req turn/start ")).unwrap().to_string();
+    let thread = sb.codex_log().lines().find_map(|l| l.strip_prefix("req turn/start ")).and_then(|r| r.split_whitespace().next()).unwrap().to_string();
     let next = history.len() as u64;
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "still there?" })).await;
     assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
@@ -937,4 +937,30 @@ async fn attachments_land_on_the_remote_host_through_the_hub() {
     assert!(err.contains("too large"), "{err}");
     let ok = c.upload("after.txt", "text/plain", b"ok", json!({ "host": host })).await.unwrap();
     assert_eq!(ok["hostId"], host.as_str());
+}
+
+#[tokio::test]
+async fn permission_modes_reach_codex_and_switch_mid_session() {
+    let sb = Sandbox::new("perm");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    let sid = c.create(&sb.folder("proj"), "look around", json!({ "permission": "plan" })).await;
+    let meta = c.wait_for("the session", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "plan").await;
+    assert_eq!(meta["session"]["permission"], "plan");
+    c.wait_turn_done(&sid, 0).await;
+    assert!(sb.codex_log().contains("approval=on-request sandboxPolicy=readOnly"), "{}", sb.codex_log());
+
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "full" })).await;
+    c.wait_for("the new mode", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "full").await;
+    let from = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "go ahead" })).await;
+    c.wait_turn_done(&sid, from).await;
+    assert!(sb.codex_log().contains("approval=never sandboxPolicy=dangerFullAccess"), "{}", sb.codex_log());
+
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "yolo" })).await;
+    let refused = c.wait_for("the refusal", |m| m["op"] == "error").await;
+    assert!(refused["message"].as_str().unwrap().contains("unknown permission mode"), "{refused}");
+    let err = c.try_create(&sb.folder("other"), "x", json!({ "permission": "yolo" })).await.unwrap_err();
+    assert!(err.contains("unknown permission mode"), "{err}");
 }

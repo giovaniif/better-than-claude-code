@@ -14,6 +14,7 @@ import {
   type Models,
   type PrResult,
   type SessionMeta,
+  type Permission,
   type Usage,
   type Attachment,
 } from "./protocol";
@@ -289,6 +290,7 @@ export interface Actions {
     effort: string;
     cwd: string;
     text: string;
+    permission?: Permission;
     /** A worktree when the folder is in a repository; otherwise it runs in place. */
     worktree: boolean;
     branch?: string;
@@ -310,6 +312,8 @@ export interface Actions {
   /** An object URL for an attachment of a session, for a thumbnail. */
   attachmentUrl(sessionId: string, attachment: Attachment): Promise<string>;
   setModel(sessionId: string, model: string, effort: string): void;
+  /** Change what the engine may do unasked; Claude switches at once, Codex from its next turn. */
+  setPermission(sessionId: string, permission: Permission): void;
   /** New session on the other engine, same folder, seeded with a brief. */
   handoff(sessionId: string, engine: Engine, model: string, effort: string): void;
   interrupt(sessionId: string): void;
@@ -453,6 +457,7 @@ export function useYard(): { state: State; actions: Actions } {
       upload,
       attachmentUrl,
       setModel: (sessionId, model, effort) => post({ op: "session.setModel", sessionId, model, effort }),
+      setPermission: (sessionId, permission) => post({ op: "session.setPermission", sessionId, permission }),
       handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
       approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),

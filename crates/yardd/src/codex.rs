@@ -416,6 +416,29 @@ fn sandbox_mode() -> &'static str {
     }
 }
 
+/// The approval and sandbox policy for a turn in a session's mode. Codex
+/// already edits inside its workspace sandbox without asking, so `ask` and
+/// `acceptEdits` are the same here; `plan` can look but not change; `full`
+/// drops the sandbox and never asks.
+fn turn_policy(permission: &str) -> (Value, Value) {
+    let workspace = || match sandbox_mode() {
+        "danger-full-access" => json!({ "type": "dangerFullAccess" }),
+        "read-only" => json!({ "type": "readOnly", "networkAccess": false }),
+        _ => json!({
+            "type": "workspaceWrite",
+            "writableRoots": [],
+            "networkAccess": false,
+            "excludeTmpdirEnvVar": false,
+            "excludeSlashTmp": false,
+        }),
+    };
+    match permission {
+        "plan" => (json!("on-request"), json!({ "type": "readOnly", "networkAccess": false })),
+        "full" => (json!("never"), json!({ "type": "dangerFullAccess" })),
+        _ => (json!("on-request"), workspace()),
+    }
+}
+
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
     let c = client(app).await?;
@@ -507,7 +530,9 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
             .filter(|a| attachments::is_inline_image(a))
             .map(|a| json!({ "type": "localImage", "path": a["path"] })),
     );
-    // Model and effort ride on every turn, so switching needs no extra call.
+    // Model, effort and permission mode ride on every turn, so switching
+    // needs no extra call.
+    let (approval, sandbox) = turn_policy(&meta.permission);
     let res = c
         .request(
             "turn/start",
@@ -516,6 +541,8 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
                 "input": input,
                 "model": meta.model,
                 "effort": meta.effort,
+                "approvalPolicy": approval,
+                "sandboxPolicy": sandbox,
             }),
         )
         .await?;

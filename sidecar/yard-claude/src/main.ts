@@ -130,7 +130,15 @@ function resultText(content: unknown): string {
   return "";
 }
 
-async function run(start: { cwd: string; model: string; effort?: string; resume?: string | null }) {
+/** yardd's permission modes, as the SDK names them. */
+const PERMISSION_MODE: Record<string, string> = {
+  ask: "default",
+  acceptEdits: "acceptEdits",
+  plan: "plan",
+  full: "bypassPermissions",
+};
+
+async function run(start: { cwd: string; model: string; effort?: string; permission?: string; resume?: string | null }) {
   cwd = start.cwd;
 
   // Keep the parent session's markers out of the child Claude Code process.
@@ -147,7 +155,10 @@ async function run(start: { cwd: string; model: string; effort?: string; resume?
     model: start.model,
     env,
     includePartialMessages: true,
-    permissionMode: "default",
+    permissionMode: PERMISSION_MODE[start.permission ?? "ask"] ?? "default",
+    // Lets the session switch into full access later; it grants nothing by
+    // itself while the mode is another one.
+    allowDangerouslySkipPermissions: true,
     canUseTool: async (toolName: string, toolInput: any, ctx: { signal?: AbortSignal; suggestions?: unknown[] }) => {
       const requestId = nextId("claude");
       const d = describe(toolName, toolInput);
@@ -287,6 +298,9 @@ createInterface({ input: process.stdin }).on("line", async (line) => {
         break;
       case "interrupt":
         await q?.interrupt();
+        break;
+      case "set_permission":
+        await q?.setPermissionMode((PERMISSION_MODE[msg.permission] ?? "default") as any);
         break;
       case "permission":
         waiting.get(msg.requestId)?.(msg.decision as Decision);

@@ -122,6 +122,7 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             "cwd": meta.cwd,
             "model": meta.model,
             "effort": meta.effort,
+            "permission": meta.permission,
             "resume": resume,
         })
         .to_string(),
@@ -155,6 +156,10 @@ pub fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Res
 
 pub fn set_model(app: &Arc<App>, sid: &str, model: &str) -> Result<()> {
     line(app, sid, json!({ "type": "set_model", "model": model }))
+}
+
+pub fn set_permission(app: &Arc<App>, sid: &str, permission: &str) -> Result<()> {
+    line(app, sid, json!({ "type": "set_permission", "permission": permission }))
 }
 
 pub fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {

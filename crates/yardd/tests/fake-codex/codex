@@ -110,7 +110,8 @@ async function handle(msg) {
   const { id, method, params: p = {} } = msg;
   const reply = (result) => write({ id, result });
   const fail = (message) => write({ id, error: { code: -32600, message } });
-  log(`req ${method}${p.threadId ? ` ${p.threadId}` : ""}${p.sandbox ? ` sandbox=${p.sandbox}` : ""}`);
+  const policy = p.approvalPolicy && method === "turn/start" ? ` approval=${p.approvalPolicy} sandboxPolicy=${p.sandboxPolicy?.type}` : "";
+  log(`req ${method}${p.threadId ? ` ${p.threadId}` : ""}${p.sandbox ? ` sandbox=${p.sandbox}` : ""}${policy}`);
 
   switch (method) {
     case "initialize":

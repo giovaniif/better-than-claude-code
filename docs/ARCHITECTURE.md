@@ -73,6 +73,17 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - It runs on the CLI's own login (`apiKeySource: none`).
 - Never parse `~/.claude/projects/*.jsonl`. Use the SDK's `listSessions` and `getSessionMessages`.
 
+**Permission modes.** A picker next to the model, named like Claude Code's modes. Saved on the session (`permission`), set by `session.create` and changed any time by `session.setPermission`; a hand-off keeps it.
+
+| Mode | Claude (SDK `permissionMode`) | Codex (`turn/start` overrides) |
+|---|---|---|
+| Ask first (`ask`, default) | `default`: asks before commands and edits | `on-request`, workspace-write sandbox |
+| Accept edits (`acceptEdits`) | `acceptEdits` | same as Ask first: Codex already edits inside its sandbox freely |
+| Plan only (`plan`) | `plan` | `on-request`, read-only sandbox |
+| Full access (`full`) | `bypassPermissions` | `never`, no sandbox |
+
+Claude switches at once with `setPermissionMode` (the sidecar always passes `allowDangerouslySkipPermissions` so a later switch to full access works); Codex takes the mode from its next turn. Approving Claude's plan-mode exit leaves the picker showing Plan only until it is changed.
+
 **Switching engine** cannot share a thread, so it is a hand-off. Picking a model of the other engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch and title and a `parent` pointing back.
 
 - yardd builds the first message from the source session's event log, with no model call, because the source is usually out of quota.

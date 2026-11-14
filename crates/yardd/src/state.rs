@@ -38,9 +38,19 @@ pub struct Meta {
     /// existed have no such key.
     #[serde(default)]
     pub parent: Option<String>,
+    /// How much the engine may do unasked: `ask`, `acceptEdits`, `plan` or
+    /// `full`. Rows saved before modes existed ran as `ask`.
+    #[serde(default = "default_permission")]
+    pub permission: String,
     pub created_at: u64,
     pub updated_at: u64,
 }
+
+fn default_permission() -> String {
+    "ask".to_string()
+}
+
+pub const PERMISSIONS: [&str; 4] = ["ask", "acceptEdits", "plan", "full"];
 
 /// Where a new session runs when it gets its own worktree.
 pub struct Worktree {
@@ -174,6 +184,7 @@ impl App {
             branch,
             repo,
             parent: None,
+            permission: default_permission(),
             created_at: now,
             updated_at: now,
         };
