@@ -10,3 +10,4 @@ docs
 .DS_Store
 *.bun-build
 app/src-tauri/gen
+scripts/screenshots
