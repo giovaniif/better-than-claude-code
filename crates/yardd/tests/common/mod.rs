@@ -18,6 +18,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use base64::Engine as _;
 use futures_util::{SinkExt, StreamExt};
 use serde_json::{json, Value};
 use tokio::net::TcpStream;
@@ -84,6 +85,15 @@ impl Sandbox {
 
     pub fn codex_log(&self) -> String {
         fs::read_to_string(self.fake_state().join("codex.log")).unwrap_or_default()
+    }
+
+    /// The `input` of every `turn/start` the fake Codex received, in order.
+    pub fn turn_inputs(&self) -> Vec<Value> {
+        fs::read_to_string(self.fake_state().join("turn-inputs.jsonl"))
+            .unwrap_or_default()
+            .lines()
+            .map(|l| serde_json::from_str::<Value>(l).unwrap()["input"].clone())
+            .collect()
     }
 
     /// A new folder for sessions to run in.
@@ -469,6 +479,54 @@ impl Client {
             }
         }
         out
+    }
+
+    /// `attach.put` one file. `target` is `{ "host": .. }`, `{ "sessionId": .. }`
+    /// or `{}` for this yardd. The stored attachment (with `hostId` when it
+    /// came through the hub), or yardd's error.
+    pub async fn upload(&mut self, name: &str, mime: &str, bytes: &[u8], target: Value) -> Result<Value, String> {
+        let r = format!("r{}", NEXT.fetch_add(1, Ordering::Relaxed));
+        let mut msg = json!({
+            "op": "attach.put",
+            "ref": r,
+            "name": name,
+            "mime": mime,
+            "data": base64::engine::general_purpose::STANDARD.encode(bytes),
+        });
+        if let (Some(m), Some(t)) = (msg.as_object_mut(), target.as_object()) {
+            m.extend(t.clone());
+        }
+        let from = self.mark();
+        self.send(msg).await;
+        let reply = self
+            .wait_after(from, "the reply to attach.put", |m| {
+                (m["op"] == "attach.stored" || m["op"] == "error") && m["ref"] == r.as_str()
+            })
+            .await;
+        if let Some(e) = reply["error"].as_str().or(reply["message"].as_str()) {
+            return Err(e.to_string());
+        }
+        let mut a = reply["attachment"].clone();
+        if !reply["hostId"].is_null() {
+            a["hostId"] = reply["hostId"].clone();
+        }
+        Ok(a)
+    }
+
+    /// `attach.get`: the bytes of an attachment of a session, or yardd's error.
+    pub async fn fetch(&mut self, sid: &str, id: &str) -> Result<Vec<u8>, String> {
+        let from = self.mark();
+        self.send(json!({ "op": "attach.get", "sessionId": sid, "id": id })).await;
+        let reply = self
+            .wait_after(from, "the reply to attach.get", |m| {
+                (m["op"] == "attach.data" && m["sessionId"] == sid && m["id"] == id)
+                    || (m["op"] == "error" && m["for"] == "attach.get")
+            })
+            .await;
+        if let Some(e) = reply["error"].as_str().or(reply["message"].as_str()) {
+            return Err(e.to_string());
+        }
+        Ok(base64::engine::general_purpose::STANDARD.decode(reply["data"].as_str().unwrap()).unwrap())
     }
 
     /// `session.open` and the history that comes back.

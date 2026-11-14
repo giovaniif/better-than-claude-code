@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import type { ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
-import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State } from "./store";
+import type { Attachment, ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
+import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { onAppend } from "./compose";
@@ -39,6 +40,9 @@ const CHEVRON_DOWN = "M6 9l6 6 6-6";
 const ARROW_UP = "M12 19V5M5 12l7-7 7 7";
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
 const CLOUD = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
+const PAPERCLIP = "M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48";
+const FILE = "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5";
+const CLOSE = "M18 6 6 18M6 6l12 12";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
 const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
@@ -57,6 +61,19 @@ const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
+  // A file dropped beside the composer would otherwise make the page (or
+  // the app's webview) navigate to it.
+  useEffect(() => {
+    const guard = (e: DragEvent) => {
+      if (dragHasFiles(e.dataTransfer)) e.preventDefault();
+    };
+    window.addEventListener("dragover", guard);
+    window.addEventListener("drop", guard);
+    return () => {
+      window.removeEventListener("dragover", guard);
+      window.removeEventListener("drop", guard);
+    };
+  }, []);
   return (
     <div className="app">
       <Sidebar state={state} actions={actions} />
@@ -301,19 +318,39 @@ function ModelPicker(props: {
 
 /* ---------- composer ---------- */
 
+/** A file in the composer, uploaded as soon as it is added so sending is quick. */
+interface PendingFile {
+  key: string;
+  file: File;
+  /** Object URL for a local preview of an image. */
+  preview?: string;
+  state: "uploading" | "ready" | "error";
+  error?: string;
+}
+
 function Composer(props: {
   placeholder: string;
   rows: number;
   large?: boolean;
   busy?: boolean;
-  /** Keep the text after sending, for a submit that can still fail. */
+  /** Keep the text and files after sending, for a submit that can still fail. */
   keepText?: boolean;
   /** Session whose terminal can add text here (see compose.ts). */
   appendFor?: string;
-  onSubmit(text: string): void;
+  /** Where attached files are stored: the host the prompt will run on. */
+  target: UploadTarget;
+  upload(file: File, target: UploadTarget): Promise<Attachment>;
+  onSubmit(text: string, attachments: Attachment[]): void;
   children: ReactNode;
 }) {
   const [text, setText] = useState("");
+  const [files, setFiles] = useState<PendingFile[]>([]);
+  const [sending, setSending] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  // The upload under way or done for each file, and the target it went to.
+  const uploads = useRef(new Map<string, { target: string; promise: Promise<Attachment> }>());
+  const picker = useRef<HTMLInputElement>(null);
+  const targetKey = JSON.stringify(props.target);
   // Start one line tall and grow with the text, up to a cap.
   const area = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -336,11 +373,87 @@ function Composer(props: {
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 220)}px`;
   }, [text]);
-  const submit = () => {
+
+  const patch = (key: string, change: Partial<PendingFile>) =>
+    setFiles((list) => list.map((f) => (f.key === key ? { ...f, ...change } : f)));
+
+  const startUpload = (f: PendingFile) => {
+    const promise = props.upload(f.file, props.target);
+    const entry = { target: targetKey, promise };
+    uploads.current.set(f.key, entry);
+    patch(f.key, { state: "uploading", error: undefined });
+    promise.then(
+      // A newer upload of the same file (the host changed) owns the chip.
+      () => uploads.current.get(f.key) === entry && patch(f.key, { state: "ready" }),
+      (e) => uploads.current.get(f.key) === entry && patch(f.key, { state: "error", error: String(e?.message ?? e) }),
+    );
+    return promise;
+  };
+
+  const addFiles = (list: File[]) => {
+    if (!list.length) return;
+    const added = list.map((file): PendingFile => {
+      const big = tooLarge(file.size);
+      return {
+        key: `f${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+        file,
+        preview: !big && file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
+        state: big ? "error" : "uploading",
+        error: big ?? undefined,
+      };
+    });
+    setFiles((cur) => [...cur, ...added]);
+    added.filter((f) => f.state !== "error").forEach(startUpload);
+    area.current?.focus();
+  };
+
+  const removeFile = (key: string) => {
+    uploads.current.delete(key);
+    const gone = files.find((f) => f.key === key);
+    if (gone?.preview) URL.revokeObjectURL(gone.preview);
+    setFiles((list) => list.filter((f) => f.key !== key));
+    // The clicked button is gone; Enter should still send.
+    area.current?.focus();
+  };
+
+  // Files go to the host the prompt runs on; picking another host re-sends them.
+  useEffect(() => {
+    files.forEach((f) => {
+      const u = uploads.current.get(f.key);
+      if (u && u.target !== targetKey) startUpload(f);
+    });
+  }, [targetKey]);
+
+  // Previews are freed when the composer goes away.
+  const live = useRef(files);
+  live.current = files;
+  useEffect(() => () => live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
+
+  const failed = files.some((f) => f.state === "error");
+  const canSend = (text.trim() !== "" || files.length > 0) && !failed && !props.busy && !sending;
+  const submit = async () => {
     const value = text.trim();
-    if (!value || props.busy) return;
-    props.onSubmit(value);
-    if (!props.keepText) setText("");
+    if (!canSend) return;
+    setSending(true);
+    try {
+      const attachments = await Promise.all(
+        files.map((f) => {
+          const u = uploads.current.get(f.key);
+          return u && u.target === targetKey ? u.promise : startUpload(f);
+        }),
+      );
+      props.onSubmit(value, attachments);
+      if (!props.keepText) {
+        setText("");
+        files.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
+        uploads.current.clear();
+        setFiles([]);
+      }
+    } catch {
+      // The chip that failed says why.
+    } finally {
+      setSending(false);
+    }
   };
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -349,7 +462,31 @@ function Composer(props: {
     }
   };
   return (
-    <div className={`composer ${props.large ? "composer-large" : ""}`}>
+    <div
+      className={`composer ${props.large ? "composer-large" : ""} ${dragging ? "composer-drop" : ""}`}
+      onDragOver={(e) => {
+        if (!dragHasFiles(e.dataTransfer)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        setDragging(true);
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragging(false);
+      }}
+      onDrop={(e) => {
+        setDragging(false);
+        if (!e.dataTransfer.files.length) return;
+        e.preventDefault();
+        addFiles(Array.from(e.dataTransfer.files));
+      }}
+    >
+      {files.length > 0 && (
+        <div className="attachments" aria-label="Attachments">
+          {files.map((f) => (
+            <PendingChip key={f.key} file={f} onRemove={() => removeFile(f.key)} />
+          ))}
+        </div>
+      )}
       <textarea
         ref={area}
         aria-label="Message"
@@ -358,15 +495,98 @@ function Composer(props: {
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
+        onPaste={(e) => {
+          const pasted = pastedFiles(e.clipboardData);
+          if (!pasted.length) return;
+          e.preventDefault();
+          addFiles(pasted);
+        }}
         autoFocus
       />
       <div className="composer-row">
+        <button className="btn-icon attach-btn" aria-label="Attach files" title="Attach files" onClick={() => picker.current?.click()}>
+          <Icon d={PAPERCLIP} size={16} />
+        </button>
+        <input
+          ref={picker}
+          type="file"
+          multiple
+          hidden
+          aria-label="Attach files"
+          onChange={(e) => {
+            addFiles(Array.from(e.currentTarget.files ?? []));
+            // Picking the same file again must fire a change.
+            e.currentTarget.value = "";
+          }}
+        />
         {props.children}
         <span className="spacer" />
-        <button className="send" aria-label="Send" disabled={!text.trim() || props.busy} onClick={submit}>
-          <Icon d={ARROW_UP} width={2.5} />
+        <button className="send" aria-label="Send" disabled={!canSend} onClick={submit}>
+          {sending ? <span className="send-wait" aria-label="Uploading" /> : <Icon d={ARROW_UP} width={2.5} />}
         </button>
       </div>
+    </div>
+  );
+}
+
+function PendingChip({ file, onRemove }: { file: PendingFile; onRemove(): void }) {
+  const [broken, setBroken] = useState(false);
+  const { state } = file;
+  return (
+    <div className={`attachment attachment-${state}`} title={file.error ?? file.file.name}>
+      {file.preview && !broken ? (
+        <img className="attachment-thumb" src={file.preview} alt="" onError={() => setBroken(true)} />
+      ) : (
+        <span className="attachment-icon">
+          <Icon d={FILE} size={16} />
+        </span>
+      )}
+      <span className="attachment-text">
+        <span className="attachment-name">{file.file.name || "file"}</span>
+        <span className="attachment-meta">
+          {state === "error" ? file.error : state === "uploading" ? `${humanSize(file.file.size)} · uploading` : humanSize(file.file.size)}
+        </span>
+      </span>
+      <button className="attachment-remove" aria-label={`Remove ${file.file.name}`} onClick={onRemove}>
+        <Icon d={CLOSE} size={12} />
+      </button>
+    </div>
+  );
+}
+
+/** An attachment of a sent prompt. Images load their bytes from the
+ *  session's host; other files show their name, with the path on hover. */
+function SentAttachment({ attachment: a, load }: { attachment: Attachment; load(a: Attachment): Promise<string> }) {
+  const image = isInlineImage(a.mime);
+  const [url, setUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (!image) return;
+    let live = true;
+    load(a).then(
+      (u) => live && setUrl(u),
+      () => live && setFailed(true),
+    );
+    return () => {
+      live = false;
+    };
+  }, [a.id]);
+  if (image && !failed) {
+    return (
+      <a className="sent-image" href={url ?? undefined} target="_blank" rel="noreferrer" title={`${a.name}\n${a.path}`}>
+        {url ? <img src={url} alt={a.name} /> : <span className="sent-image-wait" aria-label={`Loading ${a.name}`} />}
+      </a>
+    );
+  }
+  return (
+    <div className="attachment attachment-ready" title={a.path}>
+      <span className="attachment-icon">
+        <Icon d={FILE} size={16} />
+      </span>
+      <span className="attachment-text">
+        <span className="attachment-name">{a.name}</span>
+        <span className="attachment-meta">{humanSize(a.size)}</span>
+      </span>
     </div>
   );
 }
@@ -442,7 +662,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   useEffect(() => setBase(""), [cwd, target]);
   const isRepo = !!branchList?.current;
 
-  const start = (text: string) => {
+  const start = (text: string, attachments: Attachment[]) => {
     if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
     remember(target, cwd);
     setPending(true);
@@ -453,14 +673,25 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
       worktree: true,
       base: base || undefined,
       host: target === "local" ? undefined : target,
+      attachments: attachments.length ? attachments.map((a) => a.id) : undefined,
     });
   };
+  const uploadTarget = useMemo<UploadTarget>(() => (target === "local" ? {} : { host: target }), [target]);
 
   return (
     <div className="new">
       <div className="new-inner">
         <h1>What should we work on?</h1>
-        <Composer placeholder="Describe the task" rows={1} large keepText onSubmit={start} busy={pending || !state.connected || !choice.model || !cwd}>
+        <Composer
+          placeholder="Describe the task"
+          rows={1}
+          large
+          keepText
+          target={uploadTarget}
+          upload={actions.upload}
+          onSubmit={start}
+          busy={pending || !state.connected || !choice.model || !cwd}
+        >
           <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
           <span className="muted small">{PERMISSION_NOTE[choice.engine]}</span>
         </Composer>
@@ -787,6 +1018,17 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     const el = scroller.current;
     if (el && pinned.current) el.scrollTop = el.scrollHeight;
   }, [items]);
+  // Thumbnails arrive after their message and grow it; stay at the bottom.
+  // `load` does not bubble, but it does pass ancestors while capturing.
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const keep = () => {
+      if (pinned.current) el.scrollTop = el.scrollHeight;
+    };
+    el.addEventListener("load", keep, true);
+    return () => el.removeEventListener("load", keep, true);
+  }, []);
 
   // The working tree has probably changed whenever a turn ends.
   const last = useRef(meta.status);
@@ -797,6 +1039,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
 
   const lastItem = items[items.length - 1];
   const showWorking = meta.status === "running" && !(lastItem?.kind === "assistant" && lastItem.streaming);
+  // Files go to the session's own host, through the hub for a remote one.
+  const uploadTarget = useMemo<UploadTarget>(() => ({ sessionId: meta.id }), [meta.id]);
+  const loadAttachment = (a: Attachment) => actions.attachmentUrl(meta.id, a);
 
   return (
     <div className="session">
@@ -839,6 +1084,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
                 key={item.key}
                 item={item}
                 queued={meta.status === "queued"}
+                loadAttachment={loadAttachment}
                 onStart={() => actions.startNow(meta.id)}
                 onDecide={(id, d) => actions.approve(meta.id, id, d)}
               />
@@ -853,7 +1099,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             rows={1}
             busy={busy || meta.status === "queued" || !online}
             appendFor={meta.id}
-            onSubmit={(text) => actions.send(meta.id, text)}
+            target={uploadTarget}
+            upload={actions.upload}
+            onSubmit={(text, attachments) => actions.send(meta.id, text, attachments.map((a) => a.id))}
           >
             <ModelPicker
               models={models}
@@ -921,6 +1169,7 @@ function ItemView(props: {
   item: Item;
   /** The session is still waiting in the queue. */
   queued: boolean;
+  loadAttachment(a: Attachment): Promise<string>;
   onStart(): void;
   onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
 }) {
@@ -928,7 +1177,17 @@ function ItemView(props: {
   const [open, setOpen] = useState(false);
   switch (item.kind) {
     case "user":
-      return <UserBubble text={item.text} />;
+      if (!item.attachments?.length) return <UserBubble text={item.text} />;
+      return (
+        <div className="user-message">
+          <div className="attachments attachments-sent">
+            {item.attachments.map((a) => (
+              <SentAttachment key={a.id} attachment={a} load={props.loadAttachment} />
+            ))}
+          </div>
+          {item.text && <UserBubble text={item.text} />}
+        </div>
+      );
     case "note":
       return <div className="note">{item.text}</div>;
     case "assistant":

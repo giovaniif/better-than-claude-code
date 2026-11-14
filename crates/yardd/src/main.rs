@@ -1,6 +1,7 @@
 //! yardd: owns agent processes, the per-session event log and host stats.
 //! Serves the UI and a WebSocket on 127.0.0.1.
 
+mod attachments;
 mod claude;
 mod codex;
 mod git;

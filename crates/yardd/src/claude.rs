@@ -142,13 +142,15 @@ fn line(app: &Arc<App>, sid: &str, msg: Value) -> Result<()> {
     }
 }
 
-pub fn send(app: &Arc<App>, sid: &str, text: &str) -> Result<()> {
+/// The sidecar reads image attachments from disk and builds the content
+/// blocks itself; yardd only passes the records.
+pub fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
     // A session restored after a restart gets a fresh sidecar that resumes
     // the saved Claude Code session.
     if let Some(claude_session) = app.resumable(sid) {
         spawn(app, sid, Some(claude_session))?;
     }
-    line(app, sid, json!({ "type": "user", "text": text }))
+    line(app, sid, json!({ "type": "user", "text": text, "attachments": attachments }))
 }
 
 pub fn set_model(app: &Arc<App>, sid: &str, model: &str) -> Result<()> {

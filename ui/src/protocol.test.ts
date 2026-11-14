@@ -113,6 +113,20 @@ describe("applyEvent", () => {
     ]);
   });
 
+  test("a prompt keeps its attachments, and may have no text", () => {
+    const shot = { id: "a1", name: "shot.png", mime: "image/png", size: 300, path: "/d/attachments/a1/shot.png" };
+    const items = fold([
+      { type: "user_message", text: "look", attachments: [shot] },
+      { type: "user_message", text: "", attachments: [shot] },
+      { type: "user_message", text: "plain", attachments: [] },
+    ]);
+    expect(items).toEqual([
+      { kind: "user", key: "e0", text: "look", attachments: [shot] },
+      { kind: "user", key: "e1", text: "", attachments: [shot] },
+      { kind: "user", key: "e2", text: "plain" },
+    ]);
+  });
+
   test("events with no item, such as turn_started, add nothing", () => {
     expect(fold([{ type: "turn_started" }])).toEqual([]);
     expect(applyEvent([], { type: "mystery" } as unknown as AgentEvent, 0)).toEqual([]);

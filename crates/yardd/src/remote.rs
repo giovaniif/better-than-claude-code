@@ -319,9 +319,13 @@ impl Backoff {
 async fn connect(
     url: &str,
 ) -> Result<tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>> {
-    let (ws, _) = tokio::time::timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(url))
-        .await
-        .context("timed out")??;
+    // The same limits as yardd's own server, so an upload that reached the
+    // hub also fits on the way to the host, and its reply on the way back.
+    let mut config = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default();
+    config.max_message_size = Some(crate::attachments::WS_MAX_MESSAGE);
+    config.max_frame_size = Some(crate::attachments::WS_MAX_MESSAGE);
+    let connecting = tokio_tungstenite::connect_async_with_config(url, Some(config), false);
+    let (ws, _) = tokio::time::timeout(CONNECT_TIMEOUT, connecting).await.context("timed out")??;
     Ok(ws)
 }
 
@@ -544,9 +548,13 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
 
 /// Which host an op is for, when it is not for this yardd.
 pub fn route(msg: &Value) -> Option<String> {
-    // Ops that name no session say which host they are for.
-    if ["session.create", "git.branches", "fs.dirs"].iter().any(|op| msg["op"] == *op) {
-        return msg["host"].as_str().filter(|h| !h.is_empty() && *h != "local").map(str::to_string);
+    // Ops that name no session say which host they are for. An upload names
+    // either: a host from the new-session page, a session from a reply box.
+    if ["session.create", "git.branches", "fs.dirs", "attach.put"].iter().any(|op| msg["op"] == *op) {
+        let host = msg["host"].as_str().filter(|h| !h.is_empty() && *h != "local").map(str::to_string);
+        if host.is_some() || msg["op"] != "attach.put" {
+            return host;
+        }
     }
     ["sessionId", "termId"]
         .iter()
@@ -629,7 +637,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             rewrite_stats(host, name, &mut msg["host"]);
             msg["hostId"] = json!(host);
         }
-        "models" | "usage" | "error" | "git.branches" | "fs.dirs" => msg["hostId"] = json!(host),
+        "models" | "usage" | "error" | "git.branches" | "fs.dirs" | "attach.stored" => msg["hostId"] = json!(host),
         "term.list" => {
             prefix(host, &mut msg, "sessionId");
             if let Some(terms) = msg["terms"].as_array_mut() {
@@ -677,6 +685,16 @@ mod tests {
         assert_eq!(route(&json!({ "op": "fs.dirs", "path": "/x", "host": "h1" })).as_deref(), Some("h1"));
         let reply = rewrite_incoming("h1", "box", r#"{"op":"git.branches","cwd":"/x","branches":[]}"#).unwrap();
         assert_eq!(serde_json::from_str::<Value>(&reply).unwrap()["hostId"], "h1");
+        // Uploads go by host on the new-session page and by session in a reply.
+        assert_eq!(route(&json!({ "op": "attach.put", "host": "h1" })).as_deref(), Some("h1"));
+        assert_eq!(route(&json!({ "op": "attach.put", "sessionId": "h1~s9" })).as_deref(), Some("h1"));
+        assert_eq!(route(&json!({ "op": "attach.put", "sessionId": "s9" })), None);
+        assert_eq!(route(&json!({ "op": "attach.put", "host": "local" })), None);
+        assert_eq!(route(&json!({ "op": "attach.get", "sessionId": "h1~s9", "id": "a1" })).as_deref(), Some("h1"));
+        let stored = rewrite_incoming("h1", "box", r#"{"op":"attach.stored","ref":"r1","attachment":{"id":"a1"}}"#).unwrap();
+        assert_eq!(serde_json::from_str::<Value>(&stored).unwrap()["hostId"], "h1");
+        let data = rewrite_incoming("h1", "box", r#"{"op":"attach.data","sessionId":"s9","id":"a1","data":""}"#).unwrap();
+        assert_eq!(serde_json::from_str::<Value>(&data).unwrap()["sessionId"], "h1~s9");
     }
 
     #[test]

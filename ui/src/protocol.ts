@@ -186,6 +186,46 @@ export interface TermOpened {
   data: string;
 }
 
+/** A file attached to a prompt, saved by the yardd that runs the session
+ *  (a remote host's own data dir for a remote session). */
+export interface Attachment {
+  id: string;
+  /** Sanitized: one path component, no leading dot or dash. */
+  name: string;
+  /** Inline image types are checked against the bytes. */
+  mime: string;
+  size: number;
+  /** Absolute, on the session's host. */
+  path: string;
+}
+
+/** Largest file `attach.put` takes. Keep in step with `attachments::MAX_BYTES`. */
+export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+/** Reply to `attach.put { ref, name, mime, data (base64), host? | sessionId? }`.
+ *  The file goes to `host`, or to the host of `sessionId`, or stays here. */
+export interface AttachStored {
+  op: "attach.stored";
+  ref: string;
+  /** Set when the file went to a remote host. */
+  hostId?: string;
+  attachment?: Attachment;
+  error?: string;
+}
+
+/** Reply to `attach.get { ref, sessionId, id }`, for a thumbnail. Only an
+ *  attachment that one of the session's prompts carries can be read. */
+export interface AttachData {
+  op: "attach.data";
+  ref?: string;
+  sessionId: string;
+  id: string;
+  mime?: string;
+  /** Base64. */
+  data?: string;
+  error?: string;
+}
+
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
 export type PrResult =
   | PullRequest
@@ -194,7 +234,10 @@ export type PrResult =
 
 /** Normalized session events. Both engines produce exactly these. */
 export type AgentEvent =
-  | { type: "user_message"; text: string }
+  /** `session.create` and `session.send` take `attachments: string[]` (ids
+   *  from `attach.put`) and may then have empty text; the event carries
+   *  the attachments' records. */
+  | { type: "user_message"; text: string; attachments?: Attachment[] }
   | { type: "turn_started" }
   | { type: "turn_completed"; status: string }
   | { type: "assistant_delta"; itemId: string; text: string }
@@ -208,11 +251,11 @@ export type AgentEvent =
   /** A quiet line from yardd itself, such as a hand-off or a worktree setup. Changes no status. */
   | { type: "note"; text: string }
   /** The session is waiting for the host to have room. Carries its prompt. */
-  | { type: "queued"; reason: string; text?: string };
+  | { type: "queued"; reason: string; text?: string; attachments?: Attachment[] };
 
 /** What the thread renders. Built from events by `applyEvent`. */
 export type Item =
-  | { kind: "user"; key: string; text: string }
+  | { kind: "user"; key: string; text: string; attachments?: Attachment[] }
   | { kind: "assistant"; key: string; itemId: string; text: string; streaming: boolean }
   | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
   | { kind: "diff"; key: string; files: ChangedFile[] }
@@ -225,7 +268,12 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
   const key = `e${seq}`;
   switch (ev.type) {
     case "user_message":
-      return [...items, { kind: "user", key, text: ev.text }];
+      return [
+        ...items,
+        ev.attachments?.length
+          ? { kind: "user", key, text: ev.text, attachments: ev.attachments }
+          : { kind: "user", key, text: ev.text },
+      ];
     case "assistant_delta": {
       const i = items.findIndex((it) => it.kind === "assistant" && it.itemId === ev.itemId);
       if (i < 0) return [...items, { kind: "assistant", key, itemId: ev.itemId, text: ev.text, streaming: true }];

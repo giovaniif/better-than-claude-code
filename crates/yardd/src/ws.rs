@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    claude, codex, git, handoff, pr, pty, remote, sessions,
+    attachments, claude, codex, git, handoff, pr, pty, remote, sessions,
     state::{App, Worktree},
 };
 
@@ -28,7 +28,9 @@ pub async fn handler(ws: WebSocketUpgrade, headers: HeaderMap, State(app): State
     }
     let agent = headers.get("user-agent").and_then(|v| v.to_str().ok()).unwrap_or("none");
     eprintln!("yardd: client connected, origin {origin}, agent {agent}");
-    ws.on_upgrade(move |socket| client(socket, app))
+    ws.max_message_size(attachments::WS_MAX_MESSAGE)
+        .max_frame_size(attachments::WS_MAX_MESSAGE)
+        .on_upgrade(move |socket| client(socket, app))
 }
 
 /// This socket can run commands, so a web page in the user's browser must not
@@ -89,9 +91,7 @@ async fn client(socket: WebSocket, app: Arc<App>) {
                             None => Err(anyhow::anyhow!("no such host")),
                         };
                         if let Err(e) = sent {
-                            let _ = direct.send(
-                                json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] }).to_string(),
-                            );
+                            let _ = direct.send(error_reply(&msg, &e));
                         }
                         continue;
                     }
@@ -99,9 +99,7 @@ async fn client(socket: WebSocket, app: Arc<App>) {
                     let direct = direct.clone();
                     tokio::spawn(async move {
                         if let Err(e) = handle(&app, &direct, &msg).await {
-                            let _ = direct.send(
-                                json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] }).to_string(),
-                            );
+                            let _ = direct.send(error_reply(&msg, &e));
                         }
                     });
                 }
@@ -110,6 +108,16 @@ async fn client(socket: WebSocket, app: Arc<App>) {
             }
         }
     }
+}
+
+/// An op's failure. `ref` comes back when the op had one, so a client
+/// waiting on that one request (an upload) can tell it failed.
+fn error_reply(msg: &Value, e: &anyhow::Error) -> String {
+    let mut reply = json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] });
+    if !msg["ref"].is_null() {
+        reply["ref"] = msg["ref"].clone();
+    }
+    reply.to_string()
 }
 
 fn str_field<'a>(msg: &'a Value, key: &str) -> Result<&'a str> {
@@ -159,8 +167,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let model = str_field(msg, "model")?;
             let effort = str_field(msg, "effort")?;
             let cwd = str_field(msg, "cwd")?;
-            let text = str_field(msg, "text")?.trim();
-            if text.is_empty() {
+            let text = msg["text"].as_str().unwrap_or("").trim();
+            let files = attachments::resolve(&msg["attachments"])?;
+            if text.is_empty() && files.is_empty() {
                 bail!("the task is empty");
             }
             if !Path::new(cwd).is_dir() {
@@ -169,7 +178,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if engine != "claude" && engine != "codex" {
                 bail!("unknown engine {engine}");
             }
-            let title: String = text.lines().next().unwrap_or("").chars().take(60).collect();
+            let first = text.lines().next().filter(|l| !l.trim().is_empty());
+            let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
+            let title: String = first.chars().take(60).collect();
 
             // The worktree (and its setup) comes first: if it cannot be made,
             // no session exists. Without one, the folder must be free.
@@ -194,7 +205,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 app.emit(&sid, json!({ "type": "note", "text": text }));
             }
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
-            sessions::begin(app, &sid, text).await;
+            sessions::begin(app, &sid, text, &files).await;
         }
         "git.branches" => {
             let cwd = str_field(msg, "cwd")?;
@@ -216,14 +227,32 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             let _ = direct.send(reply.to_string());
         }
+        "attach.put" => {
+            // Answered with the client's `ref`, so concurrent uploads match up.
+            let mut reply = match attachments::put(app, msg) {
+                Ok(attachment) => json!({ "op": "attach.stored", "attachment": attachment }),
+                Err(e) => json!({ "op": "attach.stored", "error": format!("{e:#}") }),
+            };
+            reply["ref"] = msg["ref"].clone();
+            let _ = direct.send(reply.to_string());
+        }
+        "attach.get" => {
+            let sid = str_field(msg, "sessionId")?;
+            let id = str_field(msg, "id")?;
+            let mut reply = attachments::get(app, sid, id)
+                .unwrap_or_else(|e| json!({ "op": "attach.data", "sessionId": sid, "id": id, "error": format!("{e:#}") }));
+            reply["ref"] = msg["ref"].clone();
+            let _ = direct.send(reply.to_string());
+        }
         "session.open" => {
             let sid = str_field(msg, "sessionId")?;
             let _ = direct.send(app.history(sid).to_string());
         }
         "session.send" => {
             let sid = str_field(msg, "sessionId")?;
-            let text = str_field(msg, "text")?.trim();
-            if text.is_empty() {
+            let text = msg["text"].as_str().unwrap_or("").trim();
+            let files = attachments::resolve(&msg["attachments"])?;
+            if text.is_empty() && files.is_empty() {
                 bail!("the message is empty");
             }
             let meta = app.meta(sid).context("no such session")?;
@@ -233,7 +262,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if meta.status == "queued" {
                 bail!("this session is queued; start it first");
             }
-            sessions::send_turn(app, sid, text).await;
+            sessions::send_turn(app, sid, text, &files).await;
         }
         "session.setModel" => {
             let sid = str_field(msg, "sessionId")?;

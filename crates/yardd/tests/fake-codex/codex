@@ -11,8 +11,9 @@
 //   other   a plain streamed reply: "Echo: <prompt>"
 //
 // FAKE_CODEX_DIR (set by the tests) gets `codex.log`, one line per start and
-// per request, and `threads.json`, so a restarted fake can resume a thread
-// the previous one started, and refuses one it never saw.
+// per request, `turn-inputs.jsonl` with the input items of every turn/start,
+// and `threads.json`, so a restarted fake can resume a thread the previous
+// one started, and refuses one it never saw.
 
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 
@@ -137,7 +138,9 @@ async function handle(msg) {
     case "turn/start": {
       const thread = threads.get(p.threadId);
       if (!thread) return fail(`no such thread: ${p.threadId}`);
-      const text = (p.input ?? []).map((i) => i.text ?? "").join("\n");
+      // Every input item, so tests can check what reached the engine.
+      if (dir) appendFileSync(`${dir}/turn-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, input: p.input })}\n`);
+      const text = (p.input ?? []).filter((i) => i.type === "text").map((i) => i.text).join("\n");
       const turn = { id: newId("turn"), items: [], status: "inProgress", error: null };
       // Registered before the reply, so an interrupt that arrives before the
       // turn's first event still finds it.

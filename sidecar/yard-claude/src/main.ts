@@ -1,6 +1,8 @@
 // yard-claude: one Claude Code session on the Agent SDK, bridged to yardd.
 //
 // stdin  (JSON lines): start | user | set_model | interrupt | permission
+//                      `user` is { text, attachments? }: files yardd saved on
+//                      this host (see message.ts)
 // stdout (JSON lines): { type: "event", event } | { type: "usage", usage }
 //                      | { type: "session", claudeSessionId }
 //
@@ -12,6 +14,7 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
 import { relative } from "node:path";
+import { userMessage } from "./message";
 
 type Decision = "allow" | "allow_always" | "deny";
 
@@ -276,12 +279,7 @@ createInterface({ input: process.stdin }).on("line", async (line) => {
         );
         break;
       case "user":
-        queue.push({
-          type: "user",
-          message: { role: "user", content: String(msg.text ?? "") },
-          parent_tool_use_id: null,
-          session_id: "",
-        });
+        queue.push(userMessage(String(msg.text ?? ""), Array.isArray(msg.attachments) ? msg.attachments : []));
         wake?.();
         break;
       case "set_model":
