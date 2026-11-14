@@ -40,7 +40,7 @@ The app starts its bundled yardd if none is running and opens a window on its UI
 
 `/health` reports yardd's build id. If a yardd from another build is already running, the app does not stop it (it may hold live sessions): the title says an older daemon is running and the window uses it. Quit that yardd and reopen the app to update.
 
-Without building: every push to `main` that changes code (or a manual run of the "macOS app" workflow) builds `Switchyard-<commit>.dmg` on GitHub Actions, signed with a Developer ID and notarized. Download it from the run's artifacts. Signing needs the repository secrets listed in `.github/scripts/macos-sign.sh`; without them the DMG is ad-hoc signed and named `-unsigned`, and needs `xattr -dr com.apple.quarantine /Applications/Switchyard.app` before it opens.
+Without building: every push to `main` that changes code (or a manual run of the "macOS app" workflow) builds `Switchyard.dmg` on GitHub Actions, signed with a Developer ID and notarized, and puts it on the `latest` release: https://github.com/giovaniif/better-than-claude-code/releases/latest/download/Switchyard.dmg. Other builds are on each run's artifacts. Signing needs the repository secrets listed in `.github/scripts/macos-sign.sh`; without them the DMG is ad-hoc signed and named `-unsigned`, and needs `xattr -dr com.apple.quarantine /Applications/Switchyard.app` before it opens.
 
 `SWITCHYARD_PORT` and `YARD_DATA_DIR` run a second copy next to the real one, for example `SWITCHYARD_PORT=47728 YARD_DATA_DIR=/tmp/yard-test Switchyard.app/Contents/MacOS/switchyard`; that copy logs to its data folder.
 
