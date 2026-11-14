@@ -194,6 +194,9 @@ fn main() {
                 .title(title)
                 .inner_size(1440.0, 900.0)
                 .min_inner_size(900.0, 600.0)
+                // Tauri's own file-drop handler would swallow drops, and the
+                // composer attaches files through the page's HTML5 drop events.
+                .disable_drag_drop_handler()
                 .build()?;
             Ok(())
         })

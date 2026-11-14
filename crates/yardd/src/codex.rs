@@ -18,7 +18,10 @@ use tokio::{
     sync::{mpsc, oneshot},
 };
 
-use crate::state::{App, Backend};
+use crate::{
+    attachments,
+    state::{App, Backend},
+};
 
 pub struct Client {
     tx: mpsc::UnboundedSender<String>,
@@ -487,20 +490,30 @@ fn thread_of(app: &Arc<App>, sid: &str) -> Result<(String, Option<String>)> {
     }
 }
 
-pub async fn send(app: &Arc<App>, sid: &str, text: &str) -> Result<()> {
+pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
     if let Some(thread_id) = app.resumable(sid) {
         resume(app, sid, thread_id).await?;
     }
     let meta = app.meta(sid).context("no such session")?;
     let (thread_id, _) = thread_of(app, sid)?;
     let c = client(app).await?;
+    // Every attachment is named by path in the text; images also go as
+    // `localImage` items (codex-cli 0.164 `UserInput`), which the app-server
+    // reads from disk itself.
+    let mut input = vec![json!({ "type": "text", "text": attachments::prompt_text(text, attachments) })];
+    input.extend(
+        attachments
+            .iter()
+            .filter(|a| attachments::is_inline_image(a))
+            .map(|a| json!({ "type": "localImage", "path": a["path"] })),
+    );
     // Model and effort ride on every turn, so switching needs no extra call.
     let res = c
         .request(
             "turn/start",
             json!({
                 "threadId": thread_id,
-                "input": [{ "type": "text", "text": text }],
+                "input": input,
                 "model": meta.model,
                 "effort": meta.effort,
             }),

@@ -305,10 +305,13 @@ async fn forced_pressure_queues_until_start_now() {
     let sb = Sandbox::new("queue");
     let d = sb.start_with(&[("YARD_FORCE_PRESSURE", "1")]);
     let mut c = d.client().await;
-    let sid = c.try_create(&sb.folder("proj"), "wait your turn", json!({})).await.unwrap();
+    // The attachment waits in the queue with the prompt.
+    let shot = c.upload("shot.png", "image/png", &png(40), json!({})).await.unwrap();
+    let sid = c.try_create(&sb.folder("proj"), "wait your turn", json!({ "attachments": [shot["id"]] })).await.unwrap();
 
     let queued = c.wait_event(&sid, "queued", 0).await;
     assert_eq!(queued["text"], "wait your turn");
+    assert_eq!(queued["attachments"][0]["id"], shot["id"]);
     assert!(queued["reason"].as_str().unwrap().contains("YARD_FORCE_PRESSURE"));
     c.wait_status(&sid, "queued").await;
     assert_eq!(c.event_types(&sid), ["user_message", "queued"]);
@@ -321,7 +324,9 @@ async fn forced_pressure_queues_until_start_now() {
 
     c.send(json!({ "op": "session.startNow", "sessionId": sid })).await;
     assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
-    assert_eq!(c.wait_event(&sid, "assistant_message", 0).await["text"], "Echo: wait your turn");
+    let answer = c.wait_event(&sid, "assistant_message", 0).await;
+    assert!(answer["text"].as_str().unwrap().starts_with("Echo: wait your turn\n\nAttached files:"), "{answer}");
+    assert_eq!(split_input(&sb.turn_inputs()[0]).1, [shot["path"].as_str().unwrap()]);
     c.wait_status(&sid, "idle").await;
 
     let from = c.mark();
@@ -737,4 +742,199 @@ async fn install_sets_up_yardd_on_an_ssh_host() {
     let health = http_get(remote_port, "/health");
     stop();
     assert!(health.unwrap_or_default().contains("yardd "), "the installed yardd answers");
+}
+
+/// Bytes that pass for a PNG: yardd only checks the signature.
+fn png(len: usize) -> Vec<u8> {
+    let mut bytes = b"\x89PNG\r\n\x1a\n".to_vec();
+    bytes.resize(len.max(8), 7);
+    bytes
+}
+
+/// The text and the `localImage` paths of one `turn/start` input.
+fn split_input(input: &Value) -> (String, Vec<String>) {
+    let items = input.as_array().expect("an input list");
+    let text = items.iter().filter(|i| i["type"] == "text").map(|i| i["text"].as_str().unwrap()).collect::<Vec<_>>().join("\n");
+    let images = items.iter().filter(|i| i["type"] == "localImage").map(|i| i["path"].as_str().unwrap().to_string()).collect();
+    (text, images)
+}
+
+#[tokio::test]
+async fn attachments_reach_codex_as_a_local_image_and_a_path() {
+    let sb = Sandbox::new("attach");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+
+    let shot = c.upload("shot.png", "image/png", &png(300), json!({})).await.unwrap();
+    let notes = c.upload("notes.txt", "text/plain", b"remember the milk\n", json!({})).await.unwrap();
+    assert_eq!(shot["name"], "shot.png");
+    assert_eq!(shot["mime"], "image/png");
+    assert_eq!(shot["size"], 300);
+    assert!(shot["hostId"].is_null());
+    let shot_path = shot["path"].as_str().unwrap();
+    let notes_path = notes["path"].as_str().unwrap();
+    assert_eq!(Path::new(shot_path), sb.data().join("attachments").join(shot["id"].as_str().unwrap()).join("shot.png"));
+    assert_eq!(fs::read(notes_path).unwrap(), b"remember the milk\n");
+
+    let sid = c.create(&cwd, "look at these", json!({ "attachments": [shot["id"], notes["id"]] })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+
+    let inputs = sb.turn_inputs();
+    assert_eq!(inputs.len(), 1);
+    let (text, images) = split_input(&inputs[0]);
+    assert!(text.starts_with("look at these\n\nAttached files:\n"), "{text}");
+    assert!(text.contains(&format!("- {notes_path} (text/plain, 18 B)")), "{text}");
+    assert!(text.contains(shot_path), "every attachment is named by path: {text}");
+    assert_eq!(images, [shot_path]);
+
+    // The event keeps the user's own text and the attachments' details, for the thread.
+    let history = c.history(&sid).await;
+    let user = &history[0];
+    assert_eq!(user["type"], "user_message");
+    assert_eq!(user["text"], "look at these");
+    let names: Vec<&str> = user["attachments"].as_array().unwrap().iter().map(|a| a["name"].as_str().unwrap()).collect();
+    assert_eq!(names, ["shot.png", "notes.txt"]);
+    assert_eq!(user["attachments"][0]["path"], shot_path);
+    assert_eq!(user["attachments"][1]["size"], 18);
+
+    // Thumbnails: the bytes come back for this session's attachments only.
+    assert_eq!(c.fetch(&sid, shot["id"].as_str().unwrap()).await.unwrap(), png(300));
+    let stray = c.upload("other.png", "image/png", &png(20), json!({})).await.unwrap();
+    let refused = c.fetch(&sid, stray["id"].as_str().unwrap()).await.unwrap_err();
+    assert!(refused.contains("no attachment"), "{refused}");
+
+    // A reply can be an attachment alone. The image claimed a wrong type,
+    // and goes by what its bytes are.
+    let next = c.next_seq(&sid);
+    let pic = c.upload("pic", "application/octet-stream", &png(64), json!({ "sessionId": sid })).await.unwrap();
+    assert_eq!(pic["mime"], "image/png");
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "", "attachments": [pic["id"]] })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let (text, images) = split_input(&sb.turn_inputs()[1]);
+    assert_eq!(text, format!("Attached files:\n- {} (image/png, 64 B)", pic["path"].as_str().unwrap()));
+    assert_eq!(images, [pic["path"].as_str().unwrap()]);
+
+    // A file that claims to be an image but is not goes by path only.
+    let fake = c.upload("fake.png", "image/png", b"not an image", json!({})).await.unwrap();
+    assert_eq!(fake["mime"], "application/octet-stream");
+
+    // An unknown or malformed id refuses the message and starts nothing.
+    let from = c.mark();
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "x", "attachments": ["anope"] })).await;
+    let err = c.wait_error(from, "session.send").await;
+    assert!(err.contains("no attachment anope"), "{err}");
+    let from = c.mark();
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "x", "attachments": ["../../etc"] })).await;
+    let err = c.wait_error(from, "session.send").await;
+    assert!(err.contains("bad attachment id"), "{err}");
+    assert_eq!(sb.turn_inputs().len(), 2);
+}
+
+#[tokio::test]
+async fn a_too_large_upload_is_refused_and_the_socket_survives() {
+    let sb = Sandbox::new("attach-big");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    let err = c.upload("big.bin", "application/octet-stream", &vec![0u8; 10 * 1024 * 1024 + 1], json!({})).await.unwrap_err();
+    assert!(err.contains("big.bin is too large to attach (10.0 MB). The limit is 10.0 MB."), "{err}");
+    let stored = |sb: &Sandbox| fs::read_dir(sb.data().join("attachments")).map(|d| d.count()).unwrap_or(0);
+    assert_eq!(stored(&sb), 0);
+
+    // Exactly at the cap is fine, and the same socket still works.
+    let full = c.upload("full.bin", "", &vec![1u8; 10 * 1024 * 1024], json!({})).await.unwrap();
+    assert_eq!(full["size"], 10 * 1024 * 1024);
+    assert_eq!(full["mime"], "application/octet-stream");
+    assert_eq!(stored(&sb), 1);
+
+    let from = c.mark();
+    c.send(json!({ "op": "attach.put", "ref": "bad64", "name": "x", "mime": "text/plain", "data": "@@not base64@@" })).await;
+    let reply = c.wait_after(from, "the bad upload's reply", |m| m["ref"] == "bad64").await;
+    assert!(reply["error"].as_str().unwrap().contains("not valid base64"), "{reply}");
+}
+
+#[tokio::test]
+async fn upload_names_are_sanitized() {
+    let sb = Sandbox::new("attach-names");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let root = sb.data().join("attachments");
+
+    let a = c.upload("../../escape.txt", "text/plain", b"x", json!({})).await.unwrap();
+    assert_eq!(a["name"], "escape.txt");
+    assert_eq!(Path::new(a["path"].as_str().unwrap()), root.join(a["id"].as_str().unwrap()).join("escape.txt"));
+    assert!(!sb.data().join("escape.txt").exists() && !sb.root.join("escape.txt").exists());
+
+    let dots = c.upload("..", "text/plain", b"x", json!({})).await.unwrap();
+    assert_eq!(dots["name"], "file");
+    let hidden = c.upload(".env", "text/plain", b"x", json!({})).await.unwrap();
+    assert_eq!(hidden["name"], "env");
+    let dash = c.upload("-rf", "text/plain", b"x", json!({})).await.unwrap();
+    assert_eq!(dash["name"], "rf");
+    let windows = c.upload("C:\\Users\\me\\report.pdf", "application/pdf", b"%PDF", json!({})).await.unwrap();
+    assert_eq!(windows["name"], "report.pdf");
+    // Every file stays one level down, in its own folder.
+    for att in [&a, &dots, &hidden, &dash, &windows] {
+        let p = Path::new(att["path"].as_str().unwrap());
+        assert_eq!(p.parent().unwrap().parent().unwrap(), root);
+        assert!(p.is_file());
+    }
+}
+
+#[tokio::test]
+async fn attachments_land_on_the_remote_host_through_the_hub() {
+    let remote_sb = Sandbox::new("attach-remote");
+    let remote = remote_sb.start();
+    let hub_sb = Sandbox::new("attach-hub");
+    let hub = hub_sb.start();
+    let mut c = hub.client().await;
+
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "direct", "url": remote.url() })).await;
+    let hosts = c
+        .wait_for("the direct host to connect", |m| {
+            m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] == "connected"))
+        })
+        .await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+    c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+
+    // A full-size image crosses both hops (UI -> hub -> remote) in one message.
+    let big = png(10 * 1024 * 1024);
+    let shot = c.upload("shot.png", "image/png", &big, json!({ "host": host })).await.unwrap();
+    assert_eq!(shot["hostId"], host.as_str());
+    let shot_path = shot["path"].as_str().unwrap().to_string();
+    assert!(Path::new(&shot_path).starts_with(remote_sb.data().join("attachments")), "{shot_path}");
+    assert_eq!(fs::read(&shot_path).unwrap().len(), big.len());
+    assert!(!hub_sb.data().join("attachments").exists(), "nothing is stored on the hub");
+
+    let cwd = remote_sb.folder("proj");
+    let sid = c.create(&cwd, "remote look", json!({ "host": host, "attachments": [shot["id"]] })).await;
+    assert!(sid.starts_with(&format!("{host}~")));
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    let (text, images) = split_input(&remote_sb.turn_inputs()[0]);
+    assert!(text.contains(&shot_path), "{text}");
+    assert_eq!(images, [shot_path.clone()]);
+    assert!(hub_sb.turn_inputs().is_empty());
+
+    // A reply on the remote session uploads by session id.
+    let next = c.next_seq(&sid);
+    let log = c.upload("err.log", "text/plain", b"boom\n", json!({ "sessionId": sid })).await.unwrap();
+    assert!(Path::new(log["path"].as_str().unwrap()).starts_with(remote_sb.data().join("attachments")));
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "and this", "attachments": [log["id"]] })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let (text, images) = split_input(&remote_sb.turn_inputs()[1]);
+    assert!(text.contains(log["path"].as_str().unwrap()), "{text}");
+    assert!(images.is_empty());
+
+    // History and thumbnails come back through the hub under the prefixed id.
+    let history = c.history(&sid).await;
+    assert_eq!(history[0]["attachments"][0]["path"], shot_path.as_str());
+    assert_eq!(c.fetch(&sid, shot["id"].as_str().unwrap()).await.unwrap(), big);
+
+    // Over the cap through the hub: refused by the remote, the link stays up.
+    let err = c.upload("huge.bin", "", &vec![0u8; 10 * 1024 * 1024 + 1], json!({ "host": host })).await.unwrap_err();
+    assert!(err.contains("too large"), "{err}");
+    let ok = c.upload("after.txt", "text/plain", b"ok", json!({ "host": host })).await.unwrap();
+    assert_eq!(ok["hostId"], host.as_str());
 }

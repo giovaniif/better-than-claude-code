@@ -33,7 +33,7 @@ Both engines are normalized to one event list per session. The UI replays it on 
 
 | Event | Meaning |
 |---|---|
-| `user_message` | My prompt |
+| `user_message` | My prompt, with any attachments' details |
 | `turn_started`, `turn_completed` | Turn boundaries |
 | `assistant_delta`, `assistant_message` | Streamed text, then the final text |
 | `tool_started`, `tool_completed` | A command, read, search or other tool call |
@@ -129,7 +129,20 @@ Every new session in a git repository with at least one commit gets its own bran
 - Uncommitted changes in the original checkout are not carried over.
 - Files a setup script creates count as untracked unless gitignored, so they block removal.
 
-## Terminal
+## Attachments
+
+Files and images go with a prompt, on the new-session page and in the reply box: paste (clipboard images and files), drop on the composer, or the paperclip. Pending files show as chips above the text (a local preview for images) and can be removed. A prompt can be attachments alone.
+
+- **Upload as soon as attached**, over the same WebSocket: `attach.put { ref, name, mime, data (base64), host? | sessionId? }` answers `attach.stored { ref, attachment | error, hostId? }`. It is routed like the other ops: `host` from the new-session page, `sessionId` (with its `<hostId>~` prefix) from a reply box, so the bytes land on the host that runs the session. Picking another host re-uploads the pending files there.
+- yardd saves each file as `<data dir>/attachments/<id>/<name>` with a `.meta.json` beside it. The name is cut to its last path segment, with no control characters and no leading dot or dash. An inline image type (png, jpeg, gif, webp) must match the file's bytes, or the file counts as `application/octet-stream`.
+- **Cap: 10 MB per file**, checked in the UI before sending (a red chip, Send disabled) and again by yardd. yardd's server and the hub's client to remotes both allow 32 MiB messages, so a full-size upload (about 14 MB of base64) fits on both hops; tungstenite's default 16 MiB frame limit was too close.
+- `session.create` and `session.send` take `attachments: [id]`. The `user_message` event (and `queued`) carries `attachments: [{ id, name, mime, size, path }]`, never the bytes.
+- **Codex:** the text gets an "Attached files:" list of absolute paths; each image also goes as a `{ type: "localImage", path }` item on `turn/start` (the `UserInput` shape of codex-cli 0.164, from `codex app-server generate-ts`).
+- **Claude:** yardd sends the sidecar `{ type: "user", text, attachments }`. The sidecar (`message.ts`) puts each image first as a base64 image block, then one text block with the same path list. Images over 3.75 MB (5 MB of base64, the API's limit) are named by path only.
+- **Thumbnails** in the thread come from `attach.get { ref, sessionId, id }` -> `attach.data { sessionId, id, mime, data }`, routed by session like any session op, so they work for remote sessions. yardd serves only attachments that the session's own prompts carry. Replies with a `ref` skip the reducer.
+- Hand-off briefs list each prompt's attachments by name and path.
+- The desktop window disables Tauri's own drop handler so the page gets file drops; a drop outside the composer is ignored instead of opening the file.
+- Not built: removing attachment files when their session is deleted.
 
 The right pane has a Terminal tab next to Changes.
 
@@ -142,8 +155,9 @@ The right pane has a Terminal tab next to Changes.
 
 ## Tests
 
-- `CARGO_BUILD_JOBS=2 cargo test -p yardd`: 23 integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. Unit tests cover the hand-off brief, the hub's id rewriting and the `YARD_ALLOW_ORIGIN` list.
-- `cd ui && bun test`: 20 tests for `applyEvent` and the store reducer.
+- `CARGO_BUILD_JOBS=2 cargo test -p yardd`: integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. The fake records each `turn/start` input in `turn-inputs.jsonl`, so the attachment tests check what reached the engine, locally and on a `direct` remote through a hub. A fake `ssh` (`YARD_SSH`) runs the remote installer locally against a `file://` release. Unit tests cover the hand-off brief, the hub's id rewriting, the `YARD_ALLOW_ORIGIN` list and attachment names.
+- `cd ui && bun test`: `applyEvent`, the store reducer and the attachment helpers.
+- `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
 - Not covered: anything that needs Claude, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
 
 ## PR pane
@@ -191,6 +205,7 @@ Not checked:
 - A real SSH tunnel. This Mac has no SSH server to tunnel to, so only the failure and retry paths ran.
 - Anything that needs a Claude turn in the newer features: Claude resume after a restart, hand-off into Claude, and Claude's per-session usage and cap. Claude weekly usage was nearly exhausted.
 - Stop and a mid-session model switch on Claude. Both passed in the script spike.
+- Attachments with a real engine. Paste, drop, the paperclip, the size cap, thumbnails after a reload and a remote session were driven in headless Chromium (2026-11-14) against the fake Codex; no real Codex or Claude turn has seen an image yet, and drops were not tried in the desktop window.
 
 Codex sessions run with `approvalPolicy: on-request` in a workspace-write sandbox. `untrusted` asked before every `cat`.
 

@@ -15,7 +15,17 @@ import {
   type PrResult,
   type SessionMeta,
   type Usage,
+  type Attachment,
 } from "./protocol";
+import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
+
+/** Where an upload goes: a host from the new-session page, or the host of a
+ *  session from its reply box. Empty means this machine. */
+export type UploadTarget = { host?: string; sessionId?: string };
+
+/** Thumbnails already fetched, as object URLs, by session and attachment.
+ *  Kept for the page's life: the bytes never change. */
+const thumbs = new Map<string, Promise<string>>();
 
 export type Route = { page: "new" } | { page: "hosts" } | { page: "session"; id: string };
 
@@ -286,12 +296,19 @@ export interface Actions {
     base?: string;
     /** A remote host id; this machine when left out. */
     host?: string;
+    /** Ids from `upload` to the same host. */
+    attachments?: string[];
   }): void;
   /** Raw send, for the terminal's byte stream. */
   post(msg: object): void;
   /** Terminal messages (`term.*`) skip the reducer and go to listeners. */
   onTerm(listener: (msg: any) => void): () => void;
-  send(sessionId: string, text: string): void;
+  send(sessionId: string, text: string, attachments?: string[]): void;
+  /** Store a file on the host that will run the prompt. Rejects with a
+   *  message fit to show, such as the size limit or an offline host. */
+  upload(file: File, target: UploadTarget): Promise<Attachment>;
+  /** An object URL for an attachment of a session, for a thumbnail. */
+  attachmentUrl(sessionId: string, attachment: Attachment): Promise<string>;
   setModel(sessionId: string, model: string, effort: string): void;
   /** New session on the other engine, same folder, seeded with a brief. */
   handoff(sessionId: string, engine: Engine, model: string, effort: string): void;
@@ -326,6 +343,7 @@ export function useYard(): { state: State; actions: Actions } {
   const socket = useRef<WebSocket | null>(null);
   const opened = useRef(new Set<string>());
   const termListeners = useRef(new Set<(msg: any) => void>());
+  const replies = useRef(new Replies());
 
   useEffect(() => {
     let stopped = false;
@@ -344,6 +362,8 @@ export function useYard(): { state: State; actions: Actions } {
         } catch {
           return; // ignore malformed frames
         }
+        // Upload and thumbnail replies go to whoever asked, not the reducer.
+        if (replies.current.take(msg)) return;
         if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
           termListeners.current.forEach((listener) => listener(msg));
         } else {
@@ -351,6 +371,7 @@ export function useYard(): { state: State; actions: Actions } {
         }
       };
       ws.onclose = () => {
+        replies.current.failAll("The connection to yardd dropped. Try again.");
         dispatch({ t: "socket", connected: false });
         if (!stopped) retry = setTimeout(connect, 1500);
       };
@@ -366,6 +387,41 @@ export function useYard(): { state: State; actions: Actions } {
   const post = (msg: object) => {
     const ws = socket.current;
     if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+  };
+
+  /** Send an op with a fresh `ref` and wait for the reply that carries it. */
+  const ask = async (msg: object, timeoutMs: number): Promise<any> => {
+    const ws = socket.current;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return { error: "Not connected to yardd." };
+    const ref = replies.current.ref();
+    const reply = replies.current.wait(ref, timeoutMs);
+    ws.send(JSON.stringify({ ...msg, ref }));
+    return reply;
+  };
+
+  const upload = async (file: File, target: UploadTarget): Promise<Attachment> => {
+    const big = tooLarge(file.size);
+    if (big) throw new Error(big);
+    const data = await fileToBase64(file);
+    // A slow link to a remote host can take a while for 10 MB.
+    const reply = await ask({ op: "attach.put", name: file.name, mime: file.type, data, ...target }, 5 * 60_000);
+    if (reply.error || !reply.attachment) throw new Error(reply.error ?? "The upload failed.");
+    return reply.attachment as Attachment;
+  };
+
+  const attachmentUrl = (sessionId: string, a: Attachment): Promise<string> => {
+    const key = `${sessionId}\n${a.id}`;
+    let url = thumbs.get(key);
+    if (!url) {
+      url = ask({ op: "attach.get", sessionId, id: a.id }, 2 * 60_000).then((reply) => {
+        if (reply.error || typeof reply.data !== "string") throw new Error(reply.error ?? "No data.");
+        return URL.createObjectURL(base64ToBlob(reply.data, reply.mime || a.mime));
+      });
+      // A failure (host offline) may succeed later, so it is not kept.
+      url.catch(() => thumbs.delete(key));
+      thumbs.set(key, url);
+    }
+    return url;
   };
 
   // Load a session's history the first time it is shown on this connection.
@@ -392,7 +448,10 @@ export function useYard(): { state: State; actions: Actions } {
         termListeners.current.add(listener);
         return () => termListeners.current.delete(listener);
       },
-      send: (sessionId, text) => post({ op: "session.send", sessionId, text }),
+      send: (sessionId, text, attachments) =>
+        post(attachments?.length ? { op: "session.send", sessionId, text, attachments } : { op: "session.send", sessionId, text }),
+      upload,
+      attachmentUrl,
       setModel: (sessionId, model, effort) => post({ op: "session.setModel", sessionId, model, effort }),
       handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
