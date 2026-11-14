@@ -109,7 +109,7 @@ async function handle(msg) {
   const { id, method, params: p = {} } = msg;
   const reply = (result) => write({ id, result });
   const fail = (message) => write({ id, error: { code: -32600, message } });
-  log(`req ${method}${p.threadId ? ` ${p.threadId}` : ""}`);
+  log(`req ${method}${p.threadId ? ` ${p.threadId}` : ""}${p.sandbox ? ` sandbox=${p.sandbox}` : ""}`);
 
   switch (method) {
     case "initialize":

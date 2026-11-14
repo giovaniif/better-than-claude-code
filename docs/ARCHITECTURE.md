@@ -18,7 +18,7 @@ Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.
 
 ## Shape
 
-- **yardd** (`crates/yardd`): Rust daemon. Owns every agent process, the event log and host stats. Serves the UI and a WebSocket on `127.0.0.1:47717`. The port stays out of 4510-4559, which LocalStack publishes on every interface.
+- **yardd** (`crates/yardd`): Rust daemon. Owns every agent process, the event log and host stats. Serves the UI and a WebSocket on `127.0.0.1:47717` (`YARD_BIND` changes the address; only the container image does). The port stays out of 4510-4559, which LocalStack publishes on every interface.
 - **yard-claude** (`sidecar/yard-claude`): TypeScript sidecar on the Claude Agent SDK, run with Bun. One per Claude session, JSON lines over stdio. The SDK exists only for TypeScript and Python.
 - **ui** (`ui`): React + Vite. Talks only to yardd.
 - **app** (`app/src-tauri`): Tauri v2 window. Starts yardd if nothing is listening, then loads yardd's page. It holds no agent state and yardd outlives it, so sessions survive closing the app.
@@ -101,6 +101,18 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 - Remote sessions stay listed but offline while their host is down.
 - Preparing the box is in the README.
 
+## Web version
+
+A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, for Coolify or plain Docker Compose. Details and setup are in the README.
+
+- One image: release yardd, `ui/dist`, the compiled sidecar, and pinned `codex`, `claude` and `gh` from npm and GitHub's apt repository. It runs as uid 1000 with `HOME` (logins, `~/.yard`) and `/workspace` as volumes.
+- No sign-in, by decision: it is meant for a private network such as a tailnet. Anyone who reaches it can run commands in the container.
+- yardd binds `YARD_BIND=0.0.0.0` there; loopback stays the default everywhere else. The Origin check stays: `YARD_ALLOW_ORIGIN` (comma separated) names the page's URL. yardd never trusts an Origin because it matches the Host header, since a rebound DNS name would pass that. It warns at startup when bound off loopback with no allowed origin.
+- The page uses `wss://` when it is served over https (behind Coolify's Traefik).
+- Codex's `workspace-write` sandbox uses bubblewrap, which cannot create namespaces in an unprivileged container (checked: "No permissions to create a new namespace"; with seccomp and AppArmor unconfined it still failed on the loopback interface). The image sets `YARD_CODEX_SANDBOX=danger-full-access`, so the container is the boundary. Approvals stay `on-request`. Elsewhere the default is unchanged.
+- The local host's name is `YARD_HOST_NAME`, else "This Mac" on macOS and the hostname elsewhere. A remote host may not take that name.
+- `.github/workflows/docker.yml` pushes `ghcr.io/giovaniif/switchyard` (`latest` from main, and the short sha).
+
 ## Worktrees
 
 Every new session in a git repository with at least one commit gets its own branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default); there is no switch for it. A folder outside a repository, or in one with no commits, runs in place, and the session says so in a note. Both engines share this layout.
@@ -129,7 +141,7 @@ The right pane has a Terminal tab next to Changes.
 
 ## Tests
 
-- `CARGO_BUILD_JOBS=2 cargo test -p yardd`: 19 integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. Unit tests cover the hand-off brief and the hub's id rewriting.
+- `CARGO_BUILD_JOBS=2 cargo test -p yardd`: 23 integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. Unit tests cover the hand-off brief, the hub's id rewriting and the `YARD_ALLOW_ORIGIN` list.
 - `cd ui && bun test`: 20 tests for `applyEvent` and the store reducer.
 - Not covered: anything that needs Claude, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
 

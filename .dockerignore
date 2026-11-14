@@ -1,0 +1,12 @@
+target
+**/node_modules
+ui/dist
+.git
+.github
+.claude
+design
+docs
+*.log
+.DS_Store
+*.bun-build
+app/src-tauri/gen
