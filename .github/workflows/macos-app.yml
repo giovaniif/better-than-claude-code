@@ -18,7 +18,7 @@ jobs:
     runs-on: macos-15 # Apple Silicon
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: oven-sh/setup-bun@v2
 
@@ -40,7 +40,7 @@ jobs:
           MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
         run: .github/scripts/macos-sign.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Switchyard-dmg
           path: Switchyard-*.dmg
