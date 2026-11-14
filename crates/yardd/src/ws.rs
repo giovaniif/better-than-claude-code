@@ -32,8 +32,10 @@ pub async fn handler(ws: WebSocketUpgrade, headers: HeaderMap, State(app): State
 }
 
 /// This socket can run commands, so a web page in the user's browser must not
-/// be able to open it. Browsers always send Origin; allow only our own page
-/// and the Tauri window. Non-browser local clients send none.
+/// be able to open it. Browsers always send Origin; allow only our own page,
+/// the Tauri window and the origins listed in YARD_ALLOW_ORIGIN. Non-browser
+/// local clients send none. Matching Origin against the Host header is
+/// deliberately not done: a rebound DNS name would pass it.
 fn origin_ok(headers: &HeaderMap, port: u16) -> bool {
     let Some(origin) = headers.get("origin").and_then(|v| v.to_str().ok()) else {
         return true;
@@ -45,7 +47,21 @@ fn origin_ok(headers: &HeaderMap, port: u16) -> bool {
     if origin == "tauri://localhost" || origin == "http://tauri.localhost" {
         return true;
     }
-    matches!(std::env::var("YARD_ALLOW_ORIGIN"), Ok(extra) if extra == origin)
+    allowed_origins().iter().any(|o| o == origin)
+}
+
+/// YARD_ALLOW_ORIGIN: extra page origins, comma separated, such as the URL a
+/// container is served on behind a reverse proxy.
+pub fn allowed_origins() -> Vec<String> {
+    parse_origins(&std::env::var("YARD_ALLOW_ORIGIN").unwrap_or_default())
+}
+
+fn parse_origins(list: &str) -> Vec<String> {
+    list.split(',')
+        .map(|o| o.trim().trim_end_matches('/'))
+        .filter(|o| !o.is_empty())
+        .map(str::to_string)
+        .collect()
 }
 
 async fn client(socket: WebSocket, app: Arc<App>) {
@@ -364,4 +380,19 @@ async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     }
     pty::close_session(app, sid);
     app.remove_session(sid);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_origins;
+
+    #[test]
+    fn allow_origin_is_a_trimmed_comma_list() {
+        assert_eq!(
+            parse_origins(" https://yard.example.com/ ,http://100.64.0.1:47717,, https://b.example//"),
+            ["https://yard.example.com", "http://100.64.0.1:47717", "https://b.example"]
+        );
+        assert!(parse_origins("").is_empty());
+        assert!(parse_origins(" , ").is_empty());
+    }
 }

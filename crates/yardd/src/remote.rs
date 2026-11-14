@@ -263,7 +263,7 @@ pub fn add(app: &Arc<App>, msg: &Value) -> Result<()> {
     };
     {
         let mut entries = app.remotes.entries.lock().unwrap();
-        if name.eq_ignore_ascii_case("This Mac") || entries.iter().any(|e| e.config.name.eq_ignore_ascii_case(name)) {
+        if name.eq_ignore_ascii_case(crate::hosts::local_name()) || entries.iter().any(|e| e.config.name.eq_ignore_ascii_case(name)) {
             bail!("a host named {name} already exists");
         }
         entries.push(spawn_host(app, config));

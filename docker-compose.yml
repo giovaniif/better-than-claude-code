@@ -1,0 +1,42 @@
+# Switchyard web. Works as a Coolify "Docker Compose" resource and with plain
+# `docker compose up`. See "Web version" in README.md.
+#
+# NO SIGN-IN: anyone who can reach this service can run any command in the
+# container, with your engine logins and GitHub token. Serve it only on a
+# private network (a tailnet, a VPN, a LAN you trust).
+services:
+  switchyard:
+    image: ghcr.io/giovaniif/switchyard:latest
+    # Used when the image cannot be pulled, or with `docker compose build`.
+    build: .
+    restart: unless-stopped
+    # The default name the UI shows for this machine (else a container id).
+    hostname: switchyard
+    environment:
+      # Required. The exact URL you open Switchyard on, such as
+      # https://yard.example.com (no trailing path). The WebSocket refuses
+      # every other browser origin. Several URLs: comma separated.
+      YARD_ALLOW_ORIGIN: ${YARD_ALLOW_ORIGIN:?}
+      # The name the UI shows for this machine. Default: the hostname above.
+      YARD_HOST_NAME: ${YARD_HOST_NAME:-}
+      # Optional. Lets `gh` (PR pane) and git over HTTPS work without
+      # `gh auth login` in the container terminal.
+      GH_TOKEN: ${GH_TOKEN:-}
+      # Optional. From `claude setup-token`; the alternative to logging
+      # `claude` in from the container terminal.
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+    volumes:
+      # Engine logins, git config, yardd's database and worktrees.
+      - switchyard-home:/home/yard
+      # Your projects. To use a folder on the host instead, replace this line
+      # with a bind mount (absolute path, owned by uid 1000):
+      #   - /srv/projects:/workspace
+      - switchyard-workspace:/workspace
+    # No host ports: Coolify's proxy routes the domain to container port 47717.
+    # With plain Docker, publish it on loopback (or a private interface) only:
+    # ports:
+    #   - 127.0.0.1:47717:47717
+
+volumes:
+  switchyard-home:
+  switchyard-workspace:

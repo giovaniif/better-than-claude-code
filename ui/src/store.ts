@@ -112,8 +112,9 @@ export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
 export const modelsOn = (state: State, host: string): Models => state.models[host] ?? EMPTY_MODELS;
 export const usageOn = (state: State, host: string): Usage => state.usage[host] ?? NO_USAGE;
 export const homeOn = (state: State, host: string): string => state.home[host] ?? "";
+/** The local name comes from yardd's `host` message: "This Mac" on a Mac, the hostname or YARD_HOST_NAME elsewhere. */
 export const hostName = (state: State, host: string): string =>
-  host === "local" ? "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
+  host === "local" ? state.host.local?.name || "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
 /** A remote host's sessions are offline while the hub cannot reach it. */
 export const hostOnline = (state: State, host: string): boolean =>
   host === "local"
@@ -315,7 +316,9 @@ export interface Actions {
 function socketUrl(): string {
   const override = (import.meta as any).env?.VITE_YARD_WS as string | undefined;
   if (override) return override;
-  return `ws://${location.host}/ws`;
+  // Behind a TLS reverse proxy (the container image) the page is https, and
+  // the browser refuses a plain ws:// socket from it.
+  return `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
 }
 
 export function useYard(): { state: State; actions: Actions } {

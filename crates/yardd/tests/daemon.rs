@@ -97,6 +97,17 @@ async fn a_plain_turn_streams_then_completes() {
     let last = c.events(&sid);
     assert_eq!(last[last.len() - 2]["text"], "Echo: again");
     assert_eq!(sb.codex_log().matches("req thread/start").count(), 1);
+    assert!(sb.codex_log().contains("req thread/start sandbox=workspace-write"), "{}", sb.codex_log());
+}
+
+#[tokio::test]
+async fn the_codex_sandbox_can_be_set() {
+    let sb = Sandbox::new("sandbox");
+    let d = sb.start_with(&[("YARD_CODEX_SANDBOX", "danger-full-access")]);
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+    c.wait_turn_done(&sid, 0).await;
+    assert!(sb.codex_log().contains("req thread/start sandbox=danger-full-access"), "{}", sb.codex_log());
 }
 
 #[tokio::test]
@@ -582,6 +593,45 @@ async fn foreign_origins_are_refused() {
     assert_eq!(resp.status(), 101);
     let (_ws, resp) = connect("http://localhost:PORT/").await.expect("localhost origin is accepted");
     assert_eq!(resp.status(), 101);
+}
+
+#[tokio::test]
+async fn allow_origin_takes_a_list() {
+    let sb = Sandbox::new("origins");
+    let d = sb.start_with(&[("YARD_ALLOW_ORIGIN", " https://yard.example.com/ , http://100.64.0.9:47717")]);
+    let connect = |origin: &'static str| {
+        let mut req = d.url().into_client_request().unwrap();
+        req.headers_mut().insert("Origin", HeaderValue::from_static(origin));
+        tokio_tungstenite::connect_async(req)
+    };
+    for origin in ["https://yard.example.com", "http://100.64.0.9:47717", "http://100.64.0.9:47717/"] {
+        let (_ws, resp) = connect(origin).await.unwrap_or_else(|e| panic!("{origin} was refused: {e}"));
+        assert_eq!(resp.status(), 101);
+    }
+    for origin in ["https://yard.example.com.evil.example", "http://yard.example.com", "http://evil.example"] {
+        match connect(origin).await {
+            Err(tokio_tungstenite::tungstenite::Error::Http(resp)) => assert_eq!(resp.status(), 403, "{origin}"),
+            other => panic!("{origin} was not refused: {:?}", other.err()),
+        }
+    }
+}
+
+#[tokio::test]
+async fn the_local_host_carries_its_configured_name() {
+    let sb = Sandbox::new("hostname");
+    let d = sb.start_with(&[("YARD_HOST_NAME", "yard-box")]);
+    let mut c = d.client().await;
+    let host = c
+        .wait_for("the local host stats", |m| {
+            (m["op"] == "host" || m["op"] == "snapshot") && m["host"]["id"] == "local"
+        })
+        .await;
+    assert_eq!(host["host"]["name"], "yard-box");
+
+    // A remote may not take the local host's name.
+    c.send(json!({ "op": "host.add", "name": "Yard-Box", "kind": "direct", "url": "ws://127.0.0.1:1/ws" })).await;
+    let err = c.wait_for("the duplicate name refused", |m| m["op"] == "error").await;
+    assert!(err["message"].as_str().unwrap_or("").contains("already exists"), "{err}");
 }
 
 #[tokio::test]

@@ -1,5 +1,5 @@
 //! yardd: owns agent processes, the per-session event log and host stats.
-//! Serves the UI and a WebSocket on 127.0.0.1.
+//! Serves the UI and a WebSocket on 127.0.0.1 by default.
 
 mod claude;
 mod codex;
@@ -17,6 +17,7 @@ mod ws;
 
 use std::{path::PathBuf, sync::Arc, time::Duration};
 
+use anyhow::Context;
 use axum::{routing::get, Router};
 use tower_http::services::ServeDir;
 
@@ -39,6 +40,13 @@ async fn main() -> anyhow::Result<()> {
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(DEFAULT_PORT);
+    // Loopback by default: the desktop app and SSH hosts reach it locally or
+    // through an SSH forward. Only the container image sets YARD_BIND=0.0.0.0,
+    // so its published port or reverse proxy can reach it.
+    let bind: std::net::IpAddr = match std::env::var("YARD_BIND") {
+        Ok(b) if !b.trim().is_empty() => b.trim().parse().with_context(|| format!("YARD_BIND `{b}` is not an IP address"))?,
+        _ => std::net::Ipv4Addr::LOCALHOST.into(),
+    };
     let root: PathBuf = match std::env::var("YARD_ROOT") {
         Ok(p) => PathBuf::from(p),
         Err(_) => std::env::current_dir()?,
@@ -79,9 +87,14 @@ async fn main() -> anyhow::Result<()> {
         .fallback_service(ServeDir::new(root.join("ui/dist")))
         .with_state(app);
 
-    // Loopback only. Remote access goes through an SSH forward.
-    let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
-    eprintln!("yardd: http://127.0.0.1:{port}");
+    if !bind.is_loopback() && ws::allowed_origins().is_empty() {
+        eprintln!(
+            "yardd: WARNING: listening on {bind} with no YARD_ALLOW_ORIGIN. Browsers on any address other than \
+             http://127.0.0.1:{port} will be refused. Set YARD_ALLOW_ORIGIN to the URL you open, such as https://yard.example.com"
+        );
+    }
+    let listener = tokio::net::TcpListener::bind((bind, port)).await?;
+    eprintln!("yardd: http://{}", std::net::SocketAddr::new(bind, port));
     axum::serve(listener, router).await?;
     Ok(())
 }

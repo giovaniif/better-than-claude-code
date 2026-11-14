@@ -396,6 +396,23 @@ pub async fn load_models(app: &Arc<App>) -> Result<()> {
     Ok(())
 }
 
+/// Codex's sandbox for new and resumed threads: `workspace-write` unless
+/// YARD_CODEX_SANDBOX says otherwise. The container image sets
+/// `danger-full-access`, because Codex's Linux sandbox (bubblewrap) cannot
+/// create namespaces in an unprivileged container, so every command would
+/// fail; there the container is the boundary.
+fn sandbox_mode() -> &'static str {
+    match std::env::var("YARD_CODEX_SANDBOX").as_deref().map(str::trim) {
+        Ok("read-only") => "read-only",
+        Ok("danger-full-access") => "danger-full-access",
+        Ok("workspace-write") | Ok("") | Err(_) => "workspace-write",
+        Ok(other) => {
+            eprintln!("yardd: unknown YARD_CODEX_SANDBOX `{other}`, using workspace-write");
+            "workspace-write"
+        }
+    }
+}
+
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
     let c = client(app).await?;
@@ -405,7 +422,7 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
             json!({
                 "cwd": meta.cwd,
                 "model": meta.model,
-                "sandbox": "workspace-write",
+                "sandbox": sandbox_mode(),
                 // Sandboxed to the workspace; Codex asks when it needs more.
                 // "untrusted" asked before every `cat`, which was unusable.
                 "approvalPolicy": "on-request",
@@ -438,7 +455,7 @@ async fn resume(app: &Arc<App>, sid: &str, thread_id: String) -> Result<()> {
             "threadId": thread_id,
             "cwd": meta.cwd,
             "model": meta.model,
-            "sandbox": "workspace-write",
+            "sandbox": sandbox_mode(),
             "approvalPolicy": "on-request",
             // We have our own copy of the history.
             "excludeTurns": true,

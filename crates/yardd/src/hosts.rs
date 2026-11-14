@@ -1,7 +1,10 @@
 //! Host stats: CPU, load, memory and disk, sampled every few seconds, plus
 //! what each session uses (see `guard`).
 
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::{Arc, OnceLock},
+    time::Duration,
+};
 
 use serde_json::json;
 use sysinfo::{Disks, ProcessRefreshKind, System, UpdateKind};
@@ -11,6 +14,22 @@ use crate::state::App;
 const SAMPLE_SECS: u64 = 3;
 /// One hour of CPU history.
 const HISTORY: usize = (3600 / SAMPLE_SECS) as usize;
+
+/// The name the UI shows for the machine yardd runs on. "This Mac" is the
+/// desktop app's own wording; a box or container shows its hostname, or
+/// YARD_HOST_NAME when set.
+pub fn local_name() -> &'static str {
+    static NAME: OnceLock<String> = OnceLock::new();
+    NAME.get_or_init(|| {
+        if let Some(name) = std::env::var("YARD_HOST_NAME").ok().map(|n| n.trim().to_string()).filter(|n| !n.is_empty()) {
+            return name;
+        }
+        if cfg!(target_os = "macos") {
+            return "This Mac".to_string();
+        }
+        System::host_name().filter(|n| !n.is_empty()).unwrap_or_else(|| "This machine".to_string())
+    })
+}
 
 pub async fn run(app: Arc<App>) {
     let mut sys = System::new();
@@ -56,7 +75,7 @@ pub async fn run(app: Arc<App>) {
 
         let mut host = json!({
             "id": "local",
-            "name": "This Mac",
+            "name": local_name(),
             "cpu": cpu,
             "cores": cores,
             "load": load,
