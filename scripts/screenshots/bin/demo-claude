@@ -1,0 +1,80 @@
+#!/usr/bin/env bun
+// A scripted Claude sidecar for the README screenshots (run.sh sets
+// YARD_SIDECAR to it). It speaks yard-claude's JSON lines and plays one
+// turn: search, read, an edit written to disk for real, a test run, a summary.
+
+import { readFileSync, writeFileSync } from "node:fs";
+
+const out = (msg) => process.stdout.write(`${JSON.stringify(msg)}\n`);
+const emit = (event) => out({ type: "event", event });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let n = 0;
+const id = (p) => `${p}-${++n}`;
+let cwd = "";
+
+async function say(text) {
+  const itemId = id("text");
+  for (const chunk of text.match(/.{1,24}/gs) ?? []) {
+    emit({ type: "assistant_delta", itemId, text: chunk });
+    await sleep(8);
+  }
+  emit({ type: "assistant_message", itemId, text });
+}
+
+async function tool(kind, title, detail, output) {
+  const itemId = id("tool");
+  emit({ type: "tool_started", itemId, kind, title, detail });
+  await sleep(120);
+  emit({ type: "tool_completed", itemId, ok: true, output });
+}
+
+async function turn() {
+  await tool("search", "Grep", "rateLimit|express-rate-limit in src", "No matches.");
+  await tool("read", "Read", "src/server.ts", "");
+  await say("There is no rate limiting yet. I'll add a token bucket per API key in front of the public routes, so internal routes stay unlimited.");
+  const file = `${cwd}/src/server.ts`;
+  const before = readFileSync(file, "utf8");
+  const after = before
+    .replace('import { routes } from "./routes";\n', 'import { routes } from "./routes";\nimport { rateLimit } from "./middleware/rate-limit";\n')
+    .replace('app.use("/api", routes);\n', 'app.use("/api", rateLimit({ perMinute: 120, burst: 20, key: (req) => req.header("x-api-key") ?? req.ip }));\napp.use("/api", routes);\n');
+  writeFileSync(file, after);
+  writeFileSync(
+    `${cwd}/src/middleware/rate-limit.ts`,
+    'import type { RequestHandler } from "express";\n\n/** A token bucket per key: `burst` requests at once, refilled at `perMinute`. */\nexport function rateLimit(opts: { perMinute: number; burst: number; key: (req: any) => string }): RequestHandler {\n  const buckets = new Map<string, { tokens: number; at: number }>();\n  return (req, res, next) => {\n    const now = Date.now();\n    const k = opts.key(req);\n    const b = buckets.get(k) ?? { tokens: opts.burst, at: now };\n    b.tokens = Math.min(opts.burst, b.tokens + ((now - b.at) / 60_000) * opts.perMinute);\n    b.at = now;\n    if (b.tokens < 1) return res.status(429).set("Retry-After", "1").end();\n    b.tokens -= 1;\n    buckets.set(k, b);\n    next();\n  };\n}\n',
+  );
+  const diff = Bun.spawnSync(["git", "diff", "--", "src/server.ts"], { cwd }).stdout.toString().split("\n").slice(4).join("\n");
+  const editId = id("edit");
+  emit({ type: "tool_started", itemId: editId, kind: "edit", title: "Edit", detail: "src/server.ts" });
+  emit({ type: "file_change", itemId: `${editId}-diff`, files: [{ path: "src/server.ts", diff, kind: "update" }] });
+  emit({ type: "tool_completed", itemId: editId, ok: true, output: "" });
+  await tool("command", "Bash", "npm test -- rate-limit", "PASS  test/rate-limit.test.ts\n  ✓ allows a burst of 20 (4 ms)\n  ✓ answers 429 with Retry-After once the bucket is empty (2 ms)\n  ✓ refills at 120 per minute (1 ms)\n\nTests: 3 passed, 3 total");
+  await say(
+    [
+      "Rate limiting is in.",
+      "",
+      "- `src/middleware/rate-limit.ts`: a token bucket per API key (or IP when there is none), 120 requests a minute with bursts of 20.",
+      "- `src/server.ts`: applied to `/api` only.",
+      "- Over the limit, clients get `429` with `Retry-After`.",
+      "",
+      "Three new tests pass. Buckets live in memory, so with several instances each one limits separately; say if you want them in Redis.",
+    ].join("\n"),
+  );
+  emit({ type: "turn_completed", status: "completed" });
+}
+
+for await (const line of console) {
+  let msg;
+  try {
+    msg = JSON.parse(line);
+  } catch {
+    continue;
+  }
+  if (msg.type === "start") {
+    cwd = msg.cwd;
+    out({ type: "session", claudeSessionId: id("demo") });
+    out({ type: "usage", usage: { status: "allowed", fiveHour: 0.18, sevenDay: 0.52, resetsAt: null } });
+  } else if (msg.type === "user") {
+    turn();
+  }
+}
+process.exit(0);

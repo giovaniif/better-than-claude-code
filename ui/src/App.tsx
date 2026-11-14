@@ -202,6 +202,7 @@ function effortFor(model: ModelInfo | undefined, wanted: string): string {
  *  to Claude at once and to Codex from its next turn. */
 function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: Permission; onChange(p: Permission): void }) {
   const [open, setOpen] = useState(false);
+  useEscape(open, () => setOpen(false));
   const current = PERMISSIONS.find((p) => p.id === value) ?? PERMISSIONS[0];
   return (
     <div className="picker">
@@ -220,7 +221,7 @@ function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: 
       {open && (
         <>
           <div className="scrim" onClick={() => setOpen(false)} />
-          <div className="popover permission-menu" role="menu" onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+          <div className="popover permission-menu" role="menu">
             {PERMISSIONS.map((p) => (
               <button
                 key={p.id}
@@ -266,6 +267,7 @@ function ModelPicker(props: {
     setOpen(false);
     setConfirm(null);
   };
+  useEscape(open, close);
   return (
     <div className="picker">
       <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
@@ -775,6 +777,16 @@ const BRANCH = "M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 21a3 3 0 1 0 0-6 3 3
 const LAPTOP = "M4 5h16v11H4ZM2 20h20";
 const CHECK = "M5 12l5 5 9-11";
 
+/** Close an open menu on Escape, wherever focus is. */
+function useEscape(open: boolean, close: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: globalThis.KeyboardEvent) => e.key === "Escape" && close();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+}
+
 /** A button under the prompt box that opens a menu below it. */
 function ChipMenu(props: {
   icon: ReactNode;
@@ -786,6 +798,7 @@ function ChipMenu(props: {
   children: ReactNode;
 }) {
   const { open, setOpen } = props;
+  useEscape(open, () => setOpen(false));
   return (
     <div className="picker">
       <button className="chip" aria-haspopup="true" aria-expanded={open} title={props.title} onClick={() => setOpen(!open)}>
@@ -796,7 +809,7 @@ function ChipMenu(props: {
       {open && (
         <>
           <div className="scrim" onClick={() => setOpen(false)} />
-          <div className={`popover menu ${props.wide ? "menu-wide" : ""}`} onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
+          <div className={`popover menu ${props.wide ? "menu-wide" : ""}`}>
             {props.children}
           </div>
         </>
@@ -1251,7 +1264,8 @@ function ItemView(props: {
             <span className={`tool-chevron ${open ? "open" : ""} ${expandable ? "" : "hidden"}`}>
               <Icon d={CHEVRON_RIGHT} size={12} />
             </span>
-            <span>{item.title}</span>
+            {/* Codex titles a command "Ran" from the start; until it ends, it has not. */}
+            <span>{item.state === "running" && item.title === "Ran" ? "Running" : item.title}</span>
             {item.detail && <code>{item.detail}</code>}
             {item.state === "running" && <span className="pulse" aria-label="running" />}
             {item.state === "failed" && <span className="bad">· failed</span>}

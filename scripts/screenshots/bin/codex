@@ -1,0 +1,184 @@
+#!/usr/bin/env bun
+// A scripted `codex app-server` for the README screenshots: real-looking
+// models and turns, no model calls. scripts/screenshots/run.sh puts this
+// folder first on PATH. A turn is picked by words in the prompt:
+//   "flaky"      reproduces a failing test, edits src/retry.rs for real, reruns it
+//   "migration"  explains, then waits on a command approval that is never answered
+//   anything     streams a long answer slowly, so the session stays running
+
+import { readFileSync, writeFileSync } from "node:fs";
+
+const write = (msg) => process.stdout.write(`${JSON.stringify(msg)}\n`);
+const notify = (method, params) => write({ method, params });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let counter = 0;
+const newId = (p) => `${p}-${process.pid}-${++counter}`;
+const threads = new Map();
+
+const efforts = (list) => list.map((reasoningEffort) => ({ reasoningEffort, description: reasoningEffort }));
+const MODELS = [
+  ["gpt-6.1-sol", "GPT-6.1 Sol", true],
+  ["gpt-6-astra", "GPT-6 Astra", false],
+  ["gpt-6.1-terra", "GPT-6.1 Terra", false],
+  ["gpt-6-luna", "GPT-6 Luna", false],
+].map(([id, displayName, isDefault]) => ({
+  id,
+  model: id,
+  displayName,
+  description: "",
+  hidden: false,
+  isDefault,
+  defaultReasoningEffort: "medium",
+  supportedReasoningEfforts: efforts(["low", "medium", "high", "xhigh"]),
+}));
+
+const thread = (id, p) => ({
+  thread: { id, cwd: p.cwd ?? threads.get(id) ?? "", preview: "", ephemeral: false, modelProvider: "openai", createdAt: 0, updatedAt: 0, status: { type: "idle" }, turns: [] },
+  model: p.model ?? "gpt-6.1-sol",
+  modelProvider: "openai",
+  cwd: p.cwd ?? "",
+  approvalPolicy: "on-request",
+  approvalsReviewer: "user",
+  sandbox: { type: "workspaceWrite" },
+});
+
+function handle({ id, method, params: p = {} }) {
+  const reply = (result) => write({ id, result });
+  switch (method) {
+    case "initialize":
+      return reply({ userAgent: "codex/demo", codexHome: "/nonexistent", platformFamily: "unix", platformOs: "macos" });
+    case "model/list":
+      return reply({ data: MODELS, nextCursor: null });
+    case "account/rateLimits/read":
+      return reply({ rateLimits: { limitId: "codex", primary: { usedPercent: 23, windowDurationMins: 300, resetsAt: null }, secondary: { usedPercent: 41, windowDurationMins: 10080, resetsAt: null } } });
+    case "thread/start": {
+      const tid = newId("thread");
+      threads.set(tid, p.cwd ?? "");
+      return reply(thread(tid, p));
+    }
+    case "thread/resume":
+      return reply(thread(p.threadId, p));
+    case "turn/start": {
+      const turn = { id: newId("turn"), items: [], status: "inProgress", error: null };
+      reply({ turn });
+      const text = (p.input ?? []).map((i) => i.text ?? "").join("\n");
+      setTimeout(() => runTurn(p.threadId, threads.get(p.threadId) ?? "", turn, text), 0);
+      return;
+    }
+    case "turn/interrupt":
+      return reply({});
+    default:
+      return write({ id, error: { code: -32600, message: `demo codex does not implement ${method}` } });
+  }
+}
+
+async function runTurn(threadId, cwd, turn, text) {
+  const turnId = turn.id;
+  const item = (method, it) => notify(method, { threadId, turnId, item: it, startedAtMs: 0, completedAtMs: 0 });
+  const say = async (answer) => {
+    const itemId = newId("msg");
+    for (const chunk of answer.match(/.{1,24}/gs) ?? []) {
+      notify("item/agentMessage/delta", { threadId, turnId, itemId, delta: chunk });
+      await sleep(8);
+    }
+    item("item/completed", { type: "agentMessage", id: itemId, text: answer });
+  };
+  const run = async (command, output, exitCode) => {
+    const base = { type: "commandExecution", id: newId("cmd"), command, cwd, commandActions: [] };
+    item("item/started", { ...base, status: "inProgress" });
+    await sleep(150);
+    item("item/completed", { ...base, status: "completed", exitCode, aggregatedOutput: output });
+  };
+  notify("turn/started", { threadId, turn });
+
+  if (/flaky/i.test(text)) {
+    await say("I'll reproduce it first.");
+    await run(
+      "cargo test -p payments retry",
+      [
+        "running 3 tests",
+        "test retry::tests::retries_on_503 ... ok",
+        "test retry::tests::gives_up_after_max_attempts ... ok",
+        "test retry::tests::backs_off_exponentially ... FAILED",
+        "",
+        "---- retry::tests::backs_off_exponentially stdout ----",
+        "assertion `left == right` failed",
+        "  left: 437ms",
+        " right: 400ms",
+        "",
+        "test result: FAILED. 2 passed; 1 failed",
+      ].join("\n"),
+      101,
+    );
+    await say(
+      "`backoff()` adds jitter from `rand::thread_rng()`, so the test compares against a delay that changes on every run. I'll make the jitter source injectable and pin it in the test.",
+    );
+    const file = `${cwd.replace(/\/$/, "")}/src/retry.rs`;
+    const before = readFileSync(file, "utf8");
+    const after = before
+      .replace(
+        "use rand::Rng;\n",
+        "use rand::Rng;\n\n/// Where the random part of a delay comes from, so tests can pin it.\npub trait Jitter {\n    fn millis(&self, max: u64) -> u64;\n}\n\npub struct ThreadJitter;\n\nimpl Jitter for ThreadJitter {\n    fn millis(&self, max: u64) -> u64 {\n        rand::thread_rng().gen_range(0..=max)\n    }\n}\n",
+      )
+      .replace("pub struct Backoff {\n    base: Duration,\n    max: Duration,\n}", "pub struct Backoff<J: Jitter = ThreadJitter> {\n    base: Duration,\n    max: Duration,\n    jitter: J,\n}")
+      .replace(
+        "        let jitter = rand::thread_rng().gen_range(0..=self.base.as_millis() as u64 / 4);\n",
+        "        let jitter = self.jitter.millis(self.base.as_millis() as u64 / 4);\n",
+      )
+      .replace(
+        "        let backoff = Backoff::new(Duration::from_millis(100), Duration::from_secs(5));",
+        "        let backoff = Backoff::with_jitter(Duration::from_millis(100), Duration::from_secs(5), NoJitter);",
+      );
+    writeFileSync(file, after);
+    const diff = Bun.spawnSync(["git", "diff", "--", "src/retry.rs"], { cwd }).stdout.toString().split("\n").slice(4).join("\n");
+    const changes = [{ path: file, kind: { type: "update", move_path: null }, diff }];
+    const edit = newId("edit");
+    item("item/started", { type: "fileChange", id: edit, changes, status: "inProgress" });
+    item("item/completed", { type: "fileChange", id: edit, changes, status: "completed" });
+    await run("cargo test -p payments retry", "running 3 tests\ntest retry::tests::retries_on_503 ... ok\ntest retry::tests::gives_up_after_max_attempts ... ok\ntest retry::tests::backs_off_exponentially ... ok\n\ntest result: ok. 3 passed; 0 failed", 0);
+    await say(
+      [
+        "Fixed the flaky test.",
+        "",
+        "**Cause:** the backoff drew its jitter from the thread RNG, so `backs_off_exponentially` saw a different delay on every run.",
+        "",
+        "**Change** in `src/retry.rs`:",
+        "",
+        "- `Backoff` takes a `Jitter` source. Production keeps `ThreadJitter`, so callers are unchanged.",
+        "- The test uses `NoJitter`, so the delays are exact.",
+        "",
+        "`cargo test -p payments retry` passes 20 runs in a row.",
+      ].join("\n"),
+    );
+    return notify("turn/completed", { threadId, turn: { ...turn, status: "completed" } });
+  }
+
+  if (/migration/i.test(text)) {
+    await say("The migration adds a nullable `due_at` column to `invoices` and backfills it from `issued_at + terms`. It writes to your local database, so I need your OK to run it.");
+    const itemId = newId("cmd");
+    const command = "npm run db:migrate -- --name add_invoice_due_at";
+    item("item/started", { type: "commandExecution", id: itemId, command, cwd, commandActions: [], status: "inProgress" });
+    write({ id: 9000 + counter, method: "item/commandExecution/requestApproval", params: { threadId, turnId, itemId, startedAtMs: 0, command, cwd, reason: "Writes to the local Postgres database" } });
+    return; // Left waiting, so the screenshot shows the approval.
+  }
+
+  const itemId = newId("msg");
+  const words = "Profiling the export with 500 invoices. Most of the time goes to font subsetting: every page re-embeds the same three fonts. Caching the subset per document should cut it by about half; trying that now and measuring again.".split(" ");
+  for (const word of words) {
+    notify("item/agentMessage/delta", { threadId, turnId, itemId, delta: `${word} ` });
+    await sleep(900);
+  }
+  await sleep(10 ** 9);
+}
+
+for await (const line of console) {
+  if (!line.trim()) continue;
+  let msg;
+  try {
+    msg = JSON.parse(line);
+  } catch {
+    continue;
+  }
+  if (msg.method !== undefined && msg.id !== undefined) handle(msg);
+}
+process.exit(0);
