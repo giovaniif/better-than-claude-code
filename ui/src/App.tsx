@@ -126,20 +126,18 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
       <div className="sidebar-bottom">
         {["local", ...state.hosts.map((h) => h.id)].map((id) => {
           const stats = state.host[id];
-          const entry = state.hosts.find((h) => h.id === id);
-          const online = hostOnline(state, id);
+          const status = hostState(state, id);
           return (
-            <button key={id} className={`host-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}>
+            <button key={id} className="host-row" onClick={() => actions.go({ page: "hosts" })} title={HOST_STATE_LABEL[status]}>
+              <span className={`dot host-dot-${status}`} aria-hidden="true" />
               <span className="host-name">{hostName(state, id)}</span>
-              {id !== "local" && <Cloud size={13} />}
+              {id !== "local" && <Cloud size={12} />}
               <span className="spacer" />
-              {stats && online ? (
-                <code className={hostPressure(stats) ? "warn" : ""}>
-                  CPU {pct(stats.cpu)} · Mem {pct((stats.memUsed / stats.memTotal) * 100)}
-                </code>
-              ) : (
-                entry && <code className={entry.status === "error" ? "bad" : ""}>{entry.status === "error" ? "Offline" : "Connecting"}</code>
-              )}
+              <span className="host-stat">
+                {(status === "ok" || status === "busy") && stats
+                  ? `${pct(stats.cpu)} · ${pct((stats.memUsed / stats.memTotal) * 100)}`
+                  : HOST_STATE_LABEL[status]}
+              </span>
             </button>
           );
         })}
@@ -1181,20 +1179,6 @@ function Markdown({ text }: { text: string }) {
 
 /* ---------- hosts ---------- */
 
-function Meter({ label, value, detail, warn }: { label: string; value: number; detail: string; warn?: boolean }) {
-  return (
-    <div className="meter">
-      <div className="meter-head">
-        <span>{label}</span>
-        <code className={warn ? "warn" : "muted"}>{detail}</code>
-      </div>
-      <span className="track" aria-hidden="true">
-        <span className={`fill ${warn ? "fill-warn" : ""}`} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
-      </span>
-    </div>
-  );
-}
-
 function Sparkline({ values }: { values: number[] }) {
   if (values.length < 2) return <div className="muted small">Collecting CPU history.</div>;
   const points = values
@@ -1269,53 +1253,114 @@ function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, S
   );
 }
 
-function HostCard({ name, remote, entry, host, sessions, onRemove }: {
-  name: string;
-  remote: boolean;
-  entry?: HostEntry;
-  host: Host | undefined;
-  sessions: Record<string, SessionMeta>;
-  onRemove?(): void;
-}) {
-  const connected = !entry || entry.status === "connected";
-  const where = entry ? (entry.kind === "ssh" ? `ssh ${entry.destination}:${entry.remotePort ?? 47717}` : `Direct, for testing · ${entry.url}`) : "";
-  return (
-    <div className="host-block">
-      <section className="host-card" aria-label={name}>
-        <div className="host-head">
-          <h2>{name}</h2>
-          {remote && <Cloud size={15} />}
-          {where && <code className="muted small host-where">{where}</code>}
-          <span className="spacer" />
-          {!connected ? (
-            <span className={entry?.status === "error" ? "bad" : "muted"}>{entry?.status === "error" ? "Offline" : "Connecting"}</span>
-          ) : host ? (
-            <span className={hostPressure(host) ? "warn" : "muted"}>{hostPressure(host) ? "Under pressure" : "Healthy"}</span>
-          ) : null}
-        </div>
-        {entry?.error && entry.status !== "connected" && <div className="error-line small">{entry.error}</div>}
-        {connected && !host && <div className="muted">Waiting for the first sample.</div>}
-        {connected && host && (
+type HostState = "ok" | "busy" | "down" | "connecting";
+function hostState(state: State, id: string): HostState {
+  const entry = state.hosts.find((h) => h.id === id);
+  if (id !== "local" && !hostOnline(state, id)) return entry?.status === "connecting" ? "connecting" : "down";
+  const stats = state.host[id];
+  return stats && hostPressure(stats) ? "busy" : "ok";
+}
+const HOST_STATE_LABEL: Record<HostState, string> = { ok: "Healthy", busy: "Under pressure", down: "Offline", connecting: "Connecting" };
+
+/** yardd passes on what ssh or the socket said; turn the usual ones into
+ *  what to do about it. The raw text stays available under Details. */
+function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode } {
+  const err = entry.error ?? "";
+  const dest = entry.destination ?? "";
+  const machine = dest.replace(/^.*@/, "");
+  if (/Connection lost/i.test(err)) return { title: "Connection lost. Reconnecting…" };
+  if (entry.kind === "ssh") {
+    if (/Could not resolve hostname/i.test(err))
+      return { title: `Can't find ${machine}.`, hint: "Check the name. A Tailscale machine also answers to its full name, like box.tailnet.ts.net." };
+    if (/Permission denied/i.test(err))
+      return { title: "SSH refused the login.", hint: <>Make <code>ssh {dest}</code> work in Terminal without a password prompt (a key or Tailscale SSH), then wait for the retry.</> };
+    if (/Host key verification failed/i.test(err))
+      return { title: "The host key is not trusted yet.", hint: <>Run <code>ssh {dest}</code> once in Terminal and accept the key.</> };
+    if (/timed out|No route to host|Network is unreachable/i.test(err) && !/os error/i.test(err))
+      return { title: `Can't reach ${machine}.`, hint: "Is it on, and on the same network or tailnet?" };
+    // ssh is up but nothing answers on the forwarded port: no yardd there.
+    if (/reset by peer|refused|os error|IO error|timed out/i.test(err))
+      return {
+        title: `SSH works, but Switchyard isn't running on ${machine}.`,
+        hint: (
           <>
-            <Meter label="CPU" value={host.cpu} detail={`${pct(host.cpu)} · load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
-            <Meter
+            On that machine, clone the repo and run <code>scripts/install-host.sh</code>. It installs yardd as a service on port {entry.remotePort ?? 47717}.
+          </>
+        ),
+      };
+  }
+  return { title: err || "Not connected." };
+}
+
+function HostCard({ state, id, onRemove }: { state: State; id: string; onRemove?(): void }) {
+  const entry = state.hosts.find((h) => h.id === id);
+  const status = hostState(state, id);
+  const host = status === "down" || status === "connecting" ? undefined : state.host[id];
+  const sessions = Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
+  const name = hostName(state, id);
+  const where = entry ? (entry.kind === "ssh" ? entry.destination : entry.url) : "";
+  const problem = entry && status === "down" ? explainHostError(entry) : null;
+  return (
+    <section className="host-card" aria-label={name}>
+      <div className="host-head">
+        <span className={`dot host-dot-${status}`} aria-hidden="true" />
+        <h2>{name}</h2>
+        {entry && <Cloud size={14} />}
+        {where && <span className="muted small host-where">{where}</span>}
+        <span className="spacer" />
+        <span className={`small host-state-${status}`}>{HOST_STATE_LABEL[status]}</span>
+      </div>
+      {problem && (
+        <div className="host-problem">
+          <div>{problem.title}</div>
+          {problem.hint && <div className="muted small">{problem.hint}</div>}
+          {entry?.error && problem.title !== entry.error && (
+            <details className="small muted">
+              <summary>Details</summary>
+              <code>{entry.error}</code>
+            </details>
+          )}
+        </div>
+      )}
+      {status === "connecting" && <div className="muted small">Opening the SSH tunnel…</div>}
+      {host && (
+        <>
+          <div className="stat-grid">
+            <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
+            <Stat
               label="Memory"
               value={(host.memUsed / host.memTotal) * 100}
-              detail={`${gb(host.memUsed)} of ${gb(host.memTotal)} GB`}
+              big={`${gb(host.memUsed)} GB`}
+              detail={`of ${gb(host.memTotal)} GB`}
               warn={host.memUsed / host.memTotal > 0.9}
             />
-            <Meter
+            <Stat
               label="Disk"
               value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
-              detail={`${gb(host.diskUsed)} of ${gb(host.diskTotal)} GB`}
+              big={`${gb(host.diskUsed)} GB`}
+              detail={`of ${gb(host.diskTotal)} GB`}
               warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
             />
-            <Sparkline values={host.cpuHistory ?? []} />
-          </>
-        )}
-        {onRemove && <RemoveHost onConfirm={onRemove} />}
-      </section>
-      {connected && host && <SessionUse host={host} sessions={sessions} />}
+          </div>
+          <Sparkline values={host.cpuHistory ?? []} />
+          <SessionUse host={host} sessions={sessions} />
+        </>
+      )}
+      {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
+      {onRemove && <RemoveHost onConfirm={onRemove} />}
+    </section>
+  );
+}
+
+function Stat({ label, value, big, detail, warn }: { label: string; value: number; big: string; detail: string; warn?: boolean }) {
+  return (
+    <div className={`stat ${warn ? "warn" : ""}`}>
+      <span className="muted small">{label}</span>
+      <span className="stat-big">{big}</span>
+      <div className="bar-track" aria-hidden="true">
+        <div className="bar-fill" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
+      </div>
+      <span className="muted small">{detail}</span>
     </div>
   );
 }
@@ -1329,95 +1374,132 @@ function RemoveHost({ onConfirm }: { onConfirm(): void }) {
     return () => clearTimeout(timer);
   }, [armed]);
   return (
-    <div className="row">
-      <button className="btn" onClick={() => (armed ? onConfirm() : setArmed(true))}>
-        {armed ? "Remove host?" : "Remove"}
+    <div className="host-foot">
+      <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
+        {armed ? "Click again to remove" : "Remove host"}
       </button>
-      <span className="muted small">Its sessions keep running there.</span>
+      {armed && <span className="muted small">Its sessions keep running there.</span>}
     </div>
   );
 }
 
-function AddHost({ actions, errorCount }: { actions: Actions; errorCount: number }) {
-  const [name, setName] = useState("");
-  const [kind, setKind] = useState<"ssh" | "direct">("ssh");
+/** `user@box.tailnet.ts.net` → `box`. */
+const nameFromDestination = (dest: string) => dest.trim().replace(/^.*@/, "").split(".")[0] ?? "";
+
+function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount: number; onDone(): void }) {
   const [destination, setDestination] = useState("");
+  const [name, setName] = useState("");
   const [port, setPort] = useState("47717");
+  const [more, setMore] = useState(false);
+  const [direct, setDirect] = useState(false);
   const [url, setUrl] = useState("");
   const [sent, setSent] = useState(false);
-  // An error from yardd keeps the fields so nothing is retyped.
+  // An error from yardd keeps the form open with what was typed.
   useEffect(() => setSent(false), [errorCount]);
-  const ready = name.trim() && (kind === "ssh" ? destination.trim() : url.trim());
+  useEffect(() => {
+    if (sent) onDone();
+  }, [sent]);
+  const finalName = (name.trim() || (direct ? "" : nameFromDestination(destination))).trim();
+  const ready = finalName && (direct ? url.trim() : destination.trim());
   const submit = () => {
     if (!ready) return;
     actions.addHost(
-      kind === "ssh"
-        ? { name: name.trim(), kind, destination: destination.trim(), remotePort: Number(port) || 47717 }
-        : { name: name.trim(), kind, url: url.trim() },
+      direct
+        ? { name: finalName, kind: "direct", url: url.trim() }
+        : { name: finalName, kind: "ssh", destination: destination.trim(), remotePort: Number(port) || 47717 },
     );
     setSent(true);
-    setName("");
-    setDestination("");
-    setUrl("");
   };
   return (
     <section className="host-card add-host" aria-label="Add host">
-      <h2>Add host</h2>
-      <div className="muted small">Another machine running yardd, reached over SSH. yardd starts the tunnel itself.</div>
-      <div className="form-grid">
-        <label htmlFor="host-name">Name</label>
-        <input id="host-name" type="text" placeholder="devbox" value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
-        <label htmlFor="host-kind">Connection</label>
-        <select id="host-kind" value={kind} onChange={(e) => setKind(e.target.value as "ssh" | "direct")}>
-          <option value="ssh">SSH</option>
-          <option value="direct">Direct, for testing</option>
-        </select>
-        {kind === "ssh" ? (
-          <>
-            <label htmlFor="host-dest">SSH destination</label>
-            <input id="host-dest" type="text" placeholder="devbox or user@100.x.y.z" value={destination} onChange={(e) => setDestination(e.target.value)} spellCheck={false} />
-            <label htmlFor="host-port">Remote port</label>
-            <input id="host-port" type="text" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value.replace(/\D/g, ""))} />
-          </>
-        ) : (
-          <>
-            <label htmlFor="host-url">URL</label>
-            <input id="host-url" type="text" placeholder="ws://127.0.0.1:47726/ws" value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false} />
-          </>
-        )}
+      <h2>Add a host</h2>
+      <div className="muted small">
+        Run sessions on another machine you can <code>ssh</code> into without a password. It needs Switchyard installed: clone the repo there and run{" "}
+        <code>scripts/install-host.sh</code>.
       </div>
+      {!direct && (
+        <input
+          className="field"
+          autoFocus
+          type="text"
+          placeholder="user@machine"
+          aria-label="SSH destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          spellCheck={false}
+        />
+      )}
+      {more && (
+        <div className="form-grid">
+          <label htmlFor="host-name">Name</label>
+          <input id="host-name" type="text" placeholder={nameFromDestination(destination) || "devbox"} value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
+          {direct ? (
+            <>
+              <label htmlFor="host-url">URL</label>
+              <input id="host-url" type="text" placeholder="ws://127.0.0.1:47726/ws" value={url} onChange={(e) => setUrl(e.target.value)} spellCheck={false} />
+            </>
+          ) : (
+            <>
+              <label htmlFor="host-port">Remote port</label>
+              <input id="host-port" type="text" inputMode="numeric" value={port} onChange={(e) => setPort(e.target.value.replace(/\D/g, ""))} />
+            </>
+          )}
+          <span />
+          <label className="check small">
+            <input type="checkbox" checked={direct} onChange={(e) => setDirect(e.target.checked)} />
+            Direct WebSocket URL, for testing
+          </label>
+        </div>
+      )}
       <div className="row">
         <button className="btn-primary" disabled={!ready} onClick={submit}>
-          Add host
+          Add {finalName || "host"}
         </button>
-        {sent && <span className="muted small">Added. Connecting.</span>}
+        <button className="btn-text" onClick={onDone}>
+          Cancel
+        </button>
+        <span className="spacer" />
+        {!more && (
+          <button className="btn-text" onClick={() => setMore(true)}>
+            Options
+          </button>
+        )}
       </div>
     </section>
   );
 }
 
 function Hosts({ state, actions }: { state: State; actions: Actions }) {
-  const sessionsOn = (id: string) => Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
+  const [adding, setAdding] = useState(false);
   return (
     <div className="hosts">
       <header className="bar">
         <h1>Hosts</h1>
+        <span className="spacer" />
+        {!adding && (
+          <button className="btn" onClick={() => setAdding(true)}>
+            <Icon d={PLUS} size={13} />
+            Add host
+          </button>
+        )}
       </header>
       <div className="scroll">
         <div className="hosts-inner">
-          <HostCard name="This Mac" remote={false} host={state.host.local} sessions={sessionsOn("local")} />
+          {adding && <AddHost actions={actions} errorCount={state.errorCount} onDone={() => setAdding(false)} />}
+          <HostCard state={state} id="local" />
           {state.hosts.map((h) => (
-            <HostCard
-              key={h.id}
-              name={h.name}
-              remote
-              entry={h}
-              host={hostOnline(state, h.id) ? state.host[h.id] : undefined}
-              sessions={sessionsOn(h.id)}
-              onRemove={() => actions.removeHost(h.id)}
-            />
+            <HostCard key={h.id} state={state} id={h.id} onRemove={() => actions.removeHost(h.id)} />
           ))}
-          <AddHost actions={actions} errorCount={state.errorCount} />
+          {state.hosts.length === 0 && !adding && (
+            <button className="host-empty" onClick={() => setAdding(true)}>
+              <Icon d={CLOUD} size={16} />
+              <span>
+                <strong>Run sessions on another machine</strong>
+                <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>

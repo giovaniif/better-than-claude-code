@@ -315,3 +315,40 @@ h1, h2, h3, p { margin: 0; }
 .folder-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .folder-detail { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .folder-open { margin-left: auto; width: 24px; height: 24px; }
+
+/* hosts: sidebar rows and the Hosts page */
+.host-row { background: transparent !important; }
+.host-row:hover { background: var(--fill) !important; }
+.host-stat { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.host-dot-ok { background: var(--ok); }
+.host-dot-busy { background: var(--warn); }
+.host-dot-down { border: 1.5px solid #b8b8b8; }
+.host-dot-connecting { border: 1.5px solid var(--warn); }
+.hosts-inner { max-width: 640px; gap: 16px; }
+.hosts .bar .btn { display: flex; align-items: center; gap: 6px; height: 30px; }
+.host-card { gap: 14px; padding: 18px 20px; }
+.host-head { align-items: center; }
+.host-head h2 { font-size: 15px; }
+.host-head .dot { width: 8px; height: 8px; }
+.host-state-ok, .host-state-down, .host-state-connecting { color: var(--muted); }
+.host-state-busy { color: var(--warn-ink); }
+.host-problem { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 10px; background: var(--fill); font-size: 13px; line-height: 1.5; }
+.host-problem code, .add-host code { padding: 1px 5px; border-radius: 5px; background: var(--fill-strong); font-family: var(--mono); font-size: 11.5px; }
+.host-problem details summary { cursor: pointer; width: max-content; }
+.host-problem details code { display: block; margin-top: 6px; background: var(--bg); overflow-wrap: anywhere; white-space: pre-wrap; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.stat { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.stat-big { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.bar-track { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; background: var(--ink); }
+.stat.warn .bar-fill { background: var(--warn); }
+.stat.warn .stat-big { color: var(--warn-ink); }
+.host-card .usage { margin-top: 2px; }
+.host-foot { display: flex; align-items: center; gap: 8px; margin: -4px 0 -6px -10px; }
+.field { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--bg); font-family: var(--mono); font-size: 13px; outline: 0; }
+.field:focus { border-color: var(--ink); }
+.add-host .form-grid .check { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.host-empty { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border: 1px dashed var(--line-strong); border-radius: 14px; background: transparent; text-align: left; color: var(--muted); }
+.host-empty:hover { background: var(--fill); }
+.host-empty > span { display: flex; flex-direction: column; gap: 3px; }
+.host-empty strong { color: var(--ink); font-weight: 500; }
