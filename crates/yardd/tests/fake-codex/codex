@@ -4,7 +4,9 @@
 // CLI and no turn ever reaches a model.
 //
 // A turn's behaviour is picked by a marker in the prompt:
-//   [cmd]   a command that needs approval, then runs or is declined
+//   [cmd]   a command that needs approval, then runs or is declined; after
+//           an allowed run it waits 400 ms, and names steered input
+//           (turn/steer) in its answer
 //   [edit]  a file change with a diff (also written to disk when
 //           FAKE_CODEX_WRITE is set, as verify/yv's isolated environments do,
 //           so the Changes pane has a real git diff to show)
@@ -287,7 +289,12 @@ async function runTurn(threadId, cwd, turn, text) {
     const decision = answer?.result?.decision;
     if (decision === "accept" || decision === "acceptForSession") {
       item("item/completed", { ...base, status: "completed", exitCode: 0, aggregatedOutput: "approved\n" });
-      say("Ran it.", ["Ran ", "it."]);
+      // A real agent keeps working after a command, so input steered in
+      // meanwhile lands in this turn; the answer names it.
+      await new Promise((r) => setTimeout(r, 400));
+      const steered = running.get(turnId)?.steered;
+      const answer = steered?.length ? `Ran it. | steered: ${steered.join(" / ")}` : "Ran it.";
+      say(answer, answer === "Ran it." ? ["Ran ", "it."] : [answer]);
     } else {
       item("item/completed", { ...base, status: "declined", exitCode: null, aggregatedOutput: null });
       say("Skipped it.", ["Skipped it."]);
