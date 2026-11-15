@@ -133,7 +133,8 @@ function add(dir: string, a: Args): Result {
   const text = str(a, "text");
   if (text) proof.text = text;
 
-  const files = ([] as string[]).concat(...a.pos.slice(1).map((x) => [x]));
+  // pos: ["add", dir, ...files]
+  const files = a.pos.slice(2);
   const flagFiles = a.flags.file;
   if (typeof flagFiles === "string") files.push(...flagFiles.split(","));
   for (const f of files) {
