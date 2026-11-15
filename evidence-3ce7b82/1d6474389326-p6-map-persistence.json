@@ -1,0 +1,43 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "persistence",
+      "at": "2026-11-15T23:47:12.148Z",
+      "counts": {
+        "pass": 4,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "survives-restart",
+          "status": "pass",
+          "ms": 5048
+        },
+        {
+          "label": "mid-turn-restart",
+          "status": "pass",
+          "ms": 2998
+        },
+        {
+          "label": "resume-after-restart",
+          "status": "pass",
+          "ms": 402
+        },
+        {
+          "label": "reload-keeps-open-session",
+          "status": "pass",
+          "ms": 8025
+        },
+        {
+          "label": "claude-resume-after-restart",
+          "status": "manual",
+          "why": "needs a real Claude turn"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

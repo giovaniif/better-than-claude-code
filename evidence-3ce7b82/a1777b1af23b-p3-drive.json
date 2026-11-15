@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "route": "session:s1a1e19674866",
+  "build": {
+    "sha": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+    "short": "3ce7b82",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T23:44:43.826Z"
+  },
+  "dir": ".verify/evidence/reload-keeps-session-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6327,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reload-keeps-session-head/after-reload-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reload-keeps-session-head/after-back-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "location.hash",
+          "value": "#/s/s1a1e19674866"
+        },
+        {
+          "step": 7,
+          "eval": "(history.back(), true)",
+          "value": true
+        },
+        {
+          "step": 13,
+          "eval": "location.hash",
+          "value": "#/hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 7069,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reload-keeps-session-head/after-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reload-keeps-session-head/after-back-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "location.hash",
+          "value": "#/s/s1a1e19674866"
+        },
+        {
+          "step": 7,
+          "eval": "(history.back(), true)",
+          "value": true
+        },
+        {
+          "step": 13,
+          "eval": "location.hash",
+          "value": "#/hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

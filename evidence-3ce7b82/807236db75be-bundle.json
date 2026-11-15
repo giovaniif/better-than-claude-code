@@ -1,0 +1,220 @@
+{
+  "v": 1,
+  "claim": "Reloading the page (or a phone browser restoring a discarded tab) drops the open session and lands on New session; Back does not move between sessions. The open session is not kept in the URL.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-15-d32f",
+  "base": "ea220852f865cc5a5ab7df94f83718acb03a7e68",
+  "head": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/persistence.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T23:44:01.250Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ea220852f865cc5a5ab7df94f83718acb03a7e68",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "34627c4de8d34773a3542e722febb9e910819d0bd3ab4022b7522246e6bf92f3"
+        },
+        {
+          "path": "p1-after-reload-mobile.png",
+          "sha256": "58aa07262e95ed5c0b58cfdd29c4e3b6d36be7fa0a4fb4085d09731460770614"
+        },
+        {
+          "path": "p1-fail-mobile-step4.png",
+          "sha256": "19b7e32f819cab8aa9d6daa1a352f47ca7a5e5fb9d6622bb42c525122a13977e"
+        },
+        {
+          "path": "p1-after-reload-desktop.png",
+          "sha256": "9ab254b48ed8c8a266e2a42b356e2174573e364c93e6776f6518615146dff06b"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "87761ef6af8dc8cec70b33ff594485066167aa009ea852aee0fd237759914958"
+        }
+      ],
+      "addedAt": "2026-11-15T23:44:01.291Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "030119551e2c00c2e3b60cb8fa8fb12931b00879",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "622d266c2a6fcb561fc281ad3e482dbda3ec95c968be890689dbdb9b96589c8c"
+        }
+      ],
+      "addedAt": "2026-11-15T23:44:03.852Z",
+      "cmd": "verify/yv map run persistence --recipe reload-keeps-open-session",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "a1777b1af23b0bb673730e934f55b79ba1a37e57694f513ccfddc54bf400227a"
+        },
+        {
+          "path": "p3-after-reload-mobile.png",
+          "sha256": "294c6c0f8891af23ef6ae046968e867e79bbf98ead554ae24cfc47ba50b2abed"
+        },
+        {
+          "path": "p3-after-back-mobile.png",
+          "sha256": "dcb29b04968f2a1a4c66a59e0dcab50b78f24b465db14d242d9a0811093a1fa5"
+        },
+        {
+          "path": "p3-after-reload-desktop.png",
+          "sha256": "78f57d69a92ca246961b45ae07c381f6872eab4fa862c6b66a80fc7fffcfd2aa"
+        },
+        {
+          "path": "p3-after-back-desktop.png",
+          "sha256": "ed14d676bc86910cbc1c7c5f7a6be1252e72e1473e5b900c0bb273283094b27a"
+        }
+      ],
+      "addedAt": "2026-11-15T23:46:41.882Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "b9d911a08edde7cf9da940fa2fe2d21affd835eb5292ac1324bece6a46faa1b4"
+        }
+      ],
+      "addedAt": "2026-11-15T23:46:41.928Z",
+      "cmd": "verify/yv design-check --base ea220852f865",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "45470b7e238a0718ebcfc4038eeb5e360fb0c79d0d258c5ed6ad6f62494abbf0"
+        }
+      ],
+      "addedAt": "2026-11-15T23:46:45.437Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run persistence --recipe reload-keeps-open-session",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-persistence.json",
+          "sha256": "1d64743893261fb9ed717a58d70523e217739ff8841ed535face06b82b1287cb"
+        }
+      ],
+      "addedAt": "2026-11-15T23:46:54.821Z",
+      "cmd": "verify/yv map run persistence",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "persistence/survives-restart",
+        "persistence/mid-turn-restart",
+        "persistence/resume-after-restart",
+        "persistence/reload-keeps-open-session"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-sidebar.json",
+          "sha256": "9688f93629fb75bbae239350b3ce3eec0f6ec78ad03831ff0b87210c12dd3fdd"
+        }
+      ],
+      "addedAt": "2026-11-15T23:47:15.818Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3ce7b826fe645893d2c4c81f0a6b4b1724340248",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-terminal.json",
+          "sha256": "f4ddb747436a1c349b1c79c88ab0630525dbfed616dfeb7956062f1932ab1ca6"
+        }
+      ],
+      "addedAt": "2026-11-15T23:47:36.195Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads"
+      ]
+    }
+  ]
+}
