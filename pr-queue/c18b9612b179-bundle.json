@@ -1,0 +1,321 @@
+{
+  "v": 1,
+  "claim": "While the agent is working, the reply box is locked: you cannot line up the next instruction, so you wait for the turn to end before you can type it. You should be able to queue messages that run, in order, once the current turn finishes.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-queue-messages",
+  "base": "4ed696d7e1f21fb3520ffceb48bf2babbdf8594f",
+  "head": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T18:49:40.039Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4ed696d7e1f21fb3520ffceb48bf2babbdf8594f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "630b3af2de18e3005efe0986c1ba426dc83a7f29b116f8654504978d6fcd5ac5"
+        },
+        {
+          "path": "p1-typed-mobile.png",
+          "sha256": "c10acbf86e1a0f2904390314b55341a4bed8dc0453aa0ca93776c314dba4f875"
+        },
+        {
+          "path": "p1-fail-mobile-step3.png",
+          "sha256": "d6130e13cc1f9879f19608c048eba81fd5f10c049139dae7cb1b0a4406817882"
+        },
+        {
+          "path": "p1-typed-desktop.png",
+          "sha256": "367e0c44044cad640607c0cddc0547c6760e2be733d395820faaf7e685e0e112"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "a29427946aa62d0b732f3f729174ffa86bcb588a3fcf1ee39145392212ffb081"
+        }
+      ],
+      "addedAt": "2026-11-15T18:50:10.416Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "regression",
+      "at": "4ed696d7e1f21fb3520ffceb48bf2babbdf8594f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-map-thread.json",
+          "sha256": "a8fbe2d0a98213d80a67828923d2f8c2d38f5095730d7fd3d0f677919c76c686"
+        }
+      ],
+      "addedAt": "2026-11-15T18:50:10.461Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "2fa0ee337e00ca114010e95237a90d42aec8a3ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4cc603a7d57747574ff843574e4edfb0d4fb9a27f533c5cd0050b71fd32176c2"
+        }
+      ],
+      "addedAt": "2026-11-15T18:50:49.462Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon -- interrupt_ends_a_slow_turn_and_holds_the_queue queued_messages_run_in_order_when_turns_complete",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "2fa0ee337e00ca114010e95237a90d42aec8a3ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "a68fbd054bc0defda0538a023a711dc95aaeefc06c6a7c9efc4c0a906811db3f"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:10.951Z",
+      "cmd": "verify/yv map run thread --recipe queue-a-message-while-working",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "af7fc420711097960f95127b08b3d8587c306ea3cae1cece2b20a4774e19c88b"
+        },
+        {
+          "path": "p5-typed-mobile.png",
+          "sha256": "e0d1e2dd7b3ddf99749f0778eb4938a792e0a4e8c7450365aac90a80d93d8ead"
+        },
+        {
+          "path": "p5-queued-mobile.png",
+          "sha256": "f2e287878f72ebaca6a851af1320739a4d2a30e178460502f68b96e1be7cd01c"
+        },
+        {
+          "path": "p5-sent-mobile.png",
+          "sha256": "abc68704cc25370d17163ca2e984a11ee2395691a6ccb4cf390b313d7738dc7d"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:36.273Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "17af94014533384d86aad168a6c98f25b2e748ff6e30bb9ec8040a55cea4ff17"
+        },
+        {
+          "path": "p6-typed-desktop.png",
+          "sha256": "6bf1194c790dc11373e8848abf18f0ba599e1401ad104ea69df625603608d087"
+        },
+        {
+          "path": "p6-queued-desktop.png",
+          "sha256": "eb6fcbe397317ac3ed1795103b08b3ccd192ec067b58237380a35f170694c94d"
+        },
+        {
+          "path": "p6-sent-desktop.png",
+          "sha256": "eeee5818f5caa538ab9ead7f62baf3c7f67644506773125fcc0f35db2a8d3bc4"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:41.528Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "57e51fb92a56b877dc5795128b13b1b7987ccfbdb27d8200eaf7083419e1abb7"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:41.568Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "e5e29a1726bea7fcf5ed795bff7582c9cf8ff3bc63013cdc0963317b3865c852"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:51.344Z",
+      "cmd": "verify/yv design-check --base 4ed696d7e1f2",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-thread.json",
+          "sha256": "e383c677d8e2f40f7369da7b4d851741c698e5f19f9160e9cc727e44b1a50dcc"
+        }
+      ],
+      "addedAt": "2026-11-15T18:51:51.422Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/stop-holds-the-queue"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-stop.json",
+          "sha256": "94ac71359951e1598a523c991ac342860fd04b9d9ddb95bae6f67b4b6f209806"
+        }
+      ],
+      "addedAt": "2026-11-15T18:52:47.111Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ab12952d9bfe66819d66cb5833bc9c8617ec3423",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-approvals.json",
+          "sha256": "7bc544fb315d288f6bb2b4cf84f4e35bc6b176e94de84dc4f9ba724b37c00e8b"
+        }
+      ],
+      "addedAt": "2026-11-15T18:53:08.414Z",
+      "cmd": "verify/yv map run approvals",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/deny",
+        "approvals/always-allow"
+      ]
+    }
+  ]
+}

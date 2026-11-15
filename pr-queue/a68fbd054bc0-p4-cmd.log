@@ -1,0 +1,40 @@
+$ verify/yv map run thread --recipe queue-a-message-while-working
+# exit 1 after 15427 ms at 2fa0ee337e00ca114010e95237a90d42aec8a3ac
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-15T18:51:26.375Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "queue-a-message-while-working",
+          "status": "fail",
+          "ms": 13516,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"click\":{\"role\":\"button\",\"name\":\"Add to queue\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-messages/.verify/drives/2026-11-15T18-51-13-238Z/fail-mobile-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "            \"name\": \"Add to queue\",\n            \"exact\": true\n          }\n        },\n        \"reason\": \"click: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-queue-messages/.verify/drives/2026-11-15T18-51-13-238Z/fail-mobile-step2.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"[cmd] TEST-busy turn mobile Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-busy turn mobile\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 11% · 57%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[cmd] TEST-busy turn mobile\\\" [level=1]\\n  - code: yard/cmd-test-busy-turn-mobile-813d\\n  - button \\\"Stop\\\"\\n  - button \\\"Delete\\\"\\n  - text: \\\"[cmd] TEST-busy turn mobile\\\"\\n  - button \\\"Running echo approved running\\\" [disabled]:\\n    - text: Running\\n    - code: echo approved\\n  - text: Allow this command?\\n  - code: echo approved\\n  - text: needs to run a command\\n  - button \\\"Allow once\\\"\\n  - button \\\"Always allow\\\"\\n  - button \\\"Deny\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n    - text: TEST-queued one\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Add to queue\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-messages/.verify/drives/2026-11-15T18-51-13-238Z/fail-mobile-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/queue-a-message-while-working",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

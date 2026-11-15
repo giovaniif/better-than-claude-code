@@ -1,0 +1,57 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon -- interrupt_ends_a_slow_turn_and_holds_the_queue queued_messages_run_in_order_when_turns_complete
+# exit 101 after 21445 ms at 2fa0ee337e00ca114010e95237a90d42aec8a3ac
+
+
+running 2 tests
+test interrupt_ends_a_slow_turn_and_holds_the_queue ... FAILED
+test queued_messages_run_in_order_when_turns_complete ... FAILED
+
+failures:
+
+---- interrupt_ends_a_slow_turn_and_holds_the_queue stdout ----
+
+thread 'interrupt_ends_a_slow_turn_and_holds_the_queue' (4099457) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the queued message; last messages:
+{"home":"/tmp/yardd-test-4099456-interrupt-0/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonne
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794768650777,"cwd":"/tmp/yardd-test-4099456-interrupt-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e08c42191","model":"fake-fast","parent":null,"permission":"ask","pinned":false,"repo":null,"status":"runn
+{"op":"created","sessionId":"s1a1e08c42191"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794768650777,"cwd":"/tmp/yardd-test-4099456-interrupt-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e08c42191","model":"fake-fast","parent":null,"permission":"ask","pinned":false,"repo":null,"status":"runn
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":null,"usedPercent":12,"windowDurationMins":300},"secondary":null}}}
+{"event":{"text":"[slow] think hard","type":"user_message"},"op":"event","seq":0,"sessionId":"s1a1e08c42191"}
+{"event":{"at":1794768650804,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e08c42191"}
+{"event":{"itemId":"msg-4099537-3","text":"Working","type":"assistant_delta"},"op":"event","seq":2,"sessionId":"s1a1e08c42191"}
+{"for":"session.send","message":"a turn is already running","op":"error"}
+kept /tmp/yardd-test-4099456-interrupt-0 for inspection
+
+---- queued_messages_run_in_order_when_turns_complete stdout ----
+
+thread 'queued_messages_run_in_order_when_turns_complete' (4099458) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for two queued messages; last messages:
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794768650777,"cwd":"/tmp/yardd-test-4099456-queue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e08c42191","model":"fake-fast","parent":null,"permission":"ask","pinned":false,"repo":null,"status":"running"
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794768650777,"cwd":"/tmp/yardd-test-4099456-queue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e08c42191","model":"fake-fast","parent":null,"permission":"ask","pinned":false,"repo":null,"status":"running"
+{"op":"created","sessionId":"s1a1e08c42191"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"event":{"text":"[cmd] run it","type":"user_message"},"op":"event","seq":0,"sessionId":"s1a1e08c42191"}
+{"event":{"at":1794768650797,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e08c42191"}
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":null,"usedPercent":12,"windowDurationMins":300},"secondary":null}}}
+{"event":{"detail":"echo approved","itemId":"cmd-4099535-3","kind":"command","title":"Ran","type":"tool_started"},"op":"event","seq":2,"sessionId":"s1a1e08c42191"}
+{"event":{"detail":"needs to run a command","itemId":"cmd-4099535-3","kind":"command","requestId":"codex-1000","title":"echo approved","type":"approval_request"},"op":"event","seq":3,"sessionId":"s1a1e08c42191"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794768650777,"cwd":"/tmp/yardd-test-4099456-queue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e08c42191","model":"fake-fast","parent":null,"permission":"ask","pinned":false,"repo":null,"status":"needs_ap
+{"for":"session.send","message":"a turn is already running","op":"error"}
+{"for":"session.send","message":"a turn is already running","op":"error"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-4099456-queue-1 for inspection
+
+
+failures:
+    interrupt_ends_a_slow_turn_and_holds_the_queue
+    queued_messages_run_in_order_when_turns_complete
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 35 filtered out; finished in 20.15s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/better-than-claude-code/feat-queue-messages/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.25s
+     Running tests/daemon.rs (target/debug/build/yardd/896f585c81d80578/out/daemon-896f585c81d80578)
+error: test failed, to rerun pass `-p yardd --test daemon`
