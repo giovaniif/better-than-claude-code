@@ -199,6 +199,10 @@ describe("design check", () => {
     expect(rules).toContain("shadow-color@43");
     expect(rules).toContain("font-size-off-scale@43");
   });
+  test("a button whose className is on the next line is not raw", () => {
+    const multi = addedLines(`+++ b/ui/src/A.tsx\n@@ -1,0 +1,3 @@\n+    <button\n+      className={\`btn quote-reply\${x}\`}\n+    >`);
+    expect(lint(multi, new Set()).map((x) => x.rule)).not.toContain("raw-button");
+  });
   test("raw HTML is an error; raw buttons and inline numbers are caught", () => {
     expect(f.find((x) => x.rule === "raw-html")?.severity).toBe("error");
     expect(rules).toContain("raw-button@12");

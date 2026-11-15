@@ -88,8 +88,9 @@ function rootRanges(path: string): [number, number][] {
 
 export function lint(added: Added[], scale: Set<string>): Finding[] {
   const f: Finding[] = [];
+  const near = (i: number) => added.slice(i, i + 4).filter((x) => x.file === added[i].file).map((x) => x.text).join(" ");
   const push = (a: Added, rule: string, severity: Finding["severity"], hint: string) => f.push({ rule, severity, file: a.file, line: a.line, text: a.text.trim().slice(0, 200), hint });
-  for (const a of added) {
+  for (const [i, a] of added.entries()) {
     const t = a.text;
     const isCss = a.file.endsWith(".css");
     const isTsx = /\.(tsx|ts)$/.test(a.file);
@@ -100,7 +101,8 @@ export function lint(added: Added[], scale: Set<string>): Finding[] {
     if (isTsx && /style=\{\{/.test(t) && /:\s*-?\d+(\.\d+)?(px)?\s*[,}]/.test(t) && !/--[\w-]+/.test(t)) push(a, "inline-style-number", "error", "move magic numbers into a class in styles.css; inline style only for CSS variables and measured values");
     if (isTsx && /<svg\b/.test(t)) push(a, "raw-svg", "warn", "use <Icon d={PATH} /> like the rest of the UI");
     if (isTsx && /<button\b/.test(t)) {
-      const cls = t.match(/className=["{`]([^"}`]*)/)?.[1] ?? "";
+      // JSX props often sit on the lines after the tag.
+      const cls = near(i).match(/className=\{?["`]([^"`]*)/)?.[1] ?? "";
       if (!BUTTON_CLASSES.some((c) => cls.split(/\s+/).includes(c))) push(a, "raw-button", "warn", `give it a design-system button class: ${BUTTON_CLASSES.slice(0, 5).join(", ")}`);
     }
     if (isCss && /font-size:\s*([0-9.]+px)/.test(t)) {

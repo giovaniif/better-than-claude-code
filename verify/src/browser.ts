@@ -6,7 +6,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { join } from "node:path";
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from "playwright";
 import { substitute, loadVars } from "./api";
-import { type Args, DEFAULT_ISO, parseJsonArg, run, STATE, str } from "./common";
+import { type Args, DEFAULT_ISO, ensureDir, parseJsonArg, readJson, run, sha256, SHARED, STATE, str } from "./common";
 import { type Iso, loadIso } from "./iso";
 import { fail, Usage, type Result } from "./out";
 
@@ -36,9 +36,46 @@ interface Watch {
   inflight: number;
 }
 
-function watch(page: Page): Watch {
+/**
+ * The isolated app talks only to its own yardd. Google Fonts (the UI's Inter
+ * and JetBrains Mono) are served from a local cache, fetched once, so
+ * screenshots look real without a slow font host stalling navigation; every
+ * other outside request is blocked.
+ */
+const FONT_HOSTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
+const NET_CACHE = () => ensureDir(join(SHARED, "net-cache"));
+
+async function isolate(ctx: BrowserContext, iso: Iso) {
+  await ctx.route(
+    (url) => !url.href.startsWith(iso.url) && !["data:", "blob:"].includes(url.protocol),
+    async (route) => {
+      const url = route.request().url();
+      if (!FONT_HOSTS.test(url)) return route.abort("blockedbyclient");
+      const f = join(NET_CACHE(), sha256(url).slice(0, 32));
+      if (existsSync(`${f}.body`)) return route.fulfill({ status: 200, headers: readJson(`${f}.json`), body: readFileSync(`${f}.body`) });
+      try {
+        const res = await route.fetch({ timeout: 5000 });
+        const body = await res.body();
+        if (res.ok()) {
+          const keep = Object.fromEntries(Object.entries(res.headers()).filter(([k]) => ["content-type", "access-control-allow-origin"].includes(k)));
+          writeFileSync(`${f}.body`, body);
+          writeFileSync(`${f}.json`, JSON.stringify(keep));
+        }
+        return route.fulfill({ response: res, body });
+      } catch {
+        return route.abort("timedout");
+      }
+    },
+  );
+}
+
+const thirdParty = (url: string, own: string) => !!url && !url.startsWith(own) && !url.startsWith("data:") && !url.startsWith("blob:");
+
+function watch(page: Page, own: string): Watch {
   const w: Watch = { consoleErrors: [], pageErrors: [], failedApi: [], httpFailures: [], lastFrame: Date.now(), inflight: 0 };
   page.on("console", (m) => {
+    // A blocked or slow outside resource is not the app's error.
+    if (thirdParty(m.location()?.url ?? "", own) && /Failed to load resource/.test(m.text())) return;
     if (m.type() === "error" && !NOISE.some((r) => r.test(m.text()))) w.consoleErrors.push(m.text().slice(0, 500));
   });
   page.on("pageerror", (e) => w.pageErrors.push(String(e.message).slice(0, 500)));
@@ -47,12 +84,12 @@ function watch(page: Page): Watch {
   page.on("requestfinished", (r) => {
     done();
     r.response().then((res) => {
-      if (res && res.status() >= 400) w.httpFailures.push(`${res.status()} ${r.url()}`);
+      if (res && res.status() >= 400 && !thirdParty(r.url(), own)) w.httpFailures.push(`${res.status()} ${r.url()}`);
     });
   });
   page.on("requestfailed", (r) => {
     done();
-    if (!r.url().startsWith("data:")) w.httpFailures.push(`${r.failure()?.errorText ?? "failed"} ${r.url()}`);
+    if (!thirdParty(r.url(), own)) w.httpFailures.push(`${r.failure()?.errorText ?? "failed"} ${r.url()}`);
   });
   page.on("websocket", (ws) => {
     ws.on("framesent", () => (w.lastFrame = Date.now()));
@@ -248,8 +285,9 @@ export async function shot(a: Args): Promise<Result> {
   await withBrowser(async (browser) => {
     for (const vp of viewports(a)) {
       const ctx = await browser.newContext({ viewport: { width: VIEWPORTS[vp].width, height: VIEWPORTS[vp].height }, deviceScaleFactor: 2, isMobile: VIEWPORTS[vp].isMobile, hasTouch: VIEWPORTS[vp].hasTouch });
+      await isolate(ctx, iso);
       const page = await ctx.newPage();
-      const w = watch(page);
+      const w = watch(page, iso.url);
       const t0 = Date.now();
       try {
         await goRoute(page, iso, route, w);
@@ -395,8 +433,9 @@ export async function drive(a: Args): Promise<Result> {
         hasTouch: v.hasTouch,
         ...(a.flags.video ? { recordVideo: { dir, size: { width: v.width, height: v.height } } } : {}),
       });
+      await isolate(ctx, iso);
       const page = await ctx.newPage();
-      const w = watch(page);
+      const w = watch(page, iso.url);
       const st = { dir, vp, captures: [] as Capture[], notes: [] as any[], problems, idx: -1 };
       const t0 = Date.now();
       let failed: Record<string, unknown> | null = null;
