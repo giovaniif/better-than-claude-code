@@ -4,6 +4,9 @@
 // and no model. A turn's behaviour is picked by a marker in the prompt:
 //   [die]   the sidecar exits at once, as when Claude Code is killed
 //   [stuck] streams one chunk, then ignores interrupts
+//   [steps] three Bash tool calls, 400 ms apart, then "Echo: <prompt>";
+//           user messages that arrive meanwhile are folded into the same
+//           turn, as Claude Code does, and appended as " | also: …"
 //   other   replies "Echo: <prompt>"
 // FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id,
 // and one per one-shot `sessions` / `messages <id>` call.
@@ -63,6 +66,27 @@ if (mode === "sessions" || mode === "messages") {
 
 let n = 0;
 let stuck = false;
+// A [steps] turn in progress: messages that arrive are folded into it.
+let steps = null;
+
+async function runSteps(text) {
+  steps = { folded: [], interrupted: false };
+  for (let i = 1; i <= 3; i++) {
+    const id = `tool-${process.pid}-${++n}`;
+    emit({ type: "tool_started", itemId: id, kind: "command", title: "Bash", detail: `echo step ${i}` });
+    await new Promise((r) => setTimeout(r, 400));
+    emit({ type: "tool_completed", itemId: id, ok: true, output: `step ${i}` });
+    if (steps.interrupted) {
+      steps = null;
+      emit({ type: "turn_completed", status: "interrupted" });
+      return;
+    }
+  }
+  const also = steps.folded.length ? ` | also: ${steps.folded.join(" / ")}` : "";
+  steps = null;
+  emit({ type: "assistant_message", itemId: `text-${process.pid}-${++n}`, text: `Echo: ${text}${also}` });
+  emit({ type: "turn_completed", status: "completed" });
+}
 for await (const line of console) {
   let msg;
   try {
@@ -73,8 +97,15 @@ for await (const line of console) {
   if (msg.type === "start") {
     log(`start pid=${process.pid} resume=${msg.resume ?? ""}`);
     out({ type: "session", claudeSessionId: msg.resume ?? `fake-claude-${process.pid}` });
+  } else if (msg.type === "user" && steps) {
+    log(`fold ${String(msg.text ?? "").slice(0, 80)}`);
+    steps.folded.push(String(msg.text ?? ""));
   } else if (msg.type === "user") {
     const text = String(msg.text ?? "");
+    if (text.includes("[steps]")) {
+      runSteps(text);
+      continue;
+    }
     if (text.includes("[die]")) process.exit(1);
     const itemId = `text-${process.pid}-${++n}`;
     if (text.includes("[stuck]")) {
@@ -84,6 +115,8 @@ for await (const line of console) {
     }
     emit({ type: "assistant_message", itemId, text: `Echo: ${text}` });
     emit({ type: "turn_completed", status: "completed" });
+  } else if (msg.type === "interrupt" && steps) {
+    steps.interrupted = true;
   } else if (msg.type === "interrupt" && !stuck) {
     emit({ type: "turn_completed", status: "interrupted" });
   }

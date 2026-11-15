@@ -12,6 +12,8 @@
 //   [stuck] streams one chunk, then never ends, whatever it is asked
 //   [fail]  the turn fails with an error
 //   [think] a two-part reasoning summary, then a reply
+//   [steps] three commands, 400 ms apart, then "Echo: <prompt>"; input
+//           steered in meanwhile (turn/steer) is appended as " | steered: …"
 //   other   a plain streamed reply: "Echo: <prompt>"
 //
 // FAKE_CODEX_DIR (set by the tests) gets `codex.log`, one line per start and
@@ -170,6 +172,14 @@ async function handle(msg) {
       setTimeout(() => runTurn(p.threadId, thread.cwd, turn, text), 0);
       return;
     }
+    case "turn/steer": {
+      const ctl = running.get(p.expectedTurnId);
+      if (!ctl) return fail(`no running turn ${p.expectedTurnId} to steer`);
+      const steered = (p.input ?? []).filter((i) => i.type === "text").map((i) => i.text).join("\n");
+      if (dir) appendFileSync(`${dir}/steer-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, turnId: p.expectedTurnId, input: p.input })}\n`);
+      (ctl.steered ??= []).push(steered);
+      return reply({ turnId: p.expectedTurnId });
+    }
     case "turn/interrupt": {
       const ctl = running.get(p.turnId);
       if (!ctl) return fail(`no running turn ${p.turnId}`);
@@ -209,6 +219,23 @@ async function runTurn(threadId, cwd, turn, text) {
     notify("item/agentMessage/delta", { threadId, turnId, itemId, delta: "Working" });
     if (!ctl.interrupted) await new Promise((resolve) => (ctl.wake = resolve));
     return finish("interrupted");
+  }
+
+  if (text.includes("[steps]")) {
+    const ctl = running.get(turnId);
+    for (let i = 1; i <= 3; i++) {
+      const itemId = newId("cmd");
+      const command = `/bin/bash -lc 'echo step ${i}'`;
+      const base = { type: "commandExecution", id: itemId, command, cwd, commandActions: [] };
+      item("item/started", { ...base, status: "inProgress" });
+      await new Promise((r) => setTimeout(r, 400));
+      item("item/completed", { ...base, status: "completed", exitCode: 0, aggregatedOutput: `step ${i}\n` });
+      if (ctl.interrupted) return finish("interrupted");
+    }
+    const steered = ctl.steered?.length ? ` | steered: ${ctl.steered.join(" / ")}` : "";
+    const answer = `Echo: ${text}${steered}`;
+    say(answer, [answer]);
+    return finish("completed");
   }
 
   if (text.includes("[fail]")) {
