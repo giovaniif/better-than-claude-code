@@ -2,6 +2,13 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.3.0 (2026-11-15)
+
+- **Reply to part of an answer.** Select text in one of the agent's answers and a Reply button appears over it. It puts the selection in the reply box as a quote, ready for your reply underneath.
+- **Queue messages while the agent works.** The reply box stays open during a turn: "Add to queue" lines up your next message, shown above the box with a button to remove it, and it goes once the turn finishes. Several queued messages go in order. Stop keeps them waiting instead of sending them.
+- **Fixed: the terminal after a reload.** Reloading the page (or reopening the web version) could bring a session's terminal back garbled: a long prompt overwritten by the next command, or a command's output missing. The terminal now waits for its real size before it replays anything.
+- **Fixed: terminal keys out of order.** Fast typing could reach the shell with two keys swapped (`TSET` for `TEST`). Keys are now sent in the order they were typed.
+
 ## 0.2.3 (2026-11-15)
 
 - **Fixed: the session menu stays on screen.** With a narrow sidebar, or on a row near the bottom of the list, the … menu (Pin, Archive, Delete) was cut off. It now opens over the rest of the window, above the row when there's no room below.
