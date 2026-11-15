@@ -1,0 +1,435 @@
+{
+  "v": 1,
+  "claim": "Claude subagents were invisible (their steps were dropped, the Agent call was one flat line), and there was no way to see what processes a session is running. Now a subagent shows as one expandable entry with its nested steps, and a Processes tab lists the session's process tree.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes",
+  "base": "86e3e649063af7df527abd1daa2dbbc053effac0",
+  "head": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/guard.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/hosts.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/subagents.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/subagents.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/tools.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/ProcPane.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/procs.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/procs.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/processes.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T20:09:53.294Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "b72354c8c96fcfc65cffc4b75b5c46f2475dcc3fd8124eb0473be7ae2f03e0de"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:19.709Z"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "1f72dd9554fc763c66c10646100cbd2c3384530fccd904264906872dc60efc58"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:19.749Z",
+      "cmd": "cd ui && bun test",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "48eac4ed01240dfd302881e5f0d2d21ab7e42513bbce642b2ee5f7fc2762d9e7"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:19.831Z",
+      "cmd": "cd sidecar/yard-claude && bun test",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "b191d9b980bdb5c7ab4ca37f84a446ee3b39474990e3e37fed85b2cbd3704f66"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:20.033Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon session_procs",
+      "exit": 101
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "test",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "42da287f3db3912a9dbcac0e203ed10b2b6634953cc580a9fc49379ca052f454"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:47.731Z",
+      "cmd": "verify/yv map run processes --recipe lists-the-process-tree",
+      "exit": 1
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "6f6bdad226874fc44a399919bdab5899b2a599306ddb12408725840aae6c27af"
+        },
+        {
+          "path": "p6-head-collapsed-mobile.png",
+          "sha256": "18c24d8ea9800fac1fad6613257a99f13cbb8e134ae26ae4d150f41c364d48d0"
+        },
+        {
+          "path": "p6-head-open-mobile.png",
+          "sha256": "796b5015811af46f1c70f7974fade0a3c7bd5d9dc09f8b7c69bf7f198fa108a9"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:22.311Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "fbd76c30d4a1c2be618d2c85fb885c35dd8bd4ef24b5ba0cad1875161428ba68"
+        },
+        {
+          "path": "p7-head-collapsed-desktop.png",
+          "sha256": "9fcdaf227138cad861e6a836e05e25b5deeaec77ea7cdc1b5357c70c3a6f35e0"
+        },
+        {
+          "path": "p7-head-open-desktop.png",
+          "sha256": "c2cfbf342bd473c0a9d784e77713706e3555e15443c69ba28fcf77deb03a0277"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:29.612Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "1865ba775074462fc772e9582b96cca3ddaa940b3eb9ae2b98accf235853e473"
+        },
+        {
+          "path": "p8-head-processes-desktop.png",
+          "sha256": "f6852cf13eae3603f66abc266c7f96703f7f9f9ac178733e2169a8d57d084661"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:34.514Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "note",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-15T20:11:39.551Z",
+      "text": "Real SDK shapes, one tiny Haiku turn (claude-haiku-4-5, low, full access, isolated yardd --engines real, --allow-spend) in /tmp/sa-real/proj: foreground Agent call. Events yardd logged: tool_started Agent {agent:general-purpose, detail:\"list files\"}; tool_started Ran {parent:<agent id>} \"ls -la\"; tool_completed for it; tool_completed for the Agent {ms:4070, output: the subagent report}; assistant_message \"done\"; turn_completed completed. An earlier raw SDK probe (a default background Agent) showed the tool_result is only a \"launched\" placeholder and task_notification arrives after the first turn result, which is why the notification ends the call. Not verified live: a background agent finishing in a later turn in the UI, and a real screenshot of it (only the scripted sidecar was drawn)."
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "test",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-cmd.log",
+          "sha256": "f3591a5c7df3b35dcfa326b0ac85163599a621fb1fb36295873b7ceeb91cde81"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:39.588Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "design",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-design.json",
+          "sha256": "fd445f397b5aec30e3c11cce82179df8011e1ba10bf487d5e713500ebe96d76f"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:53.023Z",
+      "cmd": "verify/yv design-check --base 86e3e649063a",
+      "exit": 0
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-processes.json",
+          "sha256": "faece68ba18364150046974d9ce432eb2a640117509f1e4ef77c41907d3b334e"
+        }
+      ],
+      "addedAt": "2026-11-15T20:11:53.105Z",
+      "cmd": "verify/yv map run processes",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "processes/lists-the-process-tree",
+        "processes/nothing-running",
+        "processes/terminal-shell-is-listed",
+        "processes/hidden-on-mobile"
+      ]
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-map-thread.json",
+          "sha256": "e06248f0342d110a27bfb168cec9b293fd355cc1a91d6a46d4df06d0f1f0987d"
+        }
+      ],
+      "addedAt": "2026-11-15T20:12:09.508Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/stop-holds-the-queue",
+        "thread/subagent-nests-and-expands"
+      ]
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-map-changes-pane.json",
+          "sha256": "093d2802ee9193a67b2cd8f4324a89df95d045f3cc050c7aa05857e2ac50ef98"
+        }
+      ],
+      "addedAt": "2026-11-15T20:13:14.736Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "changes-pane/shows-diff",
+        "changes-pane/empty-folder",
+        "changes-pane/refresh-picks-up-new-file"
+      ]
+    },
+    {
+      "id": 15,
+      "ref": "head",
+      "kind": "regression",
+      "at": "55f216ed2c2a22bdab716b97d07452a0ac548a4f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p15-map-layout.json",
+          "sha256": "bb40f5017fa8145a1bc14a214518bfff39f423beb1b8b4efd9c2a98a89bdfe27"
+        }
+      ],
+      "addedAt": "2026-11-15T20:13:25.032Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 1,
+      "failingRecipes": [
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page"
+      ],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane"
+      ]
+    },
+    {
+      "id": 16,
+      "ref": "base",
+      "kind": "regression",
+      "at": "a40707a3b6a7dcf177822a4a236e8ee244624d84",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p16-map-layout.json",
+          "sha256": "f308b24a86b41ef9915d46da4f7487354675ae259a2689726cd344068db5b282"
+        }
+      ],
+      "addedAt": "2026-11-15T20:15:39.857Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 1,
+      "failingRecipes": [
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page"
+      ],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane"
+      ]
+    }
+  ]
+}
