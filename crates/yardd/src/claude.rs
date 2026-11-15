@@ -209,3 +209,33 @@ pub fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> R
         json!({ "type": "permission", "requestId": request_id, "decision": decision }),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The sidecar may run the tool and end the turn the moment it reads the
+    /// answer, so `approval_resolved` must already be in the log by then. Logged
+    /// after, it set the finished session back to `running` and the next
+    /// message waited in the queue for a turn that never ended.
+    #[test]
+    fn an_answer_is_logged_before_the_sidecar_reads_it() {
+        let dir = std::env::temp_dir().join(format!("yardd-unit-{}-approve", std::process::id()));
+        let (store, _) = crate::store::open(&dir).unwrap();
+        let app = Arc::new(App::new(dir.clone(), 0, store));
+        let sid = app.new_session("claude", "claude-opus-5-5", "high", "/tmp", "t", None);
+        let (tx, mut rx) = mpsc::unbounded_channel();
+        let (stop, _keep) = oneshot::channel();
+        app.sessions.lock().unwrap().get_mut(&sid).unwrap().backend = Backend::Claude { tx, _stop: stop };
+        app.emit(&sid, json!({ "type": "approval_request", "requestId": "r1" }));
+
+        approve(&app, &sid, "r1", "allow").unwrap();
+        // What the sidecar reads, and what the log holds at that moment.
+        let line: Value = serde_json::from_str(&rx.try_recv().unwrap()).unwrap();
+        assert_eq!(line["type"], "permission");
+        let logged: Vec<Value> = app.sessions.lock().unwrap()[&sid].events.iter().map(|e| e["type"].clone()).collect();
+        assert_eq!(logged, [json!("approval_request"), json!("approval_resolved")]);
+        assert_eq!(app.meta(&sid).unwrap().status, "running");
+        let _ = std::fs::remove_dir_all(dir);
+    }
+}

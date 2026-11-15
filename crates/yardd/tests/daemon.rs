@@ -137,6 +137,48 @@ async fn approval_allow_runs_the_command() {
     assert_eq!(started["detail"], "echo approved");
 }
 
+/// An engine that runs the command and ends the turn right after the answer
+/// must not overtake `approval_resolved`: a late one put the session back to
+/// `running` after its turn had completed, and the next message then waited
+/// in the queue forever. The fake answers instantly; many at once make the
+/// race show up.
+#[tokio::test]
+async fn an_answered_approval_is_logged_before_the_engine_moves_on() {
+    let sb = Sandbox::new("allow-race");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let mut asks = Vec::new();
+    for i in 0..16 {
+        let sid = c.create(&sb.folder(&format!("proj{i}")), "[cmd] run it", json!({})).await;
+        let req = c.wait_event(&sid, "approval_request", 0).await;
+        asks.push((sid, req["requestId"].clone()));
+    }
+    for (sid, request_id) in &asks {
+        c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": request_id, "decision": "allow" }))
+            .await;
+    }
+    for (sid, _) in &asks {
+        c.wait_turn_done(sid, 0).await;
+        c.wait_event(sid, "approval_resolved", 0).await;
+        c.wait_status(sid, "idle").await;
+    }
+    // One more turn end to end, so a status broadcast late from the ones
+    // above has arrived by the time it is done.
+    let flush = c.create(&sb.folder("flush"), "flush", json!({})).await;
+    c.wait_turn_done(&flush, 0).await;
+    let fresh = d.client().await;
+    for (sid, _) in &asks {
+        let events = c.events(sid);
+        let order: Vec<&str> = types(&events)
+            .into_iter()
+            .filter(|t| ["approval_resolved", "tool_completed", "turn_completed"].contains(t))
+            .collect();
+        assert_eq!(order, ["approval_resolved", "tool_completed", "turn_completed"], "{sid}");
+        assert_eq!(c.statuses(sid).last().map(String::as_str), Some("idle"), "what the client heard for {sid}");
+        assert_eq!(meta_of(&fresh, sid)["status"], "idle", "the daemon's own status for {sid}");
+    }
+}
+
 #[tokio::test]
 async fn approval_deny_declines_the_command() {
     let sb = Sandbox::new("deny");
