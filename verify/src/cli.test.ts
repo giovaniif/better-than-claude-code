@@ -135,6 +135,11 @@ describe("land gate scan", () => {
     expect(codes([file("verify/features/thread.md", "@@\n-### reply-renders\n-x")])).toContain("recipe-removed");
     expect(codes([file("verify/features/thread.md", "@@\n-### reply-renders\n+### reply-renders\n+more")])).toEqual([]);
   });
+  test("test code cleaning up after itself is not data loss", () => {
+    expect(codes([file("crates/yardd/src/claude.rs", "@@\n+fn run() {}\n+#[cfg(test)]\n+mod tests {\n+    fn t() { let _ = std::fs::remove_dir_all(dir); }\n+}")])).toEqual([]);
+    expect(codes([file("crates/yardd/tests/daemon.rs", "@@\n+    std::fs::remove_dir_all(&root).ok();")])).toEqual([]);
+    expect(codes([file("crates/yardd/src/git.rs", "@@\n+    std::fs::remove_dir_all(&p)?;\n+#[cfg(test)]\n+mod tests {}")])).toContain("data-loss");
+  });
   test("security boundary, data loss and secrets", () => {
     expect(codes([file("crates/yardd/src/ws.rs", '@@\n-    if origin_ok(&o) {\n+    if true || origin_ok(&o) { // Origin')])).toContain("security-boundary");
     expect(codes([file("crates/yardd/src/git.rs", '@@\n+    std::fs::remove_dir_all(&p)?;')])).toContain("data-loss");

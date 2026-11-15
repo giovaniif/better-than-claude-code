@@ -72,6 +72,23 @@ const SECURITY: [RegExp, string][] = [[/YARD_BIND|YARD_ALLOW_ORIGIN|allow_origin
 
 const SECRET_TEXT = /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bghp_[A-Za-z0-9]{30,}|\bgho_[A-Za-z0-9]{30,}|\bsk-[A-Za-z0-9]{32,}|\bAKIA[0-9A-Z]{16}\b|xox[bp]-[A-Za-z0-9-]{20,}/;
 
+/**
+ * Added lines that are not test code: a test cleaning up its own temp dir is
+ * not a data-loss risk. Skips files under tests/ and, in a Rust file, every
+ * line after a `#[cfg(test)]` marker in the patch (test modules close a file).
+ */
+export function addedNonTest(filename: string, patch: string | undefined): string[] {
+  if (/(^|\/)tests?\//.test(filename)) return [];
+  const out: string[] = [];
+  let inTests = false;
+  for (const l of (patch ?? "").split("\n")) {
+    if (l.startsWith("@@")) continue;
+    if (/#\[cfg\(test\)\]/.test(l) && !l.startsWith("-")) inTests = true;
+    if (l.startsWith("+") && !l.startsWith("+++") && !inTests) out.push(l.slice(1));
+  }
+  return out;
+}
+
 const lines = (patch: string | undefined, sign: "+" | "-") =>
   (patch ?? "")
     .split("\n")
@@ -100,7 +117,10 @@ export function scanFiles(files: PrFile[]): { blockers: Blocker[]; category: str
     const joined = plus.join("\n");
     const code = /\.(rs|ts|tsx|js|sql|sh)$/.test(f.filename);
     if (code) for (const [re, what] of DESTRUCTIVE_SQL) if (re.test(joined)) add("destructive-sql", `${f.filename}: adds ${what}`);
-    if (code && /^crates\/|^scripts\//.test(f.filename)) for (const [re, what] of DATA_LOSS) if (re.test(joined)) add("data-loss", `${f.filename}: ${what}`);
+    if (code && /^crates\/|^scripts\//.test(f.filename)) {
+      const real = addedNonTest(f.filename, f.patch).join("\n");
+      for (const [re, what] of DATA_LOSS) if (re.test(real)) add("data-loss", `${f.filename}: ${what}`);
+    }
     if (/^crates\/yardd\/src\/(ws|main)\.rs$/.test(f.filename)) for (const [re, what] of SECURITY) if (re.test(joined + "\n" + minus.join("\n"))) add("security-boundary", `${f.filename}: touches the ${what}`);
     if (SECRET_TEXT.test(joined)) add("secret", `${f.filename}: an added line looks like a credential`);
     // The feature map may change, but a recipe may not quietly disappear.
