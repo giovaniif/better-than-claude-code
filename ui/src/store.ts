@@ -17,6 +17,7 @@ import {
   type Item,
   type Models,
   type PrResult,
+  type ProcRow,
   type SessionMeta,
   type Permission,
   type Usage,
@@ -73,6 +74,8 @@ export interface State {
   threads: Record<string, Thread>;
   changes: Record<string, Changes>;
   pr: Record<string, PrResult>;
+  /** The Processes tab's list per session: the latest `session.procs` reply. */
+  procs: Record<string, ProcRow[]>;
   /** Remote hosts and their connection state. This Mac is not in the list. */
   hosts: HostEntry[];
   /** Per host id; `local` is this machine. */
@@ -127,6 +130,7 @@ export const initial: State = {
   threads: {},
   changes: {},
   pr: {},
+  procs: {},
   hosts: [],
   models: {},
   usage: {},
@@ -340,8 +344,9 @@ function reduceServer(state: State, msg: any): State {
       const { [id]: _s, ...sessions } = state.sessions;
       const { [id]: _t, ...threads } = state.threads;
       const { [id]: _c, ...changes } = state.changes;
+      const { [id]: _p, ...procs } = state.procs;
       const route = state.route.page === "session" && state.route.id === id ? ({ page: "new" } as Route) : state.route;
-      return { ...state, sessions, threads, changes, route };
+      return { ...state, sessions, threads, changes, procs, route };
     }
     case "created":
       return { ...state, route: { page: "session", id: msg.sessionId }, restore: null };
@@ -355,9 +360,11 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, changes: { ...state.changes, [msg.sessionId]: msg.changes } };
     case "pr":
       return { ...state, pr: { ...state.pr, [msg.sessionId]: msg.pr } };
+    case "session.procs":
+      return { ...state, procs: { ...state.procs, [msg.sessionId]: msg.procs } };
     case "error": {
       // A host on an older Switchyard has no engine status; its card offers Update.
-      if (msg.for === "engines.status") return state;
+      if (msg.for === "engines.status" || msg.for === "session.procs") return state;
       // The import dialog says why; no banner behind it.
       if (msg.for === "session.import") return { ...state, importError: msg.message };
       // The refusal names no request, so every waiting card gets its buttons back.
@@ -503,6 +510,7 @@ export interface Actions {
   /** Deletes the account's folder and login; refused while a session uses it. */
   removeAccount(host: string, id: string): void;
   loadPr(sessionId: string): void;
+  loadProcs(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
   /** Install or update yardd on an SSH host from the release, over SSH. */
@@ -691,6 +699,7 @@ export function useYard(): { state: State; actions: Actions } {
         post(host === "local" ? { op: "git.branches", cwd } : { op: "git.branches", cwd, host }),
       listDirs: (path, host) => post(host === "local" ? { op: "fs.dirs", path } : { op: "fs.dirs", path, host }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
+      loadProcs: (sessionId) => post({ op: "session.procs", sessionId }),
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),

@@ -15,7 +15,8 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
 import { userMessage } from "./message";
-import { describe as describeTool, EDIT_TOOLS, patchFor, resultText, short } from "./tools";
+import { createSubagents } from "./subagents";
+import { describe as describeTool, EDIT_TOOLS, patchFor, resultText, short, toolStarted } from "./tools";
 import { oneShot } from "./oneshot";
 import { mergeUsage, type ClaudeUsage } from "./usage";
 
@@ -73,6 +74,7 @@ const PERMISSION_MODE: Record<string, string> = {
 
 async function run(start: { cwd: string; model: string; effort?: string; permission?: string; resume?: string | null }) {
   cwd = start.cwd;
+  const subagents = createSubagents(cwd);
 
   // Keep the parent session's markers out of the child Claude Code process.
   const env: Record<string, string> = {};
@@ -129,8 +131,12 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
   let openThinking: string | null = null;
 
   for await (const m of q as AsyncIterable<any>) {
-    // Subagent chatter stays out of the main thread.
-    if (m.parent_tool_use_id) continue;
+    // A subagent's steps nest under its Agent call; the rest of its chatter
+    // stays out of the thread.
+    if (m.parent_tool_use_id) {
+      for (const event of subagents.child(m)) emit(event);
+      continue;
+    }
 
     if (m.type === "stream_event") {
       const e = m.event;
@@ -157,7 +163,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
           openText = null;
         } else if (block.type === "tool_use") {
           const d = describeTool(block.name, block.input, cwd);
-          emit({ type: "tool_started", itemId: block.id, kind: d.kind, title: d.title, detail: d.detail });
+          emit(toolStarted(block, cwd));
           const patch = patchFor(block.name, block.input);
           if (patch) {
             emit({
@@ -176,6 +182,8 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
       if (!Array.isArray(content)) continue;
       for (const block of content) {
         if (block?.type !== "tool_result") continue;
+        // An Agent call ends with its task's notification, not with this.
+        if (subagents.holds(block.tool_use_id)) continue;
         emit({
           type: "tool_completed",
           itemId: block.tool_use_id,
@@ -183,6 +191,11 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
           output: short(resultText(block.content), 4000),
         });
       }
+      continue;
+    }
+
+    if (m.type === "system" && (m.subtype === "task_started" || m.subtype === "task_notification")) {
+      for (const event of subagents.task(m)) emit(event);
       continue;
     }
 

@@ -91,3 +91,14 @@ export function resultText(content: unknown): string {
   }
   return "";
 }
+
+/** The `tool_started` event for a `tool_use` block. An Agent call names its
+ *  subagent's type (`agent`); a subagent's own call names the Agent call it
+ *  runs under (`parent`). */
+export function toolStarted(block: { id: string; name: string; input?: any }, cwd: string, parent?: string) {
+  const d = describe(block.name, block.input, cwd);
+  const event: Record<string, unknown> = { type: "tool_started", itemId: block.id, kind: d.kind, title: d.title, detail: d.detail };
+  if (d.title === "Agent" && typeof block.input?.subagent_type === "string") event.agent = block.input.subagent_type;
+  if (parent) event.parent = parent;
+  return event;
+}

@@ -1,8 +1,9 @@
 // How a thread's items are laid out, after T3 Code's work log: tool calls and
 // thinking between messages fold into one-line groups, and a finished turn
 // folds all of its work into "Worked for 1m 12s" above its final answer.
-import type { Item } from "./protocol";
+import type { Item, ToolItem } from "./protocol";
 
+export type { ToolItem };
 export type WorkItem = Extract<Item, { kind: "tool" | "reasoning" }>;
 
 export type Row =
@@ -13,6 +14,29 @@ export type Row =
   | { type: "fold"; key: string; rows: Row[]; ms: number | null; status: string; summary: string };
 
 const isWork = (it: Item): it is WorkItem => it.kind === "tool" || it.kind === "reasoning";
+
+/** An Agent call that is still going: it stays in view after its turn ends. */
+const goingOn = (it: Item) => it.kind === "tool" && !!it.agent && it.state === "running";
+
+/** Move each step that ran under an Agent call into that call's `steps`. A
+ *  step whose call is not in the turn stays where it is. */
+function nest(items: Item[]): Item[] {
+  if (!items.some((it) => it.kind === "tool" && it.parent)) return items;
+  const copies = new Map<string, ToolItem>();
+  for (const it of items) if (it.kind === "tool") copies.set(it.itemId, { ...it, steps: undefined });
+  const top: Item[] = [];
+  for (const it of items) {
+    if (it.kind !== "tool") {
+      top.push(it);
+      continue;
+    }
+    const copy = copies.get(it.itemId)!;
+    const parent = it.parent && it.parent !== it.itemId ? copies.get(it.parent) : undefined;
+    if (parent) (parent.steps ??= []).push(copy);
+    else top.push(copy);
+  }
+  return top;
+}
 
 /** Group runs of work items; `liveTail` marks the last run live. */
 function group(items: Item[], liveTail: boolean): Row[] {
@@ -46,7 +70,7 @@ export function layout(items: Item[], running: boolean): Row[] {
   turns.forEach((turn, n) => {
     const head = turn[0]?.kind === "user" ? turn[0] : null;
     if (head) rows.push({ type: "item", key: head.key, item: head });
-    const body = head ? turn.slice(1) : turn;
+    const body = nest(head ? turn.slice(1) : turn);
     const live = running && n === turns.length - 1;
     const own = body.find((it): it is Extract<Item, { kind: "turn" }> => it.kind === "turn");
     if (own) lastMarker = own;
@@ -68,9 +92,13 @@ export function layout(items: Item[], running: boolean): Row[] {
         break;
       }
     }
-    const folded = (answer < 0 ? body : body.slice(0, answer)).filter((it) => it.kind !== "error");
-    const shown = body.filter((it, i) => (answer >= 0 && i >= answer) || (it.kind === "error" && !folded.includes(it)));
+    const folded = (answer < 0 ? body : body.slice(0, answer)).filter((it) => it.kind !== "error" && !goingOn(it));
+    const shown = body.filter((it, i) => (answer >= 0 && i >= answer) || (it.kind === "error" && !folded.includes(it)) || goingOn(it));
     const work = folded.filter(isWork);
+    if (!work.length) {
+      rows.push(...group(body, false));
+      return;
+    }
     const ms = from != null && to != null ? to - from : null;
     rows.push({
       type: "fold",

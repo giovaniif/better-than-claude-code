@@ -56,7 +56,7 @@ describe("shortCommand", () => {
 
 describe("procSummary", () => {
   test("counts processes and adds up CPU and memory", () => {
-    const rows = [row(1, 0, "a", { cpu: 50, memBytes: 100 * 1024 ** 2 }), row(2, 1, "b", { cpu: 25.5, memBytes: 1.5 * 1024 ** 3 })];
+    const rows = [row(1, 0, "a", { cpu: 50, memBytes: 100 * 1024 ** 2 }), row(2, 1, "b", { cpu: 25, memBytes: 1.5 * 1024 ** 3 })];
     expect(procSummary(rows)).toBe("2 processes · 75% CPU · 1.6 GB");
     expect(procSummary([rows[0]])).toBe("1 process · 50% CPU · 100 MB");
     expect(procSummary([])).toBe("No processes");

@@ -318,6 +318,21 @@ export interface AttachData {
   error?: string;
 }
 
+/** One process of a session, from `session.procs`: the host sampler's view,
+ *  up to 3 s old. `cpu` is percent of one core. */
+export interface ProcRow {
+  pid: number;
+  ppid: number;
+  name: string;
+  /** The command line, joined, at most 400 characters. */
+  cmd: string;
+  cpu: number;
+  memBytes: number;
+  ageSecs: number;
+  /** `agent`: what the engine runs. `terminal`: the session's shells. */
+  origin: "agent" | "terminal";
+}
+
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
 export type PrResult =
   | PullRequest
@@ -338,8 +353,12 @@ export type AgentEvent =
   /** Thinking: Claude's summarized thinking, Codex's reasoning summary. */
   | { type: "reasoning_delta"; itemId: string; text: string }
   | { type: "reasoning"; itemId: string; text: string }
-  | { type: "tool_started"; itemId: string; kind: string; title: string; detail: string }
-  | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null }
+  /** `agent` names the subagent an Agent call starts (Claude). `parent` is the
+   *  itemId of the Agent call a subagent's own step runs under. */
+  | { type: "tool_started"; itemId: string; kind: string; title: string; detail: string; agent?: string; parent?: string }
+  /** `ms`: how long a subagent ran. An Agent call ends with its task, which
+   *  can be after the turn that started it. */
+  | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null; ms?: number | null }
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
   | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
@@ -349,6 +368,26 @@ export type AgentEvent =
   /** The session is waiting for the host to have room. Carries its prompt. */
   | { type: "queued"; reason: string; text?: string; attachments?: Attachment[] };
 
+/** A tool call. An Agent call has `agent` (the subagent's type) and, in
+ *  `layout`, `steps`: the calls that ran under it, nested as deep as the
+ *  subagents are. */
+export interface ToolItem {
+  kind: "tool";
+  key: string;
+  itemId: string;
+  toolKind: string;
+  title: string;
+  detail: string;
+  state: "running" | "ok" | "failed";
+  output?: string | null;
+  agent?: string;
+  /** The itemId of the Agent call this step runs under. */
+  parent?: string;
+  /** How long the subagent ran. */
+  ms?: number;
+  steps?: ToolItem[];
+}
+
 /** What the thread renders. Built from events by `applyEvent`. */
 export type Item =
   /** `steered`: sent while the agent worked and given to it mid-turn, at `at`. */
@@ -357,7 +396,7 @@ export type Item =
   | { kind: "reasoning"; key: string; itemId: string; text: string; streaming: boolean }
   /** A turn's span, for "Worked for 1m 12s". Not drawn by itself. */
   | { kind: "turn"; key: string; start?: number; end?: number; status: string }
-  | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
+  | ToolItem
   | { kind: "diff"; key: string; files: ChangedFile[] }
   | {
       kind: "approval";
@@ -436,16 +475,18 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       next[i] = { ...(next[i] as Extract<Item, { kind: "assistant" }>), text: ev.text, streaming: false };
       return next;
     }
-    case "tool_started":
-      return [
-        ...items,
-        { kind: "tool", key, itemId: ev.itemId, toolKind: ev.kind, title: ev.title, detail: ev.detail, state: "running" },
-      ];
+    case "tool_started": {
+      const tool: ToolItem = { kind: "tool", key, itemId: ev.itemId, toolKind: ev.kind, title: ev.title, detail: ev.detail, state: "running" };
+      if (ev.agent) tool.agent = ev.agent;
+      if (ev.parent) tool.parent = ev.parent;
+      return [...items, tool];
+    }
     case "tool_completed": {
       const from = turnStart(items);
+      // An Agent call can end after a later prompt: its notification comes when its task does.
       return items.map((it, i) =>
-        i >= from && it.kind === "tool" && it.itemId === ev.itemId
-          ? { ...it, state: ev.ok ? "ok" : "failed", output: ev.output ?? null }
+        (i >= from || (it.kind === "tool" && it.agent)) && it.kind === "tool" && it.itemId === ev.itemId
+          ? { ...it, state: ev.ok ? "ok" : "failed", output: ev.output ?? null, ...(ev.ms != null ? { ms: ev.ms } : {}) }
           : it,
       );
     }
@@ -472,11 +513,18 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
           break;
         }
       }
-      // Nothing may look live once the turn is over.
+      // A background subagent goes on after a completed turn, with the steps it
+      // is taking. Stop or a failure ends it.
+      const goesOn = new Set(
+        ev.status === "completed" ? items.flatMap((it) => (it.kind === "tool" && it.agent && it.state === "running" ? [it.itemId] : [])) : [],
+      );
+      // Nothing else may look live once the turn is over.
       return items.map((it, i) => {
         if (i === open && it.kind === "turn") return { ...it, end: ev.at, status: ev.status };
         if ((it.kind === "assistant" || it.kind === "reasoning") && it.streaming) return { ...it, streaming: false };
-        if (it.kind === "tool" && it.state === "running") return { ...it, state: "failed" as const };
+        if (it.kind === "tool" && it.state === "running" && !goesOn.has(it.itemId) && !(it.parent && goesOn.has(it.parent))) {
+          return { ...it, state: "failed" as const };
+        }
         if (it.kind === "approval" && it.decision === null) return { ...it, decision: "deny" as const };
         return it;
       });
