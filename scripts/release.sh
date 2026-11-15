@@ -5,6 +5,8 @@
 # Write the "## 0.2.0 (date)" section of CHANGELOG.md first.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+# Cargo is often only in a login shell's PATH (rustup on Homebrew, ~/.cargo).
+PATH="$PATH:$HOME/.cargo/bin:/opt/homebrew/opt/rustup/bin"
 
 version="${1:-}"
 if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
