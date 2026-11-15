@@ -1,0 +1,53 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-15T18:52:24.206Z",
+      "counts": {
+        "pass": 6,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "dialog-lists-sessions",
+          "status": "pass",
+          "ms": 5061
+        },
+        {
+          "label": "filter-narrows-the-list",
+          "status": "pass",
+          "ms": 2741
+        },
+        {
+          "label": "import-opens-the-session",
+          "status": "pass",
+          "ms": 5468
+        },
+        {
+          "label": "import-on-mobile",
+          "status": "pass",
+          "ms": 3655
+        },
+        {
+          "label": "next-message-resumes",
+          "status": "pass",
+          "ms": 514
+        },
+        {
+          "label": "missing-folder-is-refused",
+          "status": "pass",
+          "ms": 3365
+        },
+        {
+          "label": "import-from-a-remote-host",
+          "status": "manual",
+          "why": "needs a second machine with Claude Code sessions"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

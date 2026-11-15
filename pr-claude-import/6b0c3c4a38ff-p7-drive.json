@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "dfcd1fdaec53a714b80c654ee3104a3dd1f4af57",
+    "short": "dfcd1fd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T18:51:44.753Z"
+  },
+  "dir": ".verify/evidence/head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3521,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head-d/dialog-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head-d/imported-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
