@@ -198,60 +198,148 @@ fn pending_texts(c: &Client, sid: &str) -> Vec<String> {
     meta_of(c, sid)["pending"].as_array().map(|a| a.iter().map(|p| p["text"].as_str().unwrap_or("").to_string()).collect()).unwrap_or_default()
 }
 
+fn user_texts(c: &Client, sid: &str) -> Vec<String> {
+    c.events(sid).iter().filter(|e| e["type"] == "user_message").map(|e| e["text"].as_str().unwrap_or("").to_string()).collect()
+}
+
+fn count(c: &Client, sid: &str, ty: &str) -> usize {
+    c.event_types(sid).iter().filter(|t| *t == ty).count()
+}
+
+// Messages sent during a turn work like Claude Code's queue: they reach the
+// agent at its next step, in the same turn; Stop hands them back.
+
 #[tokio::test]
-async fn interrupt_ends_a_slow_turn_and_holds_the_queue() {
+async fn stop_hands_queued_messages_back() {
     let sb = Sandbox::new("interrupt");
     let d = sb.start();
     let mut c = d.client().await;
     let sid = c.create(&sb.folder("proj"), "[slow] think hard", json!({})).await;
     c.wait_event(&sid, "assistant_delta", 0).await;
 
-    // A message sent during a turn waits in the queue instead of being refused.
+    // No step ends during a [slow] turn, so the message waits in the queue.
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "and another" })).await;
     c.wait_for("the queued message", |m| m["op"] == "session" && m["session"]["pending"].as_array().is_some_and(|p| p.len() == 1)).await;
     assert_eq!(pending_texts(&c, &sid), ["and another"]);
 
-    // Stop means stop: the queue is held, not sent.
+    // Stop ends the turn and gives the queue back to the window that stopped it.
+    let from = c.mark();
     c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    let back = c.wait_after(from, "the returned queue", |m| m["op"] == "queue.returned" && m["sessionId"] == sid).await;
+    assert_eq!(back["text"], "and another");
     assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "interrupted");
     c.wait_status(&sid, "idle").await;
     c.drain_for(Duration::from_millis(600)).await;
-    assert_eq!(c.event_types(&sid).iter().filter(|t| *t == "user_message").count(), 1, "the queued message did not run");
-    assert_eq!(pending_texts(&c, &sid), ["and another"], "still queued after Stop");
-
-    // And it can be taken back.
-    let id = meta_of(&c, &sid)["pending"][0]["id"].as_str().unwrap().to_string();
-    let from = c.mark();
-    c.send(json!({ "op": "session.unqueue", "sessionId": sid, "id": id })).await;
-    c.wait_after(from, "the empty queue", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pending"].as_array().map_or(true, |p| p.is_empty())).await;
+    assert_eq!(user_texts(&c, &sid), ["[slow] think hard"], "nothing queued was sent");
     assert!(pending_texts(&c, &sid).is_empty());
 }
 
 #[tokio::test]
-async fn queued_messages_run_in_order_when_turns_complete() {
+async fn a_queued_message_can_be_taken_back_to_edit() {
+    let sb = Sandbox::new("unqueue");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[slow] think hard", json!({})).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "fix the typo" })).await;
+    c.wait_for("the queued message", |m| m["op"] == "session" && m["session"]["pending"].as_array().is_some_and(|p| p.len() == 1)).await;
+    let id = meta_of(&c, &sid)["pending"][0]["id"].as_str().unwrap().to_string();
+    let from = c.mark();
+    c.send(json!({ "op": "session.unqueue", "sessionId": sid, "id": id })).await;
+    let back = c.wait_after(from, "the taken message", |m| m["op"] == "queue.returned" && m["sessionId"] == sid).await;
+    assert_eq!(back["text"], "fix the typo");
+    assert_eq!(back["id"], id);
+    c.wait_after(from, "the empty queue", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pending"].as_array().map_or(true, |p| p.is_empty())).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+}
+
+#[tokio::test]
+async fn a_message_sent_mid_turn_is_steered_into_the_codex_turn() {
+    let sb = Sandbox::new("steer");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[steps] TEST-go", json!({})).await;
+    c.wait_event(&sid, "tool_started", 0).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "TEST-also this" })).await;
+
+    let done = c.wait_turn_done(&sid, 0).await;
+    assert_eq!(done["status"], "completed");
+    let answer = c.events(&sid).into_iter().rev().find(|e| e["type"] == "assistant_message").unwrap();
+    assert_eq!(answer["text"], "Echo: [steps] TEST-go | steered: TEST-also this");
+    c.wait_status(&sid, "idle").await;
+    c.drain_for(Duration::from_millis(600)).await;
+    assert_eq!(user_texts(&c, &sid), ["[steps] TEST-go", "TEST-also this"]);
+    let steered = c.events(&sid).into_iter().find(|e| e["type"] == "user_message" && e["text"] == "TEST-also this").unwrap();
+    assert_eq!(steered["steered"], true, "marked as sent while the agent worked");
+    assert_eq!(count(&c, &sid, "turn_started"), 1, "one turn, not two");
+    assert_eq!(count(&c, &sid, "turn_completed"), 1);
+    assert_eq!(sb.turn_inputs().len(), 1);
+    assert!(pending_texts(&c, &sid).is_empty());
+}
+
+#[tokio::test]
+async fn a_message_sent_mid_turn_is_folded_into_the_claude_turn() {
+    let sb = Sandbox::new("fold");
+    let sidecar = fake_bin().join("yard-claude");
+    let d = sb.start_with(&[("YARD_SIDECAR", sidecar.to_str().unwrap())]);
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[steps] TEST-go", json!({ "engine": "claude", "model": "claude-haiku-5-5", "effort": "medium" })).await;
+    c.wait_event(&sid, "tool_started", 0).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "TEST-and this" })).await;
+
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    let answer = c.events(&sid).into_iter().rev().find(|e| e["type"] == "assistant_message").unwrap();
+    assert_eq!(answer["text"], "Echo: [steps] TEST-go | also: TEST-and this");
+    c.wait_status(&sid, "idle").await;
+    c.drain_for(Duration::from_millis(600)).await;
+    assert_eq!(user_texts(&c, &sid), ["[steps] TEST-go", "TEST-and this"]);
+    assert_eq!(count(&c, &sid, "turn_completed"), 1, "folded into the same turn");
+}
+
+#[tokio::test]
+async fn messages_after_the_last_step_go_together_as_the_next_turn() {
+    let sb = Sandbox::new("tail");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[tail] TEST-go", json!({})).await;
+    c.wait_event(&sid, "tool_completed", 0).await;
+    // The last step is done: these wait for the turn to end, then go as one message.
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "TEST-one" })).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "TEST-two" })).await;
+
+    c.wait_for("the combined reply", |m| is_event(m, &sid) && m["event"]["type"] == "assistant_message" && m["event"]["text"] == "Echo: TEST-one\n\nTEST-two").await;
+    let after = c.next_seq(&sid);
+    c.wait_for("the second turn's end", |m| is_event(m, &sid) && m["event"]["type"] == "turn_completed" && m["seq"].as_u64() >= Some(after)).await;
+    assert_eq!(user_texts(&c, &sid), ["[tail] TEST-go", "TEST-one\n\nTEST-two"]);
+    assert_eq!(count(&c, &sid, "turn_completed"), 2);
+    let inputs: Vec<String> = sb.turn_inputs().iter().map(|i| i[0]["text"].as_str().unwrap_or("").to_string()).collect();
+    assert_eq!(inputs, ["[tail] TEST-go", "TEST-one\n\nTEST-two"]);
+}
+
+#[tokio::test]
+async fn messages_queued_during_an_approval_reach_the_agent_after_it() {
     let sb = Sandbox::new("queue");
     let d = sb.start();
     let mut c = d.client().await;
     let sid = c.create(&sb.folder("proj"), "[cmd] run it", json!({})).await;
     let req = c.wait_event(&sid, "approval_request", 0).await;
     c.wait_status(&sid, "needs_approval").await;
-
-    // Two messages while the turn waits for an approval.
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "first queued" })).await;
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "second queued" })).await;
     c.wait_for("two queued messages", |m| m["op"] == "session" && m["session"]["pending"].as_array().is_some_and(|p| p.len() == 2)).await;
-    assert_eq!(pending_texts(&c, &sid), ["first queued", "second queued"]);
-    assert_eq!(c.event_types(&sid).iter().filter(|t| *t == "user_message").count(), 1, "queued messages are not in the thread yet");
+    assert_eq!(user_texts(&c, &sid), ["[cmd] run it"], "queued messages are not in the thread yet");
 
+    // The approved command is a step: both go to the agent as one message,
+    // steered into this turn, or as the next turn when this one ended first
+    // (the fake ends the moment the command is approved).
     c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
-    // The approved turn, then one turn per queued message, in order.
-    c.wait_for("the second queued reply", |m| is_event(m, &sid) && m["event"]["type"] == "assistant_message" && m["event"]["text"] == "Echo: second queued").await;
-    c.wait_status(&sid, "idle").await;
-    let users: Vec<String> = c.events(&sid).iter().filter(|e| e["type"] == "user_message").map(|e| e["text"].as_str().unwrap().to_string()).collect();
-    assert_eq!(users, ["[cmd] run it", "first queued", "second queued"]);
-    let inputs: Vec<String> = sb.turn_inputs().iter().map(|i| i[0]["text"].as_str().unwrap_or("").to_string()).collect();
-    assert_eq!(inputs, ["[cmd] run it", "first queued", "second queued"], "each queued message reached the engine as its own turn");
-    c.drain_for(Duration::from_millis(300)).await;
+    c.wait_for("the combined message", |m| is_event(m, &sid) && m["event"]["type"] == "user_message" && m["event"]["text"] == "first queued\n\nsecond queued").await;
+    c.drain_for(Duration::from_millis(1500)).await;
+    assert_eq!(user_texts(&c, &sid), ["[cmd] run it", "first queued\n\nsecond queued"]);
+    let steer = std::fs::read_to_string(sb.fake_state().join("steer-inputs.jsonl")).unwrap_or_default();
+    let turns: Vec<String> = sb.turn_inputs().iter().map(|i| i[0]["text"].as_str().unwrap_or("").to_string()).collect();
+    let reached = steer.contains("first queued\\n\\nsecond queued") || turns.iter().any(|t| t == "first queued\n\nsecond queued");
+    assert!(reached, "the combined message reached the engine: steer {steer:?}, turns {turns:?}");
     assert!(pending_texts(&c, &sid).is_empty());
 }
 
