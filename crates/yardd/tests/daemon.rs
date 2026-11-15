@@ -1241,3 +1241,46 @@ async fn stop_kills_a_claude_sidecar_that_ignores_the_interrupt() {
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hello" })).await;
     assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
 }
+
+#[tokio::test]
+async fn notify_reaches_every_connected_window() {
+    let sb = Sandbox::new("notify");
+    let d = sb.start();
+    let mut a = d.client().await;
+    let mut b = d.client().await;
+    let mut agent = d.client().await;
+    let (ma, mb) = (a.mark(), b.mark());
+
+    agent
+        .send(json!({ "op": "notify", "title": "Loop failed", "body": "patrol did not start", "sessionId": "s1", "url": "https://github.com/o/r/pull/7" }))
+        .await;
+    let want = |m: &Value| m["op"] == "notify";
+    let got_a = a.wait_after(ma, "the notification in window a", want).await;
+    let got_b = b.wait_after(mb, "the notification in window b", want).await;
+    for got in [&got_a, &got_b] {
+        assert_eq!(got["title"], "Loop failed");
+        assert_eq!(got["body"], "patrol did not start");
+        assert_eq!(got["sessionId"], "s1");
+        assert_eq!(got["url"], "https://github.com/o/r/pull/7");
+    }
+    // The sender learns how many windows got it: three clients are connected,
+    // and the sender is one of them, so a caller can tell nobody was there.
+    let sent = agent.wait_for("the sender's receipt", |m| m["op"] == "notify.sent").await;
+    assert_eq!(sent["windows"], 3, "{sent}");
+}
+
+#[tokio::test]
+async fn notify_needs_a_title_and_only_takes_web_links() {
+    let sb = Sandbox::new("notify-bad");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let from = c.mark();
+    c.send(json!({ "op": "notify", "body": "no title" })).await;
+    let err = c.wait_error(from, "notify").await;
+    assert!(err.contains("title"), "{err}");
+
+    let from = c.mark();
+    c.send(json!({ "op": "notify", "title": "x", "url": "file:///etc/passwd" })).await;
+    let err = c.wait_error(from, "notify").await;
+    assert!(err.contains("url"), "{err}");
+}
