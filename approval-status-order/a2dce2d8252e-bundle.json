@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "claim": "Allowing a command that runs quickly can leave the session marked running after its turn ended; the next message then waits in the queue forever",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-15-6b1c",
+  "base": "121506538ea5ea761fbbce7f50e1dc42fb98926c",
+  "head": "8f1077183fc968f806cd133533163e06cdf1696e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approvals.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-15T19:46:16.741Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "499202de69d63acabac38fa4cccdde75062f209e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "65c00da981923e7833665709abcc546ff33b93d9f1a1200ea3856a7d2f9138e5"
+        }
+      ],
+      "addedAt": "2026-11-15T19:46:16.789Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd an_answer_is_logged_before_the_sidecar_reads_it",
+      "exit": 101
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "499202de69d63acabac38fa4cccdde75062f209e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-15T19:46:18.746Z",
+      "text": "no-repro: the race window is the few microseconds between handing the answer to the engine and logging approval_resolved, so it does not reproduce on demand in the UI (16 sessions approved at once, 80 tries under CPU contention on this host: 0 hits). It did reproduce in CI on main at cbd8299: approval_allow_runs_the_command saw statuses running, needs_approval, idle (https://github.com/giovaniif/switchyard/actions/runs/43747265198). The base test above shows the order deterministically: when the Claude sidecar reads the answer, approval_resolved is not in the log yet."
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8f1077183fc968f806cd133533163e06cdf1696e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-approval-status-order-head-mobile.json",
+          "sha256": "2a1a7461c8c0606d3a048dfda65c4bb0491ac70cba129a449bc2741c20f181c1"
+        },
+        {
+          "path": "p3-before-allow-mobile.png",
+          "sha256": "27dcf8c2e6a4e6c9c1e72d0ffd3efa77166cf4027f7e3af79aadce909b1ce221"
+        },
+        {
+          "path": "p3-after-follow-up-mobile.png",
+          "sha256": "b0389a616bbe95af97c85e9f6bcc6ebc7f9acdf72340dfa4c5407babbaa66afb"
+        }
+      ],
+      "addedAt": "2026-11-15T19:47:28.033Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8f1077183fc968f806cd133533163e06cdf1696e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-approval-status-order-head-desktop.json",
+          "sha256": "7bbdf487a243be9daccebaf1b1ab0389cec959a5b53396161129805c449766bf"
+        },
+        {
+          "path": "p4-before-allow-desktop.png",
+          "sha256": "9afc314fad50441e901598a749089e5392e23fa4a69dd68f76ef98ba78925798"
+        },
+        {
+          "path": "p4-after-follow-up-desktop.png",
+          "sha256": "e00b859f8bd9711c348a1d17cc3dcf6c4d2002ea14a6fa44cc043be27a8a3626"
+        }
+      ],
+      "addedAt": "2026-11-15T19:47:28.077Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "8f1077183fc968f806cd133533163e06cdf1696e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "bb4bd1faab197360f517fdbd470fe9c58ae4d430799c4c807bae3b1195096fdf"
+        }
+      ],
+      "addedAt": "2026-11-15T19:47:32.110Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8f1077183fc968f806cd133533163e06cdf1696e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-approvals.json",
+          "sha256": "5d3f12291fd0560562a80d1e6f5b94bfd7d49fb332ce3f704c1b86c3a0c2e50e"
+        }
+      ],
+      "addedAt": "2026-11-15T19:47:42.490Z",
+      "cmd": "verify/yv map run approvals",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/allow-then-follow-up",
+        "approvals/deny",
+        "approvals/always-allow"
+      ]
+    }
+  ]
+}

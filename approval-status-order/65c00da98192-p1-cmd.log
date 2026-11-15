@@ -1,0 +1,28 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd an_answer_is_logged_before_the_sidecar_reads_it
+# exit 101 after 1904 ms at 499202de69d63acabac38fa4cccdde75062f209e
+
+
+running 1 test
+test claude::tests::an_answer_is_logged_before_the_sidecar_reads_it ... FAILED
+
+failures:
+
+---- claude::tests::an_answer_is_logged_before_the_sidecar_reads_it stdout ----
+
+thread 'claude::tests::an_answer_is_logged_before_the_sidecar_reads_it' (202855) panicked at crates/yardd/src/claude.rs:237:9:
+assertion `left == right` failed
+  left: [String("approval_request")]
+ right: [String("approval_request"), String("approval_resolved")]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    claude::tests::an_answer_is_logged_before_the_sidecar_reads_it
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.01s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-15-6b1c/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.84s
+     Running unittests src/main.rs (target/debug/build/yardd/62cb9df1db9dbe27/out/yardd-62cb9df1db9dbe27)
+error: test failed, to rerun pass `-p yardd --bin yardd`
