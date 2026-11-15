@@ -24,7 +24,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 - Live agent turns spend the user's subscriptions. Test with Codex on `gpt-5.6-luna`, effort `low`, with tiny prompts. Claude weekly usage is nearly exhausted: no Claude turns unless the task says so.
 - You own this repo end to end: commit and push your work, including CI changes. Leave other repositories alone.
 - Releases are numbered: write the CHANGELOG.md section, then `scripts/release.sh X.Y.Z` (see CONTRIBUTING.md). Pushes to `main` build but don't publish.
-- yardd binds loopback by default and always checks the WebSocket `Origin`. Keep both. Only the container image opts out of loopback (`YARD_BIND=0.0.0.0`, with `YARD_ALLOW_ORIGIN` naming the page's URL). Never match `Origin` against the `Host` header: that reopens DNS rebinding.
+- yardd binds loopback by default and always checks the WebSocket `Origin`. Keep both. Leaving loopback is opt-in through `YARD_BIND` (the container image uses `0.0.0.0`; a server behind a proxy lists loopback plus one proxy-facing address), always with `YARD_ALLOW_ORIGIN` naming the page's URL. Never match `Origin` against the `Host` header: that reopens DNS rebinding.
 
 ## Code
 

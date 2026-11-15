@@ -18,7 +18,7 @@ Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.
 
 ## Shape
 
-- **yardd** (`crates/yardd`): Rust daemon. Owns every agent process, the event log and host stats. Serves the UI and a WebSocket on `127.0.0.1:47717` (`YARD_BIND` changes the address; only the container image does). The port stays out of 4510-4559, which LocalStack publishes on every interface.
+- **yardd** (`crates/yardd`): Rust daemon. Owns every agent process, the event log and host stats. Serves the UI and a WebSocket on `127.0.0.1:47717` (`YARD_BIND` changes it: one address or a comma-separated list; the container image uses `0.0.0.0`, a server behind a reverse proxy adds the proxy-facing address next to loopback). The port stays out of 4510-4559, which LocalStack publishes on every interface.
 - **yard-claude** (`sidecar/yard-claude`): TypeScript sidecar on the Claude Agent SDK, run with Bun. One per Claude session, JSON lines over stdio. The SDK exists only for TypeScript and Python.
 - **ui** (`ui`): React + Vite. Talks only to yardd.
 - **app** (`app/src-tauri`): Tauri v2 window. Starts yardd if nothing is listening, then loads yardd's page. It holds no agent state and yardd outlives it, so sessions survive closing the app.

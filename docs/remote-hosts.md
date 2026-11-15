@@ -28,6 +28,15 @@ Or build from a checkout on the server with `scripts/install-host.sh` (needs Rus
 
 Logs: `journalctl --user -u yardd`. Stop it: `systemctl --user stop yardd`.
 
+## Also in a browser, as your own user
+
+The [web version](web.md) runs in a container as its own user, with its own logins and none of your tools. To use a server from a browser as your normal user instead, keep this install and put your reverse proxy in front of it:
+
+- `YARD_BIND` takes a comma-separated list. Keep loopback, so SSH hosts still work, and add one address the proxy can reach, such as the gateway of the proxy's Docker network: `YARD_BIND=127.0.0.1,10.0.1.1`.
+- `YARD_ALLOW_ORIGIN` names the page's URL, as in the container.
+- Put both in a drop-in, such as `~/.config/systemd/user/yardd.service.d/web.conf`, so **Update Switchyard** (which rewrites `yardd.service`) keeps them.
+- yardd has no sign-in, and it now runs as you. Firewall the port so only loopback and the proxy reach it: on Linux, any container can reach the host's address on a Docker network.
+
 ## What the host card tells you
 
 | The card says | What it means |

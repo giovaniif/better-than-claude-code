@@ -43,12 +43,11 @@ async fn main() -> anyhow::Result<()> {
         .and_then(|p| p.parse().ok())
         .unwrap_or(DEFAULT_PORT);
     // Loopback by default: the desktop app and SSH hosts reach it locally or
-    // through an SSH forward. Only the container image sets YARD_BIND=0.0.0.0,
-    // so its published port or reverse proxy can reach it.
-    let bind: std::net::IpAddr = match std::env::var("YARD_BIND") {
-        Ok(b) if !b.trim().is_empty() => b.trim().parse().with_context(|| format!("YARD_BIND `{b}` is not an IP address"))?,
-        _ => std::net::Ipv4Addr::LOCALHOST.into(),
-    };
+    // through an SSH forward. The container image sets YARD_BIND=0.0.0.0, so
+    // its published port or reverse proxy can reach it. A list lets a yardd on
+    // a server keep loopback for SSH hosts and add the one address a reverse
+    // proxy can reach, such as a Docker network's gateway.
+    let binds = parse_binds(&std::env::var("YARD_BIND").unwrap_or_default())?;
     let root: PathBuf = match std::env::var("YARD_ROOT") {
         Ok(p) => PathBuf::from(p),
         Err(_) => std::env::current_dir()?,
@@ -89,14 +88,59 @@ async fn main() -> anyhow::Result<()> {
         .fallback_service(ServeDir::new(root.join("ui/dist")))
         .with_state(app);
 
-    if !bind.is_loopback() && ws::allowed_origins().is_empty() {
-        eprintln!(
-            "yardd: WARNING: listening on {bind} with no YARD_ALLOW_ORIGIN. Browsers on any address other than \
-             http://127.0.0.1:{port} will be refused. Set YARD_ALLOW_ORIGIN to the URL you open, such as https://yard.example.com"
-        );
+    if let Some(bind) = binds.iter().find(|b| !b.is_loopback()) {
+        if ws::allowed_origins().is_empty() {
+            eprintln!(
+                "yardd: WARNING: listening on {bind} with no YARD_ALLOW_ORIGIN. Browsers on any address other than \
+                 http://127.0.0.1:{port} will be refused. Set YARD_ALLOW_ORIGIN to the URL you open, such as https://yard.example.com"
+            );
+        }
     }
-    let listener = tokio::net::TcpListener::bind((bind, port)).await?;
-    eprintln!("yardd: http://{}", std::net::SocketAddr::new(bind, port));
-    axum::serve(listener, router).await?;
+    // Bind every address before serving any, so a bad one fails the start
+    // instead of leaving a yardd that answers on some addresses only.
+    let mut listeners = Vec::new();
+    for bind in &binds {
+        let addr = std::net::SocketAddr::new(*bind, port);
+        listeners.push(tokio::net::TcpListener::bind(addr).await.with_context(|| format!("cannot listen on {addr}"))?);
+        eprintln!("yardd: http://{addr}");
+    }
+    let mut servers = tokio::task::JoinSet::new();
+    for listener in listeners {
+        let router = router.clone();
+        servers.spawn(async move { axum::serve(listener, router).await });
+    }
+    // A server only returns on error; one that stops takes yardd down with it.
+    if let Some(done) = servers.join_next().await {
+        done??;
+    }
     Ok(())
+}
+
+/// `YARD_BIND`: one IP address or a comma-separated list. Empty is loopback.
+fn parse_binds(list: &str) -> anyhow::Result<Vec<std::net::IpAddr>> {
+    let mut binds = Vec::new();
+    for b in list.split(',').map(str::trim).filter(|b| !b.is_empty()) {
+        let ip: std::net::IpAddr = b.parse().with_context(|| format!("YARD_BIND `{b}` is not an IP address"))?;
+        if !binds.contains(&ip) {
+            binds.push(ip);
+        }
+    }
+    if binds.is_empty() {
+        binds.push(std::net::Ipv4Addr::LOCALHOST.into());
+    }
+    Ok(binds)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_binds;
+
+    #[test]
+    fn bind_list() {
+        assert_eq!(parse_binds("").unwrap(), vec!["127.0.0.1".parse::<std::net::IpAddr>().unwrap()]);
+        assert_eq!(parse_binds(" 0.0.0.0 ").unwrap(), vec!["0.0.0.0".parse::<std::net::IpAddr>().unwrap()]);
+        let two = parse_binds("127.0.0.1, 10.0.1.1,127.0.0.1").unwrap();
+        assert_eq!(two, ["127.0.0.1", "10.0.1.1"].map(|a| a.parse::<std::net::IpAddr>().unwrap()));
+        assert!(parse_binds("127.0.0.1,yard.example.com").is_err());
+    }
 }

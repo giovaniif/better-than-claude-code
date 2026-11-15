@@ -5,6 +5,7 @@ Each version is a [GitHub release](https://github.com/giovaniif/better-than-clau
 ## 0.2.3 (2026-11-15)
 
 - **Fixed: the session menu stays on screen.** With a narrow sidebar, or on a row near the bottom of the list, the … menu (Pin, Archive, Delete) was cut off. It now opens over the rest of the window, above the row when there's no room below.
+- **A server's Switchyard in the browser, as your own user.** `YARD_BIND` now takes a comma-separated list, so a yardd installed on a server (as an SSH host) can keep loopback for the app and also listen on one address a reverse proxy reaches. Its sessions and terminals then run as you, with your `gh`, SSH keys and tools, instead of as the container's `yard` user. See "Also in a browser" in docs/remote-hosts.md.
 
 ## 0.2.2 (2026-11-15)
 
