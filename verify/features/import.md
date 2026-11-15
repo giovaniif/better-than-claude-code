@@ -102,5 +102,6 @@ yv iso down --name map-import-remote
 
 ## Gotchas
 - Imported sessions run in place (no worktree): Claude Code keeps a session's transcript by folder, and resuming needs the same folder.
-- A real Claude resume after an import was not tried: the map and the daemon suite use the fake sidecar, which only logs the resume id it was given.
+- The map and the daemon suite use the fake sidecar, which only logs the resume id it was given. A real resume was checked by hand on 2026-11-15: a throwaway `claude -p --model claude-haiku-5-5` session in a temp folder told to remember PELICAN, imported into a `--engines real` isolated yardd (it kept Haiku 5.5), answered "PELICAN" to "What word did I ask you to remember?". Repeat that by hand after changing the resume path; never import the owner's real sessions to test.
+- `claude -p` and SDK sessions are not listed (the SDK's `includeProgrammatic: false`, like Claude Code's own `/resume`); `session.import` still takes their id.
 - Titles come from the SDK: the custom title (`/rename`), else the summary, else the first prompt.
