@@ -74,13 +74,13 @@ async fn main() -> anyhow::Result<()> {
 
     tokio::spawn(hosts::run(app.clone()));
 
-    // A turn completed with messages queued behind it: start the next one.
+    // Queued messages: into the running turn at a step, or the next turn.
+    // One at a time, so two steps in a row cannot deliver out of order.
     let mut next_turns = app.take_next_turns();
     let runner = app.clone();
     tokio::spawn(async move {
-        while let Some(sid) = next_turns.recv().await {
-            let app = runner.clone();
-            tokio::spawn(async move { sessions::send_next(&app, &sid).await });
+        while let Some((sid, when)) = next_turns.recv().await {
+            sessions::deliver(&runner, &sid, when).await;
         }
     });
 

@@ -5,7 +5,7 @@ use std::{sync::Arc, time::Duration};
 
 use serde_json::{json, Value};
 
-use crate::{claude, codex, state::{App, Backend}};
+use crate::{claude, codex, state::{App, Backend, Delivery}};
 
 /// How long Stop waits for the engine to end the turn before ending it itself.
 const STOP_GRACE: Duration = Duration::from_secs(5);
@@ -72,12 +72,54 @@ async fn start_engine(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
     }
 }
 
-/// Send the oldest queued message, if the session is idle and has one.
-pub async fn send_next(app: &Arc<App>, sid: &str) {
-    let Some(item) = app.next_pending(sid) else { return };
-    let text = item["text"].as_str().unwrap_or("").to_string();
-    let attachments = item["attachments"].as_array().cloned().unwrap_or_default();
-    send_turn(app, sid, &text, &attachments).await;
+/// Several queued messages go to the agent as one, as in Claude Code.
+pub fn combine(items: &[Value]) -> (String, Vec<Value>) {
+    let text = items.iter().filter_map(|i| i["text"].as_str()).filter(|t| !t.is_empty()).collect::<Vec<_>>().join("\n\n");
+    let attachments = items.iter().flat_map(|i| i["attachments"].as_array().cloned().unwrap_or_default()).collect();
+    (text, attachments)
+}
+
+/// Deliver queued messages: into the running turn at a step, or as the next
+/// turn once it completed.
+pub async fn deliver(app: &Arc<App>, sid: &str, when: Delivery) {
+    match when {
+        Delivery::NextTurn => {
+            let items = app.take_all_queued(sid, |s| s == "idle");
+            if items.is_empty() {
+                return;
+            }
+            let (text, attachments) = combine(&items);
+            send_turn(app, sid, &text, &attachments).await;
+        }
+        Delivery::Steer => {
+            let items = app.take_all_queued(sid, |s| s == "running");
+            if items.is_empty() {
+                return;
+            }
+            let (text, attachments) = combine(&items);
+            let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
+            let sent = match engine.as_str() {
+                "codex" => codex::steer(app, sid, &text, &attachments).await,
+                _ => claude::push(app, sid, &text, &attachments),
+            };
+            match sent {
+                Ok(()) => {
+                    let mut ev = user_message(&text, &attachments);
+                    ev["steered"] = json!(true);
+                    app.emit(sid, ev);
+                }
+                Err(e) => {
+                    // The turn may have ended under us: back in the queue,
+                    // and on to the next turn if it already completed.
+                    eprintln!("yardd: could not steer {sid}: {e:#}");
+                    app.requeue(sid, items);
+                    if app.meta(sid).is_some_and(|m| m.status == "idle") {
+                        Box::pin(deliver(app, sid, Delivery::NextTurn)).await;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// Record the user's message and hand it to the session's engine.

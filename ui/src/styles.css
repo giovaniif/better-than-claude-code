@@ -461,3 +461,4 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .pending-row { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--side); }
 .pending-text { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pending-row .btn-icon { height: 26px; }
+.pending-row .pending-edit { height: 26px; padding: 0 8px; }

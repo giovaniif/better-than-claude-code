@@ -48,9 +48,9 @@ pub struct Meta {
     /// Moved out of the list into Archived; still there to open or restore.
     #[serde(default)]
     pub archived: bool,
-    /// Messages sent while a turn ran, oldest first: `{ id, text,
-    /// attachments, at }`. The next one starts when a turn completes; Stop
-    /// or a failed turn leaves them waiting.
+    /// Messages sent while a turn ran and not yet given to the agent, oldest
+    /// first: `{ id, text, attachments, at }`. Like Claude Code's queue, they
+    /// go to the agent at its next step (see `Delivery`); Stop hands them back.
     #[serde(default)]
     pub pending: Vec<Value>,
     pub created_at: u64,
@@ -91,6 +91,17 @@ pub struct Session {
     pub engine_ref: Option<String>,
 }
 
+/// When queued messages reach the agent.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Delivery {
+    /// A step of the running turn ended: give them to the agent now, in this
+    /// turn (Codex `turn/steer`; Claude Code folds a message that arrives
+    /// mid-turn into it).
+    Steer,
+    /// The turn completed with no step left to join: they are the next turn.
+    NextTurn,
+}
+
 pub struct App {
     pub root: PathBuf,
     pub port: u16,
@@ -106,10 +117,10 @@ pub struct App {
     pub store: crate::store::Store,
     pub remotes: crate::remote::Remotes,
     pub logins: crate::login::Logins,
-    /// Sessions whose turn completed with messages waiting; drained by a task
-    /// in main (emit cannot start a turn itself).
-    next_turns: mpsc::UnboundedSender<String>,
-    next_turns_rx: Mutex<Option<mpsc::UnboundedReceiver<String>>>,
+    /// Sessions with queued messages to deliver; drained by a task in main
+    /// (emit cannot talk to an engine itself).
+    next_turns: mpsc::UnboundedSender<(String, Delivery)>,
+    next_turns_rx: Mutex<Option<mpsc::UnboundedReceiver<(String, Delivery)>>>,
     next: AtomicU64,
 }
 
@@ -138,8 +149,8 @@ impl App {
         }
     }
 
-    /// The queue of sessions ready for their next pending message. Taken once, by main.
-    pub fn take_next_turns(&self) -> mpsc::UnboundedReceiver<String> {
+    /// The queue of sessions with messages to deliver. Taken once, by main.
+    pub fn take_next_turns(&self) -> mpsc::UnboundedReceiver<(String, Delivery)> {
         self.next_turns_rx.lock().unwrap().take().expect("next_turns taken twice")
     }
 
@@ -151,27 +162,41 @@ impl App {
         id
     }
 
-    /// Take a queued message back. Unknown ids are ignored: it may have just started.
-    pub fn unqueue_message(&self, sid: &str, id: &str) {
-        self.update_meta(sid, |m| m.pending.retain(|p| p["id"] != id));
-    }
-
-    /// The oldest queued message, removed from the queue, if the session is idle.
-    pub fn next_pending(&self, sid: &str) -> Option<Value> {
-        {
-            let map = self.sessions.lock().unwrap();
-            let s = map.get(sid)?;
-            if s.meta.status != "idle" || s.meta.pending.is_empty() {
-                return None;
-            }
-        }
+    /// Take one queued message back, if it has not reached the agent yet.
+    pub fn take_queued(&self, sid: &str, id: &str) -> Option<Value> {
         let mut taken = None;
         self.update_meta(sid, |m| {
-            if m.status == "idle" && !m.pending.is_empty() {
-                taken = Some(m.pending.remove(0));
+            if let Some(i) = m.pending.iter().position(|p| p["id"] == id) {
+                taken = Some(m.pending.remove(i));
             }
         });
         taken
+    }
+
+    /// Take every queued message, when the session's status passes `ok`.
+    pub fn take_all_queued(&self, sid: &str, ok: impl Fn(&str) -> bool) -> Vec<Value> {
+        {
+            let map = self.sessions.lock().unwrap();
+            match map.get(sid) {
+                Some(s) if ok(&s.meta.status) && !s.meta.pending.is_empty() => {}
+                _ => return Vec::new(),
+            }
+        }
+        let mut taken = Vec::new();
+        self.update_meta(sid, |m| {
+            if ok(&m.status) {
+                taken = std::mem::take(&mut m.pending);
+            }
+        });
+        taken
+    }
+
+    /// Put messages back at the front of the queue (the engine refused them).
+    pub fn requeue(&self, sid: &str, items: Vec<Value>) {
+        self.update_meta(sid, |m| {
+            let rest = std::mem::take(&mut m.pending);
+            m.pending = items.into_iter().chain(rest).collect();
+        });
     }
 
     /// A short id that is unique within this yardd run.
@@ -306,8 +331,10 @@ impl App {
             Some("fatal") => Some("error"),
             _ => None,
         };
-        // Only a turn that completed sends the next queued message: after
-        // Stop or a failure the user decides.
+        // A step ending is the agent's next chance to read queued messages;
+        // a completed turn sends what is left as the next one. After Stop or
+        // a failure the user decides.
+        let step = matches!(event["type"].as_str(), Some("tool_started") | Some("tool_completed"));
         let completed = event["type"] == "turn_completed" && event["status"] == "completed";
         let (msg, changed, next) = {
             let mut map = self.sessions.lock().unwrap();
@@ -325,7 +352,15 @@ impl App {
                     changed = Some(s.meta.clone());
                 }
             }
-            let next = completed && !s.meta.pending.is_empty();
+            let next = if s.meta.pending.is_empty() {
+                None
+            } else if completed {
+                Some(Delivery::NextTurn)
+            } else if step && s.meta.status == "running" {
+                Some(Delivery::Steer)
+            } else {
+                None
+            };
             (
                 json!({ "op": "event", "sessionId": sid, "seq": seq, "event": event }),
                 changed,
@@ -336,8 +371,8 @@ impl App {
         if let Some(meta) = changed {
             self.broadcast(json!({ "op": "session", "session": meta }));
         }
-        if next {
-            let _ = self.next_turns.send(sid.to_string());
+        if let Some(when) = next {
+            let _ = self.next_turns.send((sid.to_string(), when));
         }
     }
 

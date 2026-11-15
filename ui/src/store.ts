@@ -1,3 +1,4 @@
+import { appendToComposer } from "./compose";
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import {
   applyEvent,
@@ -354,8 +355,8 @@ export interface Actions {
   listDirs(path: string, host: string): void;
   /** Sidebar housekeeping: neither changes what the session does. */
   setPinned(sessionId: string, pinned: boolean): void;
-  /** Take back a message queued during a turn. */
-  unqueue(sessionId: string, id: string): void;
+  /** Take back a message queued during a turn: to the reply box, or dropped. */
+  unqueue(sessionId: string, id: string, drop?: boolean): void;
   setArchived(sessionId: string, archived: boolean): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine): void;
@@ -407,6 +408,9 @@ export function useYard(): { state: State; actions: Actions } {
         if (replies.current.take(msg)) return;
         if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
           termListeners.current.forEach((listener) => listener(msg));
+        } else if (msg.op === "queue.returned") {
+          // Stop or Edit gave queued text back: it goes to the reply box.
+          if (typeof msg.text === "string" && msg.text) appendToComposer(msg.sessionId, msg.text);
         } else {
           dispatch({ t: "server", msg });
         }
@@ -518,7 +522,7 @@ export function useYard(): { state: State; actions: Actions } {
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
-      unqueue: (sessionId, id) => post({ op: "session.unqueue", sessionId, id }),
+      unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
       loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),

@@ -174,6 +174,16 @@ pub fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Res
     line(app, sid, json!({ "type": "user", "text": text, "attachments": attachments }))
 }
 
+/// A message for the running turn: Claude Code folds input that arrives
+/// mid-turn into it at its next step (checked against a real turn,
+/// 2026-11-15), so there is no separate turn to start.
+pub fn push(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
+    if !app.meta(sid).is_some_and(|m| m.status == "running") {
+        anyhow::bail!("the turn already ended");
+    }
+    line(app, sid, json!({ "type": "user", "text": text, "attachments": attachments }))
+}
+
 pub fn set_model(app: &Arc<App>, sid: &str, model: &str) -> Result<()> {
     line(app, sid, json!({ "type": "set_model", "model": model }))
 }
