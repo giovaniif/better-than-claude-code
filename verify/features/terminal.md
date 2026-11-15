@@ -28,6 +28,17 @@ Typing a command shows its output.
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"wait":"label:Terminal input"},{"type":"echo TEST-$((40+2))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-42"},{"shot":"terminal"}]'
 ```
 
+### keys-arrive-in-order
+Viewports: desktop
+Keys typed in a quick run reach the shell in the order typed: the echoed
+command and its output both match what was typed. Found 2026-11-15: the shell
+got `…qrstuvxwyz…` (keys swapped), about half the runs; yardd handled each
+keystroke in its own task.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-order-"},{"wait":1000},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")","equals":true}]'
+```
+
 ### second-terminal
 Viewports: desktop
 "New terminal" adds tab 2 and selects it.
