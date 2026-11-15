@@ -2,6 +2,17 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.2.0 (2026-11-15)
+
+- **Log in from the app.** When Claude Code or Codex isn't logged in on a machine, the new-session page and its sessions say so, with **Log in**. Codex shows a link and a code; Claude Code shows a sign-in link and takes the code it gives back. `/login` in a session opens the same dialog, and the Hosts page shows each engine's state.
+- **Thinking.** Claude's and Codex's thinking stream into the thread as a one-line preview that opens to the full text.
+- **A calmer thread.** Tool calls between messages fold into one line ("Read 3 files, ran 2 commands"). A running turn shows its latest step under "Working for 12s"; a finished turn folds its work into "Worked for 1m 12s" above the answer.
+- **Fixed:** a reply could appear above the question it answered after the Claude sidecar restarted (for example after logging in). Threads recorded that way now show in order too.
+- **Pin, archive and delete** sessions from the sidebar: the … button on a row, or right-click.
+- **Resizable sidebars:** drag the edge of the session list or the workspace pane.
+- **Web version:** set `PROJECTS` to a folder on the server and it is mounted at the same path; the folder picker lists it first. Codex retries no longer show as errors.
+- A favicon.
+
 ## 0.1.0 (2026-11-15)
 
 The first release.
