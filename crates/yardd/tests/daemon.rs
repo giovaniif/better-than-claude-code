@@ -1301,3 +1301,30 @@ async fn claude_code_sessions_are_listed_and_imported_with_their_history() {
     let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap();
     assert!(log.lines().any(|l| l.starts_with("start") && l.ends_with(&format!("resume={found}"))), "{log}");
 }
+
+#[tokio::test]
+async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
+    let sb = Sandbox::new("claude-import-race");
+    let sidecar = claude_sidecar();
+    let work = sb.folder("claude-home");
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar), ("FAKE_CLAUDE_CWD", &work)]);
+    let id = "11111111-1111-4111-8111-111111111111";
+    // Two clients (the desktop app and a phone), each importing at the same moment.
+    let mut a = d.client().await;
+    let mut b = d.client().await;
+    let (fa, fb) = (a.mark(), b.mark());
+    a.send(json!({ "op": "session.import", "claudeSessionId": id })).await;
+    b.send(json!({ "op": "session.import", "claudeSessionId": id })).await;
+    let ra = a.wait_after(fa, "a's import", |m| m["op"] == "created" || m["op"] == "error").await;
+    let rb = b.wait_after(fb, "b's import", |m| m["op"] == "created" || m["op"] == "error").await;
+    assert_eq!(ra["op"], "created", "{ra}");
+    assert_eq!(rb["op"], "created", "{rb}");
+    assert_eq!(ra["sessionId"], rb["sessionId"], "two sessions for one Claude Code conversation: {ra} {rb}");
+    let claude_sessions = a
+        .log
+        .iter()
+        .filter(|m| m["op"] == "session" && m["session"]["engine"] == "claude")
+        .map(|m| m["session"]["id"].as_str().unwrap_or("").to_string())
+        .collect::<std::collections::HashSet<_>>();
+    assert!(claude_sessions.len() <= 1, "{claude_sessions:?}");
+}
