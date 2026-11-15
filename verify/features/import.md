@@ -39,12 +39,21 @@ yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Impo
 ```
 
 ### import-opens-the-session
+Viewports: desktop
 Importing opens a Claude session in that folder with its history and a note;
 listing again offers "Open" instead.
 
 ```sh
-yv drive new --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"click":"role:button:Import TEST-fix the login redirect"},{"expect":"role:heading:TEST-fix the login redirect"},{"expect":"css:.thread","text":"TEST-added login.test.ts."},{"expect":"css:.thread","text":"Imported from Claude Code"},{"shot":"imported"},{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:button:Open TEST-fix the login redirect"}]'
+yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"click":"role:button:Import TEST-fix the login redirect"},{"expect":"role:heading:TEST-fix the login redirect"},{"expect":"css:.thread","text":"TEST-added login.test.ts."},{"expect":"css:.thread","text":"Imported from Claude Code"},{"shot":"imported"},{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:button:Open TEST-fix the login redirect"}]'
 yv state --expect '{"sessions":[{"title":"TEST-fix the login redirect","engine":"claude","cwd":"{{work}}"}]}'
+```
+
+### import-on-mobile
+Viewports: mobile
+At 390 px the dialog's Import button is on screen and importing opens the session.
+
+```sh
+yv drive new --viewport mobile --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:button:Import TEST-old refactor of the parser","inViewport":true},{"click":"role:button:Import TEST-old refactor of the parser"},{"expect":"css:.thread","text":"TEST-answer to: TEST-old refactor of the parser"},{"shot":"imported-mobile"}]'
 ```
 
 ### next-message-resumes

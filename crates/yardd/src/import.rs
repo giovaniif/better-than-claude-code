@@ -1,0 +1,95 @@
+//! Importing Claude Code sessions run outside Switchyard. The sidecar lists
+//! them and reads their transcripts through the Agent SDK (never by parsing
+//! `~/.claude/projects`); yardd turns one into a session in its own folder,
+//! with its history, whose next message resumes the same conversation.
+
+use std::{path::Path, process::Stdio, sync::Arc, time::Duration};
+
+use anyhow::{bail, Context, Result};
+use serde_json::{json, Value};
+use tokio::sync::mpsc;
+
+use crate::{claude, state::App};
+
+const SIDECAR_TIMEOUT: Duration = Duration::from_secs(60);
+/// What an imported session runs on until the user picks another model.
+const MODEL: &str = "claude-opus-5-5";
+const EFFORT: &str = "high";
+
+/// Run the sidecar once and read its one JSON line.
+async fn one_shot(app: &App, args: &[&str]) -> Result<Value> {
+    let mut cmd = claude::sidecar_command(app)?;
+    cmd.args(args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped()).kill_on_drop(true);
+    let out = tokio::time::timeout(SIDECAR_TIMEOUT, cmd.output())
+        .await
+        .map_err(|_| anyhow::anyhow!("the Claude sidecar did not answer within {} s", SIDECAR_TIMEOUT.as_secs()))?
+        .context("could not start the Claude sidecar")?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.lines().rev().find(|l| l.trim_start().starts_with('{')).unwrap_or("");
+    let value: Value = serde_json::from_str(line).with_context(|| {
+        let err = String::from_utf8_lossy(&out.stderr);
+        format!("the Claude sidecar answered nothing readable{}", err.lines().last().map(|l| format!(": {l}")).unwrap_or_default())
+    })?;
+    if let Some(e) = value["error"].as_str() {
+        bail!("{e}");
+    }
+    Ok(value)
+}
+
+/// Our session already holding this Claude Code session, if any.
+fn imported_as(app: &App, claude_id: &str) -> Option<String> {
+    app.sessions
+        .lock()
+        .unwrap()
+        .values()
+        .find(|s| s.meta.engine == "claude" && s.engine_ref.as_deref() == Some(claude_id))
+        .map(|s| s.meta.id.clone())
+}
+
+pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
+    match msg["op"].as_str().unwrap_or("") {
+        "claude.sessions" => {
+            let reply = match one_shot(app, &["sessions", "--limit", "200"]).await {
+                Ok(mut v) => {
+                    if let Some(list) = v["sessions"].as_array_mut() {
+                        for s in list {
+                            let id = s["sessionId"].as_str().unwrap_or("").to_string();
+                            s["importedAs"] = json!(imported_as(app, &id));
+                        }
+                    }
+                    json!({ "op": "claude.sessions", "sessions": v["sessions"] })
+                }
+                Err(e) => json!({ "op": "claude.sessions", "sessions": [], "error": format!("{e:#}") }),
+            };
+            let _ = direct.send(reply.to_string());
+        }
+        "session.import" => {
+            let claude_id = msg["claudeSessionId"].as_str().context("missing `claudeSessionId`")?;
+            // Importing twice would give two sessions writing one conversation.
+            if let Some(sid) = imported_as(app, claude_id) {
+                let _ = direct.send(json!({ "op": "created", "sessionId": sid, "existing": true }).to_string());
+                return Ok(());
+            }
+            let v = one_shot(app, &["messages", claude_id]).await?;
+            let session = &v["session"];
+            let cwd = session["cwd"].as_str().unwrap_or("");
+            // Claude Code keeps a transcript by folder: resuming needs the same one.
+            if cwd.is_empty() || !Path::new(cwd).is_dir() {
+                bail!("this session's folder {} no longer exists", if cwd.is_empty() { "(unknown)" } else { cwd });
+            }
+            let title: String = session["title"].as_str().unwrap_or("Imported session").chars().take(60).collect();
+            let sid = app.new_session("claude", MODEL, EFFORT, cwd, &title, None);
+            app.set_engine_ref(&sid, claude_id);
+            for event in v["events"].as_array().cloned().unwrap_or_default() {
+                app.emit(&sid, event);
+            }
+            app.emit(
+                &sid,
+                json!({ "type": "note", "text": format!("Imported from Claude Code ({claude_id}). The next message continues that conversation here.") }),
+            );
+            let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
+        }
+        other => bail!("unknown op `{other}`"),
+    }
+    Ok(())
+}

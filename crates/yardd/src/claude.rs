@@ -13,13 +13,9 @@ use tokio::{
 
 use crate::state::{App, Backend};
 
-pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
-    spawn(app, sid, None)
-}
-
-/// Start the sidecar. `resume` is a Claude Code session id to continue.
-fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
-    let meta = app.meta(sid).context("no such session")?;
+/// The sidecar as a command, for a session or a one-shot (`sessions`,
+/// `messages <id>`): the bundled binary, else the script from the repo.
+pub fn sidecar_command(app: &App) -> Result<Command> {
     // The desktop app bundles a compiled sidecar and points YARD_SIDECAR at
     // it, so it needs no Bun. Without it, run the script from the repo.
     let mut cmd = match std::env::var_os("YARD_SIDECAR").filter(|s| !s.is_empty()) {
@@ -34,16 +30,27 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             cmd
         }
     };
-    cmd.stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::inherit())
-        .kill_on_drop(true);
     // yardd may itself be started from inside a Claude Code session.
     for (key, _) in std::env::vars() {
         if key == "CLAUDECODE" || key.starts_with("CLAUDE_CODE_") || key.starts_with("CLAUDE_AGENT_SDK") {
             cmd.env_remove(key);
         }
     }
+    Ok(cmd)
+}
+
+pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
+    spawn(app, sid, None)
+}
+
+/// Start the sidecar. `resume` is a Claude Code session id to continue.
+fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
+    let meta = app.meta(sid).context("no such session")?;
+    let mut cmd = sidecar_command(app)?;
+    cmd.stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::inherit())
+        .kill_on_drop(true);
     let mut child = cmd
         .spawn()
         .context("could not start the Claude sidecar (YARD_SIDECAR unset: is `bun` on PATH?)")?;

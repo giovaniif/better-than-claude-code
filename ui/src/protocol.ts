@@ -430,3 +430,24 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       return items;
   }
 }
+
+/** A Claude Code session on a host, from `claude.sessions` (the Agent SDK's listSessions). */
+export interface ClaudeSessionRow {
+  sessionId: string;
+  title: string;
+  cwd?: string | null;
+  gitBranch?: string | null;
+  lastModified: number;
+  createdAt?: number | null;
+  /** Our session already holding it, if it was imported. */
+  importedAs?: string | null;
+}
+
+/** The `claude.sessions` reply. `hostId` is set when it came from a remote host. */
+export interface ClaudeSessionList {
+  op: "claude.sessions";
+  hostId?: string;
+  sessions: ClaudeSessionRow[];
+  error?: string;
+}
+

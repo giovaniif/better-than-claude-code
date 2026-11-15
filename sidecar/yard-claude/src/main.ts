@@ -1,4 +1,5 @@
 // yard-claude: one Claude Code session on the Agent SDK, bridged to yardd.
+// (Or, with `sessions` / `messages <id>`, a one-shot for importing; see oneshot.ts.)
 //
 // stdin  (JSON lines): start | user | set_model | interrupt | permission
 //                      `user` is { text, attachments? }: files yardd saved on
@@ -13,12 +14,28 @@
 // Nothing else may write to stdout.
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
-import { relative } from "node:path";
 import { userMessage } from "./message";
+import { describe as describeTool, EDIT_TOOLS, patchFor, resultText, short } from "./tools";
+import { oneShot } from "./oneshot";
 
 type Decision = "allow" | "allow_always" | "deny";
 
 const out = (msg: unknown) => process.stdout.write(JSON.stringify(msg) + "\n");
+
+// `sessions` and `messages <id>`: answer once and exit (see oneshot.ts).
+const mode = process.argv[2];
+if (mode === "sessions" || mode === "messages") {
+  // A long history is megabytes: exit only once the pipe has taken all of
+  // it, or yardd reads a cut-off line.
+  const done = (msg: unknown, code: number) =>
+    process.stdout.write(JSON.stringify(msg) + "\n", () => process.exit(code));
+  try {
+    done(await oneShot(mode, process.argv.slice(3)), 0);
+  } catch (error: any) {
+    done({ error: String(error?.message ?? error) }, 1);
+  }
+  await new Promise(() => {});
+}
 const emit = (event: Record<string, unknown>) => out({ type: "event", event });
 
 // Ids must stay unique across sidecar restarts in one session (resume, a
@@ -42,96 +59,6 @@ async function* input() {
 const waiting = new Map<string, (d: Decision) => void>();
 let q: any = null;
 let cwd = process.cwd();
-
-const EDIT_TOOLS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
-const short = (s: unknown, n = 160) => {
-  const text = typeof s === "string" ? s : JSON.stringify(s ?? "");
-  return text.length > n ? text.slice(0, n) + "…" : text;
-};
-const rel = (p: unknown) => {
-  if (typeof p !== "string") return "";
-  const r = relative(cwd, p);
-  return r && !r.startsWith("..") ? r : p;
-};
-
-/** A short human label for a tool call. */
-function describe(name: string, toolInput: any): { kind: string; title: string; detail: string } {
-  switch (name) {
-    case "Bash":
-      return { kind: "command", title: "Ran", detail: String(toolInput?.command ?? "") };
-    case "Read":
-      return { kind: "read", title: "Read", detail: rel(toolInput?.file_path) };
-    case "Grep":
-    case "Glob":
-      return { kind: "search", title: "Searched", detail: String(toolInput?.pattern ?? "") };
-    case "Edit":
-    case "MultiEdit":
-    case "NotebookEdit":
-      return { kind: "edit", title: "Edited", detail: rel(toolInput?.file_path ?? toolInput?.notebook_path) };
-    case "Write":
-      return { kind: "edit", title: "Wrote", detail: rel(toolInput?.file_path) };
-    case "WebFetch":
-      return { kind: "other", title: "Fetched", detail: String(toolInput?.url ?? "") };
-    case "WebSearch":
-      return { kind: "other", title: "Searched the web", detail: String(toolInput?.query ?? "") };
-    case "Task":
-    case "Agent":
-      return { kind: "other", title: "Agent", detail: String(toolInput?.description ?? "") };
-    case "TodoWrite":
-      return { kind: "other", title: "Updated tasks", detail: "" };
-    default:
-      return { kind: "other", title: name, detail: short(toolInput, 120) };
-  }
-}
-
-/** The SDK gives old and new text, not a patch. Build a readable one. */
-function patchFor(name: string, toolInput: any): string | null {
-  const lines = (s: unknown, sign: string) =>
-    String(s ?? "")
-      .split("\n")
-      .slice(0, 200)
-      .map((l) => sign + l)
-      .join("\n");
-  if (name === "Edit") return replacePatch(toolInput?.old_string, toolInput?.new_string);
-  if (name === "Write") return lines(toolInput?.content, "+");
-  if (name === "MultiEdit" && Array.isArray(toolInput?.edits)) {
-    return toolInput.edits.map((e: any) => replacePatch(e?.old_string, e?.new_string)).join("\n");
-  }
-  return null;
-}
-
-/** Old text -> new text, with the unchanged lines at both ends kept as context. */
-function replacePatch(oldText: unknown, newText: unknown): string {
-  const a = String(oldText ?? "").split("\n");
-  const b = String(newText ?? "").split("\n");
-  let start = 0;
-  while (start < a.length && start < b.length && a[start] === b[start]) start++;
-  let endA = a.length;
-  let endB = b.length;
-  while (endA > start && endB > start && a[endA - 1] === b[endB - 1]) {
-    endA--;
-    endB--;
-  }
-  return [
-    ...a.slice(Math.max(0, start - 2), start).map((l) => " " + l),
-    ...a.slice(start, endA).map((l) => "-" + l),
-    ...b.slice(start, endB).map((l) => "+" + l),
-    ...a.slice(endA, endA + 2).map((l) => " " + l),
-  ]
-    .slice(0, 200)
-    .join("\n");
-}
-
-function resultText(content: unknown): string {
-  if (typeof content === "string") return content;
-  if (Array.isArray(content)) {
-    return content
-      .map((b: any) => (b?.type === "text" ? b.text : ""))
-      .filter(Boolean)
-      .join("\n");
-  }
-  return "";
-}
 
 /** yardd's permission modes, as the SDK names them. */
 const PERMISSION_MODE: Record<string, string> = {
@@ -164,7 +91,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
     allowDangerouslySkipPermissions: true,
     canUseTool: async (toolName: string, toolInput: any, ctx: { signal?: AbortSignal; suggestions?: unknown[] }) => {
       const requestId = nextId("claude");
-      const d = describe(toolName, toolInput);
+      const d = describeTool(toolName, toolInput, cwd);
       emit({
         type: "approval_request",
         requestId,
@@ -226,7 +153,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
           emit({ type: "assistant_message", itemId: openText ?? nextId("text"), text: block.text });
           openText = null;
         } else if (block.type === "tool_use") {
-          const d = describe(block.name, block.input);
+          const d = describeTool(block.name, block.input, cwd);
           emit({ type: "tool_started", itemId: block.id, kind: d.kind, title: d.title, detail: d.detail });
           const patch = patchFor(block.name, block.input);
           if (patch) {
