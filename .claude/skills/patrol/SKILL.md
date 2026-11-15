@@ -55,7 +55,8 @@ For each open patrol PR:
    When it needs a verifier: `verify/yv loop run verify --pr <N>` starts a
    fresh, independent session; do not verify your own PR.
 3. Ready (checks green, PASS or PASS+NOTES verdict on head, no threads):
-   `verify/yv land merge <N>`. The gate is live: it re-checks everything and
+   `verify/yv land merge <N>` from a checkout at origin/main (your run's
+   worktree starts there; the gate refuses to run from a PR head). The gate is live: it re-checks everything and
    squash-merges pinned to the head SHA. If it answers `waiting on guards`
    (a deploy in flight, 20 minutes since the last merge), try again next run.
    If it is blocked by `self-or-ci`, `irreversible`, `verdict-human` or another

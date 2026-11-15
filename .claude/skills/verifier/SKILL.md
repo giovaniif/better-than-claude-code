@@ -90,6 +90,7 @@ After a PASS or PASS+NOTES, hand the PR to the gate. It is live: it merges
 only when every rule holds, and it is the only way agent PRs merge.
 
 ```sh
+git checkout --detach origin/main   # the gate runs main's rules, never the PR's
 verify/yv land merge $N
 ```
 

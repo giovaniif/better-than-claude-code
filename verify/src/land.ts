@@ -387,8 +387,24 @@ function review(a: Args): Result {
   return { ok: true, days, rows, byCategory, candidatesForLive: goLive, hint: "one false accept in a category means no-go for that category; go live per category in verify/land.json (liveCategories) only with a human's yes" };
 }
 
+/**
+ * The gate's rules are main's, never a PR's: a checkout at a PR head would
+ * judge that PR with its own (possibly weakened) code and settings.
+ */
+function requireMainGate() {
+  git(["fetch", "-q", "origin", "main"]);
+  const same = git(["diff", "--quiet", "origin/main", "--", "verify/src", "verify/land.json"]).code === 0;
+  if (!same)
+    fail(
+      "gate-not-main",
+      "this checkout's gate code or verify/land.json differs from origin/main",
+      "run the gate from main: `git checkout --detach origin/main` here (after the verdict), or use ~/.local/share/switchyard-loops/switchyard/verify/yv",
+    );
+}
+
 export async function land(a: Args): Promise<Result> {
   const [sub, num] = a.pos;
+  if (["check", "merge", "watch"].includes(sub) && !process.env.YV_GATE_ANY_CHECKOUT) requireMainGate();
   switch (sub) {
     case "check": {
       const c = check(prNumber(num));
