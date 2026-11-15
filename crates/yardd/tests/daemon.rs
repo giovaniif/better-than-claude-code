@@ -177,22 +177,82 @@ async fn a_file_change_carries_its_diff_with_relative_paths() {
     c.wait_turn_done(&sid, 0).await;
 }
 
+/// The session's newest metadata as this client last heard it.
+fn meta_of(c: &Client, sid: &str) -> Value {
+    c.log
+        .iter()
+        .rev()
+        .find_map(|m| {
+            if m["op"] == "session" && m["session"]["id"] == sid {
+                return Some(m["session"].clone());
+            }
+            if m["op"] == "snapshot" {
+                return m["sessions"].as_array()?.iter().find(|s| s["id"] == sid).cloned();
+            }
+            None
+        })
+        .unwrap_or(Value::Null)
+}
+
+fn pending_texts(c: &Client, sid: &str) -> Vec<String> {
+    meta_of(c, sid)["pending"].as_array().map(|a| a.iter().map(|p| p["text"].as_str().unwrap_or("").to_string()).collect()).unwrap_or_default()
+}
+
 #[tokio::test]
-async fn interrupt_ends_a_slow_turn_and_a_second_send_is_refused() {
+async fn interrupt_ends_a_slow_turn_and_holds_the_queue() {
     let sb = Sandbox::new("interrupt");
     let d = sb.start();
     let mut c = d.client().await;
     let sid = c.create(&sb.folder("proj"), "[slow] think hard", json!({})).await;
     c.wait_event(&sid, "assistant_delta", 0).await;
 
-    let from = c.mark();
+    // A message sent during a turn waits in the queue instead of being refused.
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "and another" })).await;
-    assert_eq!(c.wait_error(from, "session.send").await, "a turn is already running");
+    c.wait_for("the queued message", |m| m["op"] == "session" && m["session"]["pending"].as_array().is_some_and(|p| p.len() == 1)).await;
+    assert_eq!(pending_texts(&c, &sid), ["and another"]);
 
+    // Stop means stop: the queue is held, not sent.
     c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
     assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "interrupted");
     c.wait_status(&sid, "idle").await;
-    assert_eq!(c.event_types(&sid).iter().filter(|t| *t == "user_message").count(), 1, "the refused message was not logged");
+    c.drain_for(Duration::from_millis(600)).await;
+    assert_eq!(c.event_types(&sid).iter().filter(|t| *t == "user_message").count(), 1, "the queued message did not run");
+    assert_eq!(pending_texts(&c, &sid), ["and another"], "still queued after Stop");
+
+    // And it can be taken back.
+    let id = meta_of(&c, &sid)["pending"][0]["id"].as_str().unwrap().to_string();
+    let from = c.mark();
+    c.send(json!({ "op": "session.unqueue", "sessionId": sid, "id": id })).await;
+    c.wait_after(from, "the empty queue", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pending"].as_array().map_or(true, |p| p.is_empty())).await;
+    assert!(pending_texts(&c, &sid).is_empty());
+}
+
+#[tokio::test]
+async fn queued_messages_run_in_order_when_turns_complete() {
+    let sb = Sandbox::new("queue");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[cmd] run it", json!({})).await;
+    let req = c.wait_event(&sid, "approval_request", 0).await;
+    c.wait_status(&sid, "needs_approval").await;
+
+    // Two messages while the turn waits for an approval.
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "first queued" })).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "second queued" })).await;
+    c.wait_for("two queued messages", |m| m["op"] == "session" && m["session"]["pending"].as_array().is_some_and(|p| p.len() == 2)).await;
+    assert_eq!(pending_texts(&c, &sid), ["first queued", "second queued"]);
+    assert_eq!(c.event_types(&sid).iter().filter(|t| *t == "user_message").count(), 1, "queued messages are not in the thread yet");
+
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
+    // The approved turn, then one turn per queued message, in order.
+    c.wait_for("the second queued reply", |m| is_event(m, &sid) && m["event"]["type"] == "assistant_message" && m["event"]["text"] == "Echo: second queued").await;
+    c.wait_status(&sid, "idle").await;
+    let users: Vec<String> = c.events(&sid).iter().filter(|e| e["type"] == "user_message").map(|e| e["text"].as_str().unwrap().to_string()).collect();
+    assert_eq!(users, ["[cmd] run it", "first queued", "second queued"]);
+    let inputs: Vec<String> = sb.turn_inputs().iter().map(|i| i[0]["text"].as_str().unwrap_or("").to_string()).collect();
+    assert_eq!(inputs, ["[cmd] run it", "first queued", "second queued"], "each queued message reached the engine as its own turn");
+    c.drain_for(Duration::from_millis(300)).await;
+    assert!(pending_texts(&c, &sid).is_empty());
 }
 
 #[tokio::test]
