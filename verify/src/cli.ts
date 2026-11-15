@@ -45,7 +45,7 @@ const HELP = `verify/yv <command> [args]   (every command prints one JSON object
   pr status|threads|comment|rerequest <pr> | pr reply <pr> <thread-id> --body t [--resolve]
   land check <pr> | land verdict <pr> --verdict PASS|PASS+NOTES|FAIL|HUMAN [--bundle dir] [--notes t] [--dry-run]
   land merge|watch <pr> [--dry-run] | land ledger [pr] | land review [--days 7]
-  notify "<message>" [--title t] [--priority n] [--click url]
+  notify "<message>" [--title t] [--click url]   an OS notification in every open Switchyard window
   loop run patrol|maintain|review|verify|babysit [--pr N] [--engine e --model m --effort x] [--dry-run] [--force]
   loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume
   selftest [--smoke]

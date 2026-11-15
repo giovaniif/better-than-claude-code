@@ -50,4 +50,4 @@ A run is skipped (and recorded in `~/.local/state/switchyard-verify/loops/<kind>
 when loops are paused, the previous run of the same kind is still going, the
 machine is busy, or the engine's usage is above the budget in `loops.json`.
 The `target/` of loop worktrees idle for two hours is deleted. A launch that fails
-sends one ntfy alert per hour.
+sends one Switchyard notification per hour (`verify/yv notify`).

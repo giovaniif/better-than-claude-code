@@ -45,5 +45,5 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 
 - Agent fixes go through PRs, not straight to `main`: the patrol loop finds, fixes and proves one issue per run; an independent verifier posts a verdict; the land gate (`verify/yv land`, settings in `verify/land.json`) decides whether it could merge. It is live: a PR it finds landable (verifier PASS or PASS+NOTES at head, green checks, no open threads, nothing irreversible or self-or-CI) merges without the owner.
 - Skills: `verify`, `verifier`, `babysit`, `patrol`, `map-maintenance`, `weekly-review` in `.claude/skills/`. The loops run as Switchyard sessions on the live yardd, started by systemd user timers (`verify/loops/README.md`).
-- Agents post on GitHub as the owner, so every agent comment carries `<!-- yv:agent -->` and the owner is reached with `verify/yv notify`.
+- Agents post on GitHub as the owner, so every agent comment carries `<!-- yv:agent -->` and the owner is reached with `verify/yv notify`, which shows an OS notification in his open Switchyard windows (no ntfy). An older yardd that does not know the op makes it exit 1 with that reason; nothing falls back.
 - Overview for humans: [docs/VERIFICATION.md](docs/VERIFICATION.md).

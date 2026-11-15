@@ -1,37 +1,58 @@
-// `notify`: a push to the owner's phone through the homelab's ntfy topic.
-// GitHub never notifies you of your own comments, and agents post as the
-// owner, so a PR comment alone reaches nobody.
+// `notify`: reach the owner through Switchyard itself. The live yardd gets a
+// `notify` op and every connected window (the Mac app, the web page) shows it
+// as an OS notification. GitHub never notifies you of your own comments, and
+// agents post as the owner, so a PR comment alone reaches nobody.
+//
+// This is the one op allowed on the live daemon (port 47717). No Origin header
+// is sent, which yardd allows for non-browser local clients.
 
-import { existsSync, readFileSync } from "node:fs";
-import { type Args, run, str } from "./common";
+import { type Args, str } from "./common";
 import { fail, Usage, type Result } from "./out";
 
-function topic(): string | null {
-  if (process.env.YV_NTFY_TOPIC) return process.env.YV_NTFY_TOPIC;
-  // /etc/homelab-notify.env is root-only; passwordless sudo reads it.
-  const r = existsSync("/etc/homelab-notify.env") ? run(["sudo", "-n", "cat", "/etc/homelab-notify.env"]) : null;
-  const text = r && r.code === 0 ? r.out : existsSync("/etc/homelab-notify.env") ? "" : "";
-  return text.match(/^NTFY_TOPIC=(.+)$/m)?.[1]?.trim().replace(/^["']|["']$/g, "") || null;
-}
+const livePort = () => Number(process.env.YV_NOTIFY_PORT || 47717);
 
 export async function notify(message: string, opts: { title?: string; priority?: number; click?: string } = {}): Promise<{ sent: boolean; why?: string }> {
-  // The owner found the ntfy pushes annoying (2026-11-15): they stay off
-  // until OS notifications through Switchyard replace them.
-  if (!process.env.YV_NTFY) return { sent: false, why: "ntfy is off; OS notifications through Switchyard replace it" };
   if (process.env.YV_NO_NOTIFY) return { sent: false, why: "YV_NO_NOTIFY is set" };
-  const t = topic();
-  if (!t) return { sent: false, why: "no ntfy topic (YV_NTFY_TOPIC or /etc/homelab-notify.env)" };
-  const headers: Record<string, string> = { Title: opts.title ?? "Switchyard agents", Priority: String(opts.priority ?? 3), Tags: "robot" };
-  if (opts.click) headers.Click = opts.click;
-  const r = await fetch(`https://ntfy.sh/${t}`, { method: "POST", body: message, headers, signal: AbortSignal.timeout(10000) }).catch((e) => ({ ok: false, status: String(e) }) as any);
-  return r.ok ? { sent: true } : { sent: false, why: `ntfy answered ${r.status}` };
+  const note: Record<string, unknown> = { op: "notify", title: opts.title ?? "Switchyard agents", body: message };
+  if (opts.click && /^https?:\/\//.test(opts.click)) note.url = opts.click;
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (r: { sent: boolean; why?: string }) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try {
+        ws.close();
+      } catch {}
+      resolve(r);
+    };
+    const ws = new WebSocket(`ws://127.0.0.1:${livePort()}/ws`);
+    const timer = setTimeout(() => finish({ sent: false, why: "yardd did not answer in 8 s" }), 8000);
+    ws.onerror = () => finish({ sent: false, why: `cannot reach yardd on port ${livePort()}` });
+    ws.onopen = () => ws.send(JSON.stringify(note));
+    ws.onmessage = (e) => {
+      let m: any;
+      try {
+        m = JSON.parse(String(e.data));
+      } catch {
+        return;
+      }
+      if (m.op === "notify.sent") {
+        // The count includes this connection.
+        return finish(m.windows > 1 ? { sent: true } : { sent: false, why: "yardd got it, but no Switchyard window is open to show it" });
+      }
+      if (m.op === "error" && m.for === "notify") {
+        const unknown = /unknown op/.test(String(m.message));
+        finish({ sent: false, why: unknown ? "this yardd is too old to know `notify`: update Switchyard on the server (nothing was sent)" : `yardd refused it: ${m.message}` });
+      }
+    };
+  });
 }
 
 export async function notifyCmd(a: Args): Promise<Result> {
   const msg = a.pos.join(" ").trim();
-  if (!msg) throw new Usage('notify "<message>" [--title t] [--priority 1-5] [--click url]');
-  const r = await notify(msg, { title: str(a, "title"), priority: Number(str(a, "priority", "3")), click: str(a, "click") });
-  return { ok: true, sent: r.sent, why: r.why, hint: r.sent ? undefined : "nobody was pinged: say it in the PR or the session instead" };
+  if (!msg) throw new Usage('notify "<message>" [--title t] [--click url]');
+  const r = await notify(msg, { title: str(a, "title"), click: str(a, "click") });
+  if (!r.sent) fail("not-sent", r.why ?? "not sent");
+  return { ok: true, sent: true };
 }
-
-export const _test = { readFileSync };

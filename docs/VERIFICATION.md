@@ -61,7 +61,7 @@ real model.
    pinned to its head. `land watch` checks the workflows on the merge commit
    and opens a revert PR on a regression. You can still reply `no …` on any
    PR (closed, never re-proposed) or `merge` on one the gate blocked. Pings
-   reach you through ntfy, because GitHub does not notify you of comments
+   reach you as Switchyard notifications (`verify/yv notify`), because GitHub does not notify you of comments
    from your own account, which the agents post as.
 
 ## Staying live
