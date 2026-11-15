@@ -1,0 +1,68 @@
+# Worktrees
+
+Every new session in a git repository with a commit gets its own branch
+(`yard/<words>-<hex>`) and worktree under `<data>/wt/<repo>/`. A folder outside
+a repository runs in place, with a note. One writer per folder: a second
+in-place session is refused while another runs there. Removing a worktree is
+never forced: uncommitted or untracked files keep it.
+
+## Setup
+
+```sh
+yv iso up
+yv iso seed
+```
+
+## Cleanup
+
+```sh
+yv iso down
+```
+
+## Recipes
+
+### session-gets-worktree
+Seeded sessions run on their own branches under the data dir.
+
+```sh
+yv state --expect '{"sessions":[{"id":"{{sid_echo}}","branch":"~yard/","cwd":"~/data/wt/TEST-demo-app/"}]}'
+```
+
+### plain-folder-in-place
+A folder that is not a repository runs in place and says so.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","worktree":true,"text":"TEST-in place"}' --wait '{"op":"created"}' --save place_sid=sessionId
+yv state --expect '{"sessions":[{"id":"{{place_sid}}","cwd":"{{plain}}"}]}'
+yv drive 'session:{{place_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Not a git repository with commits"}]'
+```
+
+### one-writer-per-folder
+A second in-place session in a folder with a running one is refused.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"[slow] TEST-writer one"}' --wait '{"op":"created"}' --save w1_sid=sessionId
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"TEST-writer two"}' --wait '{"op":"error"}' --expect '{"op":"error","for":"session.create"}'
+yv api '{"op":"session.interrupt","sessionId":"{{w1_sid}}"}'
+```
+
+### delete-removes-clean-worktree
+"Delete and remove worktree" on a clean session removes the folder.
+
+```sh
+yv state --save think_cwd='sessions[id={{sid_think}}].cwd'
+yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Delete","exact":true}},{"click":"role:button:Delete and remove worktree"},{"expect":"role:heading:What should we work on?"}]'
+sleep 1
+test ! -d "$(v think_cwd)"
+```
+
+### dirty-worktree-is-kept
+Removing the edit session's worktree (it has an uncommitted change) is refused.
+
+```sh
+yv api '{"op":"session.delete","sessionId":"{{sid_edit}}","removeWorktree":true}' --wait '{"op":"error"}' --expect '{"op":"error","for":"session.delete"}'
+yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
+```
+
+## Gotchas
+- Files a setup script creates count as untracked unless gitignored, so they block removal.

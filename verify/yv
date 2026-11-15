@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# The verification CLI. Every command prints one JSON object; exit 0 = ok,
+# 1 = failed, 2 = usage. See .claude/skills/verify/SKILL.md.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -d "$here/node_modules/playwright" ]; then
+  (cd "$here" && bun install --silent >/dev/null 2>&1)
+fi
+exec bun "$here/src/cli.ts" "$@"

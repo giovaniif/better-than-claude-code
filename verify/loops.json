@@ -1,0 +1,19 @@
+{
+  "$comment": "Agent loops started by verify/yv loop run (systemd user timers, see verify/loops/README.md). Each run is a normal Switchyard session on the live yardd, so it shows in the sidebar and can be steered. Changing this file is a self-or-CI change.",
+  "yardUrl": "ws://127.0.0.1:47717/ws",
+  "checkout": "~/.local/share/switchyard-loops/switchyard",
+  "budget": {
+    "$comment": "Skip a run when the engine's usage is above these percentages (5-hour window, week) or the machine is busy.",
+    "codex": { "primaryMax": 60, "secondaryMax": 75 },
+    "claude": { "fiveHourMax": 50, "sevenDayMax": 60 },
+    "maxLoadPerCore": 0.7
+  },
+  "loops": {
+    "patrol": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/patrol/SKILL.md" },
+    "maintain": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/map-maintenance/SKILL.md" },
+    "review": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 30, "skill": ".claude/skills/weekly-review/SKILL.md" },
+    "verify": { "engine": "codex", "model": "default", "effort": "high", "minutes": 40, "skill": ".claude/skills/verifier/SKILL.md" },
+    "babysit": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 40, "skill": ".claude/skills/babysit/SKILL.md" }
+  },
+  "keepFinishedSessions": 3
+}

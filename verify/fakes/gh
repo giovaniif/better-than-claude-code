@@ -1,0 +1,29 @@
+#!/usr/bin/env bun
+// A stand-in for `gh` inside isolated environments (verify/yv iso): the PR
+// pane gets a canned pull request instead of reaching GitHub.
+// `$FAKE_CODEX_DIR/gh-pr.json` ({ view, threads }) answers `gh pr view --json`
+// on the branch named in `view.headRefName` and the review-threads query.
+// Any other branch has no PR; any other command fails.
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
+
+const dir = process.env.FAKE_CODEX_DIR;
+const args = process.argv.slice(2);
+if (dir) appendFileSync(`${dir}/gh.log`, `${args.join(" ").slice(0, 200)}\n`);
+const fixture = dir && existsSync(`${dir}/gh-pr.json`) ? JSON.parse(readFileSync(`${dir}/gh-pr.json`, "utf8")) : null;
+const branch = Bun.spawnSync(["git", "branch", "--show-current"]).stdout.toString().trim();
+const mine = fixture && fixture.view?.headRefName === branch;
+
+if (args[0] === "pr" && args[1] === "view") {
+  if (!mine) {
+    console.error(`no pull requests found for branch "${branch}"`);
+    process.exit(1);
+  }
+  console.log(JSON.stringify(fixture.view));
+  process.exit(0);
+}
+if (args[0] === "api" && args[1] === "graphql" && mine) {
+  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: fixture.threads ?? [] } } } } }));
+  process.exit(0);
+}
+console.error("fake gh: not available in an isolated environment");
+process.exit(1);

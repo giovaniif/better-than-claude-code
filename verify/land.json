@@ -1,0 +1,24 @@
+{
+  "$comment": "Land gate settings for verify/yv land. Changing this file is a self-or-CI change: a human merges it.",
+  "mode": "shadow",
+  "owner": "giovaniif",
+  "requiredChecks": ["yardd", "ui", "sidecar", "verify"],
+  "approval": {
+    "$comment": "Solo repository: GitHub does not let the author approve, and agents post as the owner. A PASS verdict from the independent verifier at the current head counts as the approval.",
+    "verdictCounts": true
+  },
+  "review": {
+    "$comment": "Reviewer bots to re-request after every push. Empty: none is installed yet.",
+    "bots": [],
+    "how": "request",
+    "comment": "@codex review"
+  },
+  "guards": {
+    "minMinutesSinceLastMerge": 20,
+    "landingHours": { "tz": "America/Sao_Paulo", "from": 8, "to": 22 },
+    "deployWorkflows": ["Release", "Docker image"],
+    "watchWorkflows": ["CI", "Linux host", "macOS app", "Docker image"]
+  },
+  "liveCategories": [],
+  "smallLines": 200
+}

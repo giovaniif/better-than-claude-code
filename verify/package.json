@@ -1,0 +1,12 @@
+{
+  "name": "switchyard-verify",
+  "private": true,
+  "description": "The verification CLI (verify/yv): see .claude/skills/verify/SKILL.md",
+  "type": "module",
+  "scripts": {
+    "test": "bun test src"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

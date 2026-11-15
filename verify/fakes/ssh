@@ -1,0 +1,5 @@
+#!/bin/sh
+# Isolated environments never leave the machine: every ssh fails like an
+# unreachable host.
+echo "ssh: connect to host ${1:-unknown}: Network is unreachable (isolated environment)" >&2
+exit 255
