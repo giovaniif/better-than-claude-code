@@ -43,3 +43,4 @@ recipe with its repro.
 | [security](security.md) | Origin checks on the WebSocket, loopback binding |
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
+| [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
