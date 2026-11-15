@@ -21,6 +21,23 @@ export function appendToComposer(sessionId: string, text: string) {
 
 export const SELECTION_CAP = 20_000;
 
+/**
+ * Part of an agent's answer, quoted for a reply: each line as a Markdown
+ * quote, then a blank line where the reply goes. Cut to the cap.
+ */
+export function quoted(selection: string): string {
+  const body = selection
+    .slice(0, SELECTION_CAP)
+    .replace(/\r\n?/g, "\n")
+    .replace(/^\s*\n|\s+$/g, "")
+    .replace(/\n{3,}/g, "\n\n");
+  if (!body.trim()) return "";
+  return body
+    .split("\n")
+    .map((line) => (line ? `> ${line}` : ">"))
+    .join("\n") + "\n\n";
+}
+
 /** A terminal selection as a fenced block, cut to the cap. */
 export function fenced(selection: string): string {
   const body = selection.slice(0, SELECTION_CAP).replace(/\n+$/, "");

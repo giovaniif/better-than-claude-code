@@ -451,3 +451,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .row-menu .menu-item { height: 30px; gap: 8px; }
 .row-menu .danger { color: var(--bad-ink); }
 .row-menu-note { padding: 4px 8px 6px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+/* reply to part of an answer: the button over a selection */
+.quote-reply { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); transform: translate(-50%, calc(-100% - 6px)); }
+.quote-reply.below { transform: translate(-50%, 6px); }

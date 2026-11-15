@@ -5,7 +5,7 @@ import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, us
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
-import { onAppend } from "./compose";
+import { appendToComposer, onAppend, quoted } from "./compose";
 import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
@@ -48,6 +48,7 @@ const PAPERCLIP = "M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0
 const FILE = "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5";
 const CLOSE = "M18 6 6 18M6 6l12 12";
 const MORE = "M5 12h.01M12 12h.01M19 12h.01";
+const REPLY = "M9 17 4 12l5-5M20 18v-2a4 4 0 0 0-4-4H4";
 const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
 const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
@@ -1448,6 +1449,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             {working && <Working since={turnStart} />}
           </div>
         </div>
+        {online && <QuoteReply sessionId={meta.id} />}
         <div className="dock">
           {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
           {online && <EngineNotice state={state} host={host} engine={meta.engine} onLogin={() => setLoggingIn(true)} />}
@@ -1503,6 +1505,55 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
     <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
       {armed ? "Delete session?" : "Delete"}
     </button>
+  );
+}
+
+/**
+ * Reply to part of an answer: selecting text inside one agent answer shows a
+ * Reply button over the selection, which quotes it into the reply box.
+ */
+function QuoteReply({ sessionId }: { sessionId: string }) {
+  const [at, setAt] = useState<{ left: number; top: number; below: boolean; text: string } | null>(null);
+  useEffect(() => {
+    const answerOf = (n: Node | null) => (n instanceof Element ? n : n?.parentElement)?.closest("[data-quotable]") ?? null;
+    const update = () => {
+      const sel = document.getSelection();
+      const box = sel && !sel.isCollapsed && sel.rangeCount > 0 ? answerOf(sel.anchorNode) : null;
+      const text = sel?.toString() ?? "";
+      // One answer at a time: a selection that runs into a prompt or a tool call is not a quote.
+      if (!box || box !== answerOf(sel!.focusNode) || !text.trim()) return setAt(null);
+      const r = sel!.getRangeAt(0).getBoundingClientRect();
+      // Touch screens put their own copy menu above a selection; go below it.
+      const below = r.top < 48 || window.matchMedia("(hover: none)").matches;
+      setAt({ left: Math.min(Math.max(r.left + r.width / 2, 48), window.innerWidth - 48), top: below ? r.bottom : r.top, below, text });
+    };
+    document.addEventListener("selectionchange", update);
+    // The button is fixed to the window; the thread scrolls under it.
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      document.removeEventListener("selectionchange", update);
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+  if (!at) return null;
+  return createPortal(
+    <button
+      className={`btn quote-reply${at.below ? " below" : ""}`}
+      style={{ left: at.left, top: at.top }}
+      // Keep the selection: a mousedown on a button would clear it before the click.
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={() => {
+        appendToComposer(sessionId, quoted(at.text));
+        document.getSelection()?.removeAllRanges();
+        setAt(null);
+      }}
+    >
+      <Icon d={REPLY} />
+      Reply
+    </button>,
+    document.body,
   );
 }
 
@@ -1680,7 +1731,7 @@ function ItemView(props: {
     case "note":
       return <div className="note">{item.text}</div>;
     case "assistant":
-      return <Markdown text={item.text} />;
+      return <Markdown text={item.text} quotable />;
     case "tool":
     case "reasoning":
       return <WorkEntry entry={item} />;
@@ -1871,10 +1922,10 @@ function inline(text: string): ReactNode[] {
   });
 }
 
-function Markdown({ text }: { text: string }) {
+function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
   const blocks = text.split(/```/);
   return (
-    <div className="prose">
+    <div className="prose" data-quotable={quotable ? "" : undefined}>
       {blocks.map((block, i) => {
         if (i % 2 === 1) {
           // Fenced code: drop the language line.
