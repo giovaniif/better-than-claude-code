@@ -32,6 +32,24 @@ const thumbs = new Map<string, Promise<string>>();
 
 export type Route = { page: "new" } | { page: "hosts" } | { page: "session"; id: string };
 
+/** The URL hash for a route, so a reload or Back lands on the same screen. */
+export function routeHash(route: Route): string {
+  if (route.page === "session") return `#/s/${encodeURIComponent(route.id)}`;
+  return route.page === "hosts" ? "#/hosts" : "#/";
+}
+
+export function parseHash(hash: string): Route {
+  const m = /^#\/s\/(.+)$/.exec(hash);
+  if (m) {
+    try {
+      return { page: "session", id: decodeURIComponent(m[1]) };
+    } catch {
+      return { page: "new" };
+    }
+  }
+  return hash === "#/hosts" ? { page: "hosts" } : { page: "new" };
+}
+
 interface Thread {
   /** Next sequence number we expect; -1 until history has loaded. */
   next: number;
@@ -43,6 +61,9 @@ interface Thread {
 export interface State {
   connected: boolean;
   route: Route;
+  /** A session the URL named before it was listed (sessions arrive with the
+   *  snapshot, a remote host's later still). Opened when it shows up. */
+  restore: string | null;
   sessions: Record<string, SessionMeta>;
   threads: Record<string, Thread>;
   changes: Record<string, Changes>;
@@ -88,6 +109,7 @@ const emptyThread = (): Thread => ({ next: -1, items: [], early: [] });
 export const initial: State = {
   connected: false,
   route: { page: "new" },
+  restore: null,
   sessions: {},
   threads: {},
   changes: {},
@@ -116,12 +138,24 @@ export function reduce(state: State, action: Action): State {
       // A reconnect means a new yardd may be on the other end: reload threads.
       return action.connected ? { ...state, connected: true } : { ...state, connected: false, threads: {} };
     case "route":
-      return { ...state, route: action.route };
+      return go(state, action.route);
     case "dismiss":
       return { ...state, error: null, notice: null };
     case "server":
-      return reduceServer(state, action.msg);
+      return restored(reduceServer(state, action.msg));
   }
+}
+
+/** Opens a route; a session not listed yet waits in `restore`. */
+export function go(state: State, route: Route): State {
+  if (route.page === "session" && !state.sessions[route.id]) return { ...state, route: { page: "new" }, restore: route.id };
+  return { ...state, route, restore: null };
+}
+
+function restored(state: State): State {
+  return state.restore && state.sessions[state.restore]
+    ? { ...state, route: { page: "session", id: state.restore }, restore: null }
+    : state;
 }
 
 const EMPTY_MODELS: Models = { claude: [], codex: [] };
@@ -232,7 +266,7 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, sessions, threads, changes, route };
     }
     case "created":
-      return { ...state, route: { page: "session", id: msg.sessionId } };
+      return { ...state, route: { page: "session", id: msg.sessionId }, restore: null };
     case "models":
       return { ...state, models: { ...state.models, [msg.hostId ?? "local"]: msg.models } };
     case "usage":
@@ -380,7 +414,7 @@ function socketUrl(): string {
 const onHost = (host: string, msg: object) => (host === "local" ? msg : { ...msg, host });
 
 export function useYard(): { state: State; actions: Actions } {
-  const [state, dispatch] = useReducer(reduce, initial);
+  const [state, dispatch] = useReducer(reduce, initial, (s) => go(s, parseHash(location.hash)));
   const socket = useRef<WebSocket | null>(null);
   const opened = useRef(new Set<string>());
   const termListeners = useRef(new Set<(msg: any) => void>());
@@ -478,6 +512,23 @@ export function useYard(): { state: State; actions: Actions } {
     post({ op: "session.open", sessionId: routeId });
     post({ op: "changes.get", sessionId: routeId });
   }, [routeId, online, state.hostEpoch]);
+
+  // Keep the open screen in the URL: phone browsers reload tabs they
+  // discarded, and Back should move between sessions.
+  const hash = routeHash(state.route);
+  useEffect(() => {
+    if (state.restore || location.hash === hash) return;
+    const shown = parseHash(location.hash);
+    // A blank first URL, or a session that was deleted, is not worth a Back stop.
+    const stale = !location.hash || (shown.page === "session" && !state.sessions[shown.id]);
+    if (stale) history.replaceState(null, "", hash);
+    else history.pushState(null, "", hash);
+  }, [hash, state.restore]);
+  useEffect(() => {
+    const back = () => dispatch({ t: "route", route: parseHash(location.hash) });
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, []);
 
   // Ask each reachable host whether its engines are logged in, once per snapshot.
   const unknownEngines = state.connected
