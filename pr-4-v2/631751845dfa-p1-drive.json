@@ -1,0 +1,46 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "ff432e4b38a1f074818870b2849b91652ac6bdb6",
+    "short": "ff432e4",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T18:59:58.227Z"
+  },
+  "dir": ".verify/evidence/base-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11290,
+      "steps": 9,
+      "failed": {
+        "step": 0,
+        "action": {
+          "click": {
+            "role": "button",
+            "name": "Import",
+            "exact": true
+          }
+        },
+        "reason": "click: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/base-d/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - text: No sessions yet.\n  - button \"iso-host 6% · 59%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/base-d/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}
