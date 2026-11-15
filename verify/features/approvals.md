@@ -35,6 +35,18 @@ yv drive 'session:{{sid_cmd}}' --viewport desktop --steps '[{"click":"role:butto
 yv state --expect '{"sessions":[{"id":"{{sid_cmd}}","status":"idle"}]}'
 ```
 
+### allow-then-follow-up
+After an allowed command the turn ends and the session is idle, so the next
+message starts a turn instead of waiting in the queue. (The answer used to be
+logged after the engine heard it; a fast engine could end the turn first and
+leave the session `running`, with the follow-up stuck in the queue.)
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-allow then follow up"}' --wait '{"op":"created"}' --save follow_sid=sessionId
+yv drive 'session:{{follow_sid}}' --viewport desktop --steps '[{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it."},{"fill":"label:Message","value":"TEST-next step"},{"press":"Enter"},{"expect":"css:.thread","text":"Echo: TEST-next step"}]'
+yv state --expect '{"sessions":[{"id":"{{follow_sid}}","status":"idle"}]}'
+```
+
 ### deny
 Denying skips the command; the fake answers "Skipped it.".
 
