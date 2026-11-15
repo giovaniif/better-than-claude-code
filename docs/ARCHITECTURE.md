@@ -140,6 +140,15 @@ A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, 
 - Each session row has a menu (the … button, or right-click): Pin, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived? }` stores both flags in the session's metadata, so every window and the web version agree, and they survive restarts. Archiving unpins. Archived sessions sit in a collapsed Archived section and still open and run.
 - The sessions sidebar and the workspace pane are resizable; widths are per browser.
 
+## Notifications
+
+- Switchyard shows an OS notification when a session needs the user: it waits for an approval, its turn finished, or it failed. Only when the window is not focused or that session is not the one open (`shouldNotify` in `ui/src/notify.ts`). Clicking one focuses the window and opens the session.
+- The UI works out the cases from what yardd already sends: a `session` message that changes status (`needs_approval`; running to idle) and the `turn_completed` event before it. A failed turn ends `idle` too, so the event's status tells a failure from a finish, and a Stop (`interrupted`) says nothing. A snapshot (also after a reconnect or a host reload) only sets the baseline, so opening the page never notifies.
+- The **Notifications** switch at the top of the sidebar's bottom block turns them on and off, kept per browser (`localStorage` `yard.notifications`). Turning it on asks the browser for permission; a refusal leaves it off and says why.
+- Browser: the Web Notifications API, one banner per session (`tag`). Desktop app: WKWebView has no `Notification`, so the UI calls the Tauri notification plugin through `window.__TAURI__` (`plugin:notification|notify`). The capability gives the loopback page only those calls (is-permission-granted, request-permission, notify, register/remove-listener), next to the folder dialog. A click is reported by the plugin's `actionPerformed` listener, with the session id attached as `extra`; if the listener cannot register, a window focus within 20 s of a banner counts as the click. No change to `tauri.conf.json` or the plist.
+- `notify { title, body?, sessionId?, url? }` is the way for an agent or script to reach the owner. yardd checks it (a title; `url` only http or https), clips the text, and broadcasts `{ op: "notify", ... }` to every connected window, which shows it under the same setting. A note that names no session shows even in a focused window. The sender gets `notify.sent { windows }`, the number of connected clients counting itself, so a caller can tell that nobody was there. `verify/yv notify` sends it to the live yardd; an older yardd answers `unknown op`. A session on a remote host is routed to that host like any session op, and its `notify` comes back through the hub with the id prefixed.
+- Not covered: the real browser prompt and OS banner (the feature map replaces `window.Notification` with a recorder), and the desktop app, which cannot run in CI.
+
 ## Engine logins
 
 - `engines.status` (per host) reports each engine as installed or not, and logged in or not: `claude auth status` (JSON) and Codex's `account/read`. The UI asks once per host snapshot. A logged-out engine shows a notice on the new-session page and in its sessions, with **Log in**; typing `/login` in a session opens the same dialog. The Hosts page lists both engines per host.
@@ -189,7 +198,7 @@ The right pane has a Terminal tab next to Changes.
 ## Tests
 
 - `CARGO_BUILD_JOBS=2 cargo test -p yardd`: integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. The fake records each `turn/start` input in `turn-inputs.jsonl`, so the attachment tests check what reached the engine, locally and on a `direct` remote through a hub. A fake `ssh` (`YARD_SSH`) runs the remote installer locally against a `file://` release. Unit tests cover the hand-off brief, the hub's id rewriting, the `YARD_ALLOW_ORIGIN` list and attachment names.
-- `cd ui && bun test`: `applyEvent`, the store reducer and the attachment helpers.
+- `cd ui && bun test`: `applyEvent`, the store reducer, the attachment helpers and the notification rule.
 - `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
 - A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop; a `[stuck]` fake Codex turn covers the Codex side of Stop.
 - `verify/yv` (docs/VERIFICATION.md) drives the built UI in headless Chromium against an isolated yardd with the same fakes plus a fake `gh` (one canned PR) and a fake `ssh`; the feature map `verify/features` covers the PR pane and the UI end to end. CI runs its selftest and two map areas.
