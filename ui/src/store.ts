@@ -352,6 +352,9 @@ export interface Actions {
   loadBranches(cwd: string, host: string): void;
   /** Subfolders of an absolute path on a host, for the folder picker. */
   listDirs(path: string, host: string): void;
+  /** Sidebar housekeeping: neither changes what the session does. */
+  setPinned(sessionId: string, pinned: boolean): void;
+  setArchived(sessionId: string, archived: boolean): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine): void;
   /** The code Claude's sign-in page gives back. */
@@ -512,6 +515,8 @@ export function useYard(): { state: State; actions: Actions } {
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),
+      setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
+      setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
       loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),
       loginCancel: (host, engine) => post(onHost(host, { op: "login.cancel", engine })),

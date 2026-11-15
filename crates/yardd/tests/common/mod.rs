@@ -590,6 +590,11 @@ pub fn make_repo(sandbox: &Sandbox, name: &str) -> String {
 
 /// A session's saved status, read straight from yardd's database.
 pub fn saved_status(sandbox: &Sandbox, sid: &str) -> Option<String> {
+    saved_meta(sandbox, sid)?["status"].as_str().map(str::to_string)
+}
+
+/// A session's metadata as yardd last wrote it to disk.
+pub fn saved_meta(sandbox: &Sandbox, sid: &str) -> Option<Value> {
     let conn = rusqlite::Connection::open_with_flags(
         sandbox.data().join("yard.db"),
         rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
@@ -598,6 +603,5 @@ pub fn saved_status(sandbox: &Sandbox, sid: &str) -> Option<String> {
     let meta: String = conn
         .query_row("SELECT meta FROM sessions WHERE id = ?1", [sid], |r| r.get(0))
         .ok()?;
-    let meta: Value = serde_json::from_str(&meta).ok()?;
-    meta["status"].as_str().map(str::to_string)
+    serde_json::from_str(&meta).ok()
 }

@@ -42,6 +42,12 @@ pub struct Meta {
     /// `full`. Rows saved before modes existed ran as `ask`.
     #[serde(default = "default_permission")]
     pub permission: String,
+    /// Kept at the top of the sidebar.
+    #[serde(default)]
+    pub pinned: bool,
+    /// Moved out of the list into Archived; still there to open or restore.
+    #[serde(default)]
+    pub archived: bool,
     pub created_at: u64,
     pub updated_at: u64,
 }
@@ -187,6 +193,8 @@ impl App {
             repo,
             parent: None,
             permission: default_permission(),
+            pinned: false,
+            archived: false,
             created_at: now,
             updated_at: now,
         };

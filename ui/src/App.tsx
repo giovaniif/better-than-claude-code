@@ -46,6 +46,10 @@ const CLOUD = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
 const PAPERCLIP = "M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48";
 const FILE = "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5";
 const CLOSE = "M18 6 6 18M6 6l12 12";
+const MORE = "M5 12h.01M12 12h.01M19 12h.01";
+const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
+const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
+const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
 const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
@@ -209,9 +213,123 @@ function Resizer(props: {
   );
 }
 
+/** A session in the sidebar, with Pin, Archive and Delete in a menu on the
+ *  row (the … button, or right-click). */
+function SessionRow({ state, actions, session: s, active }: { state: State; actions: Actions; session: SessionMeta; active: boolean }) {
+  const host = hostOf(s);
+  const online = host === "local" || hostOnline(state, host);
+  const [menu, setMenuOpen] = useState(false);
+  const [up, setUp] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  // Open upward when the list has no room below the row.
+  const setMenu = (open: boolean) => {
+    const el = box.current;
+    const list = el?.closest(".session-list");
+    if (open && el && list) setUp(el.getBoundingClientRect().bottom + 200 > list.getBoundingClientRect().bottom);
+    setMenuOpen(open);
+  };
+  const close = () => {
+    setMenu(false);
+    setConfirm(false);
+  };
+  useEscape(menu, close);
+  useEffect(() => {
+    if (!menu) return;
+    const outside = (e: MouseEvent) => !box.current?.contains(e.target as Node) && close();
+    window.addEventListener("mousedown", outside);
+    return () => window.removeEventListener("mousedown", outside);
+  }, [menu]);
+  const worktree = !!(s.branch && s.repo);
+  const remove = (removeWorktree: boolean) => {
+    close();
+    actions.remove(s.id, removeWorktree);
+  };
+  return (
+    <div
+      ref={box}
+      className={`session-item ${menu ? "menu-open" : ""}`}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setMenu(true);
+      }}
+    >
+      <button
+        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"}`}
+        onClick={() => actions.go({ page: "session", id: s.id })}
+      >
+        <span className={`dot ${online ? `dot-${s.status}` : "dot-offline"}`} aria-hidden="true" />
+        <span className="session-text">
+          <span className="session-title">{s.title}</span>
+          <span className="session-sub">
+            {modelName(modelsOn(state, host), s.engine, s.model)} · {online ? STATUS_LABEL[s.status] : "Offline"}
+          </span>
+        </span>
+        {host !== "local" && <Cloud size={14} label={`Runs on ${hostName(state, host)}`} />}
+      </button>
+      <button className="btn-icon row-more" aria-label={`Actions for ${s.title}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => (menu ? close() : setMenu(true))}>
+        <Icon d={MORE} size={16} />
+      </button>
+      {menu && (
+        <div className={`row-menu ${up ? "up" : ""}`} role="menu">
+          {!confirm ? (
+            <>
+              {!s.archived && (
+                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
+                  <Icon d={PIN} size={14} />
+                  {s.pinned ? "Unpin" : "Pin"}
+                </button>
+              )}
+              <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setArchived(s.id, !s.archived), close())}>
+                <Icon d={ARCHIVE} size={14} />
+                {s.archived ? "Restore" : "Archive"}
+              </button>
+              <div className="menu-divider" />
+              <button className="picker-item menu-item danger" role="menuitem" disabled={!online} onClick={() => setConfirm(true)}>
+                <Icon d={TRASH} size={14} />
+                Delete…
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="row-menu-note">
+                {s.status === "running" || s.status === "needs_approval" ? "It is still working; deleting stops it. " : ""}
+                This can't be undone.
+              </div>
+              <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(false)}>
+                {worktree ? "Delete, keep the worktree" : "Delete session"}
+              </button>
+              {worktree && (
+                <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(true)}>
+                  Delete and remove the worktree
+                </button>
+              )}
+              <button className="picker-item menu-item" role="menuitem" onClick={() => setConfirm(false)}>
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Sidebar({ state, actions }: { state: State; actions: Actions }) {
   const sessions = Object.values(state.sessions).sort((a, b) => b.createdAt - a.createdAt);
+  const pinned = sessions.filter((s) => s.pinned && !s.archived);
+  const active = sessions.filter((s) => !s.pinned && !s.archived);
+  const archived = sessions.filter((s) => s.archived);
   const { route } = state;
+  // Opening an archived session shows the section, so its row stays in view.
+  const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
+  const [showArchived, setShowArchived] = useState(openArchived);
+  useEffect(() => {
+    if (openArchived) setShowArchived(true);
+  }, [openArchived]);
+  const row = (s: SessionMeta) => (
+    <SessionRow key={s.id} state={state} actions={actions} session={s} active={route.page === "session" && route.id === s.id} />
+  );
   return (
     <nav className="sidebar" aria-label="Sessions">
       <div className="brand">Switchyard</div>
@@ -222,27 +340,23 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         </button>
       </div>
       <div className="session-list">
-        {sessions.map((s) => {
-          const host = hostOf(s);
-          const online = host === "local" || hostOnline(state, host);
-          return (
-            <button
-              key={s.id}
-              className={`session-row ${route.page === "session" && route.id === s.id ? "active" : ""} ${online ? "" : "offline"}`}
-              onClick={() => actions.go({ page: "session", id: s.id })}
-            >
-              <span className={`dot ${online ? `dot-${s.status}` : "dot-offline"}`} aria-hidden="true" />
-              <span className="session-text">
-                <span className="session-title">{s.title}</span>
-                <span className="session-sub">
-                  {modelName(modelsOn(state, host), s.engine, s.model)} · {online ? STATUS_LABEL[s.status] : "Offline"}
-                </span>
-              </span>
-              {host !== "local" && <Cloud size={14} label={`Runs on ${hostName(state, host)}`} />}
-            </button>
-          );
-        })}
+        {pinned.length > 0 && <div className="list-head">Pinned</div>}
+        {pinned.map(row)}
+        {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
+        {active.map(row)}
         {sessions.length === 0 && <div className="empty">No sessions yet.</div>}
+        {archived.length > 0 && (
+          <>
+            <button className="list-head list-toggle" aria-expanded={showArchived} onClick={() => setShowArchived(!showArchived)}>
+              <span>Archived</span>
+              <span className="muted">{archived.length}</span>
+              <span className={`tool-chevron ${showArchived ? "open" : ""}`}>
+                <Icon d={CHEVRON_RIGHT} size={11} />
+              </span>
+            </button>
+            {showArchived && archived.map(row)}
+          </>
+        )}
       </div>
       <div className="sidebar-bottom">
         {["local", ...state.hosts.map((h) => h.id)].map((id) => {

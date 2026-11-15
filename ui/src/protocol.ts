@@ -24,6 +24,10 @@ export interface SessionMeta {
   /** How much the engine may do unasked. Missing on sessions from an older yardd: `ask`. */
   permission?: Permission;
   parent?: string | null;
+  /** Kept at the top of the sidebar. */
+  pinned?: boolean;
+  /** Moved into the sidebar's Archived section. */
+  archived?: boolean;
   createdAt: number;
   updatedAt: number;
 }

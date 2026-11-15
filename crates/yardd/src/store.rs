@@ -158,7 +158,8 @@ impl Store {
     }
 
     pub fn event(&self, sid: &str, event: &Value) {
-        if event["type"] == "assistant_delta" {
+        // The finished text follows in its own event; chunks would only bloat the log.
+        if event["type"] == "assistant_delta" || event["type"] == "reasoning_delta" {
             return;
         }
         let _ = self.tx.send(Op::Event(sid.to_string(), event.clone()));

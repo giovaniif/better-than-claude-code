@@ -1028,3 +1028,40 @@ async fn codex_reasoning_streams_as_thinking() {
     let reply = events.iter().position(|e| e["type"] == "assistant_message").unwrap();
     assert!(think < reply, "thinking comes before the answer");
 }
+
+#[tokio::test]
+async fn sessions_are_pinned_and_archived_across_restarts() {
+    let sb = Sandbox::new("pin");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+    let a = c.create(&cwd, "first", json!({})).await;
+    let b = c.create(&cwd, "second", json!({})).await;
+    c.wait_turn_done(&a, 0).await;
+    c.wait_turn_done(&b, 0).await;
+
+    c.send(json!({ "op": "session.update", "sessionId": a, "pinned": true })).await;
+    c.wait_for("a pinned", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["pinned"] == true).await;
+    // Archiving a pinned session unpins it.
+    c.send(json!({ "op": "session.update", "sessionId": b, "pinned": true })).await;
+    c.send(json!({ "op": "session.update", "sessionId": b, "archived": true })).await;
+    let archived = c
+        .wait_for("b archived", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["archived"] == true)
+        .await;
+    assert_eq!(archived["session"]["pinned"], false);
+
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &b).map(|m| m["archived"] == true) != Some(true) {
+        assert!(Instant::now() < deadline, "the archive never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+
+    let d = sb.start();
+    let c = d.client().await;
+    let sessions = c.log[0]["sessions"].as_array().unwrap();
+    let find = |id: &str| sessions.iter().find(|s| s["id"] == id).unwrap().clone();
+    assert_eq!(find(&a)["pinned"], true);
+    assert_eq!(find(&b)["archived"], true);
+    assert_eq!(find(&b)["pinned"], false);
+}

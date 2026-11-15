@@ -325,6 +325,25 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             }
             app.update_meta(sid, |m| m.permission = permission.to_string());
         }
+        // Sidebar housekeeping; neither changes what the session does.
+        "session.update" => {
+            let sid = str_field(msg, "sessionId")?;
+            app.meta(sid).context("no such session")?;
+            let pinned = msg["pinned"].as_bool();
+            let archived = msg["archived"].as_bool();
+            app.update_meta(sid, |m| {
+                if let Some(p) = pinned {
+                    m.pinned = p;
+                }
+                if let Some(a) = archived {
+                    m.archived = a;
+                    // An archived session leaves the pinned list too.
+                    if a {
+                        m.pinned = false;
+                    }
+                }
+            });
+        }
         "session.interrupt" => {
             let sid = str_field(msg, "sessionId")?;
             let meta = app.meta(sid).context("no such session")?;

@@ -130,6 +130,11 @@ A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, 
 - The local host's name is `YARD_HOST_NAME`, else "This Mac" on macOS and the hostname elsewhere. A remote host may not take that name.
 - `.github/workflows/docker.yml` pushes `ghcr.io/giovaniif/switchyard` (`latest` from main, and the short sha).
 
+## Sidebar
+
+- Each session row has a menu (the … button, or right-click): Pin, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived? }` stores both flags in the session's metadata, so every window and the web version agree, and they survive restarts. Archiving unpins. Archived sessions sit in a collapsed Archived section and still open and run.
+- The sessions sidebar and the workspace pane are resizable; widths are per browser.
+
 ## Engine logins
 
 - `engines.status` (per host) reports each engine as installed or not, and logged in or not: `claude auth status` (JSON) and Codex's `account/read`. The UI asks once per host snapshot. A logged-out engine shows a notice on the new-session page and in its sessions, with **Log in**; typing `/login` in a session opens the same dialog. The Hosts page lists both engines per host.
