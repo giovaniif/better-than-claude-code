@@ -1,0 +1,19 @@
+$ cd sidecar/yard-claude && bun test
+# exit 1 after 145 ms at badb1d16329bc0168ed43bbae47f143f5bd987b6
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/history.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './history' from '/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/sidecar/yard-claude/src/history.test.ts'
+-------------------------------
+
+
+ 6 pass
+ 1 fail
+ 1 error
+ 9 expect() calls
+Ran 7 tests across 3 files. [134.00ms]

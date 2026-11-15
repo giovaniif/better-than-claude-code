@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon two_imports
+# exit 101 after 2980 ms at ab06a75005a3ae4529a77f1c2c38bdafd7c9d53c
+
+
+running 1 test
+test two_imports_of_one_claude_code_session_at_once_make_one_session ... FAILED
+
+failures:
+
+---- two_imports_of_one_claude_code_session_at_once_make_one_session stdout ----
+
+thread 'two_imports_of_one_claude_code_session_at_once_make_one_session' (316771) panicked at crates/yardd/tests/daemon.rs:1322:5:
+assertion `left == right` failed: two sessions for one Claude Code conversation: {"op":"created","sessionId":"s1a1e0ca9aed2"} {"op":"created","sessionId":"s1a1e0ca9aeb1"}
+  left: String("s1a1e0ca9aed2")
+ right: String("s1a1e0ca9aeb1")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-316770-claude-import-race-0 for inspection
+
+
+failures:
+    two_imports_of_one_claude_code_session_at_once_make_one_session
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.14s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.78s
+     Running tests/daemon.rs (target/debug/build/yardd/896f585c81d80578/out/daemon-896f585c81d80578)
+error: test failed, to rerun pass `-p yardd --test daemon`

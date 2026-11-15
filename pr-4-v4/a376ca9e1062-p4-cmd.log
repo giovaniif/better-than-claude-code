@@ -1,0 +1,31 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon claude_code_sessions
+# exit 101 after 21459 ms at badb1d16329bc0168ed43bbae47f143f5bd987b6
+
+
+running 1 test
+test claude_code_sessions_are_listed_and_imported_with_their_history ... FAILED
+
+failures:
+
+---- claude_code_sessions_are_listed_and_imported_with_their_history stdout ----
+
+thread 'claude_code_sessions_are_listed_and_imported_with_their_history' (301169) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the session list; last messages:
+{"home":"/tmp/yardd-test-301168-claude-import-0/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-so
+{"for":"claude.sessions","message":"unknown op `claude.sessions`","op":"error"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":null,"usedPercent":12,"windowDurationMins":300},"secondary":null}}}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-301168-claude-import-0 for inspection
+
+
+failures:
+    claude_code_sessions_are_listed_and_imported_with_their_history
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 38 filtered out; finished in 20.10s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.30s
+     Running tests/daemon.rs (target/debug/build/yardd/896f585c81d80578/out/daemon-896f585c81d80578)
+error: test failed, to rerun pass `-p yardd --test daemon`

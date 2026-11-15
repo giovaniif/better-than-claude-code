@@ -1,0 +1,123 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-15T19:58:53.783Z",
+      "counts": {
+        "fail": 5,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "dialog-lists-sessions",
+          "status": "fail",
+          "ms": 23218,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-57-42-354Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-57-42-354Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "s\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 9% · 60%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 11507,\n      \"steps\": 6,\n      \"failed\": {\n        \"step\": 0,\n        \"action\": {\n          \"click\": {\n            \"role\": \"button\",\n            \"name\": \"Import\",\n            \"exact\": true\n          }\n        },\n        \"reason\": \"click: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-57-42-354Z/fail-desktop-step0.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 14% · 62%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-57-42-354Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-57-42-354Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "filter-narrows-the-list",
+          "status": "fail",
+          "ms": 12026,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-05-614Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"new\",\n  \"build\": {\n    \"sha\": \"badb1d16329bc0168ed43bbae47f143f5bd987b6\",\n    \"short\": \"badb1d1\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-15T19:57:41.869Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-05-614Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 11486,\n      \"steps\": 4,\n      \"failed\": {\n        \"step\": 0,\n        \"action\": {\n          \"click\": {\n            \"role\": \"button\",\n            \"name\": \"Import\",\n            \"exact\": true\n          }\n        },\n        \"reason\": \"click: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-05-614Z/fail-desktop-step0.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 21% · 63%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-05-614Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "import-opens-the-session",
+          "status": "fail",
+          "ms": 23293,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-17-602Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-17-602Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 23% · 66%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 11278,\n      \"steps\": 8,\n      \"failed\": {\n        \"step\": 0,\n        \"action\": {\n          \"click\": {\n            \"role\": \"button\",\n            \"name\": \"Import\",\n            \"exact\": true\n          }\n        },\n        \"reason\": \"click: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-17-602Z/fail-desktop-step0.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 30% · 62%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-17-602Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-17-602Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "next-message-resumes",
+          "status": "fail",
+          "ms": 447,
+          "problems": [
+            {
+              "code": "api-error",
+              "msg": "session.import failed: unknown op `session.import`"
+            }
+          ],
+          "tail": "{\n  \"command\": \"state --save\",\n  \"ok\": false,\n  \"sessions\": [],\n  \"problems\": [\n    {\n      \"code\": \"save-missing\",\n      \"msg\": \"--save imp_sid=sessions[title=TEST-old refactor of the parser].id: nothing at that path\"\n    }\n  ]\n}\n{\n  \"command\": \"api {\\\"op\\\":\\\"session.import\\\",\\\"claudeSessionId\\\":\\\"33333333-3333-4333-8333-333333333333\\\"}\",\n  \"ok\": false,\n  \"reply\": {\n    \"for\": \"session.import\",\n    \"message\": \"unknown op `session.import`\",\n    \"op\": \"error\"\n  },\n  \"problems\": [\n    {\n      \"code\": \"api-error\",\n      \"msg\": \"session.import failed: unknown op `session.import`\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "missing-folder-is-refused",
+          "status": "fail",
+          "ms": 12629,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"click\":{\"role\":\"button\",\"name\":\"Import\",\"exact\":true}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-41-354Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"new\",\n  \"build\": {\n    \"sha\": \"badb1d16329bc0168ed43bbae47f143f5bd987b6\",\n    \"short\": \"badb1d1\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-15T19:57:41.869Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-41-354Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 12125,\n      \"steps\": 3,\n      \"failed\": {\n        \"step\": 0,\n        \"action\": {\n          \"click\": {\n            \"role\": \"button\",\n            \"name\": \"Import\",\n            \"exact\": true\n          }\n        },\n        \"reason\": \"click: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-41-354Z/fail-desktop-step0.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - text: No sessions yet.\\n  - button \\\"iso-host 7% · 59%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"click\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Import\\\",\\\"exact\\\":true}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-claude-import/.verify/drives/2026-11-15T19-58-41-354Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "import-from-a-remote-host",
+          "status": "manual",
+          "why": "needs a second machine with Claude Code sessions"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "import/dialog-lists-sessions",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "import/filter-narrows-the-list",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "import/import-opens-the-session",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "import/next-message-resumes",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "import/missing-folder-is-refused",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "events": [
+    {
+      "text": "Remember the word PELICAN. Reply OK.",
+      "type": "user_message"
+    },
+    {
+      "at": 1794772555313,
+      "type": "turn_started"
+    },
+    {
+      "itemId": "imp-text-1",
+      "text": "OK",
+      "type": "assistant_message"
+    },
+    {
+      "at": 1794772555313,
+      "status": "completed",
+      "type": "turn_completed"
+    },
+    {
+      "text": "Imported from Claude Code (71f604c2-5274-41a1-9200-da79442ee48f). The next message continues that conversation here.",
+      "type": "note"
+    },
+    {
+      "text": "What word did I ask you to remember?",
+      "type": "user_message"
+    },
+    {
+      "at": 1794772560654,
+      "type": "turn_started"
+    },
+    {
+      "itemId": "text-f9bde688-1",
+      "text": "PELICAN",
+      "type": "assistant_delta"
+    },
+    {
+      "itemId": "text-f9bde688-1",
+      "text": "PELICAN",
+      "type": "assistant_message"
+    },
+    {
+      "at": 1794772564479,
+      "status": "completed",
+      "type": "turn_completed"
+    }
+  ],
+  "op": "history",
+  "sessionId": "s1a1e0c7d6311"
+}

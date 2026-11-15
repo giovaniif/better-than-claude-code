@@ -1,0 +1,37 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-15T20:00:08.086Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 3565
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6197
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 5992
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 3686
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
