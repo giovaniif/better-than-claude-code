@@ -3537,7 +3537,7 @@ dependencies = [
 
 [[package]]
 name = "switchyard"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "tauri",
  "tauri-build",
@@ -5132,7 +5132,7 @@ dependencies = [
 
 [[package]]
 name = "yardd"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "axum",
