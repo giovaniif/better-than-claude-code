@@ -25,7 +25,12 @@ Set up 2026-11-15.
 - The land gate is live: the verifier posts PASS or PASS+NOTES, then runs
   `land merge`, which merges when every rule holds. Self-or-CI and
   irreversible changes still go to the owner.
-- PR #1 (terminal scrollback garbled after a reload) was the first PR through the flow.
+- PR #2 (reply to a part of an agent's answer, the owner's feature request)
+  went through the whole loop unattended: evidence, a PASS+NOTES verdict, the
+  gate merged it 13 s later, and the post-merge watch came back green.
+- PR #1 (terminal scrollback garbled after a reload) got a FAIL from its
+  verifier, which found the first fix incomplete; the second round attaches
+  only after the first fit, with the verifier's repro as a recipe.
 - Open product gap: no layout below ~700 px (layout/mobile-* recipes fail).
 
 ## The isolated app
