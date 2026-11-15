@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import { useNotifySetting } from "./notify";
 import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -51,6 +52,7 @@ const MORE = "M5 12h.01M12 12h.01M19 12h.01";
 const REPLY = "M9 17 4 12l5-5M20 18v-2a4 4 0 0 0-4-4H4";
 const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
 const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
+const BELL = "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
@@ -388,6 +390,7 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         )}
       </div>
       <div className="sidebar-bottom">
+        <NotifySwitch />
         {["local", ...state.hosts.map((h) => h.id)].map((id) => {
           const stats = state.host[id];
           const status = hostState(state, id);
@@ -407,6 +410,21 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         })}
       </div>
     </nav>
+  );
+}
+
+function NotifySwitch() {
+  const { on, hint, toggle } = useNotifySetting();
+  return (
+    <>
+      <button className="host-row" role="switch" aria-checked={on} onClick={toggle}>
+        <Icon d={BELL} size={12} />
+        <span className="host-name">Notifications</span>
+        <span className="spacer" />
+        <span className="host-stat">{on ? "On" : "Off"}</span>
+      </button>
+      {hint && <div className="notify-hint">{hint}</div>}
+    </>
   );
 }
 

@@ -38,7 +38,7 @@ yv drive new --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{co
 When the browser refuses permission the switch stays off and says why.
 
 ```sh
-yv drive new --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"default\";window.Notification.requestPermission=()=>Promise.resolve(\"denied\");return 1})()"},{"click":"role:switch:Notifications"},{"wait":300},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"},{"expect":"role:status:Notifications are blocked","text":"blocked"}]'
+yv drive new --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"default\";window.Notification.requestPermission=()=>Promise.resolve(\"denied\");return 1})()"},{"click":"role:switch:Notifications"},{"wait":300},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"},{"expect":"css:.notify-hint","text":"blocked"}]'
 ```
 
 ### notifications-from-sessions

@@ -307,6 +307,7 @@ h1, h2, h3, p { margin: 0; }
 .dot-offline { border: 1.5px solid #c4c4c4; }
 .session-row.offline .session-title { color: var(--muted); }
 .host-row { gap: 6px; }
+.notify-hint { padding: 2px 10px 6px; font-size: 12px; color: var(--muted); }
 .host-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .host-row code.bad { color: var(--bad-ink); }
 .bar-host { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }

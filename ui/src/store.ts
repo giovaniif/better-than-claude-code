@@ -20,6 +20,7 @@ import {
   type Usage,
   type Attachment,
 } from "./protocol";
+import { createNotifier } from "./notify";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
 
 /** Where an upload goes: a host from the new-session page, or the host of a
@@ -385,6 +386,17 @@ export function useYard(): { state: State; actions: Actions } {
   const opened = useRef(new Set<string>());
   const termListeners = useRef(new Set<(msg: any) => void>());
   const replies = useRef(new Replies());
+  const routeRef = useRef(state.route);
+  routeRef.current = state.route;
+  const sessionsRef = useRef(state.sessions);
+  sessionsRef.current = state.sessions;
+  const notifier = useRef<((msg: any) => void) | null>(null);
+  notifier.current ??= createNotifier({
+    openSessionId: () => (routeRef.current.page === "session" ? routeRef.current.id : null),
+    open: (id) => {
+      if (sessionsRef.current[id]) dispatch({ t: "route", route: { page: "session", id } });
+    },
+  });
 
   useEffect(() => {
     let stopped = false;
@@ -405,6 +417,7 @@ export function useYard(): { state: State; actions: Actions } {
         }
         // Upload and thumbnail replies go to whoever asked, not the reducer.
         if (replies.current.take(msg)) return;
+        notifier.current!(msg);
         if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
           termListeners.current.forEach((listener) => listener(msg));
         } else {

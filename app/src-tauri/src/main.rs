@@ -245,6 +245,7 @@ fn ensure_yardd(resources: Option<PathBuf>, port: u16) -> Option<String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let port = port();
