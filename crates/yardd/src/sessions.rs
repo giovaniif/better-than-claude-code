@@ -106,6 +106,8 @@ pub async fn deliver(app: &Arc<App>, sid: &str, when: Delivery) {
                 Ok(()) => {
                     let mut ev = user_message(&text, &attachments);
                     ev["steered"] = json!(true);
+                    // When the agent got it, so the thread can time the work after it.
+                    ev["at"] = json!(crate::state::now_ms());
                     app.emit(sid, ev);
                 }
                 Err(e) => {

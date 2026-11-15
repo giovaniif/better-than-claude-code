@@ -40,12 +40,22 @@ export function layout(items: Item[], running: boolean): Row[] {
     if (it.kind === "user") turns.push([it]);
     else turns[turns.length - 1].push(it);
   }
+  // A message given to the agent mid-turn (steered) splits its turn in two
+  // here; each part is timed from its start to the next part's.
+  let lastMarker: Extract<Item, { kind: "turn" }> | undefined;
   turns.forEach((turn, n) => {
     const head = turn[0]?.kind === "user" ? turn[0] : null;
     if (head) rows.push({ type: "item", key: head.key, item: head });
     const body = head ? turn.slice(1) : turn;
     const live = running && n === turns.length - 1;
-    const marker = body.find((it): it is Extract<Item, { kind: "turn" }> => it.kind === "turn");
+    const own = body.find((it): it is Extract<Item, { kind: "turn" }> => it.kind === "turn");
+    if (own) lastMarker = own;
+    const steered = head?.kind === "user" && head.steered;
+    const marker = own ?? (steered ? lastMarker : undefined);
+    const nextHead = turns[n + 1]?.[0];
+    const cut = nextHead?.kind === "user" && nextHead.steered ? nextHead.at : undefined;
+    const from = own?.start ?? (steered && head?.kind === "user" ? head.at : undefined);
+    const to = cut ?? marker?.end;
     if (live || !body.some(isWork)) {
       rows.push(...group(body, live));
       return;
@@ -61,7 +71,7 @@ export function layout(items: Item[], running: boolean): Row[] {
     const folded = (answer < 0 ? body : body.slice(0, answer)).filter((it) => it.kind !== "error");
     const shown = body.filter((it, i) => (answer >= 0 && i >= answer) || (it.kind === "error" && !folded.includes(it)));
     const work = folded.filter(isWork);
-    const ms = marker?.start != null && marker.end != null ? marker.end - marker.start : null;
+    const ms = from != null && to != null ? to - from : null;
     rows.push({
       type: "fold",
       key: `fold-${folded[0]?.key ?? body[0].key}`,

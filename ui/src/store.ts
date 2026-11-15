@@ -1,5 +1,5 @@
-import { appendToComposer } from "./compose";
 import { useEffect, useMemo, useReducer, useRef } from "react";
+import { appendToComposer } from "./compose";
 import {
   applyEvent,
   type AgentEvent,
@@ -20,6 +20,7 @@ import {
   type Permission,
   type Usage,
   type Attachment,
+  type QueueReturned,
 } from "./protocol";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
 
@@ -410,7 +411,8 @@ export function useYard(): { state: State; actions: Actions } {
           termListeners.current.forEach((listener) => listener(msg));
         } else if (msg.op === "queue.returned") {
           // Stop or Edit gave queued text back: it goes to the reply box.
-          if (typeof msg.text === "string" && msg.text) appendToComposer(msg.sessionId, msg.text);
+          const back = msg as QueueReturned;
+          if (back.text) appendToComposer(back.sessionId, back.text);
         } else {
           dispatch({ t: "server", msg });
         }

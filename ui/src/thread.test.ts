@@ -21,6 +21,22 @@ const turn: AgentEvent[] = [
 ];
 
 describe("layout", () => {
+  test("a steered message splits its turn, and each part has its own duration", () => {
+    const items = fold([
+      { type: "user_message", text: "do it" },
+      { type: "turn_started", at: 1_000 },
+      { type: "tool_started", itemId: "a", kind: "command", title: "Ran", detail: "one" },
+      { type: "tool_completed", itemId: "a", ok: true },
+      { type: "user_message", text: "and this", steered: true, at: 4_000 },
+      { type: "tool_started", itemId: "b", kind: "command", title: "Ran", detail: "two" },
+      { type: "tool_completed", itemId: "b", ok: true },
+      { type: "assistant_message", itemId: "m", text: "Done." },
+      { type: "turn_completed", status: "completed", at: 9_000 },
+    ]);
+    const folds = layout(items, false).filter((r) => r.type === "fold") as Extract<ReturnType<typeof layout>[number], { type: "fold" }>[];
+    expect(folds.map((f) => f.ms)).toEqual([3_000, 5_000]);
+  });
+
   test("a live turn groups work between messages, the last group live", () => {
     const items = fold(turn.slice(0, 9));
     expect(shape(layout(items, true))).toEqual(["user", "work(2)", "assistant", "work(2,live)"]);

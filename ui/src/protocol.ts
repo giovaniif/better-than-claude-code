@@ -250,6 +250,17 @@ export interface Attachment {
 /** Largest file `attach.put` takes. Keep in step with `attachments::MAX_BYTES`. */
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 
+/** Reply to `session.interrupt` (what was queued, joined) or `session.unqueue`
+ *  (one message, with its `id`) when it had not reached the agent yet: the
+ *  text goes back to that window's reply box. Sent only to the asking window. */
+export interface QueueReturned {
+  op: "queue.returned";
+  sessionId: string;
+  id?: string;
+  text: string;
+  attachments?: Attachment[];
+}
+
 /** Reply to `attach.put { ref, name, mime, data (base64), host? | sessionId? }`.
  *  The file goes to `host`, or to the host of `sessionId`, or stays here. */
 export interface AttachStored {
@@ -285,7 +296,7 @@ export type AgentEvent =
   /** `session.create` and `session.send` take `attachments: string[]` (ids
    *  from `attach.put`) and may then have empty text; the event carries
    *  the attachments' records. */
-  | { type: "user_message"; text: string; attachments?: Attachment[] }
+  | { type: "user_message"; text: string; attachments?: Attachment[]; steered?: boolean; at?: number }
   /** `at` is yardd's clock in ms; older logs lack it. */
   | { type: "turn_started"; at?: number }
   | { type: "turn_completed"; status: string; at?: number }
@@ -307,7 +318,8 @@ export type AgentEvent =
 
 /** What the thread renders. Built from events by `applyEvent`. */
 export type Item =
-  | { kind: "user"; key: string; text: string; attachments?: Attachment[] }
+  /** `steered`: sent while the agent worked and given to it mid-turn, at `at`. */
+  | { kind: "user"; key: string; text: string; attachments?: Attachment[]; steered?: boolean; at?: number }
   | { kind: "assistant"; key: string; itemId: string; text: string; streaming: boolean }
   | { kind: "reasoning"; key: string; itemId: string; text: string; streaming: boolean }
   /** A turn's span, for "Worked for 1m 12s". Not drawn by itself. */
@@ -342,9 +354,13 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
     case "user_message":
       return [
         ...items,
-        ev.attachments?.length
-          ? { kind: "user", key, text: ev.text, attachments: ev.attachments }
-          : { kind: "user", key, text: ev.text },
+        {
+          kind: "user",
+          key,
+          text: ev.text,
+          ...(ev.attachments?.length ? { attachments: ev.attachments } : {}),
+          ...(ev.steered ? { steered: true, at: ev.at } : {}),
+        },
       ];
     case "reasoning_delta":
     case "reasoning": {

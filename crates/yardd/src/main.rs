@@ -75,12 +75,19 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(hosts::run(app.clone()));
 
     // Queued messages: into the running turn at a step, or the next turn.
-    // One at a time, so two steps in a row cannot deliver out of order.
+    // In order per session (tokio's Mutex queues waiters first come, first
+    // served), without one slow engine call holding up other sessions.
     let mut next_turns = app.take_next_turns();
     let runner = app.clone();
     tokio::spawn(async move {
+        let mut locks: std::collections::HashMap<String, Arc<tokio::sync::Mutex<()>>> = Default::default();
         while let Some((sid, when)) = next_turns.recv().await {
-            sessions::deliver(&runner, &sid, when).await;
+            let lock = locks.entry(sid.clone()).or_default().clone();
+            let app = runner.clone();
+            tokio::spawn(async move {
+                let _turn = lock.lock().await;
+                sessions::deliver(&app, &sid, when).await;
+            });
         }
     });
 

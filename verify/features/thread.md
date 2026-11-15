@@ -83,16 +83,28 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { c
 
 ### queue-a-message-while-working
 Like Claude Code: while a turn runs the reply box stays open, "Add to queue"
-puts the message under "Queued" above the box, and the agent gets it at its
-next step, in the same turn (here: the approved command is that step). Each
-viewport gets its own busy session.
+puts the message under "Queued" above the box and empties the box, and the
+agent gets it at its next step, in the same turn: here the approved command
+is that step, and the fake's answer names what was steered in. Each viewport
+gets its own busy session.
 
 ```sh
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-busy turn mobile"}' --wait '{"op":"created"}' --save busy_mobile=sessionId
-yv drive 'session:{{busy_mobile}}' --viewport mobile --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"expect":"label:Message","value":""},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
+yv drive 'session:{{busy_mobile}}' --viewport mobile --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"expect":"label:Message","value":""},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it. | steered: TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
+yv state --expect '{"sessions":[{"id":"{{busy_mobile}}","status":"idle"}]}'
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-busy turn desktop"}' --wait '{"op":"created"}' --save busy_desktop=sessionId
-yv drive 'session:{{busy_desktop}}' --viewport desktop --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
+yv drive 'session:{{busy_desktop}}' --viewport desktop --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"expect":"label:Message","value":""},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it. | steered: TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
 yv state --expect '{"sessions":[{"id":"{{busy_desktop}}","status":"idle"}]}'
+```
+
+### remove-a-queued-message
+Viewports: desktop
+× drops a queued message: it leaves the list, does not come back to the reply
+box, and never reaches the agent.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-drop turn"}' --wait '{"op":"created"}' --save dropq_sid=sessionId
+yv drive 'session:{{dropq_sid}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-dropped"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-dropped"},{"click":{"role":"button","name":"Remove from queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"wait":500},{"expect":"label:Message","value":""},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"label:Message","value":""},{"expect":{"css":".thread","hasText":"TEST-dropped"},"visible":false}]'
 ```
 
 ### steer-a-running-turn

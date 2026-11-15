@@ -330,16 +330,16 @@ async fn messages_queued_during_an_approval_reach_the_agent_after_it() {
     assert_eq!(user_texts(&c, &sid), ["[cmd] run it"], "queued messages are not in the thread yet");
 
     // The approved command is a step: both go to the agent as one message,
-    // steered into this turn, or as the next turn when this one ended first
-    // (the fake ends the moment the command is approved).
+    // steered into this turn (the fake keeps working briefly after it, as
+    // an agent does, and names what was steered in).
     c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
-    c.wait_for("the combined message", |m| is_event(m, &sid) && m["event"]["type"] == "user_message" && m["event"]["text"] == "first queued\n\nsecond queued").await;
-    c.drain_for(Duration::from_millis(1500)).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    c.wait_status(&sid, "idle").await;
+    c.drain_for(Duration::from_millis(600)).await;
     assert_eq!(user_texts(&c, &sid), ["[cmd] run it", "first queued\n\nsecond queued"]);
-    let steer = std::fs::read_to_string(sb.fake_state().join("steer-inputs.jsonl")).unwrap_or_default();
-    let turns: Vec<String> = sb.turn_inputs().iter().map(|i| i[0]["text"].as_str().unwrap_or("").to_string()).collect();
-    let reached = steer.contains("first queued\\n\\nsecond queued") || turns.iter().any(|t| t == "first queued\n\nsecond queued");
-    assert!(reached, "the combined message reached the engine: steer {steer:?}, turns {turns:?}");
+    assert_eq!(count(&c, &sid, "turn_completed"), 1, "one turn");
+    let answer = c.events(&sid).into_iter().rev().find(|e| e["type"] == "assistant_message").unwrap();
+    assert_eq!(answer["text"], "Ran it. | steered: first queued\n\nsecond queued");
     assert!(pending_texts(&c, &sid).is_empty());
 }
 
