@@ -573,6 +573,43 @@ async fn terminal_runs_commands_and_replays_its_scrollback() {
     assert!(b64(theirs["data"].as_str().unwrap()).starts_with(&all));
 }
 
+#[tokio::test]
+async fn terminal_keystrokes_reach_the_shell_in_order() {
+    let sb = Sandbox::new("term-order");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+
+    let from = c.mark();
+    // Wide enough that the typed line never wraps.
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 400, "rows": 24 })).await;
+    let opened = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    let term = opened["termId"].as_str().unwrap().to_string();
+
+    // One frame per key, as xterm sends them while someone types.
+    let word: String = (0..6).map(|_| "abcdefghijklmnopqrstuvwxyz0123456789").collect();
+    for ch in format!("echo {word}\n").chars() {
+        c.send(json!({ "op": "term.input", "termId": term, "data": ch.to_string() })).await;
+    }
+    let mut all = b64(opened["data"].as_str().unwrap());
+    let mut seen = 0;
+    loop {
+        for m in &c.log[seen..] {
+            if m["op"] == "term.data" && m["termId"] == term {
+                all.extend(b64(m["data"].as_str().unwrap()));
+            }
+        }
+        seen = c.log.len();
+        let text = String::from_utf8_lossy(&all).into_owned();
+        // `echo` prints the word on a line of its own only if every key arrived in order.
+        if text.lines().any(|l| l.trim_end_matches('\r').rsplit('\r').next() == Some(word.as_str())) {
+            break;
+        }
+        let from = c.mark();
+        c.wait_after(from, "the typed word echoed back unscrambled", |m| m["op"] == "term.data").await;
+    }
+}
+
 fn b64(s: &str) -> Vec<u8> {
     base64::engine::general_purpose::STANDARD.decode(s).unwrap()
 }
