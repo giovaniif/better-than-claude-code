@@ -1,0 +1,45 @@
+$ verify/yv map run thread --recipe steer-a-running-turn
+# exit 1 after 38041 ms at 854707dd4551a29161a5337c2f5950e1f769b6e6
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-15T19:50:12.774Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "steer-a-running-turn",
+          "status": "fail",
+          "ms": 35894,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":\"css:.thread\",\"text\":\"steered: TEST-steer\",\"timeout\":15000}: expected \"css:.thread\" to contain \"steered: TEST-steer\", got \"[steps] TEST-three steps",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude/.verify/drives/2026-11-15T19-49-37-738Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":\"css:.thread\",\"text\":\"steered: TEST-steer\",\"timeout\":15000}: expected \"css:.thread\" to contain \"steered: TEST-steer\", got \"[steps] TEST-three steps",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude/.verify/drives/2026-11-15T19-49-37-738Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "n the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 7% · 61%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[steps] TEST-three steps\\\" [level=1]\\n  - code: yard/steps-test-three-steps-fa2d\\n  - button \\\"Delete\\\"\\n  - text: \\\"[steps] TEST-three steps\\\"\\n  - button \\\"Worked for 1s · Ran 3 commands\\\"\\n  - paragraph: \\\"Echo: [steps] TEST-three steps\\\"\\n  - text: TEST-steer\\n  - paragraph: \\\"Echo: TEST-steer\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":\\\"css:.thread\\\",\\\"text\\\":\\\"steered: TEST-steer\\\",\\\"timeout\\\":15000}: expected \\\"css:.thread\\\" to contain \\\"steered: TEST-steer\\\", got \\\"[steps] TEST-three steps\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude/.verify/drives/2026-11-15T19-49-37-738Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":\\\"css:.thread\\\",\\\"text\\\":\\\"steered: TEST-steer\\\",\\\"timeout\\\":15000}: expected \\\"css:.thread\\\" to contain \\\"steered: TEST-steer\\\", got \\\"[steps] TEST-three steps\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude/.verify/drives/2026-11-15T19-49-37-738Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/steer-a-running-turn",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

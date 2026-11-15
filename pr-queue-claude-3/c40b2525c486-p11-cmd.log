@@ -1,0 +1,36 @@
+$ verify/yv map run stop
+# exit 0 after 22459 ms at 0224ec23e5e1c5105f570b10b86987eb9a60bd33
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "stop",
+      "at": "2026-11-15T23:50:25.325Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-slow-turn",
+          "status": "pass",
+          "ms": 4427
+        },
+        {
+          "label": "stop-stuck-codex-turn",
+          "status": "pass",
+          "ms": 8162
+        },
+        {
+          "label": "stop-stuck-claude-turn",
+          "status": "pass",
+          "ms": 8975
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
