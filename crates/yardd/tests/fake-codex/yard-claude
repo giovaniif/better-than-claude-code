@@ -7,6 +7,11 @@
 //   [steps] three Bash tool calls, 400 ms apart, then "Echo: <prompt>";
 //           user messages that arrive meanwhile are folded into the same
 //           turn, as Claude Code does, and appended as " | also: …"
+//   [subagent] a Task call with a subagent of its own: the call, two nested
+//           steps of the subagent (events carry `parent`), the subagent's
+//           result with its duration (`ms`), then "Echo: <prompt>". It also
+//           leaves a `sleep 30` running under the sidecar, so a session's
+//           process list has something to show.
 //   other   replies "Echo: <prompt>"
 // Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%).
 // FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id,
@@ -88,6 +93,26 @@ async function runSteps(text) {
   emit({ type: "assistant_message", itemId: `text-${process.pid}-${++n}`, text: `Echo: ${text}${also}` });
   emit({ type: "turn_completed", status: "completed" });
 }
+let sleeper = null;
+async function runSubagent(text) {
+  // A background process, as `npm run dev &` would be. Ends on its own after 30 s.
+  if (!sleeper) {
+    sleeper = Bun.spawn(["sleep", "30"], { stdout: "ignore", stderr: "ignore" });
+  }
+  const agent = `tool-${process.pid}-${++n}`;
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+  emit({ type: "tool_started", itemId: agent, kind: "other", title: "Agent", detail: "TEST-survey the repo", agent: "general-purpose" });
+  for (const [kind, title, detail] of [["read", "Read", "README.md"], ["command", "Bash", "ls src"]]) {
+    const id = `tool-${process.pid}-${++n}`;
+    await pause(400);
+    emit({ type: "tool_started", itemId: id, parent: agent, kind, title, detail });
+    await pause(400);
+    emit({ type: "tool_completed", itemId: id, ok: true, output: `${title} done` });
+  }
+  emit({ type: "tool_completed", itemId: agent, ok: true, output: "TEST-subagent report: two files read", ms: 1700 });
+  emit({ type: "assistant_message", itemId: `text-${process.pid}-${++n}`, text: `Echo: ${text}` });
+  emit({ type: "turn_completed", status: "completed" });
+}
 for await (const line of console) {
   let msg;
   try {
@@ -119,6 +144,10 @@ for await (const line of console) {
     const text = String(msg.text ?? "");
     if (text.includes("[steps]")) {
       runSteps(text);
+      continue;
+    }
+    if (text.includes("[subagent]")) {
+      runSubagent(text);
       continue;
     }
     if (text.includes("[die]")) process.exit(1);
