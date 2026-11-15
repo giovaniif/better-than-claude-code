@@ -8,6 +8,7 @@
 //           user messages that arrive meanwhile are folded into the same
 //           turn, as Claude Code does, and appended as " | also: …"
 //   other   replies "Echo: <prompt>"
+// Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%).
 // FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id,
 // and one per one-shot `sessions` / `messages <id>` call.
 //
@@ -97,6 +98,20 @@ for await (const line of console) {
   if (msg.type === "start") {
     log(`start pid=${process.pid} resume=${msg.resume ?? ""}`);
     out({ type: "session", claudeSessionId: msg.resume ?? `fake-claude-${process.pid}` });
+    // The shape the real sidecar sends (sidecar/yard-claude/src/usage.ts):
+    // utilization is a fraction, resetsAt epoch seconds.
+    const at = (s) => Math.floor(Date.now() / 1000) + s;
+    out({
+      type: "usage",
+      usage: {
+        status: "allowed",
+        windows: {
+          five_hour: { utilization: 0.47, resetsAt: at(1 * 3600 + 35 * 60 + 30) },
+          seven_day: { utilization: 0.17, resetsAt: at(4 * 86400 + 2 * 3600 + 30) },
+          seven_day_sonnet: { utilization: 0.08, resetsAt: at(4 * 86400 + 2 * 3600 + 30) },
+        },
+      },
+    });
   } else if (msg.type === "user" && steps) {
     log(`fold ${String(msg.text ?? "").slice(0, 80)}`);
     steps.folded.push(String(msg.text ?? ""));
