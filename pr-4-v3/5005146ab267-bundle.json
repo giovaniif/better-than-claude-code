@@ -1,0 +1,363 @@
+{
+  "v": 1,
+  "claim": "Claude Code sessions run outside Switchyard (in a terminal or an IDE) cannot be brought into it: there is no way to list the host's Claude Code sessions, see one's history in Switchyard, or continue it there.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-claude-import",
+  "base": "ff432e4b38a1f074818870b2849b91652ac6bdb6",
+  "head": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/import.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/history.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/history.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/oneshot.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/tools.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/import.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T18:59:54.671Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ff432e4b38a1f074818870b2849b91652ac6bdb6",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "631751845dfa9ef5558f0957c047157534269788e6cd7857b8d7fa333d95cb11"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "889cd6b3b87f8e0b78594ecd421ab1c7aa42eff9c5fb593d5ca1303e018ece5e"
+        }
+      ],
+      "addedAt": "2026-11-15T19:00:22.050Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ff432e4b38a1f074818870b2849b91652ac6bdb6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "ee42e0b432842a5fa5fddffbaf4c37389a09824e0179efe1d1d5c83a37299987"
+        },
+        {
+          "path": "p2-fail-mobile-step0.png",
+          "sha256": "3b3a4867c6a61327807ec84735eee3d5a512f30d953f4e1703b2363975fc4814"
+        }
+      ],
+      "addedAt": "2026-11-15T19:00:22.090Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "regression",
+      "at": "ff432e4b38a1f074818870b2849b91652ac6bdb6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-sidebar.json",
+          "sha256": "72c96583ecacad031d465551450279d23acb215522e27040327a064040e31b87"
+        }
+      ],
+      "addedAt": "2026-11-15T19:00:22.138Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "3eef8d8550c0ea6abfe9c7d66466f6e70a1986c3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "d06a55e773c90ba89d338e5b9d27ccc56645ed62cda320999c2d48704fbae4fa"
+        }
+      ],
+      "addedAt": "2026-11-15T19:00:42.472Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon claude_code_sessions",
+      "exit": 101
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "test",
+      "at": "3eef8d8550c0ea6abfe9c7d66466f6e70a1986c3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "b35f3d5bb7cf1919ee19cc7e86b8c8852b757118487d2923d5a4e9dcff44b202"
+        }
+      ],
+      "addedAt": "2026-11-15T19:01:04.331Z",
+      "cmd": "cd sidecar/yard-claude && bun test",
+      "exit": 1
+    },
+    {
+      "id": 6,
+      "ref": "base",
+      "kind": "regression",
+      "at": "3eef8d8550c0ea6abfe9c7d66466f6e70a1986c3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-import.json",
+          "sha256": "09500fd75b3fce3c67404a7b78a698751cf567cea0224922eae947f28f1549f0"
+        }
+      ],
+      "addedAt": "2026-11-15T19:01:04.516Z",
+      "cmd": "verify/yv map run import",
+      "exit": 1,
+      "failingRecipes": [
+        "import/dialog-lists-sessions",
+        "import/filter-narrows-the-list",
+        "import/import-opens-the-session",
+        "import/next-message-resumes",
+        "import/missing-folder-is-refused"
+      ],
+      "passingRecipes": []
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "test",
+      "at": "1360138beb3cba232628bf113e524a8e1e3b9b44",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "b4bb465e6a9686a386c58335f3dc3e5979b9cc92ec27212d3ed43da110edd9f6"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:28.451Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon two_imports",
+      "exit": 101
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "74e53d17b4415217a018f4b6127700c91707f41114941df65fecf5fa9c6f22e8"
+        },
+        {
+          "path": "p8-dialog-desktop.png",
+          "sha256": "8e89f344f11db5169ff606c4537627b6603c5f83fdb0b04d3e03d61bf7d696e9"
+        },
+        {
+          "path": "p8-imported-desktop.png",
+          "sha256": "8b47000ec08b5086c5cfbfa5269d1b3fe9b2914e8a8fdf833801cfa13a8806bd"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:41.748Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "4f4c13e9bf32072beb8d788a5c386d7de7b1605dc9d0e67059818fe2ac0f9afa"
+        },
+        {
+          "path": "p9-dialog-mobile.png",
+          "sha256": "be53555f3bddd085028c6a3f7253e6365eccd11f711e08cb3d3814ac5264196f"
+        },
+        {
+          "path": "p9-imported-mobile.png",
+          "sha256": "c0b0c1db8610765eb6219e55d7006c5c20fb473a56eb1928a531d2803d9758d1"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:41.787Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "test",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-cmd.log",
+          "sha256": "d87ab28cd06649997f538a5a2af5a0aef1b94845dde59b75b576a3e30aac0ca1"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:41.824Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "design",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-design.json",
+          "sha256": "6799582a73e10c54ebbc29ff03c3f5478235d536327a4ac239bdfe2ece0e3ec1"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:52.191Z",
+      "cmd": "verify/yv design-check --base ff432e4b38a1",
+      "exit": 0
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-import.json",
+          "sha256": "67daaeaf206439a60c4bc63f144e425b304817812b7d404e8d0800a8d2884a12"
+        }
+      ],
+      "addedAt": "2026-11-15T19:09:52.268Z",
+      "cmd": "verify/yv map run import",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "import/dialog-lists-sessions",
+        "import/filter-narrows-the-list",
+        "import/recently-active-warns",
+        "import/import-opens-the-session",
+        "import/import-on-mobile",
+        "import/next-message-resumes",
+        "import/missing-folder-is-refused",
+        "import/import-from-a-remote-host"
+      ]
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b061da2e8d9c6125fae105c98bc27d80b6eea2e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-map-sidebar.json",
+          "sha256": "6ab2f32738e579f2971fb2d9f6f5bcc4c5304549d2ad99ed14b444dc9a58b96d"
+        }
+      ],
+      "addedAt": "2026-11-15T19:10:22.160Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ]
+    }
+  ]
+}
