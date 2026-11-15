@@ -2,6 +2,10 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## Unreleased
+
+- **No more memory cap.** Switchyard no longer stops a session for the memory its processes use. The Hosts page still shows each session's CPU and memory, and new sessions still wait while a machine is under pressure. `YARD_SESSION_MEM_CAP_GB` is gone.
+
 ## 0.2.1 (2026-11-15)
 
 - **Fixed: Stop always stops.** If Claude Code or Codex doesn't end the turn within 5 seconds, Switchyard ends it. A stuck Claude process is ended and the next message resumes the conversation.

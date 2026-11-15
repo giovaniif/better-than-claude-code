@@ -28,7 +28,7 @@ Switchyard drives the `claude` and `codex` CLIs you already have, with the login
 
 **Files and images.** Paste, drop or attach them to any prompt. They are stored on the machine the session runs on, so screenshots reach a remote agent too.
 
-**Guard rails for your machine.** CPU, memory and disk for every host are always on screen. New sessions wait while a machine is under pressure, and a session that eats too much memory is stopped.
+**Guard rails for your machine.** CPU, memory and disk for every host are always on screen. New sessions wait while a machine is under pressure.
 
 <table>
   <tr>

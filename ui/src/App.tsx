@@ -1918,7 +1918,6 @@ const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1))
 
 /** What each session's processes use, and the sessions waiting to start. */
 function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
-  const cap = host.limits?.memCapBytes ?? 0;
   const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
   const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
   const queued = Object.values(sessions)
@@ -1939,18 +1938,13 @@ function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, S
             </tr>
           </thead>
           <tbody>
-            {rows.map((u) => {
-              const over = cap > 0 && u.memBytes > cap * 0.8;
-              return (
-                <tr key={u.id}>
-                  <td className="usage-title">{sessions[u.id].title}</td>
-                  <td className="num">{u.cpuCores.toFixed(1)} cores</td>
-                  <td className={`num ${over ? "warn" : ""}`}>
-                    {cap > 0 ? `${size(u.memBytes).replace(/ GB$/, "")} of ${gbLimit(cap)} GB` : size(u.memBytes)}
-                  </td>
-                </tr>
-              );
-            })}
+            {rows.map((u) => (
+              <tr key={u.id}>
+                <td className="usage-title">{sessions[u.id].title}</td>
+                <td className="num">{u.cpuCores.toFixed(1)} cores</td>
+                <td className="num">{size(u.memBytes)}</td>
+              </tr>
+            ))}
             {queued.map((s) => (
               <tr key={s.id}>
                 <td className="usage-title">{s.title}</td>
@@ -1966,8 +1960,7 @@ function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, S
         <div className="muted small">
           {limits.forced
             ? "New sessions are queued: pressure is forced on (YARD_FORCE_PRESSURE=1)."
-            : `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`}{" "}
-          {cap > 0 ? `A session's processes are stopped above ${gbLimit(cap)} GB.` : "No memory cap per session."}
+            : `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`}
         </div>
       )}
     </section>

@@ -59,7 +59,7 @@ export interface Host {
   sessions?: SessionUsage[];
   /** Sessions waiting to start, oldest first. */
   queued?: { id: string; reason: string }[];
-  limits?: { memCapBytes: number; minFreeBytes: number; forced: boolean };
+  limits?: { minFreeBytes: number; forced: boolean };
 }
 
 /** A remote yardd this one reaches, as listed by the `hosts` message. */

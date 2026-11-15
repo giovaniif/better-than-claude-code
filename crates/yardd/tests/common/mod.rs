@@ -159,7 +159,6 @@ impl Daemon {
             .env_remove("YARD_HOST_NAME")
             .env_remove("YARD_BIND")
             .env_remove("YARD_CODEX_SANDBOX")
-            .env_remove("YARD_SESSION_MEM_CAP_GB")
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(stderr);

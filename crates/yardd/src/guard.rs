@@ -1,16 +1,12 @@
-//! Resource guard: what each session's processes use, a memory cap per
-//! session, and a queue that holds new sessions while the host is busy.
-//!
-//! The cap is a soft one. yardd polls every few seconds and kills process
-//! trees that went over, after the fact: a spike between two samples is not
-//! caught, and the kernel enforces nothing. A cgroup per session (Linux only)
-//! would be the hard version.
+//! Resource guard: what each session's processes use, and a queue that holds
+//! new sessions while the host is busy. Nothing running is ever stopped for
+//! its size: a per-session memory cap was tried and removed (2026-11-15).
 
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     path::PathBuf,
     sync::{Arc, Mutex},
-    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+    time::{SystemTime, UNIX_EPOCH},
 };
 
 use serde_json::{json, Value};
@@ -19,12 +15,8 @@ use sysinfo::{Pid, System};
 use crate::{pty, sessions, state::App};
 
 const GB: f64 = 1024.0 * 1024.0 * 1024.0;
-/// After a session is stopped for its memory, wait this long before acting on it again.
-const CAP_COOLDOWN: Duration = Duration::from_secs(30);
 
 struct Limits {
-    /// 0 turns the cap off.
-    mem_cap: u64,
     min_free: u64,
     /// `YARD_FORCE_PRESSURE=1`, for testing the queue.
     forced: bool,
@@ -70,7 +62,6 @@ struct Inner {
     queue: VecDeque<(String, String)>,
     /// From the last sample; None when the host is fine.
     pressure: Option<String>,
-    capped: HashMap<String, Instant>,
 }
 
 pub struct Guard {
@@ -82,7 +73,6 @@ impl Default for Guard {
     fn default() -> Self {
         Guard {
             limits: Limits {
-                mem_cap: gb_env("YARD_SESSION_MEM_CAP_GB", 8.0),
                 min_free: gb_env("YARD_MIN_FREE_GB", 2.0),
                 forced: std::env::var("YARD_FORCE_PRESSURE").is_ok_and(|v| v == "1"),
             },
@@ -140,7 +130,6 @@ impl Guard {
         let mut inner = self.inner.lock().unwrap();
         inner.sidecars.remove(sid);
         inner.commands.remove(sid);
-        inner.capped.remove(sid);
         inner.queue.retain(|(id, _)| id != sid);
     }
 
@@ -199,9 +188,6 @@ fn tree(children: &HashMap<Pid, Vec<Pid>>, root: Pid, out: &mut Vec<Pid>, seen: 
 struct SessionUse {
     cpu: f32,
     mem: u64,
-    /// What the cap kills: command and terminal trees, and for Claude the
-    /// processes below the CLI, so the sidecar and the conversation survive.
-    killable: Vec<Pid>,
 }
 
 /// Called by the host sampler after it refreshed `sys` (memory and processes).
@@ -246,8 +232,7 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
 
     let mut usage: HashMap<String, SessionUse> = HashMap::new();
     for (sid, pid) in &sidecars {
-        // Measure the whole sidecar tree. The CLI is the sidecar's own child;
-        // only what runs below the CLI may be killed.
+        // The whole sidecar tree: the sidecar, the CLI and what it runs.
         let root = Pid::from_u32(*pid);
         let mut all = Vec::new();
         tree(&children, root, &mut all, &mut HashSet::new());
@@ -255,12 +240,6 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
         for p in all.iter().filter_map(|pid| procs.get(pid)) {
             u.cpu += p.cpu_usage();
             u.mem += p.memory();
-        }
-        for cli in children.get(&root).into_iter().flatten() {
-            let mut below = Vec::new();
-            tree(&children, *cli, &mut below, &mut HashSet::new());
-            below.retain(|pid| pid != cli);
-            u.killable.extend(below);
         }
     }
     let mut add = |sid: &str, root: u32| {
@@ -271,7 +250,6 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
             let Some(p) = procs.get(&pid) else { continue };
             u.cpu += p.cpu_usage();
             u.mem += p.memory();
-            u.killable.push(pid);
         }
     };
     // Codex reports an id of its own as `processId`, not an OS pid. So each
@@ -298,23 +276,6 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
     }
     for (sid, pid) in pty::shell_pids(app) {
         add(&sid, pid);
-    }
-
-    if limits.mem_cap > 0 {
-        let now = Instant::now();
-        for (sid, u) in &usage {
-            if u.mem <= limits.mem_cap {
-                continue;
-            }
-            {
-                let mut inner = guard.inner.lock().unwrap();
-                if inner.capped.get(sid).is_some_and(|t| now.duration_since(*t) < CAP_COOLDOWN) {
-                    continue;
-                }
-                inner.capped.insert(sid.clone(), now);
-            }
-            enforce(app, sys, sid, u, limits.mem_cap);
-        }
     }
 
     // One per sample, so a burst of starts cannot push the host straight
@@ -349,40 +310,8 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
         "queued": queued,
         "pressure": guard.pressure(&inner),
         "limits": {
-            "memCapBytes": limits.mem_cap,
             "minFreeBytes": limits.min_free,
             "forced": limits.forced,
         },
     })
-}
-
-/// Tell the session, stop its turn, and kill what it runs.
-fn enforce(app: &Arc<App>, sys: &System, sid: &str, u: &SessionUse, cap: u64) {
-    app.emit(
-        sid,
-        json!({
-            "type": "error",
-            "message": format!(
-                "Stopped: this session's processes used {:.1} GB, over the {} GB cap.",
-                u.mem as f64 / GB,
-                gb_text(cap)
-            ),
-        }),
-    );
-    {
-        let app = app.clone();
-        let sid = sid.to_string();
-        tokio::spawn(async move {
-            if let Err(e) = sessions::interrupt(&app, &sid).await {
-                eprintln!("yardd: could not interrupt {sid} after the memory cap: {e:#}");
-            }
-        });
-    }
-    let mut killed = 0;
-    for pid in &u.killable {
-        if sys.process(*pid).is_some_and(|p| p.kill()) {
-            killed += 1;
-        }
-    }
-    eprintln!("yardd: {sid} went over the memory cap, killed {killed} processes");
 }

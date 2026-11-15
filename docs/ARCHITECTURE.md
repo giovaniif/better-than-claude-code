@@ -102,10 +102,10 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 
 - yardd samples CPU, load, memory and disk every 3 s with `sysinfo` and keeps an hour of CPU history in memory.
 - **Per session:** the same sample sums CPU and memory over each session's processes: the Claude sidecar tree, the terminal shell tree, and for Codex the app-server's children matched by command folder and start time. Codex runs as one shared app-server, so two Codex sessions running commands in the same folder at the same moment can be mixed up.
-- **Memory cap:** `YARD_SESSION_MEM_CAP_GB` (default 8, 0 off). Over it, yardd reports an error in the session, interrupts the turn and kills the command and terminal trees. For Claude it kills only what runs below the CLI, so the conversation survives. It is a polling soft cap, not a cgroup.
-- Threads are not processes: on Linux `sysinfo` lists each thread with its process as parent and the process's memory as its own. They are skipped; counting them once made a Claude CLI look 8.7 GB, and the cap's kill of a thread id took the CLI down (2026-11-14).
+- **No memory cap.** yardd never stops a running session for its size. A per-session cap (`YARD_SESSION_MEM_CAP_GB`) existed until 0.2.1 and was removed on 2026-11-15: a polling soft cap killed real work, and the queue below already keeps new sessions off a busy host.
+- Threads are not processes: on Linux `sysinfo` lists each thread with its process as parent and the process's memory as its own. They are skipped; counting them made a Claude CLI look 8.7 GB (2026-11-14).
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
-- Not built: worktree disk sizes with cleanup, cgroups on Linux.
+- Not built: worktree disk sizes with cleanup.
 
 ## Remote hosts
 
@@ -191,7 +191,7 @@ The right pane has a Terminal tab next to Changes.
 - `cd ui && bun test`: `applyEvent`, the store reducer and the attachment helpers.
 - `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
 - A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop; a `[stuck]` fake Codex turn covers the Codex side of Stop.
-- Not covered: anything that needs the real Claude SDK, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
+- Not covered: anything that needs the real Claude SDK, the PR pane, SSH hosts, and the UI beyond its reducers.
 
 ## PR pane
 
@@ -228,7 +228,7 @@ Built and checked in the browser on 2026-11-13:
 - Persistence: a session survived a restart with its history, and a follow-up after the restart used the earlier conversation (Codex).
 - PR pane: rendered a real open PR from a public repo, with checks and review threads.
 - Hand-off: Codex received a hand-off brief and answered from the earlier work. The picker's confirmation was checked in the UI.
-- Resource guard: per-session CPU and memory in the Hosts table, the memory cap killing an over-cap process, and the queue with "Start anyway".
+- Resource guard: per-session CPU and memory in the Hosts table and the queue with "Start anyway".
 - Worktrees: the "From" select, and "Delete and remove worktree" removing a clean worktree and its merged branch.
 - Terminal tabs: a second terminal running its own command, and a selection added to the reply box.
 - Self-contained app: a copy of the release bundle outside the repo started its own bundled yardd on a test port and ran a Codex turn.
@@ -262,4 +262,3 @@ Next:
 - `codex app-server` is experimental and can change between CLI versions.
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
-- The memory cap on a Claude session kills everything below the CLI, MCP servers included.

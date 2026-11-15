@@ -26,7 +26,7 @@ YARD_PORT=47790 YARD_DATA_DIR=/tmp/yard-dev cargo run -p yardd
 
 Then open http://127.0.0.1:47790. Without `YARD_DATA_DIR` it uses your real `~/.yard`, and without `YARD_PORT` it takes 47717, where the desktop app's daemon usually runs. For UI work with hot reload, start yardd with `YARD_ALLOW_ORIGIN=http://localhost:5173` as well, then run `cd ui && VITE_YARD_WS=ws://127.0.0.1:47790/ws bunx vite`.
 
-Settings, all optional: `YARD_SESSION_MEM_CAP_GB` (default 8, `0` off) stops a session whose processes use more; `YARD_MIN_FREE_GB` (default 2) is the free memory below which new sessions queue.
+Settings, all optional: `YARD_MIN_FREE_GB` (default 2) is the free memory below which new sessions queue.
 
 ## Desktop app
 
