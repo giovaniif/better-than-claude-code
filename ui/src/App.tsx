@@ -2285,6 +2285,9 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
   );
 }
 
+/** A Claude Code session touched this recently may still be open somewhere. */
+const RECENT_MS = 10 * 60_000;
+
 /** "5 min ago": when a Claude Code session was last used. */
 function ago(ms: number): string {
   const min = Math.round((Date.now() - ms) / 60000);
@@ -2370,6 +2373,10 @@ function ImportDialog({ state, actions, onClose }: { state: State; actions: Acti
                     {s.cwd ? tilde(s.cwd, homeOn(state, host)) : "unknown folder"}
                     {s.gitBranch ? ` · ${s.gitBranch}` : ""} · {ago(s.lastModified)}
                   </div>
+                  {!s.importedAs && Date.now() - s.lastModified < RECENT_MS && (
+                    // Two writers on one Claude Code conversation would interleave.
+                    <div className="warn small">Used in the last 10 minutes: if it is still open in Claude Code, close it there first.</div>
+                  )}
                 </div>
                 {s.importedAs ? (
                   <button className="btn" aria-label={`Open ${s.title}`} onClick={() => open(s.importedAs!)}>

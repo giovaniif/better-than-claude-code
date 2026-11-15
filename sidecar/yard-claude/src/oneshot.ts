@@ -11,7 +11,7 @@ export async function oneShot(mode: string, args: string[]): Promise<unknown> {
     const i = args.indexOf("--limit");
     const limit = i >= 0 ? Number(args[i + 1]) : 200;
     // Like Claude Code's own /resume: no SDK or headless sessions (Switchyard's own included).
-    const list = await listSessions({ includeProgrammatic: false, limit } as any);
+    const list = await listSessions({ includeProgrammatic: false, limit });
     return { sessions: list.map(sessionRow).sort((a, b) => b.lastModified - a.lastModified) };
   }
   const sessionId = args[0];

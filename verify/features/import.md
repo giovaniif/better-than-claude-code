@@ -18,6 +18,7 @@ yv iso seed --profile empty
 ## Cleanup
 
 ```sh
+yv iso down --name map-import-remote
 yv iso down
 ```
 
@@ -36,6 +37,15 @@ Typing in the filter keeps only matching sessions.
 
 ```sh
 yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"fill":"label:Filter sessions","value":"parser"},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"expect":"role:button:Import TEST-fix the login redirect","visible":false}]'
+```
+
+### recently-active-warns
+Viewports: desktop
+A session used in the last 10 minutes may still be open in Claude Code: its
+row warns before importing (two writers would interleave one conversation).
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog","text":"Used in the last 10 minutes"},{"expect":{"css":".import-row","hasText":"TEST-fix the login redirect"},"text":"close it there first"},{"expect":{"css":".import-row","hasText":"TEST-old refactor of the parser"},"text":"3 d ago"}]'
 ```
 
 ### import-opens-the-session
@@ -75,11 +85,22 @@ A session whose folder is gone cannot be imported; the dialog says why.
 yv drive new --viewport desktop --allow-errors --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"click":"role:button:Import TEST-write the release notes"},{"expect":"role:dialog","text":"no longer exists"}]'
 ```
 
-### import-from-a-remote-host (manual: needs a second machine with Claude Code sessions)
-The dialog's host picker lists remote hosts; the hub routes `claude.sessions`
-and `session.import` to the chosen one. The daemon suite covers the routing
-rule; a real remote was not tried.
+### import-from-a-remote-host
+Viewports: desktop
+With a remote host connected, the dialog's host picker lists its Claude Code
+sessions and imports one there; the session runs on the remote.
+
+```sh
+yv iso down --name map-import-remote >/dev/null
+P=$(yv iso up --name map-import-remote --host-name TEST-remote | jq -er .iso.port)
+yv api '{"op":"host.add","name":"TEST-remote","kind":"direct","url":"ws://127.0.0.1:'"$P"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-remote","status":"connected"}]}' --save rhost='hosts[name=TEST-remote].id'
+yv api '{"op":"claude.sessions","host":"{{rhost}}"}' --wait '{"op":"claude.sessions","hostId":"{{rhost}}"}' --expect '{"sessions":[{"title":"TEST-write the release notes"}]}'
+yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"click":{"within":"role:dialog","css":".chip"}},{"click":{"within":"role:dialog","role":"button","name":"TEST-remote"}},{"expect":"role:dialog","text":"on TEST-remote"},{"click":"role:button:Import TEST-old refactor of the parser"},{"expect":"css:.thread","text":"TEST-answer to: TEST-old refactor of the parser"}]'
+yv state --iso map-import-remote --expect '{"sessions":[{"title":"TEST-old refactor of the parser","engine":"claude","cwd":"~yv-map-import-remote"}]}'
+yv iso down --name map-import-remote
+```
 
 ## Gotchas
 - Imported sessions run in place (no worktree): Claude Code keeps a session's transcript by folder, and resuming needs the same folder.
+- A real Claude resume after an import was not tried: the map and the daemon suite use the fake sidecar, which only logs the resume id it was given.
 - Titles come from the SDK: the custom title (`/rename`), else the summary, else the first prompt.

@@ -15,6 +15,8 @@ const SIDECAR_TIMEOUT: Duration = Duration::from_secs(60);
 /// What an imported session runs on until the user picks another model.
 const MODEL: &str = "claude-opus-5-5";
 const EFFORT: &str = "high";
+/** A history beyond this many events keeps its most recent part. */
+const MAX_EVENTS: usize = 3000;
 
 /// Run the sidecar once and read its one JSON line.
 async fn one_shot(app: &App, args: &[&str]) -> Result<Value> {
@@ -80,7 +82,16 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
             let title: String = session["title"].as_str().unwrap_or("Imported session").chars().take(60).collect();
             let sid = app.new_session("claude", MODEL, EFFORT, cwd, &title, None);
             app.set_engine_ref(&sid, claude_id);
-            for event in v["events"].as_array().cloned().unwrap_or_default() {
+            let mut events = v["events"].as_array().cloned().unwrap_or_default();
+            if events.len() > MAX_EVENTS {
+                // Start at a prompt, so the kept part opens with a whole turn.
+                let cut = events.len() - MAX_EVENTS;
+                let start = (cut..events.len()).find(|&i| events[i]["type"] == "user_message").unwrap_or(cut);
+                let left = events.drain(..start).filter(|e| e["type"] == "user_message").count();
+                let text = format!("The {left} oldest prompts of this Claude Code session were left out of the import; the conversation itself is whole.");
+                app.emit(&sid, json!({ "type": "note", "text": text }));
+            }
+            for event in events {
                 app.emit(&sid, event);
             }
             app.emit(
