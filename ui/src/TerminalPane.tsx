@@ -192,14 +192,38 @@ function TermView(props: {
     term.loadAddon(fit);
     term.open(el);
     termRef.current = term;
+    // Output waits for the first real fit. Written at xterm's default 80
+    // columns and reflowed to the pane's width afterwards, the scrollback
+    // replayed after a reload came back with wrapped lines garbled and
+    // output overwritten. Right after a reload the renderer has no cell size
+    // yet, so the fit is retried on each frame for a while.
+    let fitted = false;
+    let held: (() => void)[] = [];
+    let tries = 0;
+    let gone = false;
+    const flush = () => {
+      fitted = true;
+      const run = held;
+      held = [];
+      run.forEach((f) => f());
+    };
     const refit = () => {
+      if (gone) return;
       // Fitting a hidden element would size the PTY to nothing.
       if (el.offsetWidth === 0 || el.offsetHeight === 0) return;
       try {
-        fit.fit();
+        if (fit.proposeDimensions()) {
+          fit.fit();
+          if (!fitted) flush();
+          return;
+        }
       } catch {
         /* not laid out yet */
       }
+      if (fitted || held.length === 0) return;
+      // Better a reflowed terminal than an empty one.
+      if (++tries > 120) flush();
+      else requestAnimationFrame(refit);
     };
     refit();
 
@@ -217,8 +241,7 @@ function TermView(props: {
       term.write(EXITED_LINE);
     };
 
-    const stop = live.current.actions.onTerm((msg) => {
-      if (msg.termId !== termId) return;
+    const handle = (msg: any) => {
       if (msg.op === "term.opened") {
         if (written.current < 0) written.current = msg.offset;
         write(msg);
@@ -232,6 +255,12 @@ function TermView(props: {
       } else if (msg.op === "term.exit") {
         markExited();
       }
+    };
+    const stop = live.current.actions.onTerm((msg) => {
+      if (msg.termId !== termId) return;
+      if (fitted) return handle(msg);
+      held.push(() => handle(msg));
+      refit();
     });
 
     const onData = term.onData((data) => {
@@ -246,6 +275,7 @@ function TermView(props: {
     observer.observe(el);
 
     return () => {
+      gone = true;
       stop();
       onData.dispose();
       onResize.dispose();

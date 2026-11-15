@@ -48,7 +48,7 @@ yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"
 Viewports: desktop
 A prompt line longer than the pane wraps; after a reload the replay must show
 it exactly as before: both prompts intact, the command after the first one.
-Found 2026-11-15: the replay came back as `…/yard-test-say$((6*7))735$ echo TEST-before-`.
+Found 2026-11-15 (fixed the same day): the replay came back as `…/yard-test-say$((6*7))735$ echo TEST-before-`.
 
 ```sh
 yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-wrap-$((6*7))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true},{"reload":true},{"goto":"session:{{sid_fail}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true}]'
@@ -59,6 +59,6 @@ Select text in the terminal, press "Add to message": the reply box gets a
 fenced block. Selecting through xterm's renderer is not scripted yet.
 
 ## Gotchas
-- Product bug (2026-11-15): after a page reload the scrollback replay garbles wrapped lines and can drop output (a prompt overwrites the "TEST-before-42" line). Suspected cause: the snapshot is written before the terminal is fit to the pane, so it is laid out at the default 80 columns and then reflowed. scrollback-after-reload and scrollback-keeps-wrapped-lines fail until it is fixed.
+- Fixed 2026-11-15: the scrollback replayed after a reload used to be written at xterm's default 80 columns before the first fit and then reflowed, garbling wrapped lines and overwriting output. scrollback-after-reload and scrollback-keeps-wrapped-lines guard it.
 - Wait for the prompt (`expect` text `$`) before typing: keys sent before the shell is ready are echoed out of order.
 - xterm ignores `fill`; use the `type` step with `target: "label:Terminal input"`.
