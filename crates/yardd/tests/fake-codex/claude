@@ -3,14 +3,20 @@
 # yardd's integration tests, so a test can never start a Claude turn. Any run
 # is recorded. `auth status` and `auth login` act out a login: the code
 # `good-code` logs in (a file in FAKE_CODEX_DIR); anything else is refused.
+# With CLAUDE_CONFIG_DIR set (an extra account) the login state lives in that
+# folder instead, the account's email is `<folder name>@example.com`, and the
+# log line names the folder: a test can tell which account a run used.
 # Everything else fails.
-state="${FAKE_CODEX_DIR:-/nonexistent}/claude-logged-in"
+cfg="$CLAUDE_CONFIG_DIR"
+state="${cfg:-${FAKE_CODEX_DIR:-/nonexistent}}/claude-logged-in"
+email="me@example.com"
+if [ -n "$cfg" ]; then email="$(basename "$cfg")@example.com"; fi
 if [ -n "$FAKE_CODEX_DIR" ]; then
-  echo "claude pid=$$ args=$*" >> "$FAKE_CODEX_DIR/claude.log"
+  echo "claude pid=$$ args=$* config=$cfg" >> "$FAKE_CODEX_DIR/claude.log"
 fi
 if [ "$1 $2" = "auth status" ]; then
   if [ -f "$state" ]; then
-    echo '{"loggedIn": true, "authMethod": "claude.ai", "email": "me@example.com"}'
+    echo "{\"loggedIn\": true, \"authMethod\": \"claude.ai\", \"email\": \"$email\"}"
     exit 0
   fi
   echo '{"loggedIn": false, "authMethod": "none"}'
@@ -24,7 +30,7 @@ if [ "$1 $2" = "auth login" ]; then
     IFS= read -r code || exit 1
     code="$(printf %s "$code" | tr -d '\r')"
     if [ "$code" = good-code ]; then
-      touch "$state"
+      mkdir -p "$(dirname "$state")" && touch "$state"
       printf '\r\nLogin successful.\r\n'
       exit 0
     fi
