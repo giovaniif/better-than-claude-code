@@ -289,14 +289,17 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 bail!("the message is empty");
             }
             let meta = app.meta(sid).context("no such session")?;
+            // A message sent during a turn waits for it (see Meta::pending).
             if meta.status == "running" || meta.status == "needs_approval" {
-                bail!("a turn is already running");
+                app.queue_message(sid, text, &files);
+                return Ok(());
             }
             if meta.status == "queued" {
                 bail!("this session is queued; start it first");
             }
             sessions::send_turn(app, sid, text, &files).await;
         }
+        "session.unqueue" => app.unqueue_message(str_field(msg, "sessionId")?, str_field(msg, "id")?),
         "session.setModel" => {
             let sid = str_field(msg, "sessionId")?;
             let model = str_field(msg, "model")?;

@@ -72,6 +72,14 @@ async fn start_engine(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
     }
 }
 
+/// Send the oldest queued message, if the session is idle and has one.
+pub async fn send_next(app: &Arc<App>, sid: &str) {
+    let Some(item) = app.next_pending(sid) else { return };
+    let text = item["text"].as_str().unwrap_or("").to_string();
+    let attachments = item["attachments"].as_array().cloned().unwrap_or_default();
+    send_turn(app, sid, &text, &attachments).await;
+}
+
 /// Record the user's message and hand it to the session's engine.
 pub async fn send_turn(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) {
     app.emit(sid, user_message(text, attachments));

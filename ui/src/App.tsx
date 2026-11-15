@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { Attachment, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import type { Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -625,6 +625,8 @@ function Composer(props: {
   rows: number;
   large?: boolean;
   busy?: boolean;
+  /** A turn is running: sending queues the message behind it instead. */
+  queueing?: boolean;
   /** Keep the text and files after sending, for a submit that can still fail. */
   keepText?: boolean;
   /** Session whose terminal can add text here (see compose.ts). */
@@ -813,7 +815,13 @@ function Composer(props: {
         />
         {props.children}
         <span className="spacer" />
-        <button className="send" aria-label="Send" disabled={!canSend} onClick={submit}>
+        <button
+          className="send"
+          aria-label={props.queueing ? "Add to queue" : "Send"}
+          title={props.queueing ? "Sends when the current turn finishes" : undefined}
+          disabled={!canSend}
+          onClick={submit}
+        >
           {sending ? <span className="send-wait" aria-label="Uploading" /> : <Icon d={ARROW_UP} width={2.5} />}
         </button>
       </div>
@@ -1454,10 +1462,12 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
           {online && <EngineNotice state={state} host={host} engine={meta.engine} onLogin={() => setLoggingIn(true)} />}
           {loggingIn && <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} onClose={() => setLoggingIn(false)} />}
+          {online && <PendingList pending={meta.pending ?? []} held={!busy} onRemove={(id) => actions.unqueue(meta.id, id)} />}
           <Composer
-            placeholder={online ? "Reply" : "Offline"}
+            placeholder={!online ? "Offline" : busy ? "Queue a message for when this turn ends" : "Reply"}
             rows={1}
-            busy={busy || meta.status === "queued" || !online}
+            busy={meta.status === "queued" || !online}
+            queueing={busy}
             appendFor={meta.id}
             target={uploadTarget}
             upload={actions.upload}
@@ -1554,6 +1564,29 @@ function QuoteReply({ sessionId }: { sessionId: string }) {
       Reply
     </button>,
     document.body,
+  );
+}
+
+/**
+ * Messages sent while a turn ran. They go one by one as turns complete; after
+ * Stop or a failed turn they wait ("held") until the next turn completes, or
+ * are removed.
+ */
+function PendingList({ pending, held, onRemove }: { pending: PendingMessage[]; held: boolean; onRemove(id: string): void }) {
+  if (pending.length === 0) return null;
+  return (
+    <section className="pending" aria-label="Waiting to send">
+      <div className="muted small">{held ? "Queued, waiting: they go after your next message's turn completes" : `Queued: sent when this turn finishes`}</div>
+      {pending.map((p) => (
+        <div className="pending-row" key={p.id}>
+          <span className="pending-text">{p.text || p.attachments?.map((a) => a.name).join(", ")}</span>
+          {!!p.attachments?.length && <span className="muted small">{p.attachments.length === 1 ? "1 file" : `${p.attachments.length} files`}</span>}
+          <button className="btn-icon" aria-label="Remove from queue" title="Remove" onClick={() => onRemove(p.id)}>
+            <Icon d={CLOSE} size={12} />
+          </button>
+        </div>
+      ))}
+    </section>
   );
 }
 
