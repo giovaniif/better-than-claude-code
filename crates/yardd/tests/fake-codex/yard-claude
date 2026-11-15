@@ -13,8 +13,10 @@
 //           leaves a `sleep 30` running under the sidecar, so a session's
 //           process list has something to show.
 //   other   replies "Echo: <prompt>"
-// Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%).
-// FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id,
+// Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%;
+// 91% of 5 hours when CLAUDE_CONFIG_DIR names an extra account).
+// FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id and
+// CLAUDE_CONFIG_DIR (`config=`, empty for the default account),
 // and one per one-shot `sessions` / `messages <id>` call.
 //
 // One-shot modes, like the real sidecar's, for importing Claude Code sessions:
@@ -121,7 +123,7 @@ for await (const line of console) {
     continue;
   }
   if (msg.type === "start") {
-    log(`start pid=${process.pid} resume=${msg.resume ?? ""}`);
+    log(`start pid=${process.pid} config=${process.env.CLAUDE_CONFIG_DIR ?? ""} resume=${msg.resume ?? ""}`);
     out({ type: "session", claudeSessionId: msg.resume ?? `fake-claude-${process.pid}` });
     // The shape the real sidecar sends (sidecar/yard-claude/src/usage.ts):
     // utilization is a fraction, resetsAt epoch seconds.
@@ -131,7 +133,7 @@ for await (const line of console) {
       usage: {
         status: "allowed",
         windows: {
-          five_hour: { utilization: 0.47, resetsAt: at(1 * 3600 + 35 * 60 + 30) },
+          five_hour: { utilization: process.env.CLAUDE_CONFIG_DIR ? 0.91 : 0.47, resetsAt: at(1 * 3600 + 35 * 60 + 30) },
           seven_day: { utilization: 0.17, resetsAt: at(4 * 86400 + 2 * 3600 + 30) },
           seven_day_sonnet: { utilization: 0.08, resetsAt: at(4 * 86400 + 2 * 3600 + 30) },
         },

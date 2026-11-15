@@ -41,4 +41,5 @@ recipe with its repro.
 | [worktrees](worktrees.md) | A worktree per session, in-place folders, removing a worktree |
 | [notifications](notifications.md) | OS notifications: the sidebar switch, when a session or the `notify` op shows one |
 | [security](security.md) | Origin checks on the WebSocket, loopback binding |
+| [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |

@@ -260,17 +260,18 @@ impl App {
                 }
             }
             self.store.meta(&meta);
+            // Broadcast under the lock too, so no event of this session can reach a client first.
+            self.broadcast(json!({ "op": "session", "session": meta.clone() }));
             map.insert(
                 id.clone(),
                 Session {
-                    meta: meta.clone(),
+                    meta,
                     events: Vec::new(),
                     backend: Backend::Pending,
                     engine_ref: None,
                 },
             );
         }
-        self.broadcast(json!({ "op": "session", "session": meta }));
         Ok(id)
     }
 
@@ -280,15 +281,13 @@ impl App {
 
     /// Change session fields and tell every client.
     pub fn update_meta(&self, sid: &str, f: impl FnOnce(&mut Meta)) {
-        let meta = {
-            let mut map = self.sessions.lock().unwrap();
-            let Some(s) = map.get_mut(sid) else { return };
-            f(&mut s.meta);
-            s.meta.updated_at = now_ms();
-            self.store.meta(&s.meta);
-            s.meta.clone()
-        };
-        self.broadcast(json!({ "op": "session", "session": meta }));
+        let mut map = self.sessions.lock().unwrap();
+        let Some(s) = map.get_mut(sid) else { return };
+        f(&mut s.meta);
+        s.meta.updated_at = now_ms();
+        self.store.meta(&s.meta);
+        // Under the lock, like `emit`: clients see changes in the order they were made.
+        self.broadcast(json!({ "op": "session", "session": s.meta }));
     }
 
     /// Append a normalized event to the session log and fan it out.
@@ -309,33 +308,27 @@ impl App {
         // Only a turn that completed sends the next queued message: after
         // Stop or a failure the user decides.
         let completed = event["type"] == "turn_completed" && event["status"] == "completed";
-        let (msg, changed, next) = {
+        let next = {
             let mut map = self.sessions.lock().unwrap();
             let Some(s) = map.get_mut(sid) else { return };
             let seq = s.events.len();
-            // Sent under the lock so the disk sees events in log order.
+            // Written and broadcast under the lock, so the disk and every
+            // client see events and status changes in log order. Sent after
+            // the lock, a status from one thread could overtake a newer one
+            // from another and leave the UI showing `running` on an idle session.
             self.store.event(sid, &event);
-            s.events.push(event.clone());
+            self.broadcast(json!({ "op": "event", "sessionId": sid, "seq": seq, "event": event }));
+            s.events.push(event);
             s.meta.updated_at = now_ms();
-            let mut changed = None;
             if let Some(st) = status {
                 if s.meta.status != st {
                     s.meta.status = st.to_string();
                     self.store.meta(&s.meta);
-                    changed = Some(s.meta.clone());
+                    self.broadcast(json!({ "op": "session", "session": s.meta }));
                 }
             }
-            let next = completed && !s.meta.pending.is_empty();
-            (
-                json!({ "op": "event", "sessionId": sid, "seq": seq, "event": event }),
-                changed,
-                next,
-            )
+            completed && !s.meta.pending.is_empty()
         };
-        self.broadcast(msg);
-        if let Some(meta) = changed {
-            self.broadcast(json!({ "op": "session", "session": meta }));
-        }
         if next {
             let _ = self.next_turns.send(sid.to_string());
         }

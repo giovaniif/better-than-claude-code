@@ -3,6 +3,7 @@ import {
   applyEvent,
   type AgentEvent,
   type BranchList,
+  type ClaudeSessionList,
   type DirList,
   type EngineStates,
   type LoginState,
@@ -69,6 +70,10 @@ export interface State {
   branches: Record<string, BranchList>;
   /** `fs.dirs` replies, by `branchKey(host, path)`. */
   dirs: Record<string, DirList>;
+  /** Claude Code sessions that can be imported, per host; missing until asked. */
+  claudeSessions: Record<string, ClaudeSessionList>;
+  /** Why the last import was refused, shown in the import dialog. */
+  importError: string | null;
   /** `host.install` progress by host id. */
   installs: Record<string, { lines: string[]; running: boolean; ok?: boolean }>;
   error: string | null;
@@ -105,6 +110,8 @@ export const initial: State = {
   hostEpoch: 0,
   branches: {},
   dirs: {},
+  claudeSessions: {},
+  importError: null,
   installs: {},
   error: null,
   errorCount: 0,
@@ -247,6 +254,8 @@ function reduceServer(state: State, msg: any): State {
     case "error":
       // A host on an older Switchyard has no engine status; its card offers Update.
       if (msg.for === "engines.status") return state;
+      // The import dialog says why; no banner behind it.
+      if (msg.for === "session.import") return { ...state, importError: msg.message };
       return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
     case "git.branches": {
       const reply = msg as BranchList;
@@ -268,6 +277,13 @@ function reduceServer(state: State, msg: any): State {
       const key = loginKey(msg.hostId ?? "local", msg.engine);
       const { op: _op, hostId: _h, engine: _e, ...login } = msg;
       return { ...state, logins: { ...state.logins, [key]: login as LoginState } };
+    }
+    // Local: a new import (or a closed dialog) forgets the last refusal.
+    case "import.started":
+      return { ...state, importError: null };
+    case "claude.sessions": {
+      const reply = msg as ClaudeSessionList;
+      return { ...state, claudeSessions: { ...state.claudeSessions, [reply.hostId ?? "local"]: reply } };
     }
     case "fs.dirs": {
       const reply = msg as DirList;
@@ -362,6 +378,11 @@ export interface Actions {
   login(host: string, engine: Engine): void;
   /** The code Claude's sign-in page gives back. */
   loginCode(host: string, engine: Engine, code: string): void;
+  /** Ask a host for its Claude Code sessions (`claude.sessions`). */
+  listClaudeSessions(host: string): void;
+  /** Import one as a session there; `created` opens it. */
+  importClaudeSession(host: string, claudeSessionId: string): void;
+  clearImportError(): void;
   loginCancel(host: string, engine: Engine): void;
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
@@ -535,6 +556,12 @@ export function useYard(): { state: State; actions: Actions } {
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
       loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),
+      listClaudeSessions: (host) => post(onHost(host, { op: "claude.sessions" })),
+      importClaudeSession: (host, claudeSessionId) => {
+        dispatch({ t: "server", msg: { op: "import.started" } });
+        post(onHost(host, { op: "session.import", claudeSessionId }));
+      },
+      clearImportError: () => dispatch({ t: "server", msg: { op: "import.started" } }),
       loginCancel: (host, engine) => post(onHost(host, { op: "login.cancel", engine })),
     }),
     [],
