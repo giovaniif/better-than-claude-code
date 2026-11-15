@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e0cf209e6",
+  "build": {
+    "sha": "3449fda91b0fa02e165ee18b2c339ac47cbb9edc",
+    "short": "3449fda",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T20:03:52.753Z"
+  },
+  "dir": ".verify/evidence/usage-picker-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2945,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-picker-base/picker-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3130,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-picker-base/picker-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

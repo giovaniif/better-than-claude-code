@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "session:s1a1e19fe17c6",
+  "build": {
+    "sha": "44741bcf3c9be8b0fe921f072aeaff3de3084aef",
+    "short": "44741bc",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T23:51:53.609Z"
+  },
+  "dir": ".verify/evidence/usage-picker-head2",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2864,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-picker-head2/picker-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-picker-head2/picker-expanded-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-picker-head2/strip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3406,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-picker-head2/picker-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-picker-head2/picker-expanded-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-picker-head2/strip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

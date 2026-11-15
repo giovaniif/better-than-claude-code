@@ -1,0 +1,18 @@
+$ cd ui && bun test src/usage.test.ts && cd ../sidecar/yard-claude && bun test src/usage.test.ts
+# exit 1 after 9 ms at 3449fda91b0fa02e165ee18b2c339ac47cbb9edc
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/usage.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './usage' from '/home/giovani/.yard/wt/better-than-claude-code/feat-usage-picker/ui/src/usage.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [4.00ms]
