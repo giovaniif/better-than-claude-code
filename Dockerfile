@@ -82,7 +82,9 @@ COPY --from=web /out/yard-claude /opt/switchyard/yard-claude
 # YARD_CODEX_SANDBOX: Codex's own sandbox (bubblewrap) cannot create
 # namespaces in an unprivileged container, so every command would fail. The
 # container is the boundary instead. Approvals are still on-request.
+# YARD_WORKSPACE: where new sessions start and the folder picker opens.
 ENV YARD_BIND=0.0.0.0 \
+    YARD_WORKSPACE=/workspace \
     YARD_CODEX_SANDBOX=danger-full-access \
     YARD_PORT=47717 \
     YARD_ROOT=/opt/switchyard \

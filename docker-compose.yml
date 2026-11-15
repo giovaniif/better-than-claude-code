@@ -23,15 +23,17 @@ services:
       # `gh auth login` in the container terminal.
       GH_TOKEN: ${GH_TOKEN:-}
       # Optional. From `claude setup-token`; the alternative to logging
-      # `claude` in from the container terminal.
+      # Claude Code in from the app.
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+      # Where new sessions start and the folder picker opens (see PROJECTS).
+      YARD_WORKSPACE: ${PROJECTS:-/workspace}
     volumes:
       # Engine logins, git config, yardd's database and worktrees.
       - switchyard-home:/home/yard
-      # Your projects. To use a folder on the host instead, replace this line
-      # with a bind mount (absolute path, owned by uid 1000):
-      #   - /srv/projects:/workspace
-      - switchyard-workspace:/workspace
+      # Your projects. Set PROJECTS to a folder on the server, such as
+      # /home/me/code (owned by uid 1000), and it is mounted at the same path,
+      # so sessions see the server's own paths. Unset: a volume at /workspace.
+      - ${PROJECTS:-switchyard-workspace}:${PROJECTS:-/workspace}
     # No host ports: Coolify's proxy routes the domain to container port 47717.
     # With plain Docker, publish it on loopback (or a private interface) only:
     # ports:

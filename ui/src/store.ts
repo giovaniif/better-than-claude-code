@@ -4,6 +4,8 @@ import {
   type AgentEvent,
   type BranchList,
   type DirList,
+  type EngineStates,
+  type LoginState,
   type HostInstallMsg,
   type Changes,
   type Decision,
@@ -52,6 +54,12 @@ export interface State {
   usage: Record<string, Usage>;
   host: Record<string, Host>;
   home: Record<string, string>;
+  /** Where new sessions start and the folder picker opens, per host. */
+  workspace: Record<string, string>;
+  /** Engine install and login state per host; missing until asked. */
+  engines: Record<string, EngineStates>;
+  /** Logins in progress, by `loginKey(host, engine)`. */
+  logins: Record<string, LoginState>;
   /** Hosts whose connection on this socket dropped, until their next snapshot. */
   linkDown: Record<string, boolean>;
   /** Goes up whenever a host's sessions are reloaded, so open threads refetch. */
@@ -89,6 +97,9 @@ export const initial: State = {
   usage: {},
   host: {},
   home: {},
+  workspace: {},
+  engines: {},
+  logins: {},
   linkDown: {},
   hostEpoch: 0,
   branches: {},
@@ -117,6 +128,7 @@ const EMPTY_MODELS: Models = { claude: [], codex: [] };
 const NO_USAGE: Usage = {};
 
 export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
+export const loginKey = (host: string, engine: Engine) => `${host}\n${engine}`;
 
 /** The host a session runs on, `local` for this machine. */
 export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
@@ -172,6 +184,8 @@ function reduceServer(state: State, msg: any): State {
         usage: { ...state.usage, local: msg.usage ?? {} },
         host: msg.host ? { ...state.host, local: msg.host } : state.host,
         home: { ...state.home, local: msg.home ?? "" },
+        workspace: { ...state.workspace, local: msg.workspace || msg.home || "" },
+        engines: without(state.engines, (h) => h === "local"),
       };
     }
     case "host.snapshot": {
@@ -184,6 +198,8 @@ function reduceServer(state: State, msg: any): State {
         usage: { ...state.usage, [id]: msg.usage ?? {} },
         host: msg.host ? { ...state.host, [id]: msg.host } : state.host,
         home: { ...state.home, [id]: msg.home ?? "" },
+        workspace: { ...state.workspace, [id]: msg.workspace || msg.home || "" },
+        engines: without(state.engines, (h) => h === id),
       };
     }
     case "host.down":
@@ -228,6 +244,8 @@ function reduceServer(state: State, msg: any): State {
     case "pr":
       return { ...state, pr: { ...state.pr, [msg.sessionId]: msg.pr } };
     case "error":
+      // A host on an older Switchyard has no engine status; its card offers Update.
+      if (msg.for === "engines.status") return state;
       return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
     case "git.branches": {
       const reply = msg as BranchList;
@@ -242,6 +260,13 @@ function reduceServer(state: State, msg: any): State {
         ? { ...(prev ?? base), running: false, ok: !!m.ok }
         : { ...base, running: true, ok: undefined, lines: [...base.lines, m.line ?? ""].slice(-200) };
       return { ...state, installs: { ...state.installs, [m.hostId]: next } };
+    }
+    case "engines":
+      return { ...state, engines: { ...state.engines, [msg.hostId ?? "local"]: msg.engines as EngineStates } };
+    case "login": {
+      const key = loginKey(msg.hostId ?? "local", msg.engine);
+      const { op: _op, hostId: _h, engine: _e, ...login } = msg;
+      return { ...state, logins: { ...state.logins, [key]: login as LoginState } };
     }
     case "fs.dirs": {
       const reply = msg as DirList;
@@ -327,6 +352,11 @@ export interface Actions {
   loadBranches(cwd: string, host: string): void;
   /** Subfolders of an absolute path on a host, for the folder picker. */
   listDirs(path: string, host: string): void;
+  /** Log an engine in on a host; progress arrives as `login` messages. */
+  login(host: string, engine: Engine): void;
+  /** The code Claude's sign-in page gives back. */
+  loginCode(host: string, engine: Engine, code: string): void;
+  loginCancel(host: string, engine: Engine): void;
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
@@ -341,6 +371,8 @@ function socketUrl(): string {
   // the browser refuses a plain ws:// socket from it.
   return `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
 }
+
+const onHost = (host: string, msg: object) => (host === "local" ? msg : { ...msg, host });
 
 export function useYard(): { state: State; actions: Actions } {
   const [state, dispatch] = useReducer(reduce, initial);
@@ -442,6 +474,14 @@ export function useYard(): { state: State; actions: Actions } {
     post({ op: "changes.get", sessionId: routeId });
   }, [routeId, online, state.hostEpoch]);
 
+  // Ask each reachable host whether its engines are logged in, once per snapshot.
+  const unknownEngines = state.connected
+    ? ["local", ...state.hosts.map((h) => h.id)].filter((h) => hostOnline(state, h) && state.host[h] && !state.engines[h]).join(" ")
+    : "";
+  useEffect(() => {
+    for (const h of unknownEngines.split(" ").filter(Boolean)) post(onHost(h, { op: "engines.status" }));
+  }, [unknownEngines]);
+
   const actions = useMemo<Actions>(
     () => ({
       go: (route) => dispatch({ t: "route", route }),
@@ -472,6 +512,9 @@ export function useYard(): { state: State; actions: Actions } {
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),
+      login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
+      loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),
+      loginCancel: (host, engine) => post(onHost(host, { op: "login.cancel", engine })),
     }),
     [],
   );

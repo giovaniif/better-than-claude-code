@@ -240,6 +240,18 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             let _ = direct.send(reply.to_string());
         }
+        "engines.status" => {
+            let app = app.clone();
+            tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });
+        }
+        "login.start" => {
+            let engine = str_field(msg, "engine")?;
+            if let Err(e) = crate::login::start(app, engine).await {
+                app.broadcast(json!({ "op": "login", "engine": engine, "state": "failed", "error": format!("{e:#}") }));
+            }
+        }
+        "login.code" => crate::login::code(app, str_field(msg, "engine")?, str_field(msg, "code")?)?,
+        "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?).await?,
         "fs.dirs" => {
             let path = str_field(msg, "path")?;
             let reply = match list_dirs(path) {

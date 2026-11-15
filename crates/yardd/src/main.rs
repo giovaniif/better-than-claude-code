@@ -8,6 +8,7 @@ mod git;
 mod handoff;
 mod guard;
 mod hosts;
+mod login;
 mod pr;
 mod pty;
 mod remote;

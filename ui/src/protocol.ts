@@ -162,6 +162,24 @@ export interface HostInstallMsg {
   ok?: boolean;
 }
 
+/** One engine on one host, from `engines.status`. `loggedIn` is null when it could not be read. */
+export interface EngineState {
+  installed: boolean;
+  loggedIn: boolean | null;
+  account?: string | null;
+  error?: string;
+}
+export type EngineStates = Record<Engine, EngineState>;
+
+/** Progress of `login.start`. Codex shows a link and a code to enter there;
+ *  Claude shows a link whose page gives back a code to paste into the app. */
+export interface LoginState {
+  state: "starting" | "code" | "url" | "checking" | "done" | "failed" | "cancelled";
+  url?: string;
+  code?: string;
+  error?: string;
+}
+
 /** Reply to `fs.dirs { path, host? }`: the subfolders the folder picker offers. */
 export interface DirList {
   op: "fs.dirs";

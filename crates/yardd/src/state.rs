@@ -94,6 +94,7 @@ pub struct App {
     pub guard: crate::guard::Guard,
     pub store: crate::store::Store,
     pub remotes: crate::remote::Remotes,
+    pub logins: crate::login::Logins,
     next: AtomicU64,
 }
 
@@ -114,6 +115,7 @@ impl App {
             guard: crate::guard::Guard::default(),
             store,
             remotes: crate::remote::Remotes::new(crate::store::data_dir()),
+            logins: crate::login::Logins::default(),
             next: AtomicU64::new(1),
         }
     }
@@ -376,9 +378,20 @@ impl App {
             "usage": self.usage.lock().unwrap().clone(),
             "host": self.host.lock().unwrap().clone(),
             "home": std::env::var("HOME").unwrap_or_default(),
+            "workspace": workspace(),
             "hosts": self.remotes.list(),
         })
     }
+}
+
+/// Where new sessions start and the folder picker opens: YARD_WORKSPACE
+/// (the container's project folder), else the home folder.
+pub fn workspace() -> String {
+    std::env::var("YARD_WORKSPACE")
+        .ok()
+        .filter(|w| !w.is_empty())
+        .or_else(|| std::env::var("HOME").ok())
+        .unwrap_or_default()
 }
 
 /// One spelling per folder, so `~/x`, `~/x/` and a symlinked path compare equal.

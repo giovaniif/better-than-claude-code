@@ -148,8 +148,16 @@ fn line(app: &Arc<App>, sid: &str, msg: Value) -> Result<()> {
 pub fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
     // A session restored after a restart gets a fresh sidecar that resumes
     // the saved Claude Code session.
-    if let Some(claude_session) = app.resumable(sid) {
-        spawn(app, sid, Some(claude_session))?;
+    // So does a session whose sidecar was dropped after a login, which may
+    // have no Claude Code session to resume yet.
+    let pending = {
+        let map = app.sessions.lock().unwrap();
+        map.get(sid)
+            .filter(|s| matches!(s.backend, Backend::Pending))
+            .map(|s| s.engine_ref.clone())
+    };
+    if let Some(resume) = pending {
+        spawn(app, sid, resume)?;
     }
     line(app, sid, json!({ "type": "user", "text": text, "attachments": attachments }))
 }

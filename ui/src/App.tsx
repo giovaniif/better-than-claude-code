@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import type { Attachment, ChangedFile, Changes, Engine, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
-import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
+import type { Attachment, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
@@ -673,6 +673,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const target = host === "local" || state.hosts.some((h) => h.id === host && hostOnline(state, h.id)) ? host : "local";
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
+  const workspace = state.workspace[target] || home;
+  const [loggingIn, setLoggingIn] = useState(false);
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
   const [permission, setPermission] = useState<Permission>(() => {
     const saved = localStorage.getItem("yard.permission");
@@ -690,8 +692,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
   }, [models, target]);
   useEffect(() => {
-    setCwd(localStorage.getItem(cwdKey(target)) || home);
-  }, [target, home]);
+    setCwd(localStorage.getItem(cwdKey(target)) || workspace);
+  }, [target, workspace]);
 
   // Recent picks first, then the folders of this host's sessions. A worktree
   // session counts as the repository it was cut from.
@@ -714,6 +716,10 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const isRepo = !!branchList?.current;
 
   const start = (text: string, attachments: Attachment[]) => {
+    if (/^\/login\s*$/.test(text.trim()) && !attachments.length) {
+      setLoggingIn(true);
+      return;
+    }
     if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
     localStorage.setItem("yard.permission", permission);
     remember(target, cwd);
@@ -753,6 +759,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           <FolderPicker
             host={target}
             home={home}
+            workspace={workspace}
             value={cwd}
             recent={recent}
             dirs={state.dirs}
@@ -767,6 +774,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
           )}
         </div>
+        <EngineNotice state={state} host={target} engine={choice.engine} onLogin={() => setLoggingIn(true)} />
+        {loggingIn && <LoginDialog state={state} actions={actions} host={target} engine={choice.engine} onClose={() => setLoggingIn(false)} />}
       </div>
     </div>
   );
@@ -870,20 +879,22 @@ const baseName = (path: string) => path.slice(path.lastIndexOf("/") + 1) || path
 function FolderPicker(props: {
   host: string;
   home: string;
+  /** The folder whose subfolders are offered first: the host's projects. */
+  workspace: string;
   value: string;
   recent: string[];
   dirs: State["dirs"];
   listDirs(path: string, host: string): void;
   onChange(path: string): void;
 }) {
-  const { host, home, value, recent } = props;
+  const { host, home, workspace, value, recent } = props;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
   const list = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (open) {
-      setQuery(recent.length ? "" : tilde(value || home, home).replace(/\/?$/, "/"));
+      setQuery("");
       setCursor(0);
     }
   }, [open]);
@@ -901,7 +912,13 @@ function FolderPicker(props: {
     return () => clearTimeout(timer);
   }, [open, browsing, dir, host]);
 
-  type Row = { path: string; name: string; detail: string; git?: boolean; browse?: boolean };
+  // Without a path typed, the workspace's folders are listed under the recent ones.
+  const projects = props.dirs[branchKey(host, workspace)];
+  useEffect(() => {
+    if (open && workspace) props.listDirs(workspace, host);
+  }, [open, workspace, host]);
+
+  type Row = { path: string; name: string; detail: string; git?: boolean; browse?: boolean; section?: string };
   const rows: Row[] = useMemo(() => {
     if (browsing) {
       const lower = stem.toLowerCase();
@@ -914,10 +931,18 @@ function FolderPicker(props: {
       return [...self, ...children];
     }
     const lower = query.toLowerCase();
-    return recent
+    const recents = recent
       .filter((p) => p.toLowerCase().includes(lower))
-      .map((p) => ({ path: p, name: baseName(p), detail: tilde(p, home) }));
-  }, [browsing, stem, listing, dir, query, recent, home]);
+      .slice(0, lower ? 12 : 5)
+      .map((p) => ({ path: p, name: baseName(p), detail: tilde(p, home), section: "Recent" }));
+    const shown = new Set(recents.map((r) => r.path));
+    const inWorkspace = (projects?.dirs ?? [])
+      .filter((d) => !d.name.startsWith(".") && d.name.toLowerCase().includes(lower))
+      .map((d) => ({ path: joinPath(workspace, d.name), name: d.name, detail: "", git: d.git, browse: true, section: `In ${tilde(workspace, home)}` }))
+      .filter((r) => !shown.has(r.path))
+      .slice(0, 200);
+    return [...recents, ...inWorkspace];
+  }, [browsing, stem, listing, dir, query, recent, home, projects, workspace]);
   useEffect(() => setCursor(0), [query]);
   useEffect(() => {
     list.current?.querySelector<HTMLElement>(`[data-row="${cursor}"]`)?.scrollIntoView({ block: "nearest" });
@@ -960,7 +985,7 @@ function FolderPicker(props: {
       <input
         className="menu-search"
         autoFocus
-        placeholder="Search recent folders, or type a path"
+        placeholder="Search folders, or type a path"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={onKey}
@@ -968,8 +993,12 @@ function FolderPicker(props: {
         aria-label="Folder"
       />
       <div className="menu-list" ref={list} role="listbox">
-        {!browsing && rows.length > 0 && <div className="picker-head">Recent</div>}
-        {rows.map((row, i) => (
+        {rows.map((row, i) => [
+          row.section && row.section !== rows[i - 1]?.section && (
+            <div key={`head-${row.section}`} className="picker-head">
+              {row.section}
+            </div>
+          ),
           <div
             key={row.path + i}
             data-row={i}
@@ -996,17 +1025,17 @@ function FolderPicker(props: {
                 <Icon d={CHEVRON_RIGHT} size={12} />
               </button>
             )}
-          </div>
-        ))}
+          </div>,
+        ])}
         {browsing && listing?.error && <div className="picker-empty">{listing.error}</div>}
         {browsing && !listing && <div className="picker-empty">Loading…</div>}
         {!browsing && rows.length === 0 && (
-          <div className="picker-empty">{query ? "No recent folder matches. Start with / or ~ to browse." : "No recent folders yet."}</div>
+          <div className="picker-empty">{!projects && !query ? "Loading…" : query ? "No folder matches. Start with / or ~ to type a path." : "No folders here yet. Start with / or ~ to type a path."}</div>
         )}
       </div>
       {(!browsing || invoke) && <div className="menu-divider" />}
       {!browsing && (
-        <button className="picker-item menu-item" onClick={() => browseInto(home || "/")}>
+        <button className="picker-item menu-item" onClick={() => browseInto(workspace || home || "/")}>
           <Icon d={FOLDER} />
           <span>Browse folders…</span>
         </button>
@@ -1105,6 +1134,12 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   const showWorking = meta.status === "running" && !(lastItem?.kind === "assistant" && lastItem.streaming);
   // Files go to the session's own host, through the hub for a remote one.
   const uploadTarget = useMemo<UploadTarget>(() => ({ sessionId: meta.id }), [meta.id]);
+  const [loggingIn, setLoggingIn] = useState(false);
+  // The engines' own /login cannot run inside a session; the app's does it.
+  const submit = (text: string, attachments: Attachment[]) => {
+    if (/^\/login\s*$/.test(text.trim()) && !attachments.length) setLoggingIn(true);
+    else actions.send(meta.id, text, attachments.map((a) => a.id));
+  };
   const loadAttachment = (a: Attachment) => actions.attachmentUrl(meta.id, a);
 
   return (
@@ -1158,6 +1193,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
         </div>
         <div className="dock">
           {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
+          {online && <EngineNotice state={state} host={host} engine={meta.engine} onLogin={() => setLoggingIn(true)} />}
+          {loggingIn && <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} onClose={() => setLoggingIn(false)} />}
           <Composer
             placeholder={online ? "Reply" : "Offline"}
             rows={1}
@@ -1165,7 +1202,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             appendFor={meta.id}
             target={uploadTarget}
             upload={actions.upload}
-            onSubmit={(text, attachments) => actions.send(meta.id, text, attachments.map((a) => a.id))}
+            onSubmit={submit}
           >
             <ModelPicker
               models={models}
@@ -1614,7 +1651,172 @@ function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode; 
   return { title: err || "Not connected." };
 }
 
-function HostCard({ state, id, onRemove, onInstall }: { state: State; id: string; onRemove?(): void; onInstall?(): void }) {
+/** An engine that cannot run here yet: not installed, or not logged in. */
+function EngineNotice({ state, host, engine, onLogin }: { state: State; host: string; engine: Engine; onLogin(): void }) {
+  const st = state.engines[host]?.[engine];
+  if (!st || (st.installed && st.loggedIn !== false)) return null;
+  const machine = hostName(state, host);
+  return (
+    <div className="engine-notice" role="status">
+      <span className="dot host-dot-busy" aria-hidden="true" />
+      {st.installed ? (
+        <>
+          <span>
+            {ENGINE_LABEL[engine]} isn't logged in on {machine}.
+          </span>
+          <span className="spacer" />
+          <button className="btn-primary" onClick={onLogin}>
+            Log in
+          </button>
+        </>
+      ) : (
+        <span>
+          {ENGINE_LABEL[engine]} isn't installed on {machine}. Install it there with <code>{ENGINE_INSTALL[engine]}</code>.
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Runs an engine's login on a host. Codex: open a link and enter a code
+ *  there. Claude Code: open a link, sign in, paste the code it shows here. */
+function LoginDialog({ state, actions, host, engine, onClose }: { state: State; actions: Actions; host: string; engine: Engine; onClose(): void }) {
+  const current = state.logins[loginKey(host, engine)];
+  // Whatever was there before this dialog opened belongs to an older login.
+  const before = useRef(current);
+  const login = current === before.current ? undefined : current;
+  const [code, setCode] = useState("");
+  const [copied, setCopied] = useState(false);
+  const machine = hostName(state, host);
+  const finished = login?.state === "done";
+  useEffect(() => {
+    actions.login(host, engine);
+  }, []);
+  useEffect(() => {
+    if (!finished) return;
+    const timer = setTimeout(onClose, 1500);
+    return () => clearTimeout(timer);
+  }, [finished]);
+  const close = () => {
+    if (!finished && login?.state !== "failed") actions.loginCancel(host, engine);
+    onClose();
+  };
+  useEscape(true, close);
+  const retry = () => {
+    before.current = state.logins[loginKey(host, engine)];
+    setCode("");
+    actions.login(host, engine);
+  };
+  const copy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* the code stays selectable */
+    }
+  };
+
+  let body: ReactNode;
+  if (!login || login.state === "starting" || login.state === "cancelled") {
+    body = <p className="muted">Starting the login on {machine}…</p>;
+  } else if (login.state === "code") {
+    body = (
+      <>
+        <ol className="login-steps">
+          <li>
+            Open{" "}
+            <a href={login.url} target="_blank" rel="noreferrer">
+              {login.url}
+            </a>{" "}
+            and sign in with your ChatGPT account.
+          </li>
+          <li>Enter this code:</li>
+        </ol>
+        <div className="login-code">
+          <code>{login.code}</code>
+          <button className="btn" onClick={() => copy(login.code ?? "")}>
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+        <p className="muted small">This closes by itself once you've entered the code. It expires after 15 minutes.</p>
+      </>
+    );
+  } else if (login.state === "url" || login.state === "checking") {
+    const checking = login.state === "checking";
+    body = (
+      <>
+        <ol className="login-steps">
+          <li>
+            <a className="btn-primary login-open" href={login.url} target="_blank" rel="noreferrer">
+              Open the sign-in page
+            </a>
+          </li>
+          <li>Sign in with your Claude account and copy the code it shows.</li>
+          <li>Paste it here:</li>
+        </ol>
+        <form
+          className="login-code"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (code.trim()) actions.loginCode(host, engine, code.trim());
+          }}
+        >
+          <input
+            autoFocus
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Code from the sign-in page"
+            spellCheck={false}
+            autoComplete="off"
+            disabled={checking}
+            aria-label="Code from the sign-in page"
+          />
+          <button className="btn-primary" type="submit" disabled={checking || !code.trim()}>
+            {checking ? "Checking…" : "Log in"}
+          </button>
+        </form>
+      </>
+    );
+  } else if (login.state === "done") {
+    body = (
+      <p className="login-done">
+        <Icon d={CHECK} /> {ENGINE_LABEL[engine]} is logged in on {machine}.
+      </p>
+    );
+  } else {
+    body = (
+      <>
+        <p className="bad">{login.error || "The login did not finish."}</p>
+        <div className="row">
+          <button className="btn-primary" onClick={retry}>
+            Try again
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-label={`Log in to ${ENGINE_LABEL[engine]}`}>
+        <header className="modal-head">
+          <h2>
+            Log in to {ENGINE_LABEL[engine]} on {machine}
+          </h2>
+          <span className="spacer" />
+          <button className="btn-icon" aria-label="Close" onClick={close}>
+            <Icon d={CLOSE} size={14} />
+          </button>
+        </header>
+        {body}
+      </div>
+    </div>
+  );
+}
+
+function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void }) {
+  const { state, id, onRemove, onInstall, onLogin } = props;
   const install = state.installs[id];
   const entry = state.hosts.find((h) => h.id === id);
   const status = hostState(state, id);
@@ -1678,7 +1880,11 @@ function HostCard({ state, id, onRemove, onInstall }: { state: State; id: string
         </>
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
-      {install?.ok && !install.running && <EngineSummary install={install} machine={name} />}
+      {host && state.engines[id] ? (
+        <Engines engines={state.engines[id]} onLogin={onLogin} />
+      ) : (
+        install?.ok && !install.running && <EngineSummary install={install} machine={name} />
+      )}
       {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
     </section>
   );
@@ -1727,6 +1933,42 @@ function EngineSummary({ install, machine }: { install: State["installs"][string
         </div>
       ))}
       {notReady.length > 0 && <div className="muted small">Run the command on {machine} once, over SSH. Sessions with that engine work after that.</div>}
+    </div>
+  );
+}
+
+/** Each engine on a host and whether it is ready, with a login for one that is not. */
+function Engines({ engines, onLogin }: { engines: EngineStates; onLogin?(engine: Engine): void }) {
+  return (
+    <div className="engines">
+      {(["claude", "codex"] as Engine[]).map((engine) => {
+        const st = engines[engine];
+        if (!st) return null;
+        const ready = st.installed && st.loggedIn === true;
+        return (
+          <div key={engine} className="engine-row">
+            <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
+            <span>{ENGINE_LABEL[engine]}</span>
+            <span className="muted small">
+              {!st.installed
+                ? "not installed"
+                : st.loggedIn === true
+                  ? st.account
+                    ? `logged in as ${st.account}`
+                    : "logged in"
+                  : st.loggedIn === false
+                    ? "not logged in"
+                    : st.error || "status unknown"}
+            </span>
+            {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
+            {st.installed && st.loggedIn !== true && onLogin && (
+              <button className="btn engine-login" onClick={() => onLogin(engine)}>
+                Log in
+              </button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1856,6 +2098,7 @@ function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount
 
 function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [adding, setAdding] = useState(false);
+  const [login, setLogin] = useState<{ host: string; engine: Engine } | null>(null);
   return (
     <div className="hosts">
       <header className="bar">
@@ -1871,7 +2114,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
       <div className="scroll">
         <div className="hosts-inner">
           {adding && <AddHost actions={actions} errorCount={state.errorCount} onDone={() => setAdding(false)} />}
-          <HostCard state={state} id="local" />
+          <HostCard state={state} id="local" onLogin={(engine) => setLogin({ host: "local", engine })} />
           {state.hosts.map((h) => (
             <HostCard
               key={h.id}
@@ -1879,8 +2122,10 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
               id={h.id}
               onRemove={() => actions.removeHost(h.id)}
               onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
+              onLogin={(engine) => setLogin({ host: h.id, engine })}
             />
           ))}
+          {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} onClose={() => setLogin(null)} />}
           {state.hosts.length === 0 && !adding && (
             <button className="host-empty" onClick={() => setAdding(true)}>
               <Icon d={CLOUD} size={16} />

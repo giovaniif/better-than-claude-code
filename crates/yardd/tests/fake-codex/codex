@@ -126,6 +126,21 @@ async function handle(msg) {
           secondary: null,
         },
       });
+    // Logged out until a device-code login completes; the state outlives a restart.
+    case "account/read": {
+      const loggedIn = dir && existsSync(`${dir}/codex-logged-in`);
+      return reply({ account: loggedIn ? { type: "chatgpt", email: "me@example.com", planType: "pro" } : null, requiresOpenaiAuth: true });
+    }
+    case "account/login/start": {
+      if (p.type !== "chatgptDeviceCode") return fail(`fake codex: login type ${p.type}`);
+      const loginId = newId("login");
+      reply({ type: "chatgptDeviceCode", loginId, userCode: "FAKE-1234", verificationUrl: "https://auth.openai.com/codex/device" });
+      setTimeout(() => {
+        if (dir) writeFileSync(`${dir}/codex-logged-in`, "");
+        notify("account/login/completed", { loginId, success: true, error: null });
+      }, 300);
+      return;
+    }
     case "thread/start": {
       const tid = newId("thread");
       threads.set(tid, { cwd: p.cwd ?? "" });

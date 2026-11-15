@@ -1,9 +1,35 @@
 #!/bin/sh
 # Shadows the real `claude` (and the Claude sidecar, through YARD_SIDECAR) in
 # yardd's integration tests, so a test can never start a Claude turn. Any run
-# is recorded, and it always fails.
+# is recorded. `auth status` and `auth login` act out a login: the code
+# `good-code` logs in (a file in FAKE_CODEX_DIR); anything else is refused.
+# Everything else fails.
+state="${FAKE_CODEX_DIR:-/nonexistent}/claude-logged-in"
 if [ -n "$FAKE_CODEX_DIR" ]; then
   echo "claude pid=$$ args=$*" >> "$FAKE_CODEX_DIR/claude.log"
+fi
+if [ "$1 $2" = "auth status" ]; then
+  if [ -f "$state" ]; then
+    echo '{"loggedIn": true, "authMethod": "claude.ai", "email": "me@example.com"}'
+    exit 0
+  fi
+  echo '{"loggedIn": false, "authMethod": "none"}'
+  exit 1
+fi
+if [ "$1 $2" = "auth login" ]; then
+  printf 'Opening browser to sign in\342\200\246\r\n'
+  printf "If the browser didn't open, visit: \033]8;;https://claude.com/cai/oauth/authorize?code=true&state=fake\007https://claude.com/cai/oauth/authorize?code=true&state=fake\033]8;;\007\r\n"
+  while :; do
+    printf 'Paste code here if prompted > '
+    IFS= read -r code || exit 1
+    code="$(printf %s "$code" | tr -d '\r')"
+    if [ "$code" = good-code ]; then
+      touch "$state"
+      printf '\r\nLogin successful.\r\n'
+      exit 0
+    fi
+    printf 'Invalid code. Please make sure the full code was copied.\r\n'
+  done
 fi
 echo "fake claude: Claude turns are not allowed in tests" >&2
 exit 1

@@ -9,7 +9,7 @@ Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.
 ## Decided
 
 - Tauri shell. Rust core, web UI. Personal first.
-- The app drives the installed `claude` and `codex` CLIs and turns their event streams into one UI. It never holds or offers a login.
+- The app drives the installed `claude` and `codex` CLIs and turns their event streams into one UI. It never holds a login: credentials stay where each CLI keeps them. It can start a CLI's own login flow on a host (see Engine logins).
 - Chat UI in the Claude Code message style, not a terminal. The terminal is a separate pane.
 - White, minimal theme. One flat session list. A cloud icon marks sessions on a remote host.
 - New session is a full page with a centered prompt box, not a dialog.
@@ -125,6 +125,13 @@ A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, 
 - The local host's name is `YARD_HOST_NAME`, else "This Mac" on macOS and the hostname elsewhere. A remote host may not take that name.
 - `.github/workflows/docker.yml` pushes `ghcr.io/giovaniif/switchyard` (`latest` from main, and the short sha).
 
+## Engine logins
+
+- `engines.status` (per host) reports each engine as installed or not, and logged in or not: `claude auth status` (JSON) and Codex's `account/read`. The UI asks once per host snapshot. A logged-out engine shows a notice on the new-session page and in its sessions, with **Log in**; typing `/login` in a session opens the same dialog. The Hosts page lists both engines per host.
+- Codex: `account/login/start` with `chatgptDeviceCode` on the shared app-server returns a link and a code; `account/login/completed` ends it, then models and limits reload. No terminal involved.
+- Claude Code: `claude auth login` runs in a PTY (wide, so the link never wraps). yardd strips the escapes, sends the sign-in link to the UI, and types the code the user pastes back. Exit 0 is success; "Invalid code" ends it as failed. Idle Claude sessions then get a fresh sidecar with their next message, since one started logged out keeps failing.
+- Both go through the CLIs' own flows and files; yardd never sees a token. See Policy and cost for the Claude side.
+
 ## Worktrees
 
 Every new session in a git repository with at least one commit gets its own branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default); there is no switch for it. A folder outside a repository, or in one with no commits, runs in place, and the session says so in a note. Both engines share this layout.
@@ -184,6 +191,7 @@ The right pane has a Pull request tab.
 ## Policy and cost
 
 - Anthropic's docs say products built on the Agent SDK should use API keys and must not offer claude.ai login. A personal tool that runs my own logged-in CLI is not addressed. Keep it personal; ask Anthropic before any public release.
+- The in-app Claude login (Engine logins) runs the CLI's own `claude auth login`, but it is still a claude.ai login offered from Switchyard's UI. Fine for my own hosts; it is the first thing to settle with Anthropic, or to switch to API keys, before others are pointed at it.
 - Unconfirmed: whether Agent SDK usage on a subscription is metered separately from interactive use. Check the Usage page.
 - The SDK loads my full Claude Code setup, including every MCP tool. A two-turn test cost $0.24 at API rates. Offer a trimmed profile.
 

@@ -648,7 +648,10 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
 pub fn route(msg: &Value) -> Option<String> {
     // Ops that name no session say which host they are for. An upload names
     // either: a host from the new-session page, a session from a reply box.
-    if ["session.create", "git.branches", "fs.dirs", "attach.put"].iter().any(|op| msg["op"] == *op) {
+    if ["session.create", "git.branches", "fs.dirs", "attach.put", "engines.status", "login.start", "login.code", "login.cancel"]
+        .iter()
+        .any(|op| msg["op"] == *op)
+    {
         let host = msg["host"].as_str().filter(|h| !h.is_empty() && *h != "local").map(str::to_string);
         if host.is_some() || msg["op"] != "attach.put" {
             return host;
@@ -726,6 +729,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
                 "usage": msg["usage"].take(),
                 "host": stats,
                 "home": msg["home"].take(),
+                "workspace": msg["workspace"].take(),
             });
         }
         // A remote's own remotes are not ours to show.
@@ -735,7 +739,9 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             rewrite_stats(host, name, &mut msg["host"]);
             msg["hostId"] = json!(host);
         }
-        "models" | "usage" | "error" | "git.branches" | "fs.dirs" | "attach.stored" => msg["hostId"] = json!(host),
+        "models" | "usage" | "error" | "git.branches" | "fs.dirs" | "attach.stored" | "engines" | "login" => {
+            msg["hostId"] = json!(host)
+        }
         "term.list" => {
             prefix(host, &mut msg, "sessionId");
             if let Some(terms) = msg["terms"].as_array_mut() {

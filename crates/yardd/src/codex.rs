@@ -203,6 +203,10 @@ impl Client {
             app.set_usage("codex", p["rateLimits"].clone());
             return;
         }
+        if method == "account/login/completed" {
+            crate::login::codex_completed(app, p);
+            return;
+        }
         let Some(sid) = self.session_for(p) else { return };
         match method {
             "turn/started" => set_turn(app, &sid, p["turn"]["id"].as_str()),

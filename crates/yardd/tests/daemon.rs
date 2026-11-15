@@ -964,3 +964,42 @@ async fn permission_modes_reach_codex_and_switch_mid_session() {
     let err = c.try_create(&sb.folder("other"), "x", json!({ "permission": "yolo" })).await.unwrap_err();
     assert!(err.contains("unknown permission mode"), "{err}");
 }
+
+#[tokio::test]
+async fn engines_log_in_from_the_app() {
+    let sb = Sandbox::new("login");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    c.send(json!({ "op": "engines.status" })).await;
+    let before = c.wait_for("engine status", |m| m["op"] == "engines").await;
+    assert_eq!(before["engines"]["claude"]["loggedIn"], false, "{before}");
+    assert_eq!(before["engines"]["codex"]["loggedIn"], false, "{before}");
+
+    // Codex: a link and a code, then the app-server says it is done.
+    let mark = c.log.len();
+    c.send(json!({ "op": "login.start", "engine": "codex" })).await;
+    let code = c.wait_after(mark, "codex device code", |m| m["op"] == "login" && m["engine"] == "codex" && m["state"] == "code").await;
+    assert_eq!(code["code"], "FAKE-1234");
+    assert_eq!(code["url"], "https://auth.openai.com/codex/device");
+    c.wait_after(mark, "codex login done", |m| m["op"] == "login" && m["engine"] == "codex" && m["state"] == "done").await;
+    c.wait_after(mark, "codex logged in", |m| m["op"] == "engines" && m["engines"]["codex"]["loggedIn"] == true).await;
+
+    // Claude: the sign-in link is pulled out of the CLI's output, a wrong
+    // code is refused, the right one logs in.
+    let mark = c.log.len();
+    c.send(json!({ "op": "login.start", "engine": "claude" })).await;
+    let url = c.wait_after(mark, "claude link", |m| m["op"] == "login" && m["engine"] == "claude" && m["state"] == "url").await;
+    assert_eq!(url["url"], "https://claude.com/cai/oauth/authorize?code=true&state=fake");
+    c.send(json!({ "op": "login.code", "engine": "claude", "code": "wrong" })).await;
+    let failed = c.wait_after(mark, "wrong code", |m| m["op"] == "login" && m["engine"] == "claude" && m["state"] == "failed").await;
+    assert!(failed["error"].as_str().unwrap().contains("not accepted"), "{failed}");
+
+    let mark = c.log.len();
+    c.send(json!({ "op": "login.start", "engine": "claude" })).await;
+    c.wait_after(mark, "claude link again", |m| m["op"] == "login" && m["engine"] == "claude" && m["state"] == "url").await;
+    c.send(json!({ "op": "login.code", "engine": "claude", "code": "good-code" })).await;
+    c.wait_after(mark, "claude login done", |m| m["op"] == "login" && m["engine"] == "claude" && m["state"] == "done").await;
+    let after = c.wait_after(mark, "claude logged in", |m| m["op"] == "engines" && m["engines"]["claude"]["loggedIn"] == true).await;
+    assert_eq!(after["engines"]["claude"]["account"], "me@example.com");
+}

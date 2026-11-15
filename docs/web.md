@@ -9,11 +9,10 @@ The same Switchyard as a web page, in one container: yardd, the UI, the compiled
 1. New resource > **Docker Compose**: either from the public repository `https://github.com/giovaniif/better-than-claude-code` (it picks up `docker-compose.yml` and can build the image itself), or **Empty Docker Compose** with the contents of [docker-compose.yml](docker-compose.yml) pasted (that pulls `ghcr.io/giovaniif/switchyard:latest`).
 2. Set the service's domain to `https://<name>:47717`, for example `https://yard.example.com:47717`. The `:47717` tells Coolify's proxy which container port to route to; the page itself is served on 443.
 3. Set `YARD_ALLOW_ORIGIN` to the URL you will open, without the port: `https://yard.example.com`. The WebSocket refuses every other browser origin, so the page shows "disconnected" until this matches. Several URLs can be listed, comma separated.
-4. Optional: `YARD_HOST_NAME` (the name the UI shows for the machine, default `switchyard`), `GH_TOKEN` (for the PR pane and `git` over HTTPS) and `CLAUDE_CODE_OAUTH_TOKEN` (see below).
-5. Deploy, open the URL, and log the engines in once from a session's terminal (they are saved in the home volume):
-   - Codex: `codex login --device-auth`.
-   - Claude: run `claude` and log in, or run `claude setup-token` anywhere and put the token in `CLAUDE_CODE_OAUTH_TOKEN`.
-   - GitHub: `gh auth login`, unless `GH_TOKEN` is set. Also `git config --global user.name ...` and `user.email ...` for commits.
+4. Set `PROJECTS` to the folder on the server that holds your projects, such as `/home/me/code`. It is mounted at the same path in the container, and the folder picker opens on it. Files there must be writable by uid 1000, the container's user.
+5. Optional: `YARD_HOST_NAME` (the name the UI shows for the machine, default `switchyard`), `GH_TOKEN` (for the PR pane and `git` over HTTPS) and `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`, instead of logging in from the app).
+6. Deploy and open the URL. The new-session page says when an engine isn't logged in; click **Log in** (or type `/login` in a session). Codex shows a link and a code to enter there; Claude Code shows a sign-in link whose page gives back a code to paste. The logins are saved in the home volume. The Hosts page shows each engine's state too.
+7. For the PR pane and pushing: `gh auth login` in a session's terminal, unless `GH_TOKEN` is set, and `git config --global user.name ...` and `user.email ...` for commits.
 
 ## With Docker Compose
 
@@ -27,8 +26,8 @@ Uncomment the `ports:` lines in `docker-compose.yml` first. They publish on `127
 
 The container sees only its own disk. Projects get in one of three ways:
 
-- The `/workspace` volume: `git clone` into it from a session's terminal, then pick it with the folder button on the new-session page (the picker starts at the home folder, `/home/yard`).
-- A bind mount of a folder on the server: replace the `switchyard-workspace:/workspace` line with, say, `/srv/projects:/workspace`. Files there must be writable by uid 1000, the container's user.
+- `PROJECTS`: a folder on the server, bind-mounted at the same path. The usual choice, and what the folder picker lists first.
+- The `/workspace` volume, when `PROJECTS` is unset: `git clone` into it from a session's terminal.
 - Anywhere under `/home/yard`, which is also a volume.
 
 Worktrees and sessions live in `/home/yard/.yard`. Both volumes survive redeploys; deleting them loses the logins and sessions.
