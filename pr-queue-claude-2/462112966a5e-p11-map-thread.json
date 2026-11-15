@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-15T19:51:51.653Z",
+      "counts": {
+        "pass": 12
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 4730
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 5003
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 4547
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5073
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4331
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 4691
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "pass",
+          "ms": 6829
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 2930
+        },
+        {
+          "label": "queue-a-message-while-working",
+          "status": "pass",
+          "ms": 10256
+        },
+        {
+          "label": "steer-a-running-turn",
+          "status": "pass",
+          "ms": 6181
+        },
+        {
+          "label": "stop-returns-the-queue",
+          "status": "pass",
+          "ms": 5023
+        },
+        {
+          "label": "edit-a-queued-message",
+          "status": "pass",
+          "ms": 7347
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,31 @@
+{
+  "label": "pr-queue-claude",
+  "commit": "d16f17dfdebf7e4b0687936e1d9ab88b35ff6732",
+  "urls": {
+    "p7-returned-after-stop-desktop.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/f62549e38a06-p7-returned-after-stop-desktop.png",
+    "p12-map-stop.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/7a43396db15f-p12-map-stop.json",
+    "p1-fail-desktop-step2.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/b79f47d7653d-p1-fail-desktop-step2.png",
+    "p3-cmd.log": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/93e4f1066186-p3-cmd.log",
+    "p11-map-thread.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/462112966a5e-p11-map-thread.json",
+    "p14-flaky-head-run.log": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/0c6a71b4b1ee-p14-flaky-head-run.log",
+    "p5-sent-mobile.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/7b7e5544728c-p5-sent-mobile.png",
+    "p2-map-thread.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/97821576e887-p2-map-thread.json",
+    "p1-fail-mobile-step6.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/9dab52082021-p1-fail-mobile-step6.png",
+    "p1-drive.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/50b48553fdc3-p1-drive.json",
+    "p7-queued-before-stop-desktop.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/8efa6da163d3-p7-queued-before-stop-desktop.png",
+    "p6-drive.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/b98626d994f2-p6-drive.json",
+    "p9-cmd.log": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/0c6a71b4b1ee-p9-cmd.log",
+    "p5-drive.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/1a27636fc01a-p5-drive.json",
+    "p6-sent-desktop.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/84da1e4629fa-p6-sent-desktop.png",
+    "p13-map-approvals.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/18c56a25be7f-p13-map-approvals.json",
+    "p6-queued-desktop.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/14bf15c9fd6e-p6-queued-desktop.png",
+    "p5-queued-mobile.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/6d5a0f8c74e0-p5-queued-mobile.png",
+    "bundle.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/b3e6e93d2827-bundle.json",
+    "p13-cmd.log": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/271333249144-p13-cmd.log",
+    "p10-design.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/e42290ebe97d-p10-design.json",
+    "p8-real-claude-history.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/3bd8d2d262fd-p8-real-claude-history.json",
+    "p1-queued-before-stop-mobile.png": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/2274520ece86-p1-queued-before-stop-mobile.png",
+    "p7-drive.json": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/f96f1101e255-p7-drive.json",
+    "p4-cmd.log": "https://raw.githubusercontent.com/giovaniif/switchyard/d16f17dfdebf7e4b0687936e1d9ab88b35ff6732/pr-queue-claude/f054d53a4d64-p4-cmd.log"
+  }
+}

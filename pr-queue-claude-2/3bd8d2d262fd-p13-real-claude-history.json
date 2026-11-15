@@ -1,0 +1,211 @@
+{
+  "command": "api",
+  "ok": true,
+  "sent": {
+    "op": "session.open",
+    "sessionId": "s1a1e0bfbca81"
+  },
+  "reply": {
+    "events": [
+      {
+        "text": "Use the Bash tool to run `sleep 5; echo one`, then use the Bash tool again to run `echo two`. Then reply with one short sentence.",
+        "type": "user_message"
+      },
+      {
+        "at": 1794772024489,
+        "type": "turn_started"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "I'm checking what",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " the user w",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "ants: run",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " s",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "leep 5, then echo",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " \"",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "one\", then echo \"two\",",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " then",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " re",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "ply with one",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " short sentence. They said",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " \"then,\"",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " so I",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "'ll ke",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "ep it",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " in that",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " order. My",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " first",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " move",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " is just",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": " the sleep call.",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "\n\n",
+        "type": "reasoning_delta"
+      },
+      {
+        "itemId": "think-76bfee9b-1",
+        "text": "I'm checking what the user wants: run sleep 5, then echo \"one\", then echo \"two\", then reply with one short sentence. They said \"then,\" so I'll keep it in that order. My first move is just the sleep call.\n\n",
+        "type": "reasoning"
+      },
+      {
+        "detail": "sleep 5; echo one",
+        "itemId": "toolu_01MDAzyNjcrcnjKVjwqLRRG5",
+        "kind": "command",
+        "title": "Ran",
+        "type": "tool_started"
+      },
+      {
+        "itemId": "toolu_01MDAzyNjcrcnjKVjwqLRRG5",
+        "ok": true,
+        "output": "one",
+        "type": "tool_completed"
+      },
+      {
+        "steered": true,
+        "text": "Also: end your final reply with the word BANANA.",
+        "type": "user_message"
+      },
+      {
+        "detail": "echo two",
+        "itemId": "toolu_01S68ZUtTFFRbmkNkN372te1",
+        "kind": "command",
+        "title": "Ran",
+        "type": "tool_started"
+      },
+      {
+        "itemId": "toolu_01S68ZUtTFFRbmkNkN372te1",
+        "ok": true,
+        "output": "two",
+        "type": "tool_completed"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": "Both commands ran:",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": " the first print",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": "ed `one` after the",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": " 5-second sleep,",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": " and the second printed `two`",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": ". BANANA",
+        "type": "assistant_delta"
+      },
+      {
+        "itemId": "text-76bfee9b-2",
+        "text": "Both commands ran: the first printed `one` after the 5-second sleep, and the second printed `two`. BANANA",
+        "type": "assistant_message"
+      },
+      {
+        "at": 1794772038342,
+        "status": "completed",
+        "type": "turn_completed"
+      }
+    ],
+    "op": "history",
+    "sessionId": "s1a1e0bfbca81"
+  },
+  "saved": {},
+  "received": 1,
+  "problems": []
+}
