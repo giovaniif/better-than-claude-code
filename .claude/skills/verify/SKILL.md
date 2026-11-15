@@ -41,7 +41,8 @@ PR #4242 from the fake gh), `sid_think` (thinking), `sid_fail` (engine error),
 Prompt markers for the fake Codex: `[cmd]` approval, `[edit]` file change,
 `[slow]` runs until Stop, `[stuck]` ignores Stop, `[fail]` error, `[think]`
 reasoning; anything else echoes `Echo: <prompt>`. The fake Claude sidecar
-knows `[die]` and `[stuck]`. `iso up --logged-out` starts both engines logged
+knows `[die]`, `[stuck]`, `[steps]` and `[subagent]` (a Task call with a nested
+subagent, and a `sleep 30` left running under the sidecar). `iso up --logged-out` starts both engines logged
 out; `--pressure` makes the queue hold new sessions.
 
 A dev server that does not watch files serves stale code: after changing

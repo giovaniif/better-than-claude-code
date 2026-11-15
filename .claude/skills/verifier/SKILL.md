@@ -71,9 +71,17 @@ deletion, anything in CLAUDE.md's hard rules.
   edge state you checked yourself).
 - **FAIL**: the fix does not work, the evidence does not verify, tests fail,
   or the diff does more than it says. Say exactly what failed and how to see it.
-- **HUMAN**: correct as far as you can tell but needs a person: product or
-  design judgment, irreversible effects, security boundary, a flow the CLI
-  cannot drive (`manual` recipes), or you are not sure.
+- **HUMAN**: only when a person must judge it: irreversible effects
+  (installers, releases, the database schema, secrets), the security
+  boundary (binding, Origin checks), deleting user data, changes to the
+  rules themselves (CI, the gate, skills), a flow the CLI cannot drive
+  that the change depends on, or real doubt that it is correct.
+
+The owner merges on PASS and PASS+NOTES without reading the PR (2026-11-15).
+Design and product choices that are reasonable and match the claim (order,
+copy, defaults, layout, what a setting remembers) are **not** a reason for
+HUMAN: list them under notes and give PASS+NOTES. Fix-worthy problems are
+FAIL, not HUMAN.
 
 ```sh
 # Copy the bundle you fetched in step 3 into the verdict: PASS re-verifies it at this checkout.

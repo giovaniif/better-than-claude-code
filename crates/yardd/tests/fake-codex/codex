@@ -20,6 +20,11 @@
 //           steered in meanwhile (turn/steer) is appended as " | steered: …"
 //   other   a plain streamed reply: "Echo: <prompt>"
 //
+// CODEX_HOME (set for an extra account) moves the login state and the thread
+// list into that folder, makes the account's email `<folder name>@example.com`
+// and its usage 77% (12% otherwise), and is named on the `start` log line and
+// in every turn-inputs.jsonl row, so a test can tell which account ran a turn.
+//
 // FAKE_CODEX_DIR (set by the tests) gets `codex.log`, one line per start and
 // per request, `turn-inputs.jsonl` with the input items of every turn/start,
 // and `threads.json`, so a restarted fake can resume a thread the previous
@@ -32,17 +37,20 @@ const log = (line) => {
   if (dir) appendFileSync(`${dir}/codex.log`, `${line}\n`);
 };
 
-log(`start pid=${process.pid} args=${process.argv.slice(2).join(" ")}`);
+const home = process.env.CODEX_HOME || "";
+const state = home || dir;
+log(`start pid=${process.pid} args=${process.argv.slice(2).join(" ")} home=${home}`);
 if (process.argv[2] !== "app-server") {
   console.error("fake codex: only `app-server` is implemented");
   process.exit(2);
 }
 
-const threadsFile = dir ? `${dir}/threads.json` : null;
+const threadsFile = state ? `${state}/threads.json` : null;
 const threads = new Map(
   threadsFile && existsSync(threadsFile) ? JSON.parse(readFileSync(threadsFile, "utf8")) : [],
 );
 const saveThreads = () => {
+  if (home) mkdirSync(home, { recursive: true });
   if (threadsFile) writeFileSync(threadsFile, JSON.stringify([...threads]));
 };
 
@@ -132,21 +140,26 @@ async function handle(msg) {
       return reply({
         rateLimits: {
           limitId: "codex",
-          primary: { usedPercent: 12, windowDurationMins: 300, resetsAt: null },
-          secondary: null,
+          // Reset times are epoch seconds, as the real app-server sends them.
+          primary: { usedPercent: home ? 77 : 12, windowDurationMins: 300, resetsAt: Math.floor(Date.now() / 1000) + 2 * 3600 + 10 * 60 + 30 },
+          secondary: { usedPercent: 34, windowDurationMins: 10080, resetsAt: Math.floor(Date.now() / 1000) + 3 * 86400 + 4 * 3600 + 30 },
         },
       });
     // Logged out until a device-code login completes; the state outlives a restart.
     case "account/read": {
-      const loggedIn = dir && existsSync(`${dir}/codex-logged-in`);
-      return reply({ account: loggedIn ? { type: "chatgpt", email: "me@example.com", planType: "pro" } : null, requiresOpenaiAuth: true });
+      const loggedIn = state && existsSync(`${state}/codex-logged-in`);
+      const email = home ? `${home.split("/").filter(Boolean).pop()}@example.com` : "me@example.com";
+      return reply({ account: loggedIn ? { type: "chatgpt", email, planType: "pro" } : null, requiresOpenaiAuth: true });
     }
     case "account/login/start": {
       if (p.type !== "chatgptDeviceCode") return fail(`fake codex: login type ${p.type}`);
       const loginId = newId("login");
       reply({ type: "chatgptDeviceCode", loginId, userCode: "FAKE-1234", verificationUrl: "https://auth.openai.com/codex/device" });
       setTimeout(() => {
-        if (dir) writeFileSync(`${dir}/codex-logged-in`, "");
+        if (state) {
+          if (home) mkdirSync(home, { recursive: true });
+          writeFileSync(`${state}/codex-logged-in`, "");
+        }
         notify("account/login/completed", { loginId, success: true, error: null });
       }, 300);
       return;
@@ -165,7 +178,7 @@ async function handle(msg) {
       const thread = threads.get(p.threadId);
       if (!thread) return fail(`no such thread: ${p.threadId}`);
       // Every input item, so tests can check what reached the engine.
-      if (dir) appendFileSync(`${dir}/turn-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, input: p.input })}\n`);
+      if (dir) appendFileSync(`${dir}/turn-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, input: p.input, home })}\n`);
       const text = (p.input ?? []).filter((i) => i.type === "text").map((i) => i.text).join("\n");
       const turn = { id: newId("turn"), items: [], status: "inProgress", error: null };
       // Registered before the reply, so an interrupt that arrives before the

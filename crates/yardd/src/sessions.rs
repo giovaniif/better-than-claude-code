@@ -142,6 +142,11 @@ async fn start_turn(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]
     }
 }
 
+/// The user answered an approval. Engines call this before passing the answer on.
+pub fn approval_resolved(app: &App, sid: &str, request_id: &str, decision: &str) {
+    app.emit(sid, json!({ "type": "approval_resolved", "requestId": request_id, "decision": decision }));
+}
+
 pub fn fail_turn(app: &Arc<App>, sid: &str, error: &anyhow::Error) {
     app.emit(sid, json!({ "type": "error", "message": format!("{error:#}") }));
     app.emit(sid, json!({ "type": "turn_completed", "status": "failed" }));

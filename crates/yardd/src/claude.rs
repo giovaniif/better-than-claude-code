@@ -13,13 +13,9 @@ use tokio::{
 
 use crate::state::{App, Backend};
 
-pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
-    spawn(app, sid, None)
-}
-
-/// Start the sidecar. `resume` is a Claude Code session id to continue.
-fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
-    let meta = app.meta(sid).context("no such session")?;
+/// The sidecar as a command, for a session or a one-shot (`sessions`,
+/// `messages <id>`): the bundled binary, else the script from the repo.
+pub fn sidecar_command(app: &App) -> Result<Command> {
     // The desktop app bundles a compiled sidecar and points YARD_SIDECAR at
     // it, so it needs no Bun. Without it, run the script from the repo.
     let mut cmd = match std::env::var_os("YARD_SIDECAR").filter(|s| !s.is_empty()) {
@@ -34,16 +30,27 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             cmd
         }
     };
-    cmd.stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::inherit())
-        .kill_on_drop(true);
     // yardd may itself be started from inside a Claude Code session.
     for (key, _) in std::env::vars() {
         if key == "CLAUDECODE" || key.starts_with("CLAUDE_CODE_") || key.starts_with("CLAUDE_AGENT_SDK") {
             cmd.env_remove(key);
         }
     }
+    Ok(cmd)
+}
+
+pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
+    spawn(app, sid, None)
+}
+
+/// Start the sidecar. `resume` is a Claude Code session id to continue.
+fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
+    let meta = app.meta(sid).context("no such session")?;
+    let mut cmd = sidecar_command(app)?;
+    cmd.stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::inherit())
+        .kill_on_drop(true);
     let mut child = cmd
         .spawn()
         .context("could not start the Claude sidecar (YARD_SIDECAR unset: is `bun` on PATH?)")?;
@@ -213,9 +220,47 @@ pub fn kill(app: &Arc<App>, sid: &str) {
 }
 
 pub fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> Result<()> {
-    line(
-        app,
-        sid,
-        json!({ "type": "permission", "requestId": request_id, "decision": decision }),
-    )
+    // Logged before the sidecar hears the answer: a tool that runs and a turn
+    // that ends right after it must come later in the log, not before it.
+    let tx = {
+        let map = app.sessions.lock().unwrap();
+        match map.get(sid).map(|s| &s.backend) {
+            Some(Backend::Claude { tx, .. }) if !tx.is_closed() => tx.clone(),
+            Some(Backend::Claude { .. }) => bail!("the Claude sidecar is not running"),
+            _ => bail!("session has no Claude sidecar"),
+        }
+    };
+    crate::sessions::approval_resolved(app, sid, request_id, decision);
+    tx.send(json!({ "type": "permission", "requestId": request_id, "decision": decision }).to_string())
+        .map_err(|_| anyhow::anyhow!("the Claude sidecar is not running"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The sidecar may run the tool and end the turn the moment it reads the
+    /// answer, so `approval_resolved` must already be in the log by then. Logged
+    /// after, it set the finished session back to `running` and the next
+    /// message waited in the queue for a turn that never ended.
+    #[test]
+    fn an_answer_is_logged_before_the_sidecar_reads_it() {
+        let dir = std::env::temp_dir().join(format!("yardd-unit-{}-approve", std::process::id()));
+        let (store, _) = crate::store::open(&dir).unwrap();
+        let app = Arc::new(App::new(dir.clone(), 0, store));
+        let sid = app.new_session("claude", "claude-opus-5-5", "high", "/tmp", "t", None);
+        let (tx, mut rx) = mpsc::unbounded_channel();
+        let (stop, _keep) = oneshot::channel();
+        app.sessions.lock().unwrap().get_mut(&sid).unwrap().backend = Backend::Claude { tx, _stop: stop };
+        app.emit(&sid, json!({ "type": "approval_request", "requestId": "r1" }));
+
+        approve(&app, &sid, "r1", "allow").unwrap();
+        // What the sidecar reads, and what the log holds at that moment.
+        let line: Value = serde_json::from_str(&rx.try_recv().unwrap()).unwrap();
+        assert_eq!(line["type"], "permission");
+        let logged: Vec<Value> = app.sessions.lock().unwrap()[&sid].events.iter().map(|e| e["type"].clone()).collect();
+        assert_eq!(logged, [json!("approval_request"), json!("approval_resolved")]);
+        assert_eq!(app.meta(&sid).unwrap().status, "running");
+        let _ = std::fs::remove_dir_all(dir);
+    }
 }
