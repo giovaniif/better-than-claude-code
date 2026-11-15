@@ -8,6 +8,7 @@
 //   [edit]  a file change with a diff
 //   [slow]  streams one chunk, then waits for turn/interrupt
 //   [fail]  the turn fails with an error
+//   [think] a two-part reasoning summary, then a reply
 //   other   a plain streamed reply: "Echo: <prompt>"
 //
 // FAKE_CODEX_DIR (set by the tests) gets `codex.log`, one line per start and
@@ -204,6 +205,19 @@ async function runTurn(threadId, cwd, turn, text) {
 
   if (text.includes("[fail]")) {
     return finish("failed", { message: "fake failure: the model is unavailable", codexErrorInfo: null, additionalDetails: null });
+  }
+
+  if (text.includes("[think]")) {
+    const itemId = newId("reasoning");
+    item("item/started", { type: "reasoning", id: itemId, summary: [], content: [] });
+    notify("item/reasoning/summaryPartAdded", { threadId, turnId, itemId, summaryIndex: 0 });
+    notify("item/reasoning/summaryTextDelta", { threadId, turnId, itemId, summaryIndex: 0, delta: "Reading " });
+    notify("item/reasoning/summaryTextDelta", { threadId, turnId, itemId, summaryIndex: 0, delta: "the tests" });
+    notify("item/reasoning/summaryPartAdded", { threadId, turnId, itemId, summaryIndex: 1 });
+    notify("item/reasoning/summaryTextDelta", { threadId, turnId, itemId, summaryIndex: 1, delta: "Then the fix" });
+    item("item/completed", { type: "reasoning", id: itemId, summary: ["Reading the tests", "Then the fix"], content: [] });
+    say("Thought it through.", ["Thought it through."]);
+    return finish("completed");
   }
 
   if (text.includes("[cmd]")) {

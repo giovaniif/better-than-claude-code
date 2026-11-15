@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import type { Attachment, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { onAppend } from "./compose";
+import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
 const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** Permission modes, as Claude Code names them, and what each means per engine. */
@@ -60,9 +61,13 @@ const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
 
 /* ---------- app shell ---------- */
 
+const SIDEBAR_W = 248;
+const PANE_W = 420;
+
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
+  const [sidebarW, setSidebarW] = useWidth("yard.sidebarWidth", SIDEBAR_W);
   // A file dropped beside the composer would otherwise make the page (or
   // the app's webview) navigate to it.
   useEffect(() => {
@@ -77,8 +82,18 @@ export function App() {
     };
   }, []);
   return (
-    <div className="app">
+    <div className="app" style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
       <Sidebar state={state} actions={actions} />
+      <Resizer
+        width={sidebarW}
+        min={180}
+        max={480}
+        initial={SIDEBAR_W}
+        dir={1}
+        cssVar="--sidebar-w"
+        label="Resize the sessions sidebar"
+        onWidth={setSidebarW}
+      />
       <div className="main">
         {!state.connected && <div className="banner">yardd is not reachable. Reconnecting.</div>}
         {state.error && (
@@ -104,6 +119,93 @@ export function App() {
         )}
       </div>
     </div>
+  );
+}
+
+/** A width the user drags, kept per browser. */
+function useWidth(key: string, initial: number): [number, (w: number) => void] {
+  const [width, setWidth] = useState(() => {
+    try {
+      const saved = Number(localStorage.getItem(key));
+      return saved > 0 ? saved : initial;
+    } catch {
+      return initial;
+    }
+  });
+  const set = (w: number) => {
+    setWidth(w);
+    try {
+      localStorage.setItem(key, String(Math.round(w)));
+    } catch {
+      /* the width just isn't remembered */
+    }
+  };
+  return [width, set];
+}
+
+/** A drag handle on a panel's edge. `dir` is 1 when dragging right widens the
+ *  panel (a left sidebar), -1 when dragging left does (a right pane).
+ *  Double-click restores the default; arrow keys nudge it. */
+function Resizer(props: {
+  width: number;
+  min: number;
+  max: number;
+  initial: number;
+  dir: 1 | -1;
+  /** The CSS variable on the handle's parent that holds the width. */
+  cssVar: string;
+  label: string;
+  onWidth(w: number): void;
+}) {
+  const { width, min, max, dir, onWidth } = props;
+  const clamp = (w: number) => Math.min(Math.max(w, min), Math.max(min, max));
+  const [dragging, setDragging] = useState(false);
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = width;
+    const el = e.currentTarget;
+    el.setPointerCapture(e.pointerId);
+    setDragging(true);
+    // While dragging only the CSS variable moves, so nothing re-renders;
+    // the width is kept on release.
+    let w = startW;
+    const move = (ev: PointerEvent) => {
+      w = clamp(startW + dir * (ev.clientX - startX));
+      el.parentElement?.style.setProperty(props.cssVar, `${w}px`);
+    };
+    const up = () => {
+      onWidth(w);
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+      setDragging(false);
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+  };
+  return (
+    <div
+      className={`resizer resizer-${dir === 1 ? "right" : "left"} ${dragging ? "dragging" : ""}`}
+      role="separator"
+      aria-orientation="vertical"
+      aria-label={props.label}
+      aria-valuenow={Math.round(width)}
+      aria-valuemin={min}
+      aria-valuemax={max}
+      tabIndex={0}
+      onPointerDown={onPointerDown}
+      onDoubleClick={() => onWidth(props.initial)}
+      onKeyDown={(e) => {
+        const step = e.shiftKey ? 48 : 16;
+        if (e.key === "ArrowLeft") onWidth(clamp(width - dir * step));
+        else if (e.key === "ArrowRight") onWidth(clamp(width + dir * step));
+        else return;
+        e.preventDefault();
+      }}
+    />
   );
 }
 
@@ -1130,8 +1232,18 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     last.current = meta.status;
   }, [meta.status]);
 
+  const running = meta.status === "running" || meta.status === "needs_approval";
+  const rows = useMemo(() => layout(items, running), [items, running]);
   const lastItem = items[items.length - 1];
-  const showWorking = meta.status === "running" && !(lastItem?.kind === "assistant" && lastItem.streaming);
+  const working = meta.status === "running" && !(lastItem?.kind === "assistant" && lastItem.streaming);
+  // The open turn's start, from yardd's clock.
+  const turnStart = useMemo(() => {
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i];
+      if (it.kind === "turn") return it.end == null ? (it.start ?? null) : null;
+    }
+    return null;
+  }, [items]);
   // Files go to the session's own host, through the hub for a remote one.
   const uploadTarget = useMemo<UploadTarget>(() => ({ sessionId: meta.id }), [meta.id]);
   const [loggingIn, setLoggingIn] = useState(false);
@@ -1141,6 +1253,16 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     else actions.send(meta.id, text, attachments.map((a) => a.id));
   };
   const loadAttachment = (a: Attachment) => actions.attachmentUrl(meta.id, a);
+  const renderItem = (item: Item) => (
+    <ItemView
+      key={item.key}
+      item={item}
+      queued={meta.status === "queued"}
+      loadAttachment={loadAttachment}
+      onStart={() => actions.startNow(meta.id)}
+      onDecide={(id, d) => actions.approve(meta.id, id, d)}
+    />
+  );
 
   return (
     <div className="session">
@@ -1178,17 +1300,10 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           }}
         >
           <div className="column">
-            {items.map((item) => (
-              <ItemView
-                key={item.key}
-                item={item}
-                queued={meta.status === "queued"}
-                loadAttachment={loadAttachment}
-                onStart={() => actions.startNow(meta.id)}
-                onDecide={(id, d) => actions.approve(meta.id, id, d)}
-              />
+            {rows.map((row) => (
+              <RowView key={row.key} row={row} render={renderItem} />
             ))}
-            {showWorking && <div className="working">Working</div>}
+            {working && <Working since={turnStart} />}
           </div>
         </div>
         <div className="dock">
@@ -1266,6 +1381,138 @@ function UserBubble({ text }: { text: string }) {
   );
 }
 
+/** Seconds since `since` (ms), ticking. The tick writes the DOM directly, so a
+ *  long thread does not re-render every second. */
+function Elapsed({ since }: { since: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const tick = () => {
+      if (ref.current) ref.current.textContent = duration(Date.now() - since);
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [since]);
+  return <span ref={ref} />;
+}
+
+function Working({ since }: { since: number | null }) {
+  return (
+    <div className="working" role="status">
+      <span className="shimmer">Working</span>
+      {since != null && (
+        <span className="muted small">
+          for <Elapsed since={since} />
+        </span>
+      )}
+    </div>
+  );
+}
+
+function RowView({ row, render }: { row: Row; render(item: Item): ReactNode }) {
+  if (row.type === "item") return <>{render(row.item)}</>;
+  if (row.type === "work") return <WorkGroup entries={row.entries} live={row.live} />;
+  return <TurnFold row={row} render={render} />;
+}
+
+/** A finished turn's work, folded above its answer. */
+function TurnFold({ row, render }: { row: Extract<Row, { type: "fold" }>; render(item: Item): ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const verb = row.status === "interrupted" ? "Stopped after" : "Worked for";
+  const label = row.ms != null ? `${verb} ${duration(row.ms)}` : row.status === "interrupted" ? "Stopped" : "Worked";
+  return (
+    <div className="fold">
+      <button className="fold-row" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span>{label}</span>
+        {row.summary && <span className="muted">· {row.summary}</span>}
+        <span className={`tool-chevron ${open ? "open" : ""}`}>
+          <Icon d={CHEVRON_RIGHT} size={12} />
+        </span>
+      </button>
+      {open && (
+        <div className="fold-body">
+          {row.rows.map((r) => (
+            <RowView key={r.key} row={r} render={render} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Tool calls and thinking between messages. While live, only the latest
+ *  step shows; once done, one summary line that opens the list. */
+function WorkGroup({ entries, live }: { entries: WorkItem[]; live: boolean }) {
+  const [open, setOpen] = useState(false);
+  if (entries.length === 1) return <WorkEntry entry={entries[0]} />;
+  if (live && !open) {
+    return (
+      <div className="work">
+        <button className="work-more" onClick={() => setOpen(true)}>
+          {entries.length - 1} earlier {entries.length === 2 ? "step" : "steps"}
+        </button>
+        <WorkEntry entry={entries[entries.length - 1]} />
+      </div>
+    );
+  }
+  return (
+    <div className="work">
+      <button className="work-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span>{summarize(entries) || "Worked"}</span>
+        <span className={`tool-chevron ${open ? "open" : ""}`}>
+          <Icon d={CHEVRON_RIGHT} size={12} />
+        </span>
+      </button>
+      {open && (
+        <div className="work-list">
+          {entries.map((e) => (
+            <WorkEntry key={e.key} entry={e} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WorkEntry({ entry }: { entry: WorkItem }) {
+  const [open, setOpen] = useState(false);
+  if (entry.kind === "reasoning") {
+    const line = thoughtLine(entry.text);
+    return (
+      <div className="tool">
+        <button className="tool-row" aria-expanded={open} onClick={() => setOpen(!open)}>
+          <span className={`tool-chevron ${open ? "open" : ""}`}>
+            <Icon d={CHEVRON_RIGHT} size={12} />
+          </span>
+          <span className={entry.streaming ? "shimmer" : ""}>{entry.streaming ? "Thinking" : "Thought"}</span>
+          {line && <span className="thought-line">{line}</span>}
+        </button>
+        {open && (
+          <div className="thought">
+            <Markdown text={entry.text} />
+          </div>
+        )}
+      </div>
+    );
+  }
+  const expandable = !!entry.output;
+  return (
+    <div className="tool">
+      <button className="tool-row" aria-expanded={open} disabled={!expandable} onClick={() => setOpen(!open)}>
+        <span className={`tool-chevron ${open ? "open" : ""} ${expandable ? "" : "hidden"}`}>
+          <Icon d={CHEVRON_RIGHT} size={12} />
+        </span>
+        {/* Codex titles a command "Ran" from the start; until it ends, it has not. */}
+        <span>{entry.state === "running" && entry.title === "Ran" ? "Running" : entry.title}</span>
+        {entry.detail && <code>{entry.detail}</code>}
+        {entry.state === "running" && <span className="pulse" aria-label="running" />}
+        {entry.state === "failed" && <span className="bad">· failed</span>}
+      </button>
+      {open && entry.output && <pre className="tool-output">{entry.output}</pre>}
+    </div>
+  );
+}
+
 function ItemView(props: {
   item: Item;
   /** The session is still waiting in the queue. */
@@ -1275,7 +1522,6 @@ function ItemView(props: {
   onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
 }) {
   const { item, onDecide } = props;
-  const [open, setOpen] = useState(false);
   switch (item.kind) {
     case "user":
       if (!item.attachments?.length) return <UserBubble text={item.text} />;
@@ -1293,24 +1539,11 @@ function ItemView(props: {
       return <div className="note">{item.text}</div>;
     case "assistant":
       return <Markdown text={item.text} />;
-    case "tool": {
-      const expandable = !!item.output;
-      return (
-        <div className="tool">
-          <button className="tool-row" aria-expanded={open} disabled={!expandable} onClick={() => setOpen(!open)}>
-            <span className={`tool-chevron ${open ? "open" : ""} ${expandable ? "" : "hidden"}`}>
-              <Icon d={CHEVRON_RIGHT} size={12} />
-            </span>
-            {/* Codex titles a command "Ran" from the start; until it ends, it has not. */}
-            <span>{item.state === "running" && item.title === "Ran" ? "Running" : item.title}</span>
-            {item.detail && <code>{item.detail}</code>}
-            {item.state === "running" && <span className="pulse" aria-label="running" />}
-            {item.state === "failed" && <span className="bad">· failed</span>}
-          </button>
-          {open && item.output && <pre className="tool-output">{item.output}</pre>}
-        </div>
-      );
-    }
+    case "tool":
+    case "reasoning":
+      return <WorkEntry entry={item} />;
+    case "turn":
+      return null;
     case "diff":
       return (
         <>
@@ -1403,6 +1636,7 @@ function splitDiff(diff: string): { path: string; body: string }[] {
 
 /** The right-hand pane: what changed, and a shell in the same folder. */
 function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State }) {
+  const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
   const { sessionId, changes, connected, actions } = props;
   const [tab, setTab] = useState<"changes" | "terminal" | "pr">("changes");
   const [prUsed, setPrUsed] = useState(false);
@@ -1411,7 +1645,17 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
   const parts = useMemo(() => splitDiff(changes?.diff ?? ""), [changes?.diff]);
   const files = changes?.files ?? [];
   return (
-    <section className="pane" aria-label="Workspace">
+    <section className="pane" aria-label="Workspace" style={{ "--pane-w": `${paneW}px` } as CSSProperties}>
+      <Resizer
+        width={paneW}
+        min={300}
+        max={Math.max(300, window.innerWidth - 640)}
+        initial={PANE_W}
+        dir={-1}
+        cssVar="--pane-w"
+        label="Resize the workspace pane"
+        onWidth={setPaneW}
+      />
       <header className="bar tabs">
         <button className={`tab ${tab === "changes" ? "active" : ""}`} aria-pressed={tab === "changes"} onClick={() => setTab("changes")}>
           Changes

@@ -6,6 +6,37 @@ const fold = (events: AgentEvent[], items: Item[] = [], first = 0): Item[] =>
   events.reduce((acc, ev, i) => applyEvent(acc, ev, first + i), items);
 
 describe("applyEvent", () => {
+  test("an id reused in a later turn makes a new item under its own question", () => {
+    // A restarted Claude sidecar used to count its ids from 1 again.
+    const items = fold([
+      { type: "user_message", text: "first" },
+      { type: "assistant_message", itemId: "text-1", text: "Not logged in" },
+      { type: "turn_completed", status: "completed" },
+      { type: "user_message", text: "second" },
+      { type: "assistant_delta", itemId: "text-1", text: "Hello" },
+      { type: "assistant_message", itemId: "text-1", text: "Hello there" },
+    ]);
+    expect(items.map((it) => (it.kind === "user" || it.kind === "assistant" ? `${it.kind}:${it.text}` : it.kind))).toEqual([
+      "user:first",
+      "assistant:Not logged in",
+      "user:second",
+      "assistant:Hello there",
+    ]);
+  });
+
+  test("thinking streams into one item and settles with the turn", () => {
+    const items = fold([
+      { type: "user_message", text: "why" },
+      { type: "reasoning_delta", itemId: "r1", text: "Looking at " },
+      { type: "reasoning_delta", itemId: "r1", text: "the code" },
+      { type: "assistant_delta", itemId: "m1", text: "Because" },
+      { type: "turn_completed", status: "completed" },
+    ]);
+    expect(items[1]).toEqual({ kind: "reasoning", key: "e1", itemId: "r1", text: "Looking at the code", streaming: false });
+    // An empty final block (thinking omitted) adds nothing.
+    expect(fold([{ type: "reasoning", itemId: "r2", text: "" }])).toEqual([]);
+  });
+
   test("deltas accumulate on one item, then the final message settles it", () => {
     const items = fold([
       { type: "user_message", text: "hi" },
@@ -15,13 +46,14 @@ describe("applyEvent", () => {
     ]);
     expect(items).toEqual([
       { kind: "user", key: "e0", text: "hi" },
+      { kind: "turn", key: "e1", start: undefined, status: "running" },
       { kind: "assistant", key: "e2", itemId: "m1", text: "Hello", streaming: true },
     ]);
 
     // The final text wins over what was streamed, and the item keeps its key.
     const done = applyEvent(items, { type: "assistant_message", itemId: "m1", text: "Hello!" }, 4);
-    expect(done[1]).toEqual({ kind: "assistant", key: "e2", itemId: "m1", text: "Hello!", streaming: false });
-    expect(done).toHaveLength(2);
+    expect(done[2]).toEqual({ kind: "assistant", key: "e2", itemId: "m1", text: "Hello!", streaming: false });
+    expect(done).toHaveLength(3);
   });
 
   test("a final message with no deltas is its own item", () => {
@@ -127,8 +159,10 @@ describe("applyEvent", () => {
     ]);
   });
 
-  test("events with no item, such as turn_started, add nothing", () => {
-    expect(fold([{ type: "turn_started" }])).toEqual([]);
+  test("a turn's span is kept; unknown events add nothing", () => {
+    expect(fold([{ type: "turn_started", at: 1000 }, { type: "turn_completed", status: "completed", at: 4000 }])).toEqual([
+      { kind: "turn", key: "e0", start: 1000, end: 4000, status: "completed" },
+    ]);
     expect(applyEvent([], { type: "mystery" } as unknown as AgentEvent, 0)).toEqual([]);
   });
 });

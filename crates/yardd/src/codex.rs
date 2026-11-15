@@ -214,6 +214,15 @@ impl Client {
                 &sid,
                 json!({ "type": "assistant_delta", "itemId": p["itemId"], "text": p["delta"] }),
             ),
+            // Reasoning summaries stream like messages; parts are paragraphs.
+            "item/reasoning/summaryTextDelta" => app.emit(
+                &sid,
+                json!({ "type": "reasoning_delta", "itemId": p["itemId"], "text": p["delta"] }),
+            ),
+            "item/reasoning/summaryPartAdded" if p["summaryIndex"].as_u64().unwrap_or(0) > 0 => app.emit(
+                &sid,
+                json!({ "type": "reasoning_delta", "itemId": p["itemId"], "text": "\n\n" }),
+            ),
             "item/started" => on_item(app, &sid, true, &p["item"]),
             "item/completed" => on_item(app, &sid, false, &p["item"]),
             "turn/completed" => {
@@ -229,6 +238,9 @@ impl Client {
                 }
                 app.emit(&sid, json!({ "type": "turn_completed", "status": turn["status"] }));
             }
+            // A retry in progress ("Reconnecting... 2/5") is not a failure;
+            // if the retries run out, the turn ends with the error.
+            "error" if p["willRetry"].as_bool() == Some(true) => {}
             "error" => {
                 let message = p["error"]["message"]
                     .as_str()
@@ -256,6 +268,19 @@ fn on_item(app: &Arc<App>, sid: &str, started: bool, item: &Value) {
             sid,
             json!({ "type": "assistant_message", "itemId": id, "text": item["text"] }),
         ),
+        "reasoning" if !started => {
+            let parts = |key: &str| -> Vec<String> {
+                item[key]
+                    .as_array()
+                    .map(|a| a.iter().filter_map(|x| x.as_str().map(str::to_string)).collect())
+                    .unwrap_or_default()
+            };
+            let mut text = parts("summary");
+            if text.is_empty() {
+                text = parts("content");
+            }
+            app.emit(sid, json!({ "type": "reasoning", "itemId": id, "text": text.join("\n\n") }));
+        }
         "commandExecution" => {
             // Lets the resource guard tell this session's commands apart
             // among the app-server's children (see `guard::sample`).
@@ -547,6 +572,7 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
                 "effort": meta.effort,
                 "approvalPolicy": approval,
                 "sandboxPolicy": sandbox,
+                "summary": "auto",
             }),
         )
         .await?;

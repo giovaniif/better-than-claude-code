@@ -28,7 +28,17 @@ async function tool(kind, title, detail, output) {
   emit({ type: "tool_completed", itemId, ok: true, output });
 }
 
+async function think(text) {
+  const itemId = id("think");
+  for (const chunk of text.match(/.{1,24}/gs) ?? []) {
+    emit({ type: "reasoning_delta", itemId, text: chunk });
+    await sleep(8);
+  }
+  emit({ type: "reasoning", itemId, text });
+}
+
 async function turn() {
+  await think("**Checking for an existing limiter**\n\nBefore adding middleware I want to know whether something already throttles `/api`.");
   await tool("search", "Grep", "rateLimit|express-rate-limit in src", "No matches.");
   await tool("read", "Read", "src/server.ts", "");
   await say("There is no rate limiting yet. I'll add a token bucket per API key in front of the public routes, so internal routes stay unlimited.");

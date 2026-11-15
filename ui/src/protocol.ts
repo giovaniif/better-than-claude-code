@@ -273,10 +273,14 @@ export type AgentEvent =
    *  from `attach.put`) and may then have empty text; the event carries
    *  the attachments' records. */
   | { type: "user_message"; text: string; attachments?: Attachment[] }
-  | { type: "turn_started" }
-  | { type: "turn_completed"; status: string }
+  /** `at` is yardd's clock in ms; older logs lack it. */
+  | { type: "turn_started"; at?: number }
+  | { type: "turn_completed"; status: string; at?: number }
   | { type: "assistant_delta"; itemId: string; text: string }
   | { type: "assistant_message"; itemId: string; text: string }
+  /** Thinking: Claude's summarized thinking, Codex's reasoning summary. */
+  | { type: "reasoning_delta"; itemId: string; text: string }
+  | { type: "reasoning"; itemId: string; text: string }
   | { type: "tool_started"; itemId: string; kind: string; title: string; detail: string }
   | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null }
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
@@ -292,12 +296,32 @@ export type AgentEvent =
 export type Item =
   | { kind: "user"; key: string; text: string; attachments?: Attachment[] }
   | { kind: "assistant"; key: string; itemId: string; text: string; streaming: boolean }
+  | { kind: "reasoning"; key: string; itemId: string; text: string; streaming: boolean }
+  /** A turn's span, for "Worked for 1m 12s". Not drawn by itself. */
+  | { kind: "turn"; key: string; start?: number; end?: number; status: string }
   | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
   | { kind: "diff"; key: string; files: ChangedFile[] }
   | { kind: "approval"; key: string; requestId: string; approvalKind: string; title: string; detail: string; decision: Decision | null }
   | { kind: "error"; key: string; message: string }
   | { kind: "note"; key: string; text: string }
   | { kind: "queued"; key: string; reason: string };
+
+/** Where an item with this engine id sits in the current turn, or -1. Ids
+ *  are matched only after the last user message: an engine may reuse them
+ *  across turns (older Claude sidecars restarted their counter), and a match
+ *  in an earlier turn would put new text above the question it answers. */
+function inTurn(items: Item[], match: (it: Item) => boolean): number {
+  for (let i = items.length - 1; i >= 0; i--) {
+    if (items[i].kind === "user") return -1;
+    if (match(items[i])) return i;
+  }
+  return -1;
+}
+
+function turnStart(items: Item[]): number {
+  for (let i = items.length - 1; i >= 0; i--) if (items[i].kind === "user") return i + 1;
+  return 0;
+}
 
 export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
   const key = `e${seq}`;
@@ -309,8 +333,18 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
           ? { kind: "user", key, text: ev.text, attachments: ev.attachments }
           : { kind: "user", key, text: ev.text },
       ];
+    case "reasoning_delta":
+    case "reasoning": {
+      const i = inTurn(items, (it) => it.kind === "reasoning" && it.itemId === ev.itemId);
+      const streaming = ev.type === "reasoning_delta";
+      if (i < 0) return ev.text ? [...items, { kind: "reasoning", key, itemId: ev.itemId, text: ev.text, streaming }] : items;
+      const next = items.slice();
+      const cur = next[i] as Extract<Item, { kind: "reasoning" }>;
+      next[i] = { ...cur, text: streaming ? cur.text + ev.text : ev.text || cur.text, streaming };
+      return next;
+    }
     case "assistant_delta": {
-      const i = items.findIndex((it) => it.kind === "assistant" && it.itemId === ev.itemId);
+      const i = inTurn(items, (it) => it.kind === "assistant" && it.itemId === ev.itemId);
       if (i < 0) return [...items, { kind: "assistant", key, itemId: ev.itemId, text: ev.text, streaming: true }];
       const next = items.slice();
       const cur = next[i] as Extract<Item, { kind: "assistant" }>;
@@ -318,7 +352,7 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       return next;
     }
     case "assistant_message": {
-      const i = items.findIndex((it) => it.kind === "assistant" && it.itemId === ev.itemId);
+      const i = inTurn(items, (it) => it.kind === "assistant" && it.itemId === ev.itemId);
       if (i < 0) return [...items, { kind: "assistant", key, itemId: ev.itemId, text: ev.text, streaming: false }];
       const next = items.slice();
       next[i] = { ...(next[i] as Extract<Item, { kind: "assistant" }>), text: ev.text, streaming: false };
@@ -329,12 +363,14 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
         ...items,
         { kind: "tool", key, itemId: ev.itemId, toolKind: ev.kind, title: ev.title, detail: ev.detail, state: "running" },
       ];
-    case "tool_completed":
-      return items.map((it) =>
-        it.kind === "tool" && it.itemId === ev.itemId
+    case "tool_completed": {
+      const from = turnStart(items);
+      return items.map((it, i) =>
+        i >= from && it.kind === "tool" && it.itemId === ev.itemId
           ? { ...it, state: ev.ok ? "ok" : "failed", output: ev.output ?? null }
           : it,
       );
+    }
     case "file_change":
       return ev.files.length ? [...items, { kind: "diff", key, files: ev.files }] : items;
     case "approval_request":
@@ -342,20 +378,37 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
         ...items,
         { kind: "approval", key, requestId: ev.requestId, approvalKind: ev.kind, title: ev.title, detail: ev.detail, decision: null },
       ];
-    case "approval_resolved":
-      return items.map((it) =>
-        it.kind === "approval" && it.requestId === ev.requestId ? { ...it, decision: ev.decision } : it,
+    case "approval_resolved": {
+      const from = turnStart(items);
+      return items.map((it, i) =>
+        i >= from && it.kind === "approval" && it.requestId === ev.requestId ? { ...it, decision: ev.decision } : it,
       );
-    case "turn_completed":
+    }
+    case "turn_started":
+      return [...items, { kind: "turn", key, start: ev.at, status: "running" }];
+    case "turn_completed": {
+      let open = -1;
+      for (let i = items.length - 1; i >= 0; i--) {
+        if (items[i].kind === "turn") {
+          open = i;
+          break;
+        }
+      }
       // Nothing may look live once the turn is over.
-      return items.map((it) => {
-        if (it.kind === "assistant" && it.streaming) return { ...it, streaming: false };
+      return items.map((it, i) => {
+        if (i === open && it.kind === "turn") return { ...it, end: ev.at, status: ev.status };
+        if ((it.kind === "assistant" || it.kind === "reasoning") && it.streaming) return { ...it, streaming: false };
         if (it.kind === "tool" && it.state === "running") return { ...it, state: "failed" as const };
         if (it.kind === "approval" && it.decision === null) return { ...it, decision: "deny" as const };
         return it;
       });
-    case "error":
+    }
+    case "error": {
+      // Codex reports a failed turn twice: as an error and as the turn's end.
+      const last = items[items.length - 1];
+      if (last?.kind === "error" && last.message === ev.message) return items;
       return [...items, { kind: "error", key, message: ev.message }];
+    }
     case "note":
       return [...items, { kind: "note", key, text: ev.text }];
     case "queued":

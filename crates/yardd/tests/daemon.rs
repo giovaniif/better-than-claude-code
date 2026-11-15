@@ -257,7 +257,9 @@ async fn sessions_survive_a_restart_and_resume_their_thread() {
     let history = c.history(&sid).await;
     let n = history.len();
     assert_eq!(history[n - 2], json!({ "type": "error", "message": "yardd restarted during this turn." }));
-    assert_eq!(history[n - 1], json!({ "type": "turn_completed", "status": "failed" }));
+    assert_eq!(history[n - 1]["type"], "turn_completed");
+    assert_eq!(history[n - 1]["status"], "failed");
+    assert!(history[n - 1]["at"].is_u64(), "turn ends carry yardd's clock: {}", history[n - 1]);
 }
 
 #[tokio::test]
@@ -1002,4 +1004,27 @@ async fn engines_log_in_from_the_app() {
     c.wait_after(mark, "claude login done", |m| m["op"] == "login" && m["engine"] == "claude" && m["state"] == "done").await;
     let after = c.wait_after(mark, "claude logged in", |m| m["op"] == "engines" && m["engines"]["claude"]["loggedIn"] == true).await;
     assert_eq!(after["engines"]["claude"]["account"], "me@example.com");
+}
+
+#[tokio::test]
+async fn codex_reasoning_streams_as_thinking() {
+    let sb = Sandbox::new("think");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+
+    let sid = c.create(&cwd, "[think] why", json!({})).await;
+    c.wait_turn_done(&sid, 0).await;
+    let events = c.events(&sid);
+    let deltas: String = events
+        .iter()
+        .filter(|e| e["type"] == "reasoning_delta")
+        .map(|e| e["text"].as_str().unwrap().to_string())
+        .collect();
+    assert_eq!(deltas, "Reading the tests\n\nThen the fix", "summary parts become paragraphs");
+    let done = events.iter().find(|e| e["type"] == "reasoning").expect("the finished reasoning");
+    assert_eq!(done["text"], "Reading the tests\n\nThen the fix");
+    let think = events.iter().position(|e| e["type"] == "reasoning").unwrap();
+    let reply = events.iter().position(|e| e["type"] == "assistant_message").unwrap();
+    assert!(think < reply, "thinking comes before the answer");
 }

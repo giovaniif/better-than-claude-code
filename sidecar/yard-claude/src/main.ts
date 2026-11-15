@@ -21,8 +21,11 @@ type Decision = "allow" | "allow_always" | "deny";
 const out = (msg: unknown) => process.stdout.write(JSON.stringify(msg) + "\n");
 const emit = (event: Record<string, unknown>) => out({ type: "event", event });
 
+// Ids must stay unique across sidecar restarts in one session (resume, a
+// login), or a new reply would land on an old item of the same id.
+const run = crypto.randomUUID().slice(0, 8);
 let counter = 0;
-const nextId = (prefix: string) => `${prefix}-${++counter}`;
+const nextId = (prefix: string) => `${prefix}-${run}-${++counter}`;
 
 // User turns are pushed here while the query is running (streaming input).
 const queue: unknown[] = [];
@@ -183,6 +186,8 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
   };
   if (start.effort && efforts.includes(start.effort)) options.effort = start.effort;
   if (start.resume) options.resume = start.resume;
+  // Recent models omit thinking text unless asked; summarized is what Claude Code shows.
+  options.extraArgs = { "thinking-display": "summarized" };
   const claudeBin = Bun.which("claude");
   if (claudeBin) options.pathToClaudeCodeExecutable = claudeBin;
 
@@ -191,6 +196,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
   // The id of the text block currently streaming, so deltas and the final
   // text land on the same item.
   let openText: string | null = null;
+  let openThinking: string | null = null;
 
   for await (const m of q as AsyncIterable<any>) {
     // Subagent chatter stays out of the main thread.
@@ -199,6 +205,11 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
     if (m.type === "stream_event") {
       const e = m.event;
       if (e?.type === "content_block_start" && e.content_block?.type === "text") openText = nextId("text");
+      if (e?.type === "content_block_start" && e.content_block?.type === "thinking") openThinking = nextId("think");
+      if (e?.type === "content_block_delta" && e.delta?.type === "thinking_delta" && e.delta.thinking) {
+        openThinking ??= nextId("think");
+        emit({ type: "reasoning_delta", itemId: openThinking, text: e.delta.thinking });
+      }
       if (e?.type === "content_block_delta" && e.delta?.type === "text_delta") {
         openText ??= nextId("text");
         emit({ type: "assistant_delta", itemId: openText, text: e.delta.text });
@@ -208,7 +219,10 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
 
     if (m.type === "assistant") {
       for (const block of m.message?.content ?? []) {
-        if (block.type === "text") {
+        if (block.type === "thinking") {
+          if (block.thinking || openThinking) emit({ type: "reasoning", itemId: openThinking ?? nextId("think"), text: block.thinking ?? "" });
+          openThinking = null;
+        } else if (block.type === "text") {
           emit({ type: "assistant_message", itemId: openText ?? nextId("text"), text: block.text });
           openText = null;
         } else if (block.type === "tool_use") {
@@ -263,6 +277,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
 
     if (m.type === "result") {
       openText = null;
+      openThinking = null;
       const ok = m.subtype === "success";
       if (!ok) emit({ type: "error", message: typeof m.result === "string" && m.result ? m.result : String(m.subtype) });
       emit({ type: "turn_completed", status: ok ? "completed" : "failed" });

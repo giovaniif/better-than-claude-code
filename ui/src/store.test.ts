@@ -29,14 +29,16 @@ const meta = (id: string, host = "local", status: SessionMeta["status"] = "idle"
 });
 
 const texts = (state: State, sid: string) =>
-  state.threads[sid].items.map((i) => (i.kind === "user" || i.kind === "note" ? i.text : i.kind === "assistant" ? i.text : i.kind));
+  state.threads[sid].items
+    .filter((i) => i.kind !== "turn")
+    .map((i) => (i.kind === "user" || i.kind === "note" ? i.text : i.kind === "assistant" ? i.text : i.kind));
 
 describe("thread loading", () => {
   test("history alone builds the thread", () => {
     const s = server(initial, history("s1", log));
     expect(s.threads.s1.next).toBe(6);
     expect(texts(s, "s1")).toEqual(["hi", "Hello"]);
-    expect(s.threads.s1.items[1]).toMatchObject({ streaming: false });
+    expect(s.threads.s1.items[2]).toMatchObject({ streaming: false });
   });
 
   test("events before the history wait, then only the new ones apply, in order", () => {
@@ -46,7 +48,7 @@ describe("thread loading", () => {
     s = server(s, event("s1", 1, { type: "turn_started" }));
     s = server(s, event("s1", 2, { type: "note", text: "second" }));
     expect(s.threads.s1.next).toBe(-1);
-    expect(s.threads.s1.items).toEqual([]);
+    expect(texts(s, "s1")).toEqual([]);
     expect(s.threads.s1.early).toHaveLength(3);
 
     s = server(s, history("s1", [{ type: "user_message", text: "hi" }, { type: "turn_started" }]));
@@ -69,7 +71,7 @@ describe("thread loading", () => {
     s = server(s, event("s1", 1, log[1])); // already in history
     s = server(s, event("s1", 3, log[3]));
     expect(texts(s, "s1")).toEqual(["hi", "Hello"]);
-    expect(s.threads.s1.items[1]).toMatchObject({ streaming: true });
+    expect(s.threads.s1.items[2]).toMatchObject({ streaming: true });
     expect(s.threads.s1.next).toBe(4);
 
     const same = server(s, event("s1", 3, log[3]));

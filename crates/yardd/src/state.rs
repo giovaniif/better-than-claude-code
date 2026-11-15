@@ -236,7 +236,11 @@ impl App {
 
     /// Append a normalized event to the session log and fan it out.
     /// Session status is derived here so both engines behave the same.
-    pub fn emit(&self, sid: &str, event: Value) {
+    pub fn emit(&self, sid: &str, mut event: Value) {
+        // Turn boundaries carry the time, so the UI can say how long one took.
+        if matches!(event["type"].as_str(), Some("turn_started") | Some("turn_completed")) && event["at"].is_null() {
+            event["at"] = json!(now_ms());
+        }
         let status = match event["type"].as_str() {
             Some("turn_started") | Some("approval_resolved") => Some("running"),
             Some("approval_request") => Some("needs_approval"),

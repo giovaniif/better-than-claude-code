@@ -49,6 +49,8 @@ function handle({ id, method, params: p = {} }) {
       return reply({ userAgent: "codex/demo", codexHome: "/nonexistent", platformFamily: "unix", platformOs: "macos" });
     case "model/list":
       return reply({ data: MODELS, nextCursor: null });
+    case "account/read":
+      return reply({ account: { type: "chatgpt", email: "you@example.com", planType: "pro" }, requiresOpenaiAuth: true });
     case "account/rateLimits/read":
       return reply({ rateLimits: { limitId: "codex", primary: { usedPercent: 23, windowDurationMins: 300, resetsAt: null }, secondary: { usedPercent: 41, windowDurationMins: 10080, resetsAt: null } } });
     case "thread/start": {
@@ -91,7 +93,18 @@ async function runTurn(threadId, cwd, turn, text) {
   };
   notify("turn/started", { threadId, turn });
 
+  const think = async (summary) => {
+    const itemId = newId("reasoning");
+    item("item/started", { type: "reasoning", id: itemId, summary: [], content: [] });
+    for (const chunk of summary.match(/.{1,24}/gs) ?? []) {
+      notify("item/reasoning/summaryTextDelta", { threadId, turnId, itemId, summaryIndex: 0, delta: chunk });
+      await sleep(8);
+    }
+    item("item/completed", { type: "reasoning", id: itemId, summary: [summary], content: [] });
+  };
+
   if (/flaky/i.test(text)) {
+    await think("**Reproducing the failure first**\n\nThe assertion compares a computed delay against a fixed value, so I want to see whether it changes between runs before touching the code.");
     await say("I'll reproduce it first.");
     await run(
       "cargo test -p payments retry",
@@ -110,6 +123,7 @@ async function runTurn(threadId, cwd, turn, text) {
       ].join("\n"),
       101,
     );
+    await think("**Tracing where the delay comes from**\n\n`backoff()` calls `rand::thread_rng()` for jitter, so the expected 400ms can never be exact.");
     await say(
       "`backoff()` adds jitter from `rand::thread_rng()`, so the test compares against a delay that changes on every run. I'll make the jitter source injectable and pin it in the test.",
     );

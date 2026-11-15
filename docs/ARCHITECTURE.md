@@ -34,8 +34,9 @@ Both engines are normalized to one event list per session. The UI replays it on 
 | Event | Meaning |
 |---|---|
 | `user_message` | My prompt, with any attachments' details |
-| `turn_started`, `turn_completed` | Turn boundaries |
+| `turn_started`, `turn_completed` | Turn boundaries, with yardd's clock in `at` (ms) |
 | `assistant_delta`, `assistant_message` | Streamed text, then the final text |
+| `reasoning_delta`, `reasoning` | Thinking: Claude's summarized thinking (`--thinking-display summarized`), Codex's reasoning summary (parts become paragraphs) |
 | `tool_started`, `tool_completed` | A command, read, search or other tool call |
 | `file_change` | Edited files with diffs |
 | `approval_request`, `approval_resolved` | A command or edit waiting on me |
@@ -44,6 +45,10 @@ Both engines are normalized to one event list per session. The UI replays it on 
 | `note` | A quiet line from yardd, such as a hand-off. Changes no status |
 
 Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is derived from these.
+
+- Item ids come from the engine (Codex item ids, Claude `tool_use` ids; the sidecar's own ids carry a per-process prefix). The UI matches an id only within the current turn, after the last user message, so a reused id can never pull new text up into an earlier turn. Order is the log's order.
+- Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
+- The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
 
 ## Persistence
 

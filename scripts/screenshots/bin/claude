@@ -1,0 +1,9 @@
+#!/bin/sh
+# For the README screenshots: the demo machine's Claude Code is logged in.
+# Only `auth status` is answered; turns go through bin/demo-claude.
+if [ "$1 $2" = "auth status" ]; then
+  echo '{"loggedIn": true, "authMethod": "claude.ai", "email": "you@example.com"}'
+  exit 0
+fi
+echo "demo claude: only 'auth status' is scripted" >&2
+exit 1

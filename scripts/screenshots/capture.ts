@@ -89,11 +89,18 @@ const open = async (p: Page, title: RegExp) => {
   await p.waitForTimeout(1200);
 };
 
+// A finished turn folds its work; open it to show the steps.
+const unfold = async () => {
+  for (const row of await page.locator(".fold-row").all()) await row.click();
+};
+
 await open(page, /retry test/);
+await unfold();
 // Start of the conversation: the prompt, the failing run and the fix.
 await page.evaluate(() => document.querySelector(".thread .scroll")?.scrollTo({ top: 0 }));
 await shot("session");
 await open(page, /rate limiting/);
+await unfold();
 await shot("claude-session");
 await open(page, /migration/);
 await shot("approval");
