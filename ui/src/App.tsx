@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { Attachment, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
@@ -218,27 +219,52 @@ function Resizer(props: {
 function SessionRow({ state, actions, session: s, active }: { state: State; actions: Actions; session: SessionMeta; active: boolean }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
-  const [menu, setMenuOpen] = useState(false);
-  const [up, setUp] = useState(false);
+  const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
-  // Open upward when the list has no room below the row.
-  const setMenu = (open: boolean) => {
-    const el = box.current;
-    const list = el?.closest(".session-list");
-    if (open && el && list) setUp(el.getBoundingClientRect().bottom + 200 > list.getBoundingClientRect().bottom);
-    setMenuOpen(open);
-  };
+  const more = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLDivElement>(null);
   const close = () => {
     setMenu(false);
     setConfirm(false);
+    setPos(null);
   };
   useEscape(menu, close);
+  // The menu lives on document.body at a fixed position. Inside the sidebar
+  // the scrolling list clipped it whenever the sidebar was narrower than the
+  // menu or the row sat near the list's edge. It opens under the … button,
+  // flips above when there is no room below, and stays inside the window.
+  useLayoutEffect(() => {
+    if (!menu || !more.current || !pop.current) return;
+    const at = more.current.getBoundingClientRect();
+    const { width, height } = pop.current.getBoundingClientRect();
+    const gap = 4;
+    const edge = 8;
+    const left = Math.max(edge, Math.min(at.right - width, window.innerWidth - width - edge));
+    const below = at.bottom + gap;
+    const above = at.top - gap - height;
+    const top = below + height <= window.innerHeight - edge || above < edge ? below : above;
+    setPos({ left, top: Math.max(edge, Math.min(top, window.innerHeight - height - edge)) });
+  }, [menu, confirm]);
   useEffect(() => {
     if (!menu) return;
-    const outside = (e: MouseEvent) => !box.current?.contains(e.target as Node) && close();
-    window.addEventListener("mousedown", outside);
-    return () => window.removeEventListener("mousedown", outside);
+    // pointerdown, not mousedown: the sidebar's resize handle cancels the
+    // mousedown, and dragging it would strand the menu away from its row.
+    const outside = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (!box.current?.contains(t) && !pop.current?.contains(t)) close();
+    };
+    // A fixed menu would drift away from its row, so scrolling closes it.
+    const scrolled = (e: Event) => !pop.current?.contains(e.target as Node) && close();
+    window.addEventListener("pointerdown", outside);
+    window.addEventListener("scroll", scrolled, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("pointerdown", outside);
+      window.removeEventListener("scroll", scrolled, true);
+      window.removeEventListener("resize", close);
+    };
   }, [menu]);
   const worktree = !!(s.branch && s.repo);
   const remove = (removeWorktree: boolean) => {
@@ -267,50 +293,52 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
         </span>
         {host !== "local" && <Cloud size={14} label={`Runs on ${hostName(state, host)}`} />}
       </button>
-      <button className="btn-icon row-more" aria-label={`Actions for ${s.title}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => (menu ? close() : setMenu(true))}>
+      <button ref={more} className="btn-icon row-more" aria-label={`Actions for ${s.title}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => (menu ? close() : setMenu(true))}>
         <Icon d={MORE} size={16} />
       </button>
-      {menu && (
-        <div className={`row-menu ${up ? "up" : ""}`} role="menu">
-          {!confirm ? (
-            <>
-              {!s.archived && (
-                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
-                  <Icon d={PIN} size={14} />
-                  {s.pinned ? "Unpin" : "Pin"}
+      {menu &&
+        createPortal(
+          <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
+            {!confirm ? (
+              <>
+                {!s.archived && (
+                  <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
+                    <Icon d={PIN} size={14} />
+                    {s.pinned ? "Unpin" : "Pin"}
+                  </button>
+                )}
+                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setArchived(s.id, !s.archived), close())}>
+                  <Icon d={ARCHIVE} size={14} />
+                  {s.archived ? "Restore" : "Archive"}
                 </button>
-              )}
-              <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setArchived(s.id, !s.archived), close())}>
-                <Icon d={ARCHIVE} size={14} />
-                {s.archived ? "Restore" : "Archive"}
-              </button>
-              <div className="menu-divider" />
-              <button className="picker-item menu-item danger" role="menuitem" disabled={!online} onClick={() => setConfirm(true)}>
-                <Icon d={TRASH} size={14} />
-                Delete…
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="row-menu-note">
-                {s.status === "running" || s.status === "needs_approval" ? "It is still working; deleting stops it. " : ""}
-                This can't be undone.
-              </div>
-              <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(false)}>
-                {worktree ? "Delete, keep the worktree" : "Delete session"}
-              </button>
-              {worktree && (
-                <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(true)}>
-                  Delete and remove the worktree
+                <div className="menu-divider" />
+                <button className="picker-item menu-item danger" role="menuitem" disabled={!online} onClick={() => setConfirm(true)}>
+                  <Icon d={TRASH} size={14} />
+                  Delete…
                 </button>
-              )}
-              <button className="picker-item menu-item" role="menuitem" onClick={() => setConfirm(false)}>
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      )}
+              </>
+            ) : (
+              <>
+                <div className="row-menu-note">
+                  {s.status === "running" || s.status === "needs_approval" ? "It is still working; deleting stops it. " : ""}
+                  This can't be undone.
+                </div>
+                <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(false)}>
+                  {worktree ? "Delete, keep the worktree" : "Delete session"}
+                </button>
+                {worktree && (
+                  <button className="picker-item menu-item danger" role="menuitem" onClick={() => remove(true)}>
+                    Delete and remove the worktree
+                  </button>
+                )}
+                <button className="picker-item menu-item" role="menuitem" onClick={() => setConfirm(false)}>
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
