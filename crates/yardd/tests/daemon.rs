@@ -1543,6 +1543,286 @@ async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
         .map(|m| m["session"]["id"].as_str().unwrap_or("").to_string())
         .collect::<std::collections::HashSet<_>>();
     assert!(claude_sessions.len() <= 1, "{claude_sessions:?}");
+// ---- Automations ----
+
+fn automation_of(cwd: &str, extra: Value) -> Value {
+    let mut a = json!({
+        "name": "Patrol",
+        "prompt": "say hello",
+        "cwd": cwd,
+        "engine": "codex",
+        "model": MODEL,
+        "effort": EFFORT,
+        "permission": "ask",
+        "schedule": { "kind": "interval", "every": 60, "unit": "minutes" },
+    });
+    if let (Some(m), Some(e)) = (a.as_object_mut(), extra.as_object()) {
+        m.extend(e.clone());
+    }
+    a
+}
+
+/// Save an automation and return it as yardd stored it, or yardd's error.
+async fn save_automation(c: &mut Client, a: Value) -> Result<Value, String> {
+    let from = c.mark();
+    c.send(json!({ "op": "automation.save", "automation": a, "ref": "save" })).await;
+    let reply = c
+        .wait_after(from, "automation.saved or an error", |m| {
+            m["ref"] == "save" && (m["op"] == "automation.saved" || m["op"] == "error")
+        })
+        .await;
+    match reply["op"].as_str() {
+        Some("automation.saved") => Ok(reply["automation"].clone()),
+        _ => Err(reply["message"].as_str().unwrap_or("").to_string()),
+    }
+}
+
+/// The newest `automations` list this client heard (snapshot or broadcast).
+fn automations_of(c: &Client) -> Vec<Value> {
+    c.log
+        .iter()
+        .rev()
+        .find_map(|m| match m["op"].as_str() {
+            Some("automations") | Some("snapshot") => m["automations"].as_array().cloned(),
+            _ => None,
+        })
+        .unwrap_or_default()
+}
+
+/// Run now (or a scheduled-style run without `force`); returns the reply.
+async fn run_automation(c: &mut Client, id: &str, force: bool) -> Value {
+    let from = c.mark();
+    c.send(json!({ "op": "automation.run", "id": id, "force": force, "ref": "run" })).await;
+    c.wait_after(from, "automation.ran", |m| m["ref"] == "run" && (m["op"] == "automation.ran" || m["op"] == "error"))
+        .await
+}
+
+#[tokio::test]
+async fn automations_are_saved_listed_edited_and_deleted() {
+    let sb = Sandbox::new("auto-crud");
+    let cwd = sb.folder("proj");
+    let d = sb.start();
+    let mut c = d.client().await;
+    assert_eq!(c.log[0]["automations"], json!([]), "the snapshot carries the list");
+
+    let saved = save_automation(&mut c, automation_of(&cwd, json!({}))).await.unwrap();
+    let id = saved["id"].as_str().unwrap().to_string();
+    assert_eq!(saved["name"], "Patrol");
+    assert_eq!(saved["enabled"], true, "on by default");
+    assert_eq!(saved["skipWhileRunning"], true, "skipping a run that is still going is on by default");
+    let next = saved["nextRun"].as_u64().unwrap();
+    let in_an_hour = next as i64 - (std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as i64);
+    assert!((3_500_000..=3_600_500).contains(&in_an_hour), "next run is an hour away, not {in_an_hour} ms");
+    c.wait_for("the broadcast", |m| m["op"] == "automations" && m["automations"].as_array().is_some_and(|l| l.len() == 1)).await;
+
+    // A second window sees it in its snapshot.
+    let other = d.client().await;
+    assert_eq!(other.log[0]["automations"][0]["id"], id);
+
+    // Edit by id; a partial change keeps the rest. Disabling clears the next run.
+    let off = save_automation(&mut c, json!({ "id": id, "enabled": false })).await.unwrap();
+    assert_eq!(off["enabled"], false);
+    assert!(off["nextRun"].is_null(), "{off}");
+    assert_eq!(off["prompt"], "say hello");
+    let on = save_automation(&mut c, json!({ "id": id, "enabled": true, "schedule": { "kind": "daily", "time": "09:30" } })).await.unwrap();
+    assert!(on["nextRun"].as_u64().unwrap() > 0);
+
+    // Refused: no name, a bad time, a folder that is not there.
+    assert!(save_automation(&mut c, automation_of(&cwd, json!({ "name": " " }))).await.unwrap_err().contains("name"));
+    let bad = json!({ "schedule": { "kind": "daily", "time": "25:99" } });
+    assert!(save_automation(&mut c, automation_of(&cwd, bad)).await.unwrap_err().contains("time"));
+    assert!(save_automation(&mut c, automation_of("/no/such/folder", json!({}))).await.unwrap_err().contains("not a folder"));
+
+    c.send(json!({ "op": "automation.list" })).await;
+    let from = c.mark();
+    c.send(json!({ "op": "automation.list" })).await;
+    let listed = c.wait_after(from, "the list", |m| m["op"] == "automations").await;
+    assert_eq!(listed["automations"].as_array().unwrap().len(), 1);
+
+    c.send(json!({ "op": "automation.delete", "id": id })).await;
+    c.wait_for("an empty list", |m| m["op"] == "automations" && m["automations"].as_array().is_some_and(|l| l.is_empty())).await;
+    let from = c.mark();
+    c.send(json!({ "op": "automation.delete", "id": id })).await;
+    assert!(c.wait_error(from, "automation.delete").await.contains("no such automation"));
+}
+
+#[tokio::test]
+async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
+    let sb = Sandbox::new("auto-run");
+    let repo = make_repo(&sb, "repo");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&repo, json!({ "name": "Map upkeep" }))).await.unwrap();
+    let id = a["id"].as_str().unwrap().to_string();
+
+    let ran = run_automation(&mut c, &id, true).await;
+    assert_eq!(ran["op"], "automation.ran", "{ran}");
+    assert_eq!(ran["outcome"], "started");
+    let sid = ran["sessionId"].as_str().unwrap().to_string();
+
+    let meta = c.wait_for("the run's session", |m| m["op"] == "session" && m["session"]["id"] == sid).await["session"].clone();
+    assert_eq!(meta["automation"], id);
+    let title = meta["title"].as_str().unwrap();
+    assert!(title.starts_with("Map upkeep · "), "{title}");
+    assert!(meta["branch"].as_str().unwrap().starts_with("yard/"), "a worktree: {meta}");
+    assert!(Path::new(meta["cwd"].as_str().unwrap()).starts_with(sb.data().join("wt")), "{meta}");
+    assert_eq!(meta["permission"], "ask");
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    assert_eq!(c.wait_event(&sid, "user_message", 0).await["text"], "say hello");
+
+    // A finished run leaves the main list by itself.
+    c.wait_for("the run archived", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["archived"] == true).await;
+
+    // The automation remembers its last run.
+    let last = c
+        .wait_for("lastRun", |m| m["op"] == "automations" && m["automations"][0]["lastRun"]["sessionId"] == sid)
+        .await["automations"][0]["lastRun"]
+        .clone();
+    assert_eq!(last["outcome"], "started");
+
+    // Pinning a run brings it back to the main list.
+    c.send(json!({ "op": "session.update", "sessionId": sid, "pinned": true })).await;
+    let back = c.wait_for("the run pinned", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pinned"] == true).await;
+    assert_eq!(back["session"]["archived"], false);
+
+    // Deleting the automation keeps its runs, which become ordinary sessions.
+    c.send(json!({ "op": "automation.delete", "id": id })).await;
+    let freed = c.wait_for("the run unlinked", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["automation"].is_null()).await;
+    assert_eq!(freed["session"]["pinned"], true);
+}
+
+#[tokio::test]
+async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
+    let sb = Sandbox::new("auto-skip");
+    let cwd = sb.folder("proj");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&cwd, json!({ "prompt": "[slow] think hard" }))).await.unwrap();
+    let id = a["id"].as_str().unwrap().to_string();
+
+    let first = run_automation(&mut c, &id, true).await;
+    let sid = first["sessionId"].as_str().unwrap().to_string();
+    c.wait_event(&sid, "assistant_delta", 0).await;
+
+    // A scheduled run (no force) sees the first one and leaves it alone.
+    let second = run_automation(&mut c, &id, false).await;
+    assert_eq!(second["outcome"], "skipped", "{second}");
+    assert!(second["reason"].as_str().unwrap().contains("still going"), "{second}");
+    let n = automations_of(&c)[0]["lastRun"].clone();
+    assert_eq!(n["outcome"], "skipped");
+    let sessions = c.log.iter().filter(|m| m["op"] == "session").map(|m| m["session"]["id"].clone()).collect::<std::collections::HashSet<_>>();
+    assert_eq!(sessions.len(), 1, "no second session");
+
+    // With the switch off the next run starts alongside.
+    save_automation(&mut c, json!({ "id": id, "skipWhileRunning": false })).await.unwrap();
+    let third = run_automation(&mut c, &id, false).await;
+    assert_eq!(third["outcome"], "started", "{third}");
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": third["sessionId"] })).await;
+}
+
+#[tokio::test]
+async fn a_run_is_skipped_when_engine_usage_is_above_the_limit() {
+    let sb = Sandbox::new("auto-usage");
+    let cwd = sb.folder("proj");
+    let d = sb.start();
+    let mut c = d.client().await;
+    // The fake Codex reports 12% for the 5-hour window and 34% for the week.
+    c.wait_for("codex usage", |m| (m["op"] == "usage" || m["op"] == "snapshot") && !m["usage"]["codex"].is_null()).await;
+    let a = save_automation(&mut c, automation_of(&cwd, json!({ "maxFiveHour": 10 }))).await.unwrap();
+    let id = a["id"].as_str().unwrap().to_string();
+    let skipped = run_automation(&mut c, &id, false).await;
+    assert_eq!(skipped["outcome"], "skipped", "{skipped}");
+    assert!(skipped["reason"].as_str().unwrap().contains("5-hour usage 12%"), "{skipped}");
+
+    save_automation(&mut c, json!({ "id": id, "maxFiveHour": 50, "maxWeek": 30 })).await.unwrap();
+    let skipped = run_automation(&mut c, &id, false).await;
+    assert!(skipped["reason"].as_str().unwrap().contains("weekly usage 34%"), "{skipped}");
+
+    save_automation(&mut c, json!({ "id": id, "maxWeek": 90 })).await.unwrap();
+    assert_eq!(run_automation(&mut c, &id, false).await["outcome"], "started");
+}
+
+#[tokio::test]
+async fn the_scheduler_fires_a_missed_run_once_and_automations_survive_a_restart() {
+    let sb = Sandbox::new("auto-sched");
+    let cwd = sb.folder("proj");
+    // yardd was down for hours: ten hourly slots are overdue.
+    let overdue = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64 - 10 * 3_600_000;
+    let file = json!([{
+        "id": "a1", "name": "Hourly", "prompt": "say hello", "cwd": cwd, "engine": "codex", "model": MODEL, "effort": EFFORT,
+        "permission": "ask", "schedule": { "kind": "interval", "every": 60, "unit": "minutes" },
+        "skipWhileRunning": true, "enabled": true, "createdAt": overdue - 1000, "nextRun": overdue,
+    }, {
+        "id": "a2", "name": "Off", "prompt": "never", "cwd": cwd, "engine": "codex", "model": MODEL, "effort": EFFORT,
+        "permission": "ask", "schedule": { "kind": "interval", "every": 1, "unit": "minutes" },
+        "skipWhileRunning": true, "enabled": false, "createdAt": overdue - 1000, "nextRun": null,
+    }]);
+    fs::write(sb.data().join("automations.json"), file.to_string()).unwrap();
+
+    let d = sb.start_with(&[("YARD_AUTOMATION_TICK_MS", "100")]);
+    let mut c = d.client().await;
+    let fired = c.wait_for("the missed run", |m| m["op"] == "session" && m["session"]["automation"] == "a1").await;
+    let sid = fired["session"]["id"].as_str().unwrap().to_string();
+    c.wait_turn_done(&sid, 0).await;
+    // Plenty of ticks later there is still exactly one run, and the next is an hour out.
+    c.drain_for(Duration::from_millis(1200)).await;
+    let runs = c.log.iter().filter(|m| m["op"] == "session" && m["session"]["automation"].is_string()).map(|m| m["session"]["id"].clone()).collect::<std::collections::HashSet<_>>();
+    assert_eq!(runs.len(), 1, "{runs:?}");
+    let list = automations_of(&c);
+    let hourly = list.iter().find(|a| a["id"] == "a1").unwrap();
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis() as u64;
+    assert!(hourly["nextRun"].as_u64().unwrap() > now + 3_000_000, "{hourly}");
+    assert_eq!(hourly["lastRun"]["sessionId"], sid);
+    d.stop();
+
+    // After a restart the automations and the run are still there, and nothing fires again.
+    let d = sb.start_with(&[("YARD_AUTOMATION_TICK_MS", "100")]);
+    let mut c = d.client().await;
+    assert_eq!(c.log[0]["automations"].as_array().unwrap().len(), 2);
+    assert_eq!(c.log[0]["automations"][0]["lastRun"]["sessionId"], sid);
+    let kept = c.log[0]["sessions"].as_array().unwrap().iter().filter(|s| s["automation"] == "a1").count();
+    assert_eq!(kept, 1);
+    c.drain_for(Duration::from_millis(800)).await;
+    assert!(!c.log.iter().any(|m| m["op"] == "session" && m["session"]["automation"] == "a1" && m["session"]["id"] != sid));
+}
+
+#[tokio::test]
+async fn a_hub_routes_automations_to_the_host_that_runs_them() {
+    let remote_sb = Sandbox::new("auto-remote");
+    let remote = remote_sb.start();
+    let hub_sb = Sandbox::new("auto-hub");
+    let hub = hub_sb.start();
+    let mut c = hub.client().await;
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "direct", "url": remote.url() })).await;
+    let hosts = c
+        .wait_for("the direct host to connect", |m| {
+            m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] == "connected"))
+        })
+        .await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+    c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+
+    let cwd = remote_sb.folder("proj");
+    let from = c.mark();
+    c.send(json!({ "op": "automation.save", "host": host, "automation": automation_of(&cwd, json!({})), "ref": "save" })).await;
+    let saved = c.wait_after(from, "saved on the remote", |m| m["op"] == "automation.saved" && m["ref"] == "save").await;
+    let id = saved["automation"]["id"].as_str().unwrap().to_string();
+    let list = c.wait_after(from, "the remote's list", |m| m["op"] == "automations" && m["hostId"] == host).await;
+    assert_eq!(list["automations"][0]["id"], id);
+
+    // It lives on the remote; the hub keeps none of its own.
+    assert_eq!(remote.client().await.log[0]["automations"][0]["id"], id);
+    assert_eq!(hub.client().await.log[0]["automations"], json!([]));
+
+    // Run now goes to the remote too; the session comes back with the host's prefix.
+    let from = c.mark();
+    c.send(json!({ "op": "automation.run", "host": host, "id": id, "force": true, "ref": "run" })).await;
+    let ran = c.wait_after(from, "the run", |m| m["op"] == "automation.ran" && m["ref"] == "run").await;
+    assert_eq!(ran["outcome"], "started");
+    let meta = c.wait_after(from, "the run's session", |m| m["op"] == "session" && m["session"]["automation"] == id).await;
+    assert_eq!(meta["session"]["host"], host);
+    assert!(meta["session"]["id"].as_str().unwrap().starts_with(&format!("{host}~")));
 }
 
 // Accounts: more than one login per engine, each with its own config folder
