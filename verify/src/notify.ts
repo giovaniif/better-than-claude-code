@@ -15,6 +15,9 @@ function topic(): string | null {
 }
 
 export async function notify(message: string, opts: { title?: string; priority?: number; click?: string } = {}): Promise<{ sent: boolean; why?: string }> {
+  // The owner found the ntfy pushes annoying (2026-11-15): they stay off
+  // until OS notifications through Switchyard replace them.
+  if (!process.env.YV_NTFY) return { sent: false, why: "ntfy is off; OS notifications through Switchyard replace it" };
   if (process.env.YV_NO_NOTIFY) return { sent: false, why: "YV_NO_NOTIFY is set" };
   const t = topic();
   if (!t) return { sent: false, why: "no ntfy topic (YV_NTFY_TOPIC or /etc/homelab-notify.env)" };
@@ -28,8 +31,7 @@ export async function notifyCmd(a: Args): Promise<Result> {
   const msg = a.pos.join(" ").trim();
   if (!msg) throw new Usage('notify "<message>" [--title t] [--priority 1-5] [--click url]');
   const r = await notify(msg, { title: str(a, "title"), priority: Number(str(a, "priority", "3")), click: str(a, "click") });
-  if (!r.sent) fail("not-sent", r.why ?? "not sent");
-  return { ok: true, sent: true };
+  return { ok: true, sent: r.sent, why: r.why, hint: r.sent ? undefined : "nobody was pinged: say it in the PR or the session instead" };
 }
 
 export const _test = { readFileSync };
