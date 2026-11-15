@@ -23,9 +23,9 @@ const emit = (event: Record<string, unknown>) => out({ type: "event", event });
 
 // Ids must stay unique across sidecar restarts in one session (resume, a
 // login), or a new reply would land on an old item of the same id.
-const run = crypto.randomUUID().slice(0, 8);
+const idPrefix = crypto.randomUUID().slice(0, 8);
 let counter = 0;
-const nextId = (prefix: string) => `${prefix}-${run}-${++counter}`;
+const nextId = (prefix: string) => `${prefix}-${idPrefix}-${++counter}`;
 
 // User turns are pushed here while the query is running (streaming input).
 const queue: unknown[] = [];
