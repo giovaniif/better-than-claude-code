@@ -1,0 +1,302 @@
+{
+  "v": 1,
+  "claim": "The model picker is a long flat list with usage as one text line; the 5-hour and weekly limits and when they reset are hard to see and not shown anywhere else",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-usage-picker",
+  "base": "99c3ddbc931424cd564ebf11151aaeeb7a799ece",
+  "head": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/usage.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T20:03:50.368Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3449fda91b0fa02e165ee18b2c339ac47cbb9edc",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "31b0c4cea0615ac9da73476573fe462014a3787e5272792b5d0957456e8b284f"
+        },
+        {
+          "path": "p1-picker-mobile.png",
+          "sha256": "13f1666d4ff551bf6949e694ff381a47d2eb0f9592465893a1dd80046b3be518"
+        },
+        {
+          "path": "p1-picker-desktop.png",
+          "sha256": "2758e70212c9646748a92b634f96b8d86255f0b08d94610af2b591ac25d952a4"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:02.672Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "3449fda91b0fa02e165ee18b2c339ac47cbb9edc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ec0f82e4ee688f431e2c1244d181275ccc2903ac0a83c2eb45c00be7e3cba51b"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:02.713Z",
+      "cmd": "cd ui && bun test src/usage.test.ts && cd ../sidecar/yard-claude && bun test src/usage.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "3449fda91b0fa02e165ee18b2c339ac47cbb9edc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "3438801230411ad739d6faffd5426ec59004b62023356df2f8f0a6395138f7ad"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:02.757Z",
+      "cmd": "verify/yv map run usage --recipe picker-other-engine-collapsed",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "3b4d8ad652f92ff383b2b4a907b70fbf8633e59a659a054270c69ed907e47924"
+        },
+        {
+          "path": "p4-picker-mobile.png",
+          "sha256": "7001837aa7121ea312eea3058bdc1bc0c50d82916c0d9d2fd70adfa76bdb0e46"
+        },
+        {
+          "path": "p4-picker-expanded-mobile.png",
+          "sha256": "63b813b608dd512f4e8e2ec67ff89bd5b84551384ba859f38f18e7c6ca7cf1cc"
+        },
+        {
+          "path": "p4-strip-mobile.png",
+          "sha256": "3e8618fbf023868ffa71ea1990838708b3465cdc613f987a6b8961475c96f609"
+        },
+        {
+          "path": "p4-picker-desktop.png",
+          "sha256": "657a0fcdc49926ebdbfef2d6c3164c3ea6a56035daef5e6c8c345fa889c21e19"
+        },
+        {
+          "path": "p4-picker-expanded-desktop.png",
+          "sha256": "37f7cfe64dfd69f3f681b5f7ede7bc11d138494eda3f50f663177ef404cace67"
+        },
+        {
+          "path": "p4-strip-desktop.png",
+          "sha256": "e6319a29e78573562f73814e9251cd592413c8d0d41e6a6ad24057c6ea4f23d3"
+        }
+      ],
+      "addedAt": "2026-11-15T20:06:47.404Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "78ee4fb8d7757ccb7091d578c0a99db5cfdca669b6aabcd27bfefcb5126b9bca"
+        }
+      ],
+      "addedAt": "2026-11-15T20:06:47.445Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "d2fa2fa86365c3a8a38e60a494b8162ab3abff8f97991b439655e137026a90ec"
+        }
+      ],
+      "addedAt": "2026-11-15T20:06:57.390Z",
+      "cmd": "verify/yv design-check --base 99c3ddbc9314",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-usage.json",
+          "sha256": "254526d414aa594e925d56ef0f902d1a314b60806919b357b5c8ce0da6a69a59"
+        }
+      ],
+      "addedAt": "2026-11-15T20:06:57.479Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-meters-with-reset-times",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-models.json",
+          "sha256": "c56260e6e2c77ebcc52deba08d46447446de13a6a6677d9761bc8508a601a4c4"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:16.992Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/permission-mode",
+        "models/hand-off-to-claude"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-new-session.json",
+          "sha256": "85528b658f219946b663a1c0bc1b3d82ec9e149f6a4946ff850ca779b9585034"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:29.522Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "656d8ac2745eb4bc653d96445cf952f1c253a430",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-attachments.json",
+          "sha256": "81cfd3f99aa1f75015962f797b4c408473536b14b9b01916f6985e8e68b42c22"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:46.590Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api"
+      ]
+    }
+  ]
+}

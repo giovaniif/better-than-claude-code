@@ -1,0 +1,40 @@
+$ verify/yv map run usage --recipe picker-other-engine-collapsed
+# exit 1 after 13592 ms at 3449fda91b0fa02e165ee18b2c339ac47cbb9edc
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-15T20:04:16.345Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "picker-other-engine-collapsed",
+          "status": "fail",
+          "ms": 12737,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":{\"css\":\".picker-fold\",\"hasText\":\"Claude\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-usage-picker/.verify/drives/2026-11-15T20-04-03-838Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "ude\"\n          }\n        },\n        \"reason\": \"for: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-usage-picker/.verify/drives/2026-11-15T20-04-03-838Z/fail-desktop-step1.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 29% · 65%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-7d85\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\" [expanded]\\n  - text: Codex 12% of 5-hour window\\n  - button \\\"Fake Fast\\\"\\n  - button \\\"Fake Deep\\\"\\n  - text: Claude Picking one hands off to a new session.\\n  - button \\\"Opus 5.5\\\"\\n  - button \\\"Sonnet 5.5\\\"\\n  - button \\\"Haiku 5.5\\\"\\n  - text: Effort\\n  - button \\\"Low\\\"\\n  - button \\\"High\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":{\\\"css\\\":\\\".picker-fold\\\",\\\"hasText\\\":\\\"Claude\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-usage-picker/.verify/drives/2026-11-15T20-04-03-838Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "usage/picker-other-engine-collapsed",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

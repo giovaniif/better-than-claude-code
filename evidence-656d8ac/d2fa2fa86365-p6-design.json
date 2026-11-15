@@ -1,0 +1,72 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "99c3ddbc931424cd564ebf11151aaeeb7a799ece",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/UsageMeters.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/protocol.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/usage.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/usage.ts"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule": "raw-button",
+      "severity": "warn",
+      "file": "ui/src/App.tsx",
+      "line": 555,
+      "text": "<button className=\"picker-fold\" aria-expanded={false} onClick={() => setExpanded(true)}>",
+      "hint": "give it a design-system button class: btn, btn-text, btn-icon, btn-primary, btn-quiet"
+    },
+    {
+      "rule": "raw-button",
+      "severity": "warn",
+      "file": "ui/src/App.tsx",
+      "line": 576,
+      "text": "<button",
+      "hint": "give it a design-system button class: btn, btn-text, btn-icon, btn-primary, btn-quiet"
+    },
+    {
+      "rule": "shadow-color",
+      "severity": "warn",
+      "file": "ui/src/styles.css",
+      "line": 197,
+      "text": ".popover { position: absolute; left: -8px; bottom: calc(100% + 8px); z-index: 10; width: 300px; max-width: calc(100vw - 24px); max-height: 60vh; overflow: auto; display: flex; flex-direction: column; ",
+      "hint": "shadows use literal rgba today; reuse an existing shadow value from styles.css"
+    }
+  ],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}
