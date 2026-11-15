@@ -176,6 +176,9 @@ function TermView(props: {
   // scrollback snapshot. Chunks can overlap the snapshot or arrive before it.
   const written = useRef(-1);
   const exited = useRef(false);
+  // Set by the first fit; attaching waits for it.
+  const sized = useRef(false);
+  const wasConnected = useRef(connected);
 
   useEffect(() => {
     const el = host.current;
@@ -192,13 +195,43 @@ function TermView(props: {
     term.loadAddon(fit);
     term.open(el);
     termRef.current = term;
+    sized.current = false;
+    // Nothing attaches before the first real fit. Attached at xterm's default
+    // 80 columns, the PTY was resized to 80 and the shell redrew its prompt
+    // for that width into the scrollback; a snapshot written before the fit
+    // was reflowed afterwards. Either way a reload brought wrapped lines back
+    // garbled. Right after a reload the renderer has no cell size yet, so the
+    // fit is retried once per frame for a while (one chain at a time).
+    let tries = 0;
+    let waiting = false;
+    let gone = false;
+    const attach = () => {
+      if (live.current.connected) live.current.actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
+    };
     const refit = () => {
+      if (gone) return;
       // Fitting a hidden element would size the PTY to nothing.
       if (el.offsetWidth === 0 || el.offsetHeight === 0) return;
+      let ok = false;
       try {
-        fit.fit();
+        if (fit.proposeDimensions()) {
+          fit.fit();
+          ok = true;
+        }
       } catch {
         /* not laid out yet */
+      }
+      if (sized.current) return;
+      // Better a reflowed terminal than none at all.
+      if (ok || ++tries > 120) {
+        sized.current = true;
+        attach();
+      } else if (!waiting) {
+        waiting = true;
+        requestAnimationFrame(() => {
+          waiting = false;
+          refit();
+        });
       }
     };
     refit();
@@ -246,6 +279,7 @@ function TermView(props: {
     observer.observe(el);
 
     return () => {
+      gone = true;
       stop();
       onData.dispose();
       onResize.dispose();
@@ -256,12 +290,13 @@ function TermView(props: {
     };
   }, [termId]);
 
-  // (Re)attach whenever the socket is up: the first time for the scrollback,
-  // after a reconnect for what was missed. Offsets drop the overlap.
+  // Reattach after a reconnect, for what was missed (offsets drop the
+  // overlap). The first attach comes from the first fit, above.
   useEffect(() => {
+    const back = connected && !wasConnected.current;
+    wasConnected.current = connected;
     const term = termRef.current;
-    if (!connected || !term) return;
-    actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
+    if (back && term && sized.current) actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
   }, [termId, connected]);
 
   useEffect(() => {
