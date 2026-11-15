@@ -293,6 +293,9 @@ describe("loop budget", () => {
   test("a 5-hour figure whose window already reset is ignored", () => {
     expect(loopTest.skipReason("patrol", "claude", [], { claude: { fiveHour: 0.9, sevenDay: 0.1, resetsAt: now - 600 } }, cfg, false)).toBeNull();
   });
+  test("verifier runs ignore the usage cap", () => {
+    expect(loopTest.skipReason("verify", "claude", [], { claude: { fiveHour: 0.99, sevenDay: 0.99, resetsAt: now + 600 } }, cfg, false)).toBeNull();
+  });
   test("the weekly cap still applies", () => {
     expect(loopTest.skipReason("patrol", "claude", [], { claude: { fiveHour: 0.1, sevenDay: 0.95, resetsAt: now - 600 } }, cfg, false)).toContain("weekly");
   });

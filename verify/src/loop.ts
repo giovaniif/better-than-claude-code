@@ -68,6 +68,9 @@ function skipReason(kind: Kind, engine: string, sessions: any[], usage: any, cfg
   if (force) return null;
   const busy = sessions.find((s) => s.title.startsWith(TITLE(kind)) && ["running", "needs_approval", "queued"].includes(s.status) && Date.now() - s.createdAt < 3 * 3600_000);
   if (busy && kind !== "verify" && kind !== "babysit") return `a ${kind} run is still going: "${busy.title}" (${busy.status})`;
+  // Verifier and babysit runs are what land PRs: the owner wants them to run
+  // whatever the usage (2026-11-15). The scheduled loops keep the budget.
+  if (kind === "verify" || kind === "babysit") return null;
   const per = loadavg()[0] / cpus().length;
   if (per > cfg.budget.maxLoadPerCore) return `machine busy: load ${loadavg()[0].toFixed(1)} on ${cpus().length} cores`;
   const b = cfg.budget[engine] ?? {};
