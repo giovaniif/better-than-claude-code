@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1e08375e28",
+  "build": {
+    "sha": "34431cd7c9c192bfa6474a95bbf6622d8f352202",
+    "short": "34431cd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T18:45:32.169Z"
+  },
+  "dir": ".verify/evidence/terminal-input-order-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6574,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/terminal-input-order-head/typed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

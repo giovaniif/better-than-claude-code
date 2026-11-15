@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "claim": "Keys typed quickly in the Terminal tab reach the shell out of order (e.g. 'qrstuvxwyz'), so commands run scrambled: yardd handled each WebSocket message in its own task",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-15-c18e",
+  "base": "971958e0106263c10957aa928ad75cc1eba36fcf",
+  "head": "34431cd7c9c192bfa6474a95bbf6622d8f352202",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-15T18:44:44.542Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a58de62fd0e94f6ed30c6034d92374841fcf98fa",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d125964b71ef91f5e37b9da7e5f5f8ef5c03564583b5e0ba97e2e0eca7076d55"
+        },
+        {
+          "path": "p1-typed-desktop.png",
+          "sha256": "e5fabbc383b2c3dfa973fc0c956d45f6c7977dc299362f2f044e98ce4d1cf414"
+        },
+        {
+          "path": "p1-fail-desktop-step6.png",
+          "sha256": "e5fabbc383b2c3dfa973fc0c956d45f6c7977dc299362f2f044e98ce4d1cf414"
+        }
+      ],
+      "addedAt": "2026-11-15T18:45:01.930Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "a58de62fd0e94f6ed30c6034d92374841fcf98fa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "a89a1235bc576ab7b0e64e1a95ca076b7ef52c09f292d9840b4aca3ef2cfc5dc"
+        }
+      ],
+      "addedAt": "2026-11-15T18:45:01.971Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon terminal_keystrokes_reach_the_shell_in_order",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "34431cd7c9c192bfa6474a95bbf6622d8f352202",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "aee56f8071eec3e774d5be8e856455ff33fb7a9d038904948d26049eaa2eed0a"
+        },
+        {
+          "path": "p3-typed-desktop.png",
+          "sha256": "f9c28392416b4a2f0d7db2ef4d1757793cd660c8d54e9a557b4e6431ba4825ae"
+        }
+      ],
+      "addedAt": "2026-11-15T18:45:39.454Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "34431cd7c9c192bfa6474a95bbf6622d8f352202",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "f69f7d5709c8d714c83ba5e8a54d351a9523cd0199ca1de247ebcd2375915c00"
+        }
+      ],
+      "addedAt": "2026-11-15T18:45:39.497Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "34431cd7c9c192bfa6474a95bbf6622d8f352202",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-terminal.json",
+          "sha256": "fb698acd2dd14a193418ebf102d7176c51b83593230a4552e91fa79de87ceed8"
+        }
+      ],
+      "addedAt": "2026-11-15T18:45:52.431Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 1,
+      "failingRecipes": [
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines"
+      ],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "base",
+      "kind": "regression",
+      "at": "a58de62fd0e94f6ed30c6034d92374841fcf98fa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-terminal.json",
+          "sha256": "e3bb3052dcbc069c44c5a9594005ad5a763d45c321191983df32f6252fbc68b2"
+        }
+      ],
+      "addedAt": "2026-11-15T18:47:10.461Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 1,
+      "failingRecipes": [
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines"
+      ],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/second-terminal"
+      ]
+    }
+  ]
+}

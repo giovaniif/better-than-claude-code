@@ -1,0 +1,58 @@
+{
+  "ok": false,
+  "route": "session:s1a1e08375e28",
+  "build": {
+    "sha": "a58de62fd0e94f6ed30c6034d92374841fcf98fa",
+    "short": "a58de62",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T18:44:47.711Z"
+  },
+  "dir": ".verify/evidence/terminal-input-order-base-2",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6269,
+      "steps": 7,
+      "failed": {
+        "step": 6,
+        "action": {
+          "eval": "document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": ".verify/evidence/terminal-input-order-base-2/fail-desktop-step6.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"iso-host 6% · 54%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"[edit] TEST-fix the greeting\" [level=1]\n  - code: yard/edit-test-fix-the-greeting-5cb7\n  - button \"Delete\"\n  - text: \"[edit] TEST-fix the greeting\"\n  - code: src/lib.rs\n  - text: \"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\"\n  - paragraph: Edited src/lib.rs.\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\"\n  - button \"Terminal\" [pressed]\n  - button \"Pull request\"\n  - tablist \"Terminals\":\n    - tab \"1\" [selected]\n    - button \"Close terminal\"\n    - button \"New terminal\"\n  - textbox \"Terminal input\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/terminal-input-order-base-2/typed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 6 {\"eval\":\"document.querySelector(\\\".xterm-rows\\\").innerText.replace(/\\\\s+/g, \\\"\\\").includes(\\\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\\\")\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see .verify/evidence/terminal-input-order-base-2/fail-desktop-step6.png and the aria snapshot"
+    }
+  ]
+}

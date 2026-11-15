@@ -1,0 +1,39 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon terminal_keystrokes_reach_the_shell_in_order
+# exit 101 after 21098 ms at a58de62fd0e94f6ed30c6034d92374841fcf98fa
+
+
+running 1 test
+test terminal_keystrokes_reach_the_shell_in_order ... FAILED
+
+failures:
+
+---- terminal_keystrokes_reach_the_shell_in_order stdout ----
+
+thread 'terminal_keystrokes_reach_the_shell_in_order' (4047523) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the typed word echoed back unscrambled; last messages:
+{"data":"Mg==","offset":321,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"Mw==","offset":322,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"NA==","offset":323,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"NQ==","offset":324,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"Njc=","offset":325,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"OA==","offset":327,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"OQ==","offset":328,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"DQo=","offset":329,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"G1s/MjAwNGhnaW92YW5pQGdpb3Zhbmk6L3RtcC95YXJkZC10ZXN0LTQwNDc1MjItdGVybS1vcmRlci0wL3dvcmsvcHJvaiQg","offset":331,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"Y2VvaCBhYmNkZWZoZ2lqa2xtb3BucXJzdHV2d3h6eTAxMjM0NTY3ODlhYmRjZWZoaWdqa2xtbnBvcXJzdHV2d3h5ejAxMjM0NTY3OGE5YmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejAxMjM0NTY3ODlhYmNkZWZnaWhqa2xtbm9wcXJzdHV2d3h6eTAxMjM0NTY3ODlhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejAxMjM0NTY3ODlhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejAxMjM0NTY
+{"data":"Q29tbWFuZCAnY2VvaCcgbm90IGZvdW5kLCBkaWQgeW91IG1lYW46DQogIGNvbW1hbmQgJ2NlcGgnIGZyb20gZGViIGNlcGgtY29tbW9uICgxOS4yLjMtMHVidW50dTAuMjQuMDQuMykNClRyeTogc3VkbyBhcHQgaW5zdGFsbCA8ZGViIG5hbWU+DQo=","offset":635,"op":"term.data","termId":"t1a1e086f2852"}
+{"data":"G1s/MjAwNGhnaW92YW5pQGdpb3Zhbmk6L3RtcC95YXJkZC10ZXN0LTQwNDc1MjItdGVybS1vcmRlci0wL3dvcmsvcHJvaiQg","offset":775,"op":"term.data","termId":"t1a1e086f2852"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-4047522-term-order-0 for inspection
+
+
+failures:
+    terminal_keystrokes_reach_the_shell_in_order
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 36 filtered out; finished in 20.40s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-15-c18e/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.64s
+     Running tests/daemon.rs (target/debug/build/yardd/896f585c81d80578/out/daemon-896f585c81d80578)
+error: test failed, to rerun pass `-p yardd --test daemon`
