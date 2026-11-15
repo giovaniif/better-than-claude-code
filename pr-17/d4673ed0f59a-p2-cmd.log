@@ -1,0 +1,18 @@
+$ cd ui && bun test src/notify.test.ts
+# exit 1 after 9 ms at 6038214b2b0a7185804ef84c9341e7b7ebf16494
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/notify.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './notify' from '/home/giovani/.yard/wt/better-than-claude-code/feat-os-notifications/ui/src/notify.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [4.00ms]

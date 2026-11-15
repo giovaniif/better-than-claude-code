@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "route": "session:s1a1e0d3a1c510",
+  "build": {
+    "sha": "acb184e6fcaa87530f5c778fbcd116195ba7e4f1",
+    "short": "acb184e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T20:08:22.235Z"
+  },
+  "dir": ".verify/evidence/os-notifications-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 12282,
+      "steps": 26,
+      "failed": null,
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "localStorage.getItem(\"yard.notifications\")||\"off\"",
+          "value": "on"
+        },
+        {
+          "step": 3,
+          "eval": "document.hasFocus=()=>true"
+        },
+        {
+          "step": 10,
+          "eval": "window.__n.length",
+          "value": 0
+        },
+        {
+          "step": 11,
+          "eval": "document.hasFocus=()=>false"
+        },
+        {
+          "step": 16,
+          "eval": "window.__n.length",
+          "value": 1
+        },
+        {
+          "step": 22,
+          "eval": "window.__n.map((n)=>n.title+\": \"+n.o.body)",
+          "value": [
+            "TEST-start: Waiting for your approval",
+            "TEST-start: Finished its turn",
+            "TEST-start: Failed"
+          ]
+        },
+        {
+          "step": 24,
+          "eval": "window.__n[0].onclick()"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

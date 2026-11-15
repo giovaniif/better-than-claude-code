@@ -1,0 +1,83 @@
+$ verify/yv map run notifications; verify/yv map run sidebar
+# exit 0 after 64634 ms at 97c3fc5ef7cb0f421c26f8e2f22269cb70303da1
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "notifications",
+      "at": "2026-11-15T23:56:54.116Z",
+      "counts": {
+        "pass": 5
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "notifications-switch",
+          "status": "pass",
+          "ms": 3435
+        },
+        {
+          "label": "notifications-permission-denied",
+          "status": "pass",
+          "ms": 3421
+        },
+        {
+          "label": "notifications-from-sessions",
+          "status": "pass",
+          "ms": 13311
+        },
+        {
+          "label": "notifications-from-sessions-mobile",
+          "status": "pass",
+          "ms": 12557
+        },
+        {
+          "label": "notifications-notify-op",
+          "status": "pass",
+          "ms": 10757
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-15T23:57:14.408Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 3666
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6128
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 6100
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 3528
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

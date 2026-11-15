@@ -1,0 +1,71 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1e1a00c9510",
+  "build": {
+    "sha": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+    "short": "97c3fc5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T23:51:32.888Z"
+  },
+  "dir": "/home/giovani/.yard/wt/switchyard/yard-loop-babysit-17-2026-11-a437/.verify/drives/2026-11-15T23-52-05-441Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 12530,
+      "steps": 26,
+      "failed": null,
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "localStorage.getItem(\"yard.notifications\")||\"off\"",
+          "value": "on"
+        },
+        {
+          "step": 3,
+          "eval": "document.hasFocus=()=>true"
+        },
+        {
+          "step": 10,
+          "eval": "window.__n.length",
+          "value": 0
+        },
+        {
+          "step": 11,
+          "eval": "document.hasFocus=()=>false"
+        },
+        {
+          "step": 16,
+          "eval": "window.__n.length",
+          "value": 1
+        },
+        {
+          "step": 22,
+          "eval": "window.__n.map((n)=>n.title+\": \"+n.o.body)",
+          "value": [
+            "TEST-start: Waiting for your approval",
+            "TEST-start: Finished its turn",
+            "TEST-start: Failed"
+          ]
+        },
+        {
+          "step": 24,
+          "eval": "window.__n[0].onclick()"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,310 @@
+{
+  "v": 1,
+  "claim": "Switchyard shows no OS notification when a session needs approval, finishes or fails, and agents have no way to notify through it (they use ntfy)",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-os-notifications",
+  "base": "ec9c57381064ad21662903d74ed8a99bd5a9e12a",
+  "head": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+  "changed": [
+    {
+      "status": "M",
+      "path": "Cargo.lock"
+    },
+    {
+      "status": "M",
+      "path": "app/src-tauri/Cargo.toml"
+    },
+    {
+      "status": "M",
+      "path": "app/src-tauri/capabilities/default.json"
+    },
+    {
+      "status": "M",
+      "path": "app/src-tauri/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/notify.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/notify.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/notifications.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T20:07:30.738Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6038214b2b0a7185804ef84c9341e7b7ebf16494",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-new.json",
+          "sha256": "9038f03f2b2f194937a507ea5ed22bab36129b55d4ad08aceb337ec76fba35cf"
+        },
+        {
+          "path": "p1-new-mobile.png",
+          "sha256": "7b3f976293c867415f4c3c335f77e105b3de7deeda106803ac3c27089dad6693"
+        },
+        {
+          "path": "p1-new-desktop.png",
+          "sha256": "28031c1fda5ef7a6ee3d8334ecf6ec742c7a968434f34eec8d270bd144518104"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:41.262Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "6038214b2b0a7185804ef84c9341e7b7ebf16494",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d4673ed0f59a00bff4509ccad81b6c58d78d11a8de8b4721dd1e80f33d48bfa7"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:41.304Z",
+      "cmd": "cd ui && bun test src/notify.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "6038214b2b0a7185804ef84c9341e7b7ebf16494",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "73d821f82ead4823f4a76de83bdec7d336e881a19d18ab2e5254a952f94a2bdf"
+        }
+      ],
+      "addedAt": "2026-11-15T20:07:41.354Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon notify",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "6038214b2b0a7185804ef84c9341e7b7ebf16494",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "0d89870821900b662d8266326a9e0727e2b4be7e196260e241077ba26d439054"
+        }
+      ],
+      "addedAt": "2026-11-15T20:08:05.235Z",
+      "cmd": "verify/yv map run notifications --recipe notifications-from-sessions",
+      "exit": 1
+    },
+    {
+      "id": 12,
+      "ref": "base",
+      "kind": "regression",
+      "at": "99c3ddbc931424cd564ebf11151aaeeb7a799ece",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-layout.json",
+          "sha256": "3af9cfabf26fe8df99361d565dbd8a7bd0d671f0ed76d0cd13c9d0aeb5e63363"
+        }
+      ],
+      "addedAt": "2026-11-15T20:10:46.357Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 1,
+      "failingRecipes": [
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page"
+      ],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-fix-desktop.json",
+          "sha256": "1df3b6c8d0bfcaff3c0bb651ff72de046fb03c207a6856b5382cf0f5a05e537d"
+        }
+      ],
+      "addedAt": "2026-11-15T23:56:00.178Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-fix-mobile.json",
+          "sha256": "5b0b5273045dd11597a7d8c0b9352dd6d42865e5836b460f8120224cc29ac43c"
+        }
+      ],
+      "addedAt": "2026-11-15T23:56:00.236Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-tests.log",
+          "sha256": "a1afa25c9be153b042cb540d019d76b1b32adfc2dd7cf26f387cab07c3037f3d"
+        },
+        {
+          "path": "p8-cmd.log",
+          "sha256": "95294a1b20083bc3a7c905466c5af2d4d77e1af7a7326012d7eb98b93bd30851"
+        }
+      ],
+      "addedAt": "2026-11-15T23:56:00.279Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "5ac222651fc0dd82d1fe6f5ab8860e4008236cd205d06ca681667154d014c503"
+        },
+        {
+          "path": "p9-cmd.log",
+          "sha256": "88136f1f44583a40f8e9a6e8460e80d92e3f1a9dd5e0f786fef73285e8f59fce"
+        }
+      ],
+      "addedAt": "2026-11-15T23:56:09.674Z",
+      "failedApi": [],
+      "cmd": "verify/yv design-check --base origin/main",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-sidebar.json",
+          "sha256": "178d35633faf1a32b20944812697cdfb3b897d6d580fc7b7382f92b8a3a947b3"
+        },
+        {
+          "path": "p10-cmd.log",
+          "sha256": "1052db41e369f403afe7aa1ecb041df62fbc33a624af40f11ff962782d0acc11"
+        }
+      ],
+      "addedAt": "2026-11-15T23:56:09.777Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ],
+      "cmd": "verify/yv map run notifications; verify/yv map run sidebar",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "97c3fc5ef7cb0f421c26f8e2f22269cb70303da1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-layout.json",
+          "sha256": "65c23e5a02b60717f39af56faf88dd6ea96f2516527b14a2179d8b045895033c"
+        },
+        {
+          "path": "p11-cmd.log",
+          "sha256": "835e065a2d2a2993d3dec50c87e4c6c8674427f45926c42ec3ce5bce364b4082"
+        }
+      ],
+      "addedAt": "2026-11-15T23:57:14.460Z",
+      "failedApi": [],
+      "failingRecipes": [
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page"
+      ],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane"
+      ],
+      "cmd": "verify/yv map run layout",
+      "exit": 1
+    }
+  ]
+}
