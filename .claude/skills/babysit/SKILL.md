@@ -35,13 +35,14 @@ verify/yv pr status $N
    current head, no open threads, merge state CLEAN. Then:
    ```sh
    verify/yv land check $N
-   verify/yv land merge $N     # follows verify/land.json mode: shadow records "would land"
+   verify/yv land merge $N     # live: merges when every rule holds
    ```
-5. **Merging.** Only the gate in live mode, or the owner's explicit `merge`
-   comment on *this* PR (`pr status` → `humanReplies[].merge`), merges. A
-   "merge" on one PR never carries over to another. When the owner said merge:
-   `gh pr merge $N --squash --match-head-commit <head> --repo giovaniif/switchyard`,
-   then `verify/yv land watch $N` after the workflows finish.
+5. **Merging.** The gate (live since 2026-11-15) merges a landable PR, PASS
+   and PASS+NOTES alike. Otherwise only the owner's explicit `merge` comment
+   on *this* PR (`pr status` → `humanReplies[].merge`) merges it; a "merge" on
+   one PR never carries over to another. When the owner said merge:
+   `gh pr merge $N --squash --match-head-commit <head> --repo giovaniif/switchyard`.
+   After any merge, `verify/yv land watch $N` once the workflows finish.
 
 ## Gotchas
 

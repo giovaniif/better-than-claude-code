@@ -1,8 +1,13 @@
 {
-  "$comment": "Land gate settings for verify/yv land. Changing this file is a self-or-CI change: a human merges it.",
-  "mode": "shadow",
+  "$comment": "Land gate settings for verify/yv land. Live since 2026-11-15 on the owner's word: a PR the gate finds landable (verifier PASS or PASS+NOTES at head, green checks, no threads, no irreversible or self-or-CI change) merges without them. Changing this file is a self-or-CI change: a human merges it.",
+  "mode": "live",
   "owner": "giovaniif",
-  "requiredChecks": ["yardd", "ui", "sidecar", "verify"],
+  "requiredChecks": [
+    "yardd",
+    "ui",
+    "sidecar",
+    "verify"
+  ],
   "approval": {
     "$comment": "Solo repository: GitHub does not let the author approve, and agents post as the owner. A PASS verdict from the independent verifier at the current head counts as the approval.",
     "verdictCounts": true
@@ -15,10 +20,20 @@
   },
   "guards": {
     "minMinutesSinceLastMerge": 20,
-    "landingHours": { "tz": "America/Sao_Paulo", "from": 8, "to": 22 },
-    "deployWorkflows": ["Release", "Docker image"],
-    "watchWorkflows": ["CI", "Linux host", "macOS app", "Docker image"]
+    "deployWorkflows": [
+      "Release",
+      "Docker image"
+    ],
+    "watchWorkflows": [
+      "CI",
+      "Linux host",
+      "macOS app",
+      "Docker image"
+    ],
+    "$comment": "No landing hours: the owner asked for merges without them. Deploys in flight, a failed last deploy and 20 minutes between merges still make a merge wait."
   },
-  "liveCategories": [],
+  "liveCategories": [
+    "*"
+  ],
   "smallLines": 200
 }

@@ -297,7 +297,8 @@ function merge(n: number, a: Args): Result {
   const cfg = landConfig();
   const c = check(n);
   const mode = a.flags["dry-run"] ? "shadow" : cfg.mode;
-  const liveForCategory = (cfg.liveCategories ?? []).includes(c.category);
+  const live: string[] = cfg.liveCategories ?? [];
+  const liveForCategory = live.includes("*") || live.includes(c.category);
   const entry = { kind: "decision", pr: n, head: c.head, mode, category: c.category, landable: c.landable, blockers: c.blockers.map((b) => b.code), guards: c.guards.map((g) => g.code), size: c.size };
   if (mode === "off") return { ok: true, ...c, action: "none (mode off)" };
   if (mode === "shadow" || (mode === "live" && !liveForCategory)) {

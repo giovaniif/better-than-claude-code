@@ -5,22 +5,16 @@
   "budget": {
     "$comment": "Skip a run when the engine's usage is above these percentages (5-hour window, week) or the machine is busy.",
     "codex": { "primaryMax": 60, "secondaryMax": 75 },
-    "claude": { "fiveHourMax": 50, "sevenDayMax": 60 },
+    "claude": { "fiveHourMax": 70, "sevenDayMax": 80 },
     "maxLoadPerCore": 0.7
   },
-  "fallback": {
-    "$comment": "Used only while the loop's own engine is logged out on this host. Claude is reserved for the owner, so the cap is tight: a run is skipped once Claude's 5-hour window passes 50% or its week passes 30%.",
-    "engine": "claude",
-    "model": "claude-sonnet-5-5",
-    "effort": "high",
-    "budget": { "fiveHourMax": 50, "sevenDayMax": 30 }
-  },
+  "fallback": null,
   "loops": {
-    "patrol": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/patrol/SKILL.md" },
-    "maintain": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/map-maintenance/SKILL.md" },
-    "review": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 30, "skill": ".claude/skills/weekly-review/SKILL.md" },
-    "verify": { "engine": "codex", "model": "default", "effort": "high", "minutes": 40, "skill": ".claude/skills/verifier/SKILL.md" },
-    "babysit": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 40, "skill": ".claude/skills/babysit/SKILL.md" }
+    "patrol": { "engine": "claude", "model": "claude-opus-5-5", "effort": "high", "minutes": 50, "skill": ".claude/skills/patrol/SKILL.md" },
+    "maintain": { "engine": "claude", "model": "claude-opus-5-5", "effort": "medium", "minutes": 50, "skill": ".claude/skills/map-maintenance/SKILL.md" },
+    "review": { "engine": "claude", "model": "claude-opus-5-5", "effort": "medium", "minutes": 30, "skill": ".claude/skills/weekly-review/SKILL.md" },
+    "verify": { "engine": "claude", "model": "claude-opus-5-5", "effort": "high", "minutes": 40, "skill": ".claude/skills/verifier/SKILL.md" },
+    "babysit": { "engine": "claude", "model": "claude-opus-5-5", "effort": "medium", "minutes": 40, "skill": ".claude/skills/babysit/SKILL.md" }
   },
   "keepFinishedSessions": 3
 }

@@ -21,7 +21,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 - A yardd is usually running on port 47717 with the user's live sessions, started by the desktop app. Never stop it. No `pkill yardd`: kill only the PIDs you started. Never test on port 47717.
 - Tests must not write under `~/.yard`. Point any data directory setting at a temp folder.
 - Ports 4510-4559 belong to LocalStack. Stay out of them.
-- Live agent turns spend the user's subscriptions. Test with Codex on `gpt-5.6-luna`, effort `low`, with tiny prompts. Claude weekly usage is nearly exhausted: no Claude turns unless the task says so.
+- Live agent turns spend the user's subscriptions. Tests and verification use the scripted engines; a real-engine check uses Codex on `gpt-5.6-luna`, effort `low`, with tiny prompts. The agent loops run on Claude (`verify/loops.json`), capped by usage; no other Claude turns unless the task says so.
 - You own this repo end to end: commit and push your work, including CI changes. Leave other repositories alone.
 - Releases are numbered: write the CHANGELOG.md section, then `scripts/release.sh X.Y.Z` (see CONTRIBUTING.md). Pushes to `main` build but don't publish.
 - yardd binds loopback by default and always checks the WebSocket `Origin`. Keep both. Leaving loopback is opt-in through `YARD_BIND` (the container image uses `0.0.0.0`; a server behind a proxy lists loopback plus one proxy-facing address), always with `YARD_ALLOW_ORIGIN` naming the page's URL. Never match `Origin` against the `Host` header: that reopens DNS rebinding.
@@ -43,7 +43,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 
 ## Agent PRs
 
-- Agent fixes go through PRs, not straight to `main`: the patrol loop finds, fixes and proves one issue per run; an independent verifier posts a verdict; the land gate (`verify/yv land`, settings in `verify/land.json`) decides whether it could merge. It runs in shadow mode: nothing merges without the owner's `merge` on that PR.
+- Agent fixes go through PRs, not straight to `main`: the patrol loop finds, fixes and proves one issue per run; an independent verifier posts a verdict; the land gate (`verify/yv land`, settings in `verify/land.json`) decides whether it could merge. It is live: a PR it finds landable (verifier PASS or PASS+NOTES at head, green checks, no open threads, nothing irreversible or self-or-CI) merges without the owner.
 - Skills: `verify`, `verifier`, `babysit`, `patrol`, `map-maintenance`, `weekly-review` in `.claude/skills/`. The loops run as Switchyard sessions on the live yardd, started by systemd user timers (`verify/loops/README.md`).
 - Agents post on GitHub as the owner, so every agent comment carries `<!-- yv:agent -->` and the owner is reached with `verify/yv notify`.
 - Overview for humans: [docs/VERIFICATION.md](docs/VERIFICATION.md).

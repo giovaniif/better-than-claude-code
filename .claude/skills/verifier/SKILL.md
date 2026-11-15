@@ -83,4 +83,22 @@ verify/yv land verdict $N --verdict PASS --bundle .verify/evidence/pr-$N --notes
 
 The comment carries `<!-- land:verdict v=1 sha=<head> verdict=<X> -->`; a
 push after it makes it stale and the gate asks for a new pass.
+
+## 6. Land
+
+After a PASS or PASS+NOTES, hand the PR to the gate. It is live: it merges
+only when every rule holds, and it is the only way agent PRs merge.
+
+```sh
+verify/yv land merge $N
+```
+
+- `merged`: wait for the workflows on the merge commit, then
+  `verify/yv land watch $N` (a regression opens a revert PR and pings the owner).
+  If they are still running when your budget ends, the patrol watches it.
+- `waiting on guards`: leave it; the patrol retries every hour.
+- `blocked`: read the blockers. Ones a person must judge (`self-or-ci`,
+  `irreversible`, `security-boundary`, `data-loss`) go to the owner:
+  `verify/yv notify "#$N needs you: <blocker>" --click <PR url>`.
+
 Finish with `verify/yv iso down --all`.

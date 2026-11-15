@@ -54,9 +54,12 @@ For each open patrol PR:
 2. Babysit it to ready: follow `.claude/skills/babysit/SKILL.md` (one pass).
    When it needs a verifier: `verify/yv loop run verify --pr <N>` starts a
    fresh, independent session; do not verify your own PR.
-3. Ready (checks green, PASS verdict on head, no threads): `verify/yv land check <N>`
-   then `verify/yv land merge <N>` (shadow mode records the gate's call; it
-   merges nothing). Then notify the owner once: "#N is ready: reply `merge` to land it".
+3. Ready (checks green, PASS or PASS+NOTES verdict on head, no threads):
+   `verify/yv land merge <N>`. The gate is live: it re-checks everything and
+   squash-merges pinned to the head SHA. If it answers `waiting on guards`
+   (a deploy in flight, 20 minutes since the last merge), try again next run.
+   If it is blocked by `self-or-ci`, `irreversible`, `verdict-human` or another
+   rule a person must judge, notify the owner once: "#N needs you: <blocker>".
 4. For merged patrol PRs from the last day: `verify/yv land watch <N>`.
 
 ## Phase B: one new fix
@@ -97,7 +100,8 @@ For each open patrol PR:
      viewport, all as `verify-assets` URLs (`verify/yv assets push`); the test
      plan; the Verification section from `evidence publish`. End with `<!-- yv:agent -->`.
    - Link the finding issue; set it to `pr-open`.
-   - Start the verifier: `verify/yv loop run verify --pr <N>`.
+   - Start the verifier: `verify/yv loop run verify --pr <N>`. On PASS or
+     PASS+NOTES it runs `verify/yv land merge <N>` itself.
    - Do one babysit pass.
 
 ## Finish
@@ -112,8 +116,8 @@ gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
   under `~/.yard` from tests, no Claude turns, LocalStack ports are off limits,
   `CARGO_BUILD_JOBS` stays modest (4).
 - Never weaken a recipe or a test to make it pass.
-- Never merge without the owner's explicit `merge` on that PR (the gate is in
-  shadow mode). Never push to `main`.
+- Merge only through `verify/yv land merge` (or the owner's explicit `merge`
+  on that PR). Never `gh pr merge` around the gate, never push to `main`.
 - Changes to CI, `verify/` (except `verify/features/`), skills or CLAUDE.md
   always go to the owner: the gate blocks them as self-or-CI.
 - Every surprise becomes a Gotcha in the feature map, a CLI fix, or a rule in
