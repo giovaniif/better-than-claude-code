@@ -182,13 +182,16 @@ impl Client {
         );
     }
 
-    pub fn approve(&self, request_id: &str, decision: &str) -> Result<()> {
+    /// `resolved` runs once the request is known to be pending and before
+    /// Codex hears the answer, so nothing Codex does next can be logged first.
+    pub fn approve(&self, request_id: &str, decision: &str, resolved: impl FnOnce()) -> Result<()> {
         let id = self
             .approvals
             .lock()
             .unwrap()
             .remove(request_id)
             .context("approval is no longer pending")?;
+        resolved();
         let decision = match decision {
             "allow" => "accept",
             "allow_always" => "acceptForSession",
@@ -589,6 +592,6 @@ pub async fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn approve(app: &Arc<App>, request_id: &str, decision: &str) -> Result<()> {
-    client(app).await?.approve(request_id, decision)
+pub async fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> Result<()> {
+    client(app).await?.approve(request_id, decision, || crate::sessions::approval_resolved(app, sid, request_id, decision))
 }

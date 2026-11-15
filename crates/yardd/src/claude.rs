@@ -203,11 +203,19 @@ pub fn kill(app: &Arc<App>, sid: &str) {
 }
 
 pub fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> Result<()> {
-    line(
-        app,
-        sid,
-        json!({ "type": "permission", "requestId": request_id, "decision": decision }),
-    )
+    // Logged before the sidecar hears the answer: a tool that runs and a turn
+    // that ends right after it must come later in the log, not before it.
+    let tx = {
+        let map = app.sessions.lock().unwrap();
+        match map.get(sid).map(|s| &s.backend) {
+            Some(Backend::Claude { tx, .. }) if !tx.is_closed() => tx.clone(),
+            Some(Backend::Claude { .. }) => bail!("the Claude sidecar is not running"),
+            _ => bail!("session has no Claude sidecar"),
+        }
+    };
+    crate::sessions::approval_resolved(app, sid, request_id, decision);
+    tx.send(json!({ "type": "permission", "requestId": request_id, "decision": decision }).to_string())
+        .map_err(|_| anyhow::anyhow!("the Claude sidecar is not running"))
 }
 
 #[cfg(test)]
