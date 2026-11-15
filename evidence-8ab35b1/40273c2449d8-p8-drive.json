@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+    "short": "8ab35b1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T20:04:43.653Z"
+  },
+  "dir": ".verify/evidence/session-groups-arch-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1463,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-arch-m/closed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-arch-m/open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)",
+          "value": true
+        },
+        {
+          "step": 2,
+          "eval": "Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".sidebar-bottom\").getBoundingClientRect().top) < 2",
+          "value": true
+        },
+        {
+          "step": 6,
+          "eval": "Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".sidebar-bottom\").getBoundingClientRect().top) < 2",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,331 @@
+{
+  "v": 1,
+  "claim": "Sessions cannot be grouped in the sidebar, and the Archived section scrolls away with the session list instead of staying at the bottom",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-session-groups",
+  "base": "99c3ddbc931424cd564ebf11151aaeeb7a799ece",
+  "head": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T20:03:53.829Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "82d0560529b29274632a38b23aee822355b2d87e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d159e7d106c660f9bfe7ee61b5a63f975984043a54f8cc88fdb6d8aac504971a"
+        },
+        {
+          "path": "p1-menu-desktop.png",
+          "sha256": "67e08ca1ec120d9cd2834d4d17718dbb2d81e721f77d99792132f3460527fcf5"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "1b04cc77723e322cd703eb8dd5135adfb8c43c0bc08da152ee9583a55f4c40c5"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:03.763Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "82d0560529b29274632a38b23aee822355b2d87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e0162272310e605078297b460b1d0cefdbb2bc2394722cc4005333242f0d129d"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:03.802Z",
+      "cmd": "cd ui && bun test src/store.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "82d0560529b29274632a38b23aee822355b2d87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "569c45484fd879ef5d59c1e34e7f90271ce4721fd0678b85b422c5b471d2a3c2"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:03.854Z",
+      "cmd": "cargo test -p yardd --test daemon sessions_are_grouped_across_restarts",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "82d0560529b29274632a38b23aee822355b2d87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "bc351825c8be021a5f16d700519b53ee4096fc8c8d50da20bebf54ea714d0404"
+        }
+      ],
+      "addedAt": "2026-11-15T20:04:26.680Z",
+      "cmd": "verify/yv map run sidebar --recipe group-new",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "87f94ed316ffb5eadbf75e6c00cd6be183575e189aeff2b1b45babc00ddbb061"
+        },
+        {
+          "path": "p5-pick-desktop.png",
+          "sha256": "9b074a9a3d591c1ec554ed023209fdc91d2778dbdc4a218a99cc7ae3c94cccd1"
+        },
+        {
+          "path": "p5-name-desktop.png",
+          "sha256": "a2795d8ae852974a4a9e6fcea819613108f84d72fbe3253ae124dc5398d69c6c"
+        },
+        {
+          "path": "p5-grouped-desktop.png",
+          "sha256": "eca0a10321b7d9958e5f8bbb2f04d83390fe49921bb2912a17099e5b0901477f"
+        },
+        {
+          "path": "p5-group-menu-desktop.png",
+          "sha256": "c0f8238dece1fe04932c4d54b830587b0b121d83650793b62624a4f637733d1c"
+        },
+        {
+          "path": "p5-collapsed-desktop.png",
+          "sha256": "2a579ea911338d7d542f64c1e9ef39f364d67c656f411f68214c70d1d4f60da5"
+        },
+        {
+          "path": "p5-collapsed-after-reload-desktop.png",
+          "sha256": "282553077b3272bec342634d84a20870acd56bbbbac76bea8a8e0a128383a831"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:41.718Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "24a6541fc2d28a4234bcd57d5b4b06c7dc06ebfbfd73cfa10d2b211b3a8e2b31"
+        },
+        {
+          "path": "p6-pick-mobile.png",
+          "sha256": "71b6a7c00fe5469c4b5734b906a04011e630fe357e021104570cf15598160c3c"
+        },
+        {
+          "path": "p6-name-mobile.png",
+          "sha256": "3cdf0288f68be82c86c613456948b88460939d6e888867bd77b6de8f9483854b"
+        },
+        {
+          "path": "p6-grouped-mobile.png",
+          "sha256": "bb4dcc40b130b2c706f552fc17e5b6ca3c7b0735891938f9c4a3b62b8b6ab86d"
+        },
+        {
+          "path": "p6-group-menu-mobile.png",
+          "sha256": "f039e11a0178ea70600f456b3c268dd3d0ee16338527f6142a9ffc49fd7ad7e8"
+        },
+        {
+          "path": "p6-collapsed-mobile.png",
+          "sha256": "219956cbf6dd602953065aefc40ec144b1e90732440452d8c4e8320004a81863"
+        },
+        {
+          "path": "p6-collapsed-after-reload-mobile.png",
+          "sha256": "c31a91b90e9a92eccb71586f7e0efe8cfbed855d7604b424813bc5c85905afe3"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:41.765Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "a5c35c45e6fbf4ae532073a7430fff971f58706bd960bc1721f59a70f680c987"
+        },
+        {
+          "path": "p7-closed-desktop.png",
+          "sha256": "5e59e9c5fef093018806f4d41845edbd2c3833569bc59b4aa724d2b83361dac9"
+        },
+        {
+          "path": "p7-open-desktop.png",
+          "sha256": "b5ec2681f429138cf6d49ad8e2acdc3e54355239b564e858d993097cf8ca3bed"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:41.823Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "40273c2449d8578fb2678fbc324bb045432503e3c52b75816fc3f42e49acd268"
+        },
+        {
+          "path": "p8-closed-mobile.png",
+          "sha256": "77a53afa037cef2dc1b6b6793319ee5fa40b750791544d5a0cd3236fe89a7a60"
+        },
+        {
+          "path": "p8-open-mobile.png",
+          "sha256": "ec4339451134d097149896a54c9bda1c3ae7cf4ac4adc570c1b8e7fdf0d9622f"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:41.871Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "c44af57e9feeb0c430e5f114b838ceb04605062605614deb1ac4951c1770ee6d"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:41.918Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "aab5dcb8767c73143195d02256063f509aecc4947e364f5150f7a5c42d14c0ed"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:54.963Z",
+      "cmd": "verify/yv design-check --base 99c3ddbc9314",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-sidebar.json",
+          "sha256": "edb3ac1309159a72310576ed40c6d4ab453b2c5c1757dc53354ea9364071e73f"
+        }
+      ],
+      "addedAt": "2026-11-15T20:05:55.061Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom"
+      ]
+    }
+  ]
+}

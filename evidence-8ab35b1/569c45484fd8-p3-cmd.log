@@ -1,0 +1,39 @@
+$ cargo test -p yardd --test daemon sessions_are_grouped_across_restarts
+# exit 101 after 22785 ms at 82d0560529b29274632a38b23aee822355b2d87e
+
+
+running 1 test
+test sessions_are_grouped_across_restarts ... FAILED
+
+failures:
+
+---- sessions_are_grouped_across_restarts stdout ----
+
+thread 'sessions_are_grouped_across_restarts' (379666) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for a grouped; last messages:
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794773046514,"cwd":"/tmp/yardd-test-379665-group-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0cf54f22","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794773046514,"cwd":"/tmp/yardd-test-379665-group-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0cf54f22","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+{"op":"created","sessionId":"s1a1e0cf54f22"}
+{"event":{"text":"second","type":"user_message"},"op":"event","seq":0,"sessionId":"s1a1e0cf54f22"}
+{"event":{"at":1794773046515,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e0cf54f22"}
+{"event":{"itemId":"msg-379697-6","text":"Echo","type":"assistant_delta"},"op":"event","seq":2,"sessionId":"s1a1e0cf54f22"}
+{"event":{"itemId":"msg-379697-6","text":": se","type":"assistant_delta"},"op":"event","seq":3,"sessionId":"s1a1e0cf54f22"}
+{"event":{"itemId":"msg-379697-6","text":"cond","type":"assistant_delta"},"op":"event","seq":4,"sessionId":"s1a1e0cf54f22"}
+{"event":{"itemId":"msg-379697-6","text":"Echo: second","type":"assistant_message"},"op":"event","seq":5,"sessionId":"s1a1e0cf54f22"}
+{"event":{"at":1794773046517,"status":"completed","type":"turn_completed"},"op":"event","seq":6,"sessionId":"s1a1e0cf54f22"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794773046514,"cwd":"/tmp/yardd-test-379665-group-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0cf54f22","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794773046472,"cwd":"/tmp/yardd-test-379665-group-0/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0cf54c81","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-379665-group-0 for inspection
+
+
+failures:
+    sessions_are_grouped_across_restarts
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 38 filtered out; finished in 20.18s
+
+
+   Compiling yardd v0.3.0 (/home/giovani/.yard/wt/better-than-claude-code/feat-session-groups/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.56s
+     Running tests/daemon.rs (target/debug/build/yardd/1a13ebffc0c5028a/out/daemon-1a13ebffc0c5028a)
+error: test failed, to rerun pass `-p yardd --test daemon`

@@ -1,0 +1,18 @@
+$ cd ui && bun test src/store.test.ts
+# exit 1 after 14 ms at 82d0560529b29274632a38b23aee822355b2d87e
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/store.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'cleanGroupName' not found in module '/home/giovani/.yard/wt/better-than-claude-code/feat-session-groups/ui/src/store.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [9.00ms]

@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "8ab35b173a3636e0386fe879eb99c11cf522a4aa",
+    "short": "8ab35b1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T20:04:43.653Z"
+  },
+  "dir": ".verify/evidence/session-groups-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4540,
+      "steps": 19,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/pick-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/name-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/grouped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/group-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/collapsed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/session-groups-head-m/collapsed-after-reload-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
