@@ -1,0 +1,57 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-15T18:20:06.895Z",
+      "counts": {
+        "pass": 8
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 4748
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 5031
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 4498
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5010
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4351
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 4830
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "pass",
+          "ms": 6561
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 3052
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

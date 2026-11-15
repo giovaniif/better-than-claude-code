@@ -1,0 +1,44 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "2a705dc540744b33ba4196ba8f03f4bb5ed93951",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/compose.test.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/compose.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule": "shadow-color",
+      "severity": "warn",
+      "file": "ui/src/styles.css",
+      "line": 456,
+      "text": ".quote-reply { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); transform: translate(-50%, calc(-100% - 6px)); }",
+      "hint": "shadows use literal rgba today; reuse an existing shadow value from styles.css"
+    }
+  ],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

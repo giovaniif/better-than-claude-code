@@ -1,0 +1,18 @@
+$ cd ui && bun test src/compose.test.ts
+# exit 1 after 8 ms at 8ab7bd04acbc64e06a0ac3dc39c7a9c2011c2cab
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/compose.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'quoted' not found in module '/home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part/ui/src/compose.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

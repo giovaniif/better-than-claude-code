@@ -1,0 +1,228 @@
+{
+  "v": 1,
+  "claim": "There is no way to reply to one specific part of an agent's long answer: the user has to copy the passage by hand into the reply box and quote it themselves. Selecting text in an answer should offer a Reply that quotes the selection into the reply box.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part",
+  "base": "2a705dc540744b33ba4196ba8f03f4bb5ed93951",
+  "head": "81c0e29139741e465922964fe965def3e367eb8b",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/compose.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T18:17:22.733Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2a705dc540744b33ba4196ba8f03f4bb5ed93951",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "39a97b06f58ffea350a32c042477a3c96d160afd67fcab41f3e6ba5eb61de9ea"
+        },
+        {
+          "path": "p1-selected-mobile.png",
+          "sha256": "b82b51e54b950f005b977d72a96323a72cabfa5b4c8d39e4828d43fd9fa74e0f"
+        },
+        {
+          "path": "p1-fail-mobile-step4.png",
+          "sha256": "c0df607a4541011a5e8b24c6de0313a5331bbaf945c53918fe2932f53c3a6863"
+        },
+        {
+          "path": "p1-selected-desktop.png",
+          "sha256": "19b1ea85a5e3063af72e9864bb3a536abbf05a4afefcf409c3474c46c2988c8f"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "3b087db5724fb4f2b64e657e36790eb4f4783b04a28d745b912385d7973471b4"
+        }
+      ],
+      "addedAt": "2026-11-15T18:17:52.083Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "8ab7bd04acbc64e06a0ac3dc39c7a9c2011c2cab",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "948ed5ac708652a204c93166a015a85e13e927712fbcecb409c249a0c2b1e5d1"
+        }
+      ],
+      "addedAt": "2026-11-15T18:17:52.134Z",
+      "cmd": "cd ui && bun test src/compose.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "8ab7bd04acbc64e06a0ac3dc39c7a9c2011c2cab",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "5f3eb684bda46ecf7d6bccc5d9f715bfdee84ada3c2df88d4c8c25ec4592ec29"
+        }
+      ],
+      "addedAt": "2026-11-15T18:17:52.183Z",
+      "cmd": "verify/yv map run thread --recipe reply-to-part-of-answer",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "regression",
+      "at": "8ab7bd04acbc64e06a0ac3dc39c7a9c2011c2cab",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-map-thread.json",
+          "sha256": "21c9191cd1ca83498f74ce5b3b69f10c562855ed43b9252a005c382959b1f4fa"
+        }
+      ],
+      "addedAt": "2026-11-15T18:18:19.951Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 1,
+      "failingRecipes": [
+        "thread/reply-to-part-of-answer"
+      ],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/no-reply-on-own-message"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "81c0e29139741e465922964fe965def3e367eb8b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "745c26559583da8d37c4124f3549ed09ebc8afff9511159bf0b4777a1cf84bda"
+        },
+        {
+          "path": "p5-selected-mobile.png",
+          "sha256": "d29afd314ffcacb315f2946a47760c50c7cd949b71d2228f56af780e022ffd5c"
+        },
+        {
+          "path": "p5-quoted-mobile.png",
+          "sha256": "6a57d8d389a61c996205ef62f56539d9c06c8a5efef1a3ab6132d53b5ec04e64"
+        },
+        {
+          "path": "p5-selected-desktop.png",
+          "sha256": "fae356b169bd01abb9e2ac94a160b8a4c3c51e5d9ae280f958cc521d71c640e5"
+        },
+        {
+          "path": "p5-quoted-desktop.png",
+          "sha256": "90cf6aaa05c264ba1c589dce6836ca3f79869cf09e1b16e8d75fcd4dccfc0cdb"
+        }
+      ],
+      "addedAt": "2026-11-15T18:19:15.857Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "81c0e29139741e465922964fe965def3e367eb8b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "c741106b07084e958f8e4143034449021472c2c797f968a19b91a589a56046ab"
+        }
+      ],
+      "addedAt": "2026-11-15T18:19:15.898Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "81c0e29139741e465922964fe965def3e367eb8b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "8c3ced33ceb78efa7eb4f5f1f01f3b686ab5e24abc98c00076046395c628aafa"
+        }
+      ],
+      "addedAt": "2026-11-15T18:19:27.893Z",
+      "cmd": "verify/yv design-check --base 2a705dc54074",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "81c0e29139741e465922964fe965def3e367eb8b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-thread.json",
+          "sha256": "d32aeb64ccd935290f22db610d03fe551f91badd3ff875d209aa5f8df8a4b1ca"
+        }
+      ],
+      "addedAt": "2026-11-15T18:19:27.968Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message"
+      ]
+    }
+  ]
+}

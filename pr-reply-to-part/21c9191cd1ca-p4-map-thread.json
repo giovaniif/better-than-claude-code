@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-15T18:18:57.938Z",
+      "counts": {
+        "pass": 7,
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 4755
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 5065
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 4480
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5071
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4103
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 4929
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "fail",
+          "ms": 5573,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"(() => { const p = [...document.querySelectorAll(\\\".thread .prose p\\\")].pop(); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()\",\"equals\":\"Echo: TEST-say hello\"}: eval returned \"Echo: TEST-second turn\", expected \"Echo: TEST-say hello\"",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part/.verify/drives/2026-11-15T18-18-49-396Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"(() => { const p = [...document.querySelectorAll(\\\".thread .prose p\\\")].pop(); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()\",\"equals\":\"Echo: TEST-say hello\"}: eval returned \"Echo: TEST-second turn\", expected \"Echo: TEST-say hello\"",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part/.verify/drives/2026-11-15T18-18-49-396Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "r [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 5% · 51%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-f455\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: TEST-second turn\\n  - paragraph: \\\"Echo: TEST-second turn\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const p = [...document.querySelectorAll(\\\".thread .prose p\\\")].pop(); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()\",\n          \"value\": \"Echo: TEST-second turn\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"(() => { const p = [...document.querySelectorAll(\\\\\\\".thread .prose p\\\\\\\")].pop(); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()\\\",\\\"equals\\\":\\\"Echo: TEST-say hello\\\"}: eval returned \\\"Echo: TEST-second turn\\\", expected \\\"Echo: TEST-say hello\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part/.verify/drives/2026-11-15T18-18-49-396Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"(() => { const p = [...document.querySelectorAll(\\\\\\\".thread .prose p\\\\\\\")].pop(); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()\\\",\\\"equals\\\":\\\"Echo: TEST-say hello\\\"}: eval returned \\\"Echo: TEST-second turn\\\", expected \\\"Echo: TEST-say hello\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-reply-to-part/.verify/drives/2026-11-15T18-18-49-396Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 3157
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/reply-to-part-of-answer",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
