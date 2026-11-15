@@ -374,14 +374,11 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let request_id = str_field(msg, "requestId")?;
             let decision = str_field(msg, "decision")?;
             let meta = app.meta(sid).context("no such session")?;
+            // Each engine logs `approval_resolved` itself, before it passes the answer on.
             match meta.engine.as_str() {
-                "codex" => codex::approve(app, request_id, decision).await?,
+                "codex" => codex::approve(app, sid, request_id, decision).await?,
                 _ => claude::approve(app, sid, request_id, decision)?,
             }
-            app.emit(
-                sid,
-                json!({ "type": "approval_resolved", "requestId": request_id, "decision": decision }),
-            );
         }
         "session.startNow" => {
             let sid = str_field(msg, "sessionId")?;
