@@ -18,9 +18,18 @@ use tokio::sync::mpsc;
 use crate::{claude, state::App};
 
 const SIDECAR_TIMEOUT: Duration = Duration::from_secs(60);
-/// What an imported session runs on until the user picks another model.
-const MODEL: &str = "claude-opus-5-5";
-const EFFORT: &str = "high";
+/// The model and effort an import starts on: the model the session last used
+/// (a transcript id like `claude-haiku-5-5-20261001` matches `claude-haiku-5-5`),
+/// else the first Claude model, the one the new-session page offers first.
+/// The effort is that model's default.
+fn pick_model(models: &Value, used: Option<&str>) -> (String, String) {
+    let list = models.as_array().cloned().unwrap_or_default();
+    let found = used.and_then(|u| list.iter().find(|m| m["id"].as_str().is_some_and(|id| u == id || u.starts_with(&format!("{id}-")))));
+    let m = found.or(list.first());
+    let id = m.and_then(|m| m["id"].as_str()).unwrap_or("claude-opus-5-5");
+    let effort = m.and_then(|m| m["defaultEffort"].as_str()).unwrap_or("high");
+    (id.to_string(), effort.to_string())
+}
 /** A history beyond this many events keeps its most recent part. */
 const MAX_EVENTS: usize = 3000;
 
@@ -116,7 +125,10 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
                 bail!("this session's folder {} no longer exists", if cwd.is_empty() { "(unknown)" } else { cwd });
             }
             let title: String = session["title"].as_str().unwrap_or("Imported session").chars().take(60).collect();
-            let sid = app.new_session("claude", MODEL, EFFORT, cwd, &title, None);
+            let models = app.models.lock().unwrap()["claude"].clone();
+            let (model, effort) = pick_model(&models, session["model"].as_str());
+            // Permission stays the default, Ask first: the session is new to Switchyard.
+            let sid = app.new_session("claude", &model, &effort, cwd, &title, None);
             app.set_engine_ref(&sid, claude_id);
             let mut events = v["events"].as_array().cloned().unwrap_or_default();
             if events.len() > MAX_EVENTS {
@@ -141,3 +153,31 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn models() -> Value {
+        json!([
+            { "id": "claude-opus-5-5", "defaultEffort": "high" },
+            { "id": "claude-sonnet-5-5", "defaultEffort": "medium" },
+            { "id": "claude-haiku-5-5", "defaultEffort": "medium" },
+        ])
+    }
+
+    #[test]
+    fn an_import_keeps_the_model_the_session_last_used() {
+        assert_eq!(pick_model(&models(), Some("claude-haiku-5-5")), ("claude-haiku-5-5".into(), "medium".into()));
+        assert_eq!(pick_model(&models(), Some("claude-sonnet-5-5-20261101")), ("claude-sonnet-5-5".into(), "medium".into()));
+    }
+
+    #[test]
+    fn an_unknown_or_missing_model_falls_back_to_the_first() {
+        assert_eq!(pick_model(&models(), Some("claude-legacy-3")), ("claude-opus-5-5".into(), "high".into()));
+        assert_eq!(pick_model(&models(), None), ("claude-opus-5-5".into(), "high".into()));
+        // A prefix of another id is not a match.
+        assert_eq!(pick_model(&models(), Some("claude-haiku-5-55")), ("claude-opus-5-5".into(), "high".into()));
+    }
+}
+

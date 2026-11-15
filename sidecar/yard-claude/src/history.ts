@@ -37,6 +37,18 @@ function promptText(content: unknown): string | null {
   return text || null;
 }
 
+/** The model the session's last answer came from, as the transcript records it. */
+export function lastModel(messages: any[]): string | null {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m?.type !== "assistant" || m.parent_tool_use_id) continue;
+    const model = m.message?.model;
+    // Claude Code writes "<synthetic>" for answers it made up itself (errors, interruptions).
+    if (typeof model === "string" && model && !model.startsWith("<")) return model;
+  }
+  return null;
+}
+
 export function historyEvents(messages: any[], cwd: string): Event[] {
   const events: Event[] = [];
   let n = 0;

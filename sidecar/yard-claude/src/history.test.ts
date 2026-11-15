@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { historyEvents, sessionRow } from "./history";
+import { historyEvents, lastModel, sessionRow } from "./history";
 
 const user = (content: unknown, extra = {}) => ({ type: "user", uuid: "u", session_id: "s", parent_tool_use_id: null, parent_agent_id: null, message: { role: "user", content }, ...extra });
 const assistant = (content: unknown[], extra = {}) => ({ type: "assistant", uuid: "a", session_id: "s", parent_tool_use_id: null, parent_agent_id: null, message: { role: "assistant", content }, ...extra });
@@ -75,5 +75,13 @@ describe("historyEvents", () => {
     expect(events.find((e) => e.type === "tool_completed")).toMatchObject({ ok: false, output: "exit 1" });
     const ids = events.filter((e) => e.itemId).map((e) => e.itemId);
     expect(new Set(ids.filter((i) => i !== "b1")).size).toBe(ids.filter((i) => i !== "b1").length);
+  });
+});
+
+describe("lastModel", () => {
+  test("the last main-thread answer's model, skipping synthetic answers and subagents", () => {
+    const a = (model: string, extra = {}) => ({ type: "assistant", parent_tool_use_id: null, message: { role: "assistant", model, content: [] }, ...extra });
+    expect(lastModel([a("claude-opus-5-5"), a("claude-haiku-5-5-20261001"), a("<synthetic>"), a("claude-sonnet-5-5", { parent_tool_use_id: "t1" })])).toBe("claude-haiku-5-5-20261001");
+    expect(lastModel([{ type: "user", message: { content: "hi" } }])).toBeNull();
   });
 });
