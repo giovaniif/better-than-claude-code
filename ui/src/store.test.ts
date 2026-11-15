@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { AgentEvent, SessionMeta } from "./protocol";
-import { go, initial, parseHash, reduce, routeHash, type State } from "./store";
+import { cleanGroupName, go, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
 const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
@@ -185,5 +185,56 @@ describe("route in the URL", () => {
     s = reduce(s, { t: "route", route: { page: "session", id: "s1" } });
     s = server(s, { op: "host.snapshot", hostId: "h1", sessions: [meta("r1", "h1")] });
     expect(s.route).toEqual({ page: "session", id: "s1" });
+  });
+});
+
+describe("sidebar layout", () => {
+  const at = (id: string, over: Partial<SessionMeta>): SessionMeta => ({ ...meta(id), ...over });
+  const ids = (list: SessionMeta[]) => list.map((s) => s.id);
+
+  test("pinned, then ungrouped, then one section per group", () => {
+    const l = sidebarLayout([
+      at("a", { createdAt: 1 }),
+      at("b", { createdAt: 2, pinned: true }),
+      at("c", { createdAt: 3, group: "Release" }),
+      at("d", { createdAt: 4 }),
+      at("e", { createdAt: 5, archived: true }),
+    ]);
+    expect(ids(l.pinned)).toEqual(["b"]);
+    expect(ids(l.ungrouped)).toEqual(["d", "a"]);
+    expect(l.groups.map((g) => g.name)).toEqual(["Release"]);
+    expect(ids(l.groups[0].sessions)).toEqual(["c"]);
+    expect(ids(l.archived)).toEqual(["e"]);
+  });
+
+  test("a group's sessions are newest activity first and archived ones are left out", () => {
+    const l = sidebarLayout([
+      at("old", { group: "G", updatedAt: 10 }),
+      at("new", { group: "G", updatedAt: 30 }),
+      at("gone", { group: "G", updatedAt: 40, archived: true }),
+    ]);
+    expect(ids(l.groups[0].sessions)).toEqual(["new", "old"]);
+    expect(ids(l.archived)).toEqual(["gone"]);
+  });
+
+  test("a group with only archived members does not exist; groups sort by name", () => {
+    const l = sidebarLayout([
+      at("a", { group: "beta" }),
+      at("b", { group: "Alpha" }),
+      at("c", { group: "Ghost", archived: true }),
+    ]);
+    expect(l.groups.map((g) => g.name)).toEqual(["Alpha", "beta"]);
+  });
+
+  test("a pinned grouped session shows under Pinned only", () => {
+    const l = sidebarLayout([at("a", { group: "G", pinned: true })]);
+    expect(ids(l.pinned)).toEqual(["a"]);
+    expect(l.groups).toEqual([]);
+  });
+
+  test("group names are trimmed and capped", () => {
+    expect(cleanGroupName("  Release  ")).toBe("Release");
+    expect(cleanGroupName("   ")).toBe("");
+    expect(cleanGroupName("x".repeat(100))).toHaveLength(60);
   });
 });
