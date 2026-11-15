@@ -192,7 +192,8 @@ The right pane has a Terminal tab next to Changes.
 - `cd ui && bun test`: `applyEvent`, the store reducer and the attachment helpers.
 - `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
 - A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop; a `[stuck]` fake Codex turn covers the Codex side of Stop.
-- Not covered: anything that needs the real Claude SDK, the PR pane, SSH hosts, and the UI beyond its reducers.
+- `verify/yv` (docs/VERIFICATION.md) drives the built UI in headless Chromium against an isolated yardd with the same fakes plus a fake `gh` (one canned PR) and a fake `ssh`; the feature map `verify/features` covers the PR pane and the UI end to end. CI runs its selftest and two map areas.
+- Not covered: anything that needs the real Claude SDK, real SSH hosts.
 
 ## PR pane
 

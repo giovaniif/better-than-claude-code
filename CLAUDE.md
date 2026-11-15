@@ -9,7 +9,7 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 
 ## Build and run
 
-- Rust is not on `PATH` on this Mac: `export PATH=/opt/homebrew/opt/rustup/bin:$PATH` before any `cargo`.
+- Rust is not on `PATH` on the Mac: `export PATH=/opt/homebrew/opt/rustup/bin:$PATH` before any `cargo`. The Linux server (where the agent loops run) has it on `PATH`.
 - `CARGO_BUILD_JOBS=2 cargo build -p yardd`. Keep the job cap: the machine has 8 cores, 16 GB and other work running.
 - UI: `cd ui && bun install && bunx vite build`. Sidecar: `cd sidecar/yard-claude && bun install`.
 - Use Bun. `pnpm` is broken here. Never run `tsc` in any form.
@@ -35,6 +35,15 @@ One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCH
 
 ## Verifying
 
-- Compiling is not proof. Drive the feature through the WebSocket with a Bun script (`new WebSocket("ws://127.0.0.1:<port>/ws")`, no `Origin` header is sent, which yardd allows) and check the messages that come back.
-- Run the tests: `CARGO_BUILD_JOBS=2 cargo test -p yardd` (daemon suite on a fake Codex, no real turns) and `cd ui && bun test`.
+- Compiling is not proof. Use the verification CLI, `verify/yv` (skill: `.claude/skills/verify/SKILL.md`): `yv iso up && yv iso seed` starts an isolated yardd with scripted engines on a free port, `yv shot`/`yv drive` exercise the UI in headless Chromium at mobile and desktop sizes, `yv api`/`yv state` drive and read the daemon over its WebSocket. Every command prints one JSON object.
+- The feature map `verify/features/*.md` says what "working" means, area by area; `verify/yv map run <area>` runs it. Never weaken a recipe to make it pass.
+- A fix is proven with an evidence bundle (`verify/yv evidence …`): base repro, the regression test failing first, head fix at both viewports, tests, design check.
+- Run the tests: `CARGO_BUILD_JOBS=2 cargo test -p yardd` (daemon suite on a fake Codex, no real turns), `cd ui && bun test`, `cd sidecar/yard-claude && bun test`, `verify/yv selftest`. CI (`.github/workflows/ci.yml`) runs all of them on every PR.
 - Say plainly what you did not verify.
+
+## Agent PRs
+
+- Agent fixes go through PRs, not straight to `main`: the patrol loop finds, fixes and proves one issue per run; an independent verifier posts a verdict; the land gate (`verify/yv land`, settings in `verify/land.json`) decides whether it could merge. It runs in shadow mode: nothing merges without the owner's `merge` on that PR.
+- Skills: `verify`, `verifier`, `babysit`, `patrol`, `map-maintenance`, `weekly-review` in `.claude/skills/`. The loops run as Switchyard sessions on the live yardd, started by systemd user timers (`verify/loops/README.md`).
+- Agents post on GitHub as the owner, so every agent comment carries `<!-- yv:agent -->` and the owner is reached with `verify/yv notify`.
+- Overview for humans: [docs/VERIFICATION.md](docs/VERIFICATION.md).

@@ -54,7 +54,7 @@ cargo test -p yardd                       # unit tests and the daemon integratio
 
 The integration tests start the real yardd on free ports with temporary data folders and drive it over its WebSocket. A scripted `codex app-server` (`crates/yardd/tests/fake-codex`) stands in for Codex, and a fake `ssh` runs the remote installer locally, so nothing needs a login, the network or your subscriptions, and the suite is safe next to a running yardd.
 
-Compiling isn't proof: for anything user-visible, drive the feature through the WebSocket or the UI and check what comes back.
+Compiling isn't proof: for anything user-visible, drive the feature through the WebSocket or the UI and check what comes back. `verify/yv` does that for you: `verify/yv iso up && verify/yv iso seed` starts an isolated daemon with scripted engines, `verify/yv shot new` screenshots it, and `verify/yv map run <area>` runs the feature map in `verify/features`. See [docs/VERIFICATION.md](docs/VERIFICATION.md).
 
 ## Screenshots
 
