@@ -5,7 +5,9 @@
 //
 // A turn's behaviour is picked by a marker in the prompt:
 //   [cmd]   a command that needs approval, then runs or is declined
-//   [edit]  a file change with a diff
+//   [edit]  a file change with a diff (also written to disk when
+//           FAKE_CODEX_WRITE is set, as verify/yv's isolated environments do,
+//           so the Changes pane has a real git diff to show)
 //   [slow]  streams one chunk, then waits for turn/interrupt
 //   [stuck] streams one chunk, then never ends, whatever it is asked
 //   [fail]  the turn fails with an error
@@ -17,7 +19,7 @@
 // and `threads.json`, so a restarted fake can resume a thread the previous
 // one started, and refuses one it never saw.
 
-import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const dir = process.env.FAKE_CODEX_DIR;
 const log = (line) => {
@@ -261,6 +263,10 @@ async function runTurn(threadId, cwd, turn, text) {
       },
     ];
     item("item/started", { type: "fileChange", id: itemId, changes, status: "inProgress" });
+    if (process.env.FAKE_CODEX_WRITE) {
+      mkdirSync(`${cwd.replace(/\/$/, "")}/src`, { recursive: true });
+      writeFileSync(changes[0].path, "fn kept() {}\nfn added() {}\n");
+    }
     item("item/completed", { type: "fileChange", id: itemId, changes, status: "completed" });
     say("Edited src/lib.rs.", ["Edited ", "src/lib.rs."]);
     return finish("completed");
