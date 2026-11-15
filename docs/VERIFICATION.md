@@ -17,6 +17,20 @@ Set up 2026-11-15.
 | Patrol / maintenance / weekly review | `.claude/skills/{patrol,map-maintenance,weekly-review}`, `verify/loops/` | systemd user timers starting Switchyard sessions |
 | CI | `.github/workflows/ci.yml` | yardd, ui, sidecar, verify (unit tests + a real Chromium round trip) |
 
+## State on 2026-11-15
+
+- Timers enabled on the server (`systemctl --user list-timers 'switchyard-loop*'`).
+- Codex is **not logged in** on the server, so loops fall back to Claude Sonnet
+  under a tight cap (5-hour window ≤ 50%, week ≤ 30%), which skips most runs.
+  Log Codex in (Hosts → Log in in Switchyard, or `codex login --device-auth`)
+  and the loops use it.
+- PR #1 (terminal scrollback garbled after a reload) is the first PR through
+  the flow: found by the feature map, base repro, failing recipe first, fix,
+  evidence bundle, green CI. It is waiting for a verifier verdict, which the
+  patrol starts once usage allows. The gate's shadow call so far: would not land
+  (no verdict yet).
+- Open product gap: no layout below ~700 px (layout/mobile-* recipes fail).
+
 ## The isolated app
 
 `verify/yv iso up` builds yardd and the UI from the checkout (only when
