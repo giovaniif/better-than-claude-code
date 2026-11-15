@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { AgentEvent, SessionMeta } from "./protocol";
-import { initial, reduce, type State } from "./store";
+import { go, initial, parseHash, reduce, routeHash, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
 const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
@@ -150,5 +150,40 @@ describe("sessions", () => {
     expect(s.errorCount).toBe(2);
     s = reduce(s, { t: "dismiss" });
     expect(s.error).toBeNull();
+  });
+});
+
+describe("route in the URL", () => {
+  const snapshot = (...ids: string[]) => ({ op: "snapshot", sessions: ids.map((id) => meta(id)), hosts: [] });
+
+  test("hash round trip", () => {
+    for (const route of [{ page: "new" }, { page: "hosts" }, { page: "session", id: "s1a1e19674866" }] as const)
+      expect(parseHash(routeHash(route))).toEqual(route);
+    expect(parseHash("")).toEqual({ page: "new" });
+    expect(parseHash("#/s/%E0%A4%A")).toEqual({ page: "new" });
+  });
+
+  test("a reload opens the session the URL names once the snapshot lists it", () => {
+    let s = go(initial, parseHash("#/s/s2"));
+    expect(s.route).toEqual({ page: "new" });
+    s = server(s, snapshot("s1", "s2"));
+    expect(s.route).toEqual({ page: "session", id: "s2" });
+    expect(s.restore).toBeNull();
+  });
+
+  test("a remote session opens when its host's snapshot arrives", () => {
+    let s = go(initial, parseHash("#/s/r1"));
+    s = server(s, snapshot("s1"));
+    expect(s.route).toEqual({ page: "new" });
+    s = server(s, { op: "host.snapshot", hostId: "h1", sessions: [meta("r1", "h1")] });
+    expect(s.route).toEqual({ page: "session", id: "r1" });
+  });
+
+  test("going somewhere else first cancels the pending session", () => {
+    let s = go(initial, parseHash("#/s/r1"));
+    s = server(s, snapshot("s1"));
+    s = reduce(s, { t: "route", route: { page: "session", id: "s1" } });
+    s = server(s, { op: "host.snapshot", hostId: "h1", sessions: [meta("r1", "h1")] });
+    expect(s.route).toEqual({ page: "session", id: "s1" });
   });
 });
