@@ -146,7 +146,7 @@ async function runLoop(a: Args): Promise<Result> {
   try {
     const sessions = sessionsOf(ws);
     const usage = usageOf(ws);
-    const tidied = a.flags["dry-run"] ? { archived: [], pruned: [] } : tidy(ws, sessions, cfg.keepFinishedSessions ?? 3);
+    const tidied = a.flags["dry-run"] ? { archived: [], pruned: [] } : tidy(ws, sessions, cfg.keepFinishedSessions ?? 0);
     // A logged-out engine cannot run a loop: fall back when the config allows it.
     let engines: any = null;
     {
@@ -200,6 +200,7 @@ async function runLoop(a: Args): Promise<Result> {
     }
     if (!reply) fail("timeout", "the live yardd did not answer session.create within 60 s");
     if (reply.op === "error") fail("create-failed", reply.message);
+    await sleep(300);
     record({ started: reply.sessionId, model, effort: l.effort, engine: l.engine, pr, fellBack });
     return { ok: true, started: { sessionId: reply.sessionId, kind, engine: l.engine, model, effort: l.effort, pr }, fellBack, tidied };
   } finally {
@@ -256,8 +257,23 @@ async function logOf(a: Args): Promise<Result> {
   }
 }
 
+/** Archives every finished loop session now (a timer runs this every few minutes). */
+async function tidyNow(): Promise<Result> {
+  const cfg = loopsConfig();
+  const { ws } = await live(cfg.yardUrl);
+  try {
+    const t = tidy(ws, sessionsOf(ws), cfg.keepFinishedSessions ?? 0);
+    // Let the session.update ops leave before the socket closes.
+    await sleep(500);
+    return { ok: true, ...t };
+  } finally {
+    ws.close();
+  }
+}
+
 export async function loop(a: Args): Promise<Result> {
   const sub = a.pos[0];
+  if (sub === "tidy") return tidyNow();
   if (sub === "log") return logOf(a);
   if (sub === "run") return runLoop(a);
   if (sub === "status") return status();
@@ -270,7 +286,7 @@ export async function loop(a: Args): Promise<Result> {
     if (existsSync(PAUSED())) unlinkSync(PAUSED());
     return { ok: true, paused: false };
   }
-  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop status | loop log <sessionId> [--last n] | loop pause | loop resume");
+  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume");
 }
 
 export const _test = { skipReason, prompt, matches, statSync };

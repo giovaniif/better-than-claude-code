@@ -16,5 +16,5 @@
     "verify": { "engine": "claude", "model": "claude-opus-5-5", "effort": "high", "minutes": 40, "skill": ".claude/skills/verifier/SKILL.md" },
     "babysit": { "engine": "claude", "model": "claude-opus-5-5", "effort": "medium", "minutes": 40, "skill": ".claude/skills/babysit/SKILL.md" }
   },
-  "keepFinishedSessions": 3
+  "keepFinishedSessions": 0
 }

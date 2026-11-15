@@ -42,9 +42,12 @@ systemctl --user start switchyard-loop@patrol   # one run now
 journalctl --user -u 'switchyard-loop@*' -n 50
 ```
 
+Every finished loop session is archived within five minutes
+(`switchyard-loop-tidy.timer` → `verify/yv loop tidy`), so the sidebar shows
+only loops that are running; the runs stay under Archived to read.
+
 A run is skipped (and recorded in `~/.local/state/switchyard-verify/loops/<kind>.last.json`)
 when loops are paused, the previous run of the same kind is still going, the
 machine is busy, or the engine's usage is above the budget in `loops.json`.
-Finished loop sessions beyond the newest three per kind are archived, and the
-`target/` of loop worktrees idle for two hours is deleted. A launch that fails
+The `target/` of loop worktrees idle for two hours is deleted. A launch that fails
 sends one ntfy alert per hour.

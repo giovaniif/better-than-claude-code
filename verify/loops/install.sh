@@ -46,11 +46,36 @@ WantedBy=timers.target
 UNIT
 }
 timer patrol "*-*-* *:37:00" "patrol loop, hourly"
+
+# Finished loop sessions are archived within minutes, so only running ones
+# sit in the sidebar. Read-only for the checkout: no reset, no fetch.
+cat > "$units/switchyard-loop-tidy.service" <<UNIT
+[Unit]
+Description=Switchyard: archive finished agent-loop sessions
+After=yardd.service
+
+[Service]
+Type=oneshot
+Environment="PATH=$path"
+ExecStart=%h/.local/share/switchyard-loops/switchyard/verify/yv loop tidy
+Nice=10
+UNIT
+cat > "$units/switchyard-loop-tidy.timer" <<UNIT
+[Unit]
+Description=Switchyard: archive finished agent-loop sessions every 5 minutes
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=false
+
+[Install]
+WantedBy=timers.target
+UNIT
 timer maintain "*-*-* 03:30:00 America/Sao_Paulo" "feature-map maintenance loop, daily"
 timer review "Mon *-*-* 08:00:00 America/Sao_Paulo" "land gate weekly review"
 
 systemctl --user daemon-reload
 if [ "${1:-}" = "--enable" ]; then
-  systemctl --user enable --now switchyard-loop-patrol.timer switchyard-loop-maintain.timer switchyard-loop-review.timer
+  systemctl --user enable --now switchyard-loop-patrol.timer switchyard-loop-maintain.timer switchyard-loop-review.timer switchyard-loop-tidy.timer
 fi
 systemctl --user list-timers --all --no-pager | grep -E "NEXT|switchyard-loop" || true
