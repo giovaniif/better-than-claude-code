@@ -3,7 +3,13 @@
 //! `~/.claude/projects`); yardd turns one into a session in its own folder,
 //! with its history, whose next message resumes the same conversation.
 
-use std::{path::Path, process::Stdio, sync::Arc, time::Duration};
+use std::{
+    collections::HashSet,
+    path::Path,
+    process::Stdio,
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use anyhow::{bail, Context, Result};
 use serde_json::{json, Value};
@@ -17,6 +23,29 @@ const MODEL: &str = "claude-opus-5-5";
 const EFFORT: &str = "high";
 /** A history beyond this many events keeps its most recent part. */
 const MAX_EVENTS: usize = 3000;
+
+/// Claude Code sessions being imported right now. Reading a transcript takes
+/// a while; a second import of the same one (another window, a retry) waits
+/// for the first instead of making a second session on one conversation.
+static IMPORTING: Mutex<Option<HashSet<String>>> = Mutex::new(None);
+
+/// Holds one session id in `IMPORTING` until dropped.
+struct Importing(String);
+
+impl Importing {
+    fn claim(id: &str) -> Option<Importing> {
+        let mut set = IMPORTING.lock().unwrap();
+        set.get_or_insert_with(HashSet::new).insert(id.to_string()).then(|| Importing(id.to_string()))
+    }
+}
+
+impl Drop for Importing {
+    fn drop(&mut self) {
+        if let Some(set) = IMPORTING.lock().unwrap().as_mut() {
+            set.remove(&self.0);
+        }
+    }
+}
 
 /// Run the sidecar once and read its one JSON line.
 async fn one_shot(app: &App, args: &[&str]) -> Result<Value> {
@@ -67,11 +96,18 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
         }
         "session.import" => {
             let claude_id = msg["claudeSessionId"].as_str().context("missing `claudeSessionId`")?;
-            // Importing twice would give two sessions writing one conversation.
-            if let Some(sid) = imported_as(app, claude_id) {
-                let _ = direct.send(json!({ "op": "created", "sessionId": sid, "existing": true }).to_string());
-                return Ok(());
-            }
+            // Importing twice would give two sessions writing one conversation:
+            // wait out an import of the same session already under way.
+            let claim = loop {
+                if let Some(sid) = imported_as(app, claude_id) {
+                    let _ = direct.send(json!({ "op": "created", "sessionId": sid, "existing": true }).to_string());
+                    return Ok(());
+                }
+                if let Some(claim) = Importing::claim(claude_id) {
+                    break claim;
+                }
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            };
             let v = one_shot(app, &["messages", claude_id]).await?;
             let session = &v["session"];
             let cwd = session["cwd"].as_str().unwrap_or("");
@@ -99,6 +135,7 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
                 json!({ "type": "note", "text": format!("Imported from Claude Code ({claude_id}). The next message continues that conversation here.") }),
             );
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
+            drop(claim);
         }
         other => bail!("unknown op `{other}`"),
     }
