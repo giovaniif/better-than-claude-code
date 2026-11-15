@@ -354,6 +354,8 @@ export interface Actions {
   listDirs(path: string, host: string): void;
   /** Sidebar housekeeping: neither changes what the session does. */
   setPinned(sessionId: string, pinned: boolean): void;
+  /** Take back a message queued during a turn. */
+  unqueue(sessionId: string, id: string): void;
   setArchived(sessionId: string, archived: boolean): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine): void;
@@ -516,6 +518,7 @@ export function useYard(): { state: State; actions: Actions } {
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
+      unqueue: (sessionId, id) => post({ op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
       loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),

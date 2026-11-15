@@ -28,8 +28,17 @@ export interface SessionMeta {
   pinned?: boolean;
   /** Moved into the sidebar's Archived section. */
   archived?: boolean;
+  /** Messages sent while a turn ran, oldest first. The next one starts when a turn completes; Stop or a failure holds them. */
+  pending?: PendingMessage[];
   createdAt: number;
   updatedAt: number;
+}
+
+export interface PendingMessage {
+  id: string;
+  text: string;
+  attachments?: Attachment[];
+  at: number;
 }
 
 export interface ModelInfo {

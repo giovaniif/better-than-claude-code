@@ -455,3 +455,9 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 /* reply to part of an answer: the button over a selection */
 .quote-reply { position: fixed; z-index: 40; display: flex; align-items: center; gap: 6px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); transform: translate(-50%, calc(-100% - 6px)); }
 .quote-reply.below { transform: translate(-50%, 6px); }
+
+/* messages queued behind a running turn, above the reply box */
+.pending { max-width: 680px; margin: 0 auto 8px; display: flex; flex-direction: column; gap: 4px; }
+.pending-row { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--side); }
+.pending-text { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pending-row .btn-icon { height: 26px; }

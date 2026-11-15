@@ -81,5 +81,30 @@ Selecting text in your own prompt bubble offers no Reply button.
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { const b = document.querySelector(\".thread .bubble\"); const r = document.createRange(); r.selectNodeContents(b); getSelection().removeAllRanges(); getSelection().addRange(r); return getSelection().toString(); })()","equals":"TEST-say hello"},{"wait":500},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false}]'
 ```
 
+### queue-a-message-while-working
+While a turn runs (here: waiting for an approval), the reply box stays open:
+sending queues the message, shown under "Queued" above the box, and it runs
+as its own turn once the current one completes. Each viewport gets its own
+busy session (the approval is answered during the drive).
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-busy turn mobile"}' --wait '{"op":"created"}' --save busy_mobile=sessionId
+yv drive 'session:{{busy_mobile}}' --viewport mobile --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"expect":"label:Message","value":""},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Echo: TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
+yv state --expect '{"sessions":[{"id":"{{busy_mobile}}","status":"idle"}]}'
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-busy turn desktop"}' --wait '{"op":"created"}' --save busy_desktop=sessionId
+yv drive 'session:{{busy_desktop}}' --viewport desktop --steps '[{"expect":"text:Allow this command?"},{"fill":"label:Message","value":"TEST-queued one"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-queued one"},{"expect":"label:Message","value":""},{"shot":"queued"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Echo: TEST-queued one"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"shot":"sent"}]'
+yv state --expect '{"sessions":[{"id":"{{busy_desktop}}","status":"idle"}]}'
+```
+
+### stop-holds-the-queue
+Viewports: desktop
+Stop ends the turn but does not send what was queued; a queued message can
+be removed.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-long turn"}' --wait '{"op":"created"}' --save slowq_sid=sessionId
+yv drive 'session:{{slowq_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working"},{"fill":"label:Message","value":"TEST-held"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-held"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false},{"wait":800},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-held"},{"expect":{"css":".thread","hasText":"Echo: TEST-held"},"visible":false},{"click":{"role":"button","name":"Remove from queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false}]'
+```
+
 ## Gotchas
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.

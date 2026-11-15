@@ -48,6 +48,11 @@ pub struct Meta {
     /// Moved out of the list into Archived; still there to open or restore.
     #[serde(default)]
     pub archived: bool,
+    /// Messages sent while a turn ran, oldest first: `{ id, text,
+    /// attachments, at }`. The next one starts when a turn completes; Stop
+    /// or a failed turn leaves them waiting.
+    #[serde(default)]
+    pub pending: Vec<Value>,
     pub created_at: u64,
     pub updated_at: u64,
 }
@@ -101,12 +106,17 @@ pub struct App {
     pub store: crate::store::Store,
     pub remotes: crate::remote::Remotes,
     pub logins: crate::login::Logins,
+    /// Sessions whose turn completed with messages waiting; drained by a task
+    /// in main (emit cannot start a turn itself).
+    next_turns: mpsc::UnboundedSender<String>,
+    next_turns_rx: Mutex<Option<mpsc::UnboundedReceiver<String>>>,
     next: AtomicU64,
 }
 
 impl App {
     pub fn new(root: PathBuf, port: u16, store: crate::store::Store) -> Self {
         let (tx, _) = broadcast::channel(2048);
+        let (next_turns, next_turns_rx) = mpsc::unbounded_channel();
         App {
             root,
             port,
@@ -122,8 +132,46 @@ impl App {
             store,
             remotes: crate::remote::Remotes::new(crate::store::data_dir()),
             logins: crate::login::Logins::default(),
+            next_turns,
+            next_turns_rx: Mutex::new(Some(next_turns_rx)),
             next: AtomicU64::new(1),
         }
+    }
+
+    /// The queue of sessions ready for their next pending message. Taken once, by main.
+    pub fn take_next_turns(&self) -> mpsc::UnboundedReceiver<String> {
+        self.next_turns_rx.lock().unwrap().take().expect("next_turns taken twice")
+    }
+
+    /// Queue a message sent while a turn runs.
+    pub fn queue_message(&self, sid: &str, text: &str, attachments: &[Value]) -> String {
+        let id = self.id("q");
+        let item = json!({ "id": id, "text": text, "attachments": attachments, "at": now_ms() });
+        self.update_meta(sid, |m| m.pending.push(item));
+        id
+    }
+
+    /// Take a queued message back. Unknown ids are ignored: it may have just started.
+    pub fn unqueue_message(&self, sid: &str, id: &str) {
+        self.update_meta(sid, |m| m.pending.retain(|p| p["id"] != id));
+    }
+
+    /// The oldest queued message, removed from the queue, if the session is idle.
+    pub fn next_pending(&self, sid: &str) -> Option<Value> {
+        {
+            let map = self.sessions.lock().unwrap();
+            let s = map.get(sid)?;
+            if s.meta.status != "idle" || s.meta.pending.is_empty() {
+                return None;
+            }
+        }
+        let mut taken = None;
+        self.update_meta(sid, |m| {
+            if m.status == "idle" && !m.pending.is_empty() {
+                taken = Some(m.pending.remove(0));
+            }
+        });
+        taken
     }
 
     /// A short id that is unique within this yardd run.
@@ -195,6 +243,7 @@ impl App {
             permission: default_permission(),
             pinned: false,
             archived: false,
+            pending: Vec::new(),
             created_at: now,
             updated_at: now,
         };
@@ -257,7 +306,10 @@ impl App {
             Some("fatal") => Some("error"),
             _ => None,
         };
-        let (msg, changed) = {
+        // Only a turn that completed sends the next queued message: after
+        // Stop or a failure the user decides.
+        let completed = event["type"] == "turn_completed" && event["status"] == "completed";
+        let (msg, changed, next) = {
             let mut map = self.sessions.lock().unwrap();
             let Some(s) = map.get_mut(sid) else { return };
             let seq = s.events.len();
@@ -273,14 +325,19 @@ impl App {
                     changed = Some(s.meta.clone());
                 }
             }
+            let next = completed && !s.meta.pending.is_empty();
             (
                 json!({ "op": "event", "sessionId": sid, "seq": seq, "event": event }),
                 changed,
+                next,
             )
         };
         self.broadcast(msg);
         if let Some(meta) = changed {
             self.broadcast(json!({ "op": "session", "session": meta }));
+        }
+        if next {
+            let _ = self.next_turns.send(sid.to_string());
         }
     }
 

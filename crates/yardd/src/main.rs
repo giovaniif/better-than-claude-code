@@ -74,6 +74,16 @@ async fn main() -> anyhow::Result<()> {
 
     tokio::spawn(hosts::run(app.clone()));
 
+    // A turn completed with messages queued behind it: start the next one.
+    let mut next_turns = app.take_next_turns();
+    let runner = app.clone();
+    tokio::spawn(async move {
+        while let Some(sid) = next_turns.recv().await {
+            let app = runner.clone();
+            tokio::spawn(async move { sessions::send_next(&app, &sid).await });
+        }
+    });
+
     // Start Codex in the background so the model list is ready early.
     let boot = app.clone();
     tokio::spawn(async move {
