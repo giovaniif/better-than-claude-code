@@ -1,0 +1,37 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-15T19:52:30.104Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "pending-shows-card",
+          "status": "pass",
+          "ms": 5222
+        },
+        {
+          "label": "allow-once",
+          "status": "pass",
+          "ms": 3678
+        },
+        {
+          "label": "deny",
+          "status": "pass",
+          "ms": 3514
+        },
+        {
+          "label": "always-allow",
+          "status": "pass",
+          "ms": 3886
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
