@@ -265,3 +265,22 @@ describe("approval decisions", () => {
     expect(refused.error).toBe("the engine is gone");
   });
 });
+
+describe("session.procs", () => {
+  test("the latest list replaces the last, per session; the reply for an unknown op is no toast", () => {
+    const rows = [{ pid: 1, ppid: 0, name: "bun", cmd: "bun main.ts", cpu: 1, memBytes: 2, ageSecs: 3, origin: "agent" }];
+    let s = server(initial, { op: "session.procs", sessionId: "s1", procs: rows });
+    expect(s.procs.s1).toEqual(rows);
+    s = server(s, { op: "session.procs", sessionId: "s1", procs: [] });
+    expect(s.procs.s1).toEqual([]);
+    // An older remote yardd does not know the op.
+    const e = server(s, { op: "error", for: "session.procs", message: "unknown op `session.procs`" });
+    expect(e.error).toBeNull();
+  });
+
+  test("deleting a session forgets its list", () => {
+    let s = server(initial, { op: "session.procs", sessionId: "s1", procs: [] });
+    s = server(s, { op: "session.deleted", sessionId: "s1" });
+    expect(s.procs.s1).toBeUndefined();
+  });
+});

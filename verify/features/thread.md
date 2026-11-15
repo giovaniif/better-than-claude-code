@@ -140,5 +140,17 @@ yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"lo
 yv drive 'session:{{editq_sid}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-first draft"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-first draft"},{"click":{"role":"button","name":"Edit","exact":true}},{"expect":"label:Message","value":"TEST-first draft"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-first draft"},{"press":"ArrowUp","target":"label:Message"},{"expect":"label:Message","value":"TEST-first draft"},{"click":{"role":"button","name":"Stop","exact":true}}]'
 ```
 
+### subagent-nests-and-expands
+A Claude subagent (the Agent tool) shows as one entry in the work log: its
+description, its type and how long it took; collapsed, its steps stay out of
+the list. Opening it shows the steps it took, nested, and its report. The
+scripted sidecar's `[subagent]` turn runs one subagent that reads a file and
+lists a folder.
+
+```sh
+yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","effort":"medium","cwd":"{{repo}}","worktree":true,"text":"[subagent] TEST-survey"}' --wait '{"op":"created"}' --save sub_sid=sessionId
+yv drive 'session:{{sub_sid}}' --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-survey","timeout":20000},{"click":"role:button:Worked for"},{"expect":"css:.thread","text":"TEST-survey the repo"},{"expect":"css:.thread","text":"general-purpose"},{"expect":"css:.thread","text":"2 steps"},{"expect":{"css":".thread","hasText":"README.md"},"visible":false},{"shot":"subagent-collapsed"},{"click":"role:button:TEST-survey the repo"},{"expect":"css:.thread","text":"README.md"},{"expect":"css:.thread","text":"ls src"},{"expect":"css:.thread","text":"TEST-subagent report: two files read"},{"shot":"subagent-open"},{"click":"role:button:TEST-survey the repo"},{"expect":{"css":".thread","hasText":"README.md"},"visible":false}]'
+```
+
 ## Gotchas
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.

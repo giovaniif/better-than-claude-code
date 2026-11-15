@@ -179,4 +179,43 @@ describe("applyEvent", () => {
     ]);
     expect(applyEvent([], { type: "mystery" } as unknown as AgentEvent, 0)).toEqual([]);
   });
+
+  test("a subagent's tool call carries its Agent call's id; its end carries a duration", () => {
+    const items = fold([
+      { type: "user_message", text: "go" },
+      { type: "tool_started", itemId: "a", kind: "other", title: "Agent", detail: "d", agent: "Explore" },
+      { type: "tool_started", itemId: "c", parent: "a", kind: "read", title: "Read", detail: "x" },
+      { type: "tool_completed", itemId: "c", ok: true },
+      { type: "tool_completed", itemId: "a", ok: true, output: "report", ms: 3568 },
+    ]);
+    expect(items.filter((i) => i.kind === "tool").map((i) => (i.kind === "tool" ? [i.itemId, i.agent, i.parent, i.ms, i.state] : []))).toEqual([
+      ["a", "Explore", undefined, 3568, "ok"],
+      ["c", undefined, "a", undefined, "ok"],
+    ]);
+  });
+
+  test("a background subagent outlives a completed turn; Stop or a failure ends it", () => {
+    const run: AgentEvent[] = [
+      { type: "user_message", text: "go" },
+      { type: "tool_started", itemId: "a", kind: "other", title: "Agent", detail: "d", agent: "Explore" },
+      { type: "tool_started", itemId: "c", parent: "a", kind: "command", title: "Ran", detail: "ls" },
+      { type: "tool_started", itemId: "other", kind: "command", title: "Ran", detail: "ls" },
+    ];
+    const states = (events: AgentEvent[]) => fold(events).flatMap((i) => (i.kind === "tool" ? [`${i.itemId}:${i.state}`] : []));
+    expect(states([...run, { type: "turn_completed", status: "completed" }])).toEqual(["a:running", "c:running", "other:failed"]);
+    expect(states([...run, { type: "turn_completed", status: "interrupted" }])).toEqual(["a:failed", "c:failed", "other:failed"]);
+    expect(states([...run, { type: "turn_completed", status: "failed" }])).toEqual(["a:failed", "c:failed", "other:failed"]);
+  });
+
+  test("an agent's end is matched after a later prompt too: its notification can come late", () => {
+    const items = fold([
+      { type: "user_message", text: "go" },
+      { type: "tool_started", itemId: "a", kind: "other", title: "Agent", detail: "d", agent: "Explore" },
+      { type: "turn_completed", status: "completed" },
+      { type: "user_message", text: "and meanwhile?" },
+      { type: "tool_completed", itemId: "a", ok: true, output: "found it", ms: 9000 },
+    ]);
+    const agent = items.find((i) => i.kind === "tool");
+    expect(agent).toMatchObject({ state: "ok", output: "found it", ms: 9000 });
+  });
 });

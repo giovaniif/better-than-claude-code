@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { applyEvent, type AgentEvent, type Item } from "./protocol";
-import { duration, layout, summarize, thoughtLine, type WorkItem } from "./thread";
+import { duration, layout, summarize, thoughtLine, type ToolItem, type WorkItem } from "./thread";
 
 const fold = (events: AgentEvent[]): Item[] => events.reduce((acc, ev, i) => applyEvent(acc, ev, i), [] as Item[]);
 const shape = (rows: ReturnType<typeof layout>) =>
@@ -80,5 +80,70 @@ describe("labels", () => {
     expect(duration(45_000)).toBe("45s");
     expect(duration(72_000)).toBe("1m 12s");
     expect(duration(7_380_000)).toBe("2h 3m");
+  });
+});
+
+describe("subagents", () => {
+  const AGENT = "toolu_agent";
+  const agentTurn: AgentEvent[] = [
+    { type: "user_message", text: "survey it" },
+    { type: "turn_started", at: 1_000 },
+    { type: "tool_started", itemId: AGENT, kind: "other", title: "Agent", detail: "survey the repo", agent: "general-purpose" },
+    { type: "tool_started", itemId: "c1", parent: AGENT, kind: "read", title: "Read", detail: "README.md" },
+    { type: "tool_completed", itemId: "c1", ok: true, output: "# readme" },
+    { type: "tool_started", itemId: "c2", parent: AGENT, kind: "command", title: "Ran", detail: "ls src" },
+  ];
+  const tool = (rows: ReturnType<typeof layout>, i = 0) => {
+    const row = rows.find((r) => r.type === "work");
+    if (row?.type !== "work") throw new Error("no work row");
+    return row.entries[i] as ToolItem;
+  };
+
+  test("a subagent's steps nest under its Agent call, not in the work list", () => {
+    const rows = layout(fold(agentTurn), true);
+    expect(shape(rows)).toEqual(["user", "work(1,live)"]);
+    const agent = tool(rows);
+    expect(agent.agent).toBe("general-purpose");
+    expect(agent.steps?.map((s) => [s.detail, s.state])).toEqual([
+      ["README.md", "ok"],
+      ["ls src", "running"],
+    ]);
+    expect(agent.steps?.every((s) => s.parent === AGENT)).toBe(true);
+  });
+
+  test("steps nest as deep as the subagents do", () => {
+    const rows = layout(
+      fold([
+        ...agentTurn,
+        { type: "tool_started", itemId: "inner", parent: AGENT, kind: "other", title: "Agent", detail: "dig", agent: "Explore" },
+        { type: "tool_started", itemId: "deep", parent: "inner", kind: "search", title: "Searched", detail: "TODO" },
+      ]),
+      true,
+    );
+    const inner = tool(rows).steps?.find((s) => s.itemId === "inner");
+    expect(inner?.steps?.map((s) => s.detail)).toEqual(["TODO"]);
+  });
+
+  test("a step whose Agent call is not in the turn stays an ordinary entry", () => {
+    const rows = layout(fold([agentTurn[0], agentTurn[1], agentTurn[3]]), true);
+    expect(shape(rows)).toEqual(["user", "work(1,live)"]);
+    expect(tool(rows).title).toBe("Read");
+  });
+
+  test("steps do not count as work in the summary", () => {
+    const rows = layout(fold([...agentTurn, { type: "tool_completed", itemId: AGENT, ok: true, output: "done", ms: 2_000 }, { type: "turn_completed", status: "completed", at: 5_000 }]), false);
+    const row = rows.find((r) => r.type === "fold");
+    expect(row?.type === "fold" && row.summary).toBe("1 other step");
+  });
+
+  test("an agent still running when the turn ends stays out of the fold, running", () => {
+    const items = fold([
+      ...agentTurn.slice(0, 5),
+      { type: "assistant_message", itemId: "m", text: "Launched it." },
+      { type: "turn_completed", status: "completed", at: 5_000 },
+    ]);
+    const rows = layout(items, false);
+    expect(shape(rows)).toEqual(["user", "work(1)", "assistant"]);
+    expect(tool(rows).state).toBe("running");
   });
 });

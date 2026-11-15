@@ -29,6 +29,7 @@ recipe with its repro.
 | [approvals](approvals.md) | Command approvals: allow once, always, deny, and the sidebar status |
 | [stop](stop.md) | Stopping a running turn, including one the engine ignores |
 | [changes-pane](changes-pane.md) | The Changes tab: the session folder's git diff |
+| [processes](processes.md) | The Processes tab: the session's process tree, refreshed while visible |
 | [terminal](terminal.md) | The Terminal tab: shells per session, tabs, scrollback, Add to message |
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
