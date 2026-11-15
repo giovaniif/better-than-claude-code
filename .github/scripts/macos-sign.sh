@@ -5,6 +5,8 @@
 # Secrets (env): MACOS_CERTIFICATE (base64 .p12 with the Developer ID
 # Application cert and key), MACOS_CERTIFICATE_PASSWORD, MACOS_NOTARY_APPLE_ID,
 # MACOS_NOTARY_PASSWORD (app-specific password), MACOS_TEAM_ID.
+# TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD sign the
+# in-app updater's package; tauri.conf.json holds the public half.
 # They are not named APPLE_* so that `tauri build` does not sign on its own.
 #
 # Without MACOS_CERTIFICATE it signs ad-hoc, so the build still yields a DMG;
@@ -91,6 +93,16 @@ notarize() {
 ditto -c -k --keepParent "$app" "$tmp/Switchyard.zip"
 notarize "$tmp/Switchyard.zip"
 xcrun stapler staple "$app"
+
+# The in-app updater's package: this same notarized, stapled app. Made here,
+# not by `tauri build`, whose package would hold the app before signing.
+if [ -n "${TAURI_SIGNING_PRIVATE_KEY:-}" ]; then
+  version="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' app/src-tauri/tauri.conf.json)"
+  COPYFILE_DISABLE=1 tar -czf Switchyard.app.tar.gz -C "$(dirname "$app")" Switchyard.app
+  (cd app && bunx tauri signer sign --app-version "$version" ../Switchyard.app.tar.gz)
+else
+  echo "::warning::TAURI_SIGNING_PRIVATE_KEY is not set: no update package"
+fi
 
 dmg="Switchyard-$sha.dmg"
 make_dmg "$dmg"

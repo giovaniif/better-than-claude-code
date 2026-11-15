@@ -20,7 +20,9 @@ use std::{
     time::{Duration, Instant},
 };
 
-use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+use tauri_plugin_updater::UpdaterExt;
 
 /// Keep in step with `DEFAULT_PORT` in crates/yardd/src/main.rs.
 const DEFAULT_PORT: u16 = 47717;
@@ -30,6 +32,9 @@ const DEFAULT_PORT: u16 = 47717;
 const BUILD_ID: &str = env!("YARD_BUILD_ID");
 
 const OLDER_DAEMON: &str = "an older daemon is running, quit it to update";
+
+/// How often a running app looks for a new release, after the check at launch.
+const UPDATE_EVERY: Duration = Duration::from_secs(6 * 60 * 60);
 
 /// `SWITCHYARD_PORT` lets a second copy run next to the real one.
 fn port() -> u16 {
@@ -154,6 +159,67 @@ fn start_yardd(daemon: &Daemon, port: u16) -> Result<(), String> {
     Err(format!("yardd did not start listening within 10 seconds. See {}", log_dir.join("yardd.log").display()))
 }
 
+/// Stops the yardd listening on `port` and waits for the port to free up.
+/// yardd flushes its log on SIGTERM; sessions come back when it starts again.
+fn stop_yardd(port: u16) -> Result<(), String> {
+    let out = Command::new("/usr/sbin/lsof")
+        .args(["-nP", "-t", &format!("-iTCP:{port}"), "-sTCP:LISTEN"])
+        .output()
+        .map_err(|e| format!("lsof: {e}"))?;
+    let pids: Vec<String> = String::from_utf8_lossy(&out.stdout).split_whitespace().map(str::to_string).collect();
+    if pids.is_empty() {
+        return Ok(());
+    }
+    Command::new("/bin/kill").args(&pids).status().map_err(|e| format!("kill: {e}"))?;
+    let deadline = Instant::now() + Duration::from_secs(8);
+    while Instant::now() < deadline {
+        if health(port).is_none() {
+            return Ok(());
+        }
+        thread::sleep(Duration::from_millis(150));
+    }
+    Err(format!("yardd on port {port} did not stop"))
+}
+
+/// Restarts the app, and the background yardd with it, so both run the
+/// installed version. Asked first: a running turn stops.
+fn ask_restart(app: &AppHandle, port: u16, message: String) {
+    let handle = app.clone();
+    app.dialog()
+        .message(message)
+        .title("Switchyard")
+        .buttons(MessageDialogButtons::OkCancelCustom("Restart now".into(), "Later".into()))
+        .show(move |restart| {
+            if !restart {
+                return;
+            }
+            if let Err(e) = stop_yardd(port) {
+                eprintln!("switchyard: {e}");
+            }
+            handle.restart();
+        });
+}
+
+/// Installs a newer release in place, then offers to restart into it. Only
+/// for the packaged app: a build run from the repo has nothing to replace.
+async fn check_for_update(app: &AppHandle, port: u16) -> Result<(), String> {
+    let Some(update) = app.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())? else {
+        return Ok(());
+    };
+    let version = update.version.clone();
+    eprintln!("switchyard: installing {version}");
+    update.download_and_install(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
+    ask_restart(
+        app,
+        port,
+        format!(
+            "Switchyard {version} is installed. Restart to use it?\n\n\
+             Sessions and their history are kept. A turn that is running now stops."
+        ),
+    );
+    Ok(())
+}
+
 /// Make sure our yardd is serving `port`. Returns a problem for the title.
 fn ensure_yardd(resources: Option<PathBuf>, port: u16) -> Option<String> {
     // SWITCHYARD_BUILD_ID stands in for the bundled id, to test a mismatch
@@ -179,9 +245,12 @@ fn ensure_yardd(resources: Option<PathBuf>, port: u16) -> Option<String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let port = port();
-            let problem = ensure_yardd(app.path().resource_dir().ok(), port);
+            let resources = app.path().resource_dir().ok();
+            let packaged = resources.as_deref().and_then(bundled).is_some();
+            let problem = ensure_yardd(resources, port);
             if let Some(message) = &problem {
                 eprintln!("switchyard: {message}");
             }
@@ -198,6 +267,29 @@ fn main() {
                 // composer attaches files through the page's HTML5 drop events.
                 .disable_drag_drop_handler()
                 .build()?;
+
+            if packaged {
+                // The app was updated while an older yardd kept running (the
+                // restart was put off, or this is the first update-aware build).
+                if problem.as_deref() == Some(OLDER_DAEMON) {
+                    ask_restart(
+                        app.handle(),
+                        port,
+                        "Switchyard was updated, but the background service still runs the old version. \
+                         Restart it now?\n\nSessions and their history are kept. A turn that is running now stops."
+                            .to_string(),
+                    );
+                }
+                let handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    loop {
+                        if let Err(e) = check_for_update(&handle, port).await {
+                            eprintln!("switchyard: update check failed: {e}");
+                        }
+                        tokio::time::sleep(UPDATE_EVERY).await;
+                    }
+                });
+            }
             Ok(())
         })
         .run(tauri::generate_context!())

@@ -22,6 +22,7 @@ Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.
 - **yard-claude** (`sidecar/yard-claude`): TypeScript sidecar on the Claude Agent SDK, run with Bun. One per Claude session, JSON lines over stdio. The SDK exists only for TypeScript and Python.
 - **ui** (`ui`): React + Vite. Talks only to yardd.
 - **app** (`app/src-tauri`): Tauri v2 window. Starts yardd if nothing is listening, then loads yardd's page. It holds no agent state and yardd outlives it, so sessions survive closing the app.
+- **App updates:** the packaged app checks `releases/latest/download/latest.json` at launch and every 6 hours (Tauri updater plugin), installs a newer release in place, then asks before restarting. Restarting stops the local yardd (SIGTERM, found with `lsof` on the port) so the new app starts its own; sessions come back, a running turn stops. At launch, an older yardd than the bundled one gets the same question instead of only the title warning. The package is the notarized, stapled `.app`, tarred and signed with the updater key by `.github/scripts/macos-sign.sh`; `tauri.conf.json` holds the public key. A copy run from the repo never updates.
 
 The same yardd binary runs on my Mac and on the remote box. A remote session is a session on another yardd, reached through an SSH port forward over Tailscale. No open port, no auth layer of our own.
 

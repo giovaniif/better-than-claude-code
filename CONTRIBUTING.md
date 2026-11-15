@@ -42,7 +42,7 @@ open target/release/bundle/macos/Switchyard.app
 - `SWITCHYARD_PORT=47728 YARD_DATA_DIR=/tmp/yard-test Switchyard.app/Contents/MacOS/switchyard` runs a second copy next to the real one.
 - `cargo run -p switchyard` falls back to the repo's builds of yardd, the UI and the sidecar.
 
-CI builds a signed, notarized DMG on every push to `main` and keeps it in the run's artifacts (`.github/workflows/macos-app.yml`). Signing reads the repository secrets listed in `.github/scripts/macos-sign.sh`; without them the DMG is ad-hoc signed.
+CI builds a signed, notarized DMG on every push to `main` and keeps it in the run's artifacts (`.github/workflows/macos-app.yml`). Signing reads the repository secrets listed in `.github/scripts/macos-sign.sh`; without them the DMG is ad-hoc signed. `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` sign the in-app update package (its public key is in `app/src-tauri/tauri.conf.json`); losing the private key means users must download the DMG again to get a build with a new key.
 
 ## Tests
 
@@ -64,7 +64,7 @@ Compiling isn't proof: for anything user-visible, drive the feature through the 
 
 1. Add a `## X.Y.Z (date)` section to [CHANGELOG.md](CHANGELOG.md): what changed, for people who use the app. It becomes the release notes.
 2. Run `scripts/release.sh X.Y.Z` on `main`. It sets the version in yardd and the app, commits, tags `vX.Y.Z` and pushes.
-3. `.github/workflows/release.yml` checks the versions, builds the signed DMG and both Linux packages, and publishes the release. The Docker workflow tags the image `X.Y.Z` too.
+3. `.github/workflows/release.yml` checks the versions, builds the signed DMG, the signed update package (`Switchyard.app.tar.gz` and `latest.json`, which installed apps poll) and both Linux packages, and publishes the release. The Docker workflow tags the image `X.Y.Z` too.
 
 Asset names never change, so `releases/latest/download/Switchyard.dmg` and the server installer always get the newest release.
 
