@@ -28,6 +28,8 @@ export interface SessionMeta {
   pinned?: boolean;
   /** Moved into the sidebar's Archived section. */
   archived?: boolean;
+  /** The sidebar group it sits in; a group exists only while a session is in it. */
+  group?: string | null;
   /** Messages sent while a turn ran, oldest first. The next one starts when a turn completes; Stop or a failure holds them. */
   pending?: PendingMessage[];
   createdAt: number;

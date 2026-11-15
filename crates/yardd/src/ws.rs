@@ -379,7 +379,16 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             app.meta(sid).context("no such session")?;
             let pinned = msg["pinned"].as_bool();
             let archived = msg["archived"].as_bool();
+            // A name sets the group; null or a blank name clears it; absent leaves it.
+            let group = match &msg["group"] {
+                Value::String(g) => Some(Some(g.trim().chars().take(60).collect::<String>()).filter(|g| !g.is_empty())),
+                Value::Null if msg.get("group").is_some() => Some(None),
+                _ => None,
+            };
             app.update_meta(sid, |m| {
+                if let Some(g) = group {
+                    m.group = g;
+                }
                 if let Some(p) = pinned {
                     m.pinned = p;
                 }

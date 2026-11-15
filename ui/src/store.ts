@@ -175,6 +175,39 @@ export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
 export const loginKey = (host: string, engine: Engine) => `${host}\n${engine}`;
 
 /** The host a session runs on, `local` for this machine. */
+export const GROUP_NAME_MAX = 60;
+/** What yardd stores for a typed group name: trimmed and capped; empty means no group. */
+export const cleanGroupName = (name: string) => name.trim().slice(0, GROUP_NAME_MAX);
+
+export interface SidebarLayout {
+  pinned: SessionMeta[];
+  ungrouped: SessionMeta[];
+  groups: { name: string; sessions: SessionMeta[] }[];
+  archived: SessionMeta[];
+}
+
+/** The sidebar's sections. Pinned and ungrouped keep creation order; each
+ *  group is newest activity first, groups sort by name, and a group with no
+ *  live member is not listed. Pinned and archived sessions never show in a group. */
+export function sidebarLayout(sessions: SessionMeta[]): SidebarLayout {
+  const byCreated = [...sessions].sort((a, b) => b.createdAt - a.createdAt);
+  const live = byCreated.filter((s) => !s.archived);
+  const named = new Map<string, SessionMeta[]>();
+  for (const s of live) {
+    if (s.pinned || !s.group) continue;
+    named.set(s.group, [...(named.get(s.group) ?? []), s]);
+  }
+  const groups = [...named.entries()]
+    .map(([name, list]) => ({ name, sessions: list.sort((a, b) => b.updatedAt - a.updatedAt) }))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }) || (a.name < b.name ? -1 : 1));
+  return {
+    pinned: live.filter((s) => s.pinned),
+    ungrouped: live.filter((s) => !s.pinned && !s.group),
+    groups,
+    archived: byCreated.filter((s) => s.archived),
+  };
+}
+
 export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
 export const modelsOn = (state: State, host: string): Models => state.models[host] ?? EMPTY_MODELS;
 export const usageOn = (state: State, host: string): Usage => state.usage[host] ?? NO_USAGE;
@@ -410,6 +443,8 @@ export interface Actions {
   /** Take back a message queued during a turn: to the reply box, or dropped. */
   unqueue(sessionId: string, id: string, drop?: boolean): void;
   setArchived(sessionId: string, archived: boolean): void;
+  /** Put a session in a named group, or take it out with null. */
+  setGroup(sessionId: string, group: string | null): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine): void;
   /** The code Claude's sign-in page gives back. */
@@ -611,6 +646,7 @@ export function useYard(): { state: State; actions: Actions } {
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
+      setGroup: (sessionId, group) => post({ op: "session.update", sessionId, group }),
       login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
       loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),
       listClaudeSessions: (host) => post(onHost(host, { op: "claude.sessions" })),

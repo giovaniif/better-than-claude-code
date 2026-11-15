@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
-import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
+import { branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
@@ -55,6 +55,8 @@ const REPLY = "M9 17 4 12l5-5M20 18v-2a4 4 0 0 0-4-4H4";
 const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
 const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
 const BELL = "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0";
+const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM12 11v6M9 14h6";
+const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
@@ -221,11 +223,14 @@ function Resizer(props: {
 
 /** A session in the sidebar, with Pin, Archive and Delete in a menu on the
  *  row (the … button, or right-click). */
-function SessionRow({ state, actions, session: s, active }: { state: State; actions: Actions; session: SessionMeta; active: boolean }) {
+function SessionRow({ state, actions, session: s, active, groups }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[] }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
   const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  // The menu's group pages: the list of groups, then the name field for a new one.
+  const [groupPage, setGroupPage] = useState<"list" | "new" | null>(null);
+  const [newGroup, setNewGroup] = useState("");
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const more = useRef<HTMLButtonElement>(null);
@@ -233,6 +238,8 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
   const close = () => {
     setMenu(false);
     setConfirm(false);
+    setGroupPage(null);
+    setNewGroup("");
     setPos(null);
   };
   useEscape(menu, close);
@@ -251,7 +258,7 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
     const above = at.top - gap - height;
     const top = below + height <= window.innerHeight - edge || above < edge ? below : above;
     setPos({ left, top: Math.max(edge, Math.min(top, window.innerHeight - height - edge)) });
-  }, [menu, confirm]);
+  }, [menu, confirm, groupPage]);
   useEffect(() => {
     if (!menu) return;
     // pointerdown, not mousedown: the sidebar's resize handle cancels the
@@ -275,6 +282,10 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
   const remove = (removeWorktree: boolean) => {
     close();
     actions.remove(s.id, removeWorktree);
+  };
+  const moveTo = (group: string | null) => {
+    close();
+    actions.setGroup(s.id, group);
   };
   return (
     <div
@@ -304,12 +315,59 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
       {menu &&
         createPortal(
           <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
-            {!confirm ? (
+            {groupPage === "list" ? (
+              <>
+                <div className="row-menu-note">Move to group</div>
+                {groups
+                  .filter((g) => g !== s.group)
+                  .map((g) => (
+                    <button key={g} className="picker-item menu-item" role="menuitem" onClick={() => moveTo(g)}>
+                      <Icon d={FOLDER} size={14} />
+                      <span className="menu-label">{g}</span>
+                    </button>
+                  ))}
+                <button className="picker-item menu-item" role="menuitem" onClick={() => setGroupPage("new")}>
+                  <Icon d={FOLDER_PLUS} size={14} />
+                  New group…
+                </button>
+              </>
+            ) : groupPage === "new" ? (
+              <form
+                className="row-menu-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const name = cleanGroupName(newGroup);
+                  if (name) moveTo(name);
+                }}
+              >
+                <input
+                  className="field"
+                  autoFocus
+                  aria-label="Group name"
+                  placeholder="Group name"
+                  maxLength={GROUP_NAME_MAX}
+                  value={newGroup}
+                  onChange={(e) => setNewGroup(e.target.value)}
+                />
+              </form>
+            ) : !confirm ? (
               <>
                 {!s.archived && (
                   <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
                     <Icon d={PIN} size={14} />
                     {s.pinned ? "Unpin" : "Pin"}
+                  </button>
+                )}
+                {!s.archived && (
+                  <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => setGroupPage("list")}>
+                    <Icon d={FOLDER} size={14} />
+                    Move to group…
+                  </button>
+                )}
+                {!s.archived && s.group && (
+                  <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => moveTo(null)}>
+                    <Icon d={CLOSE} size={14} />
+                    Remove from group
                   </button>
                 )}
                 <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setArchived(s.id, !s.archived), close())}>
@@ -348,11 +406,150 @@ function SessionRow({ state, actions, session: s, active }: { state: State; acti
   );
 }
 
+/** Which groups the user folded in this browser. */
+const COLLAPSED_KEY = "yard.groups.collapsed";
+function useCollapsedGroups(): [Set<string>, (name: string) => void] {
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(COLLAPSED_KEY) ?? "[]");
+      return new Set(Array.isArray(saved) ? saved.filter((n) => typeof n === "string") : []);
+    } catch {
+      return new Set();
+    }
+  });
+  const toggle = (name: string) =>
+    setCollapsed((was) => {
+      const next = new Set(was);
+      if (!next.delete(name)) next.add(name);
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  return [collapsed, toggle];
+}
+
+/** A group's header: the name, how many sessions, a chevron; its menu renames
+ *  or ungroups every session in it, archived ones included. */
+function GroupHead({ name, count, open, onToggle, members, actions }: { name: string; count: number; open: boolean; onToggle(): void; members: SessionMeta[]; actions: Actions }) {
+  const [menu, setMenu] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [draft, setDraft] = useState(name);
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+  const more = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLDivElement>(null);
+  const close = () => {
+    setMenu(false);
+    setPos(null);
+  };
+  useEscape(menu, close);
+  // Leaving the field by Escape or Enter must not commit a second time through blur.
+  const done = useRef(false);
+  useLayoutEffect(() => {
+    if (!menu || !more.current || !pop.current) return;
+    const at = more.current.getBoundingClientRect();
+    const { width, height } = pop.current.getBoundingClientRect();
+    const edge = 8;
+    const left = Math.max(edge, Math.min(at.right - width, window.innerWidth - width - edge));
+    const below = at.bottom + 4;
+    const above = at.top - 4 - height;
+    const top = below + height <= window.innerHeight - edge || above < edge ? below : above;
+    setPos({ left, top: Math.max(edge, Math.min(top, window.innerHeight - height - edge)) });
+  }, [menu]);
+  useEffect(() => {
+    if (!menu) return;
+    const outside = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (!more.current?.contains(t) && !pop.current?.contains(t)) close();
+    };
+    const scrolled = (e: Event) => !pop.current?.contains(e.target as Node) && close();
+    window.addEventListener("pointerdown", outside);
+    window.addEventListener("scroll", scrolled, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("pointerdown", outside);
+      window.removeEventListener("scroll", scrolled, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [menu]);
+  const rename = () => {
+    if (done.current) return;
+    done.current = true;
+    const next = cleanGroupName(draft);
+    setRenaming(false);
+    if (!next || next === name) return;
+    for (const s of members) actions.setGroup(s.id, next);
+  };
+  return (
+    <div className={`group-head session-item ${menu ? "menu-open" : ""}`}>
+      {renaming ? (
+        <input
+          className="field group-rename"
+          autoFocus
+          aria-label="Group name"
+          maxLength={GROUP_NAME_MAX}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={rename}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") (e.preventDefault(), rename());
+            else if (e.key === "Escape") (done.current = true, setRenaming(false));
+          }}
+        />
+      ) : (
+        <button className="list-head list-toggle group-toggle" aria-expanded={open} onClick={onToggle}>
+          <span className={`tool-chevron ${open ? "open" : ""}`}>
+            <Icon d={CHEVRON_RIGHT} size={11} />
+          </span>
+          <span className="group-name">{name}</span>
+          <span className="muted">{count}</span>
+        </button>
+      )}
+      {!renaming && (
+        <button ref={more} className="btn-icon row-more" aria-label={`Actions for group ${name}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => (menu ? close() : setMenu(true))}>
+          <Icon d={MORE} size={16} />
+        </button>
+      )}
+      {menu &&
+        createPortal(
+          <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
+            <button
+              className="picker-item menu-item"
+              role="menuitem"
+              onClick={() => {
+                close();
+                setDraft(name);
+                done.current = false;
+                setRenaming(true);
+              }}
+            >
+              <Icon d={PENCIL} size={14} />
+              Rename
+            </button>
+            <button
+              className="picker-item menu-item"
+              role="menuitem"
+              onClick={() => {
+                close();
+                for (const s of members) actions.setGroup(s.id, null);
+              }}
+            >
+              <Icon d={CLOSE} size={14} />
+              Ungroup
+            </button>
+          </div>,
+          document.body,
+        )}
+    </div>
+  );
+}
+
 function Sidebar({ state, actions }: { state: State; actions: Actions }) {
-  const sessions = Object.values(state.sessions).sort((a, b) => b.createdAt - a.createdAt);
-  const pinned = sessions.filter((s) => s.pinned && !s.archived);
-  const active = sessions.filter((s) => !s.pinned && !s.archived);
-  const archived = sessions.filter((s) => s.archived);
+  const all = Object.values(state.sessions);
+  const { pinned, ungrouped: active, groups, archived } = sidebarLayout(all);
+  // Every group a session can be moved to, including ones whose only live
+  // members are pinned.
+  const groupNames = [...new Set(all.filter((s) => s.group && !s.archived).map((s) => s.group as string))].sort((a, b) => a.localeCompare(b));
+  const [collapsed, toggleGroup] = useCollapsedGroups();
   const { route } = state;
   // Opening an archived session shows the section, so its row stays in view.
   const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
@@ -362,7 +559,7 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
     if (openArchived) setShowArchived(true);
   }, [openArchived]);
   const row = (s: SessionMeta) => (
-    <SessionRow key={s.id} state={state} actions={actions} session={s} active={route.page === "session" && route.id === s.id} />
+    <SessionRow key={s.id} state={state} actions={actions} session={s} groups={groupNames} active={route.page === "session" && route.id === s.id} />
   );
   return (
     <nav className="sidebar" aria-label="Sessions">
@@ -383,20 +580,33 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         {pinned.map(row)}
         {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
         {active.map(row)}
-        {sessions.length === 0 && <div className="empty">No sessions yet.</div>}
-        {archived.length > 0 && (
-          <>
-            <button className="list-head list-toggle" aria-expanded={showArchived} onClick={() => setShowArchived(!showArchived)}>
-              <span>Archived</span>
-              <span className="muted">{archived.length}</span>
-              <span className={`tool-chevron ${showArchived ? "open" : ""}`}>
-                <Icon d={CHEVRON_RIGHT} size={11} />
-              </span>
-            </button>
-            {showArchived && archived.map(row)}
-          </>
-        )}
+        {all.length === 0 && <div className="empty">No sessions yet.</div>}
+        {groups.map((g) => (
+          <Fragment key={g.name}>
+            <GroupHead
+              name={g.name}
+              count={g.sessions.length}
+              open={!collapsed.has(g.name)}
+              onToggle={() => toggleGroup(g.name)}
+              members={all.filter((s) => s.group === g.name)}
+              actions={actions}
+            />
+            {!collapsed.has(g.name) && g.sessions.map(row)}
+          </Fragment>
+        ))}
       </div>
+      {archived.length > 0 && (
+        <div className="archived-dock">
+          <button className="list-head list-toggle" aria-expanded={showArchived} onClick={() => setShowArchived(!showArchived)}>
+            <span>Archived</span>
+            <span className="muted">{archived.length}</span>
+            <span className={`tool-chevron ${showArchived ? "open" : ""}`}>
+              <Icon d={CHEVRON_RIGHT} size={11} />
+            </span>
+          </button>
+          {showArchived && <div className="archived-list">{archived.map(row)}</div>}
+        </div>
+      )}
       <UsageStrip usage={usageOn(state, "local")} />
       <div className="sidebar-bottom">
         <NotifySwitch />
