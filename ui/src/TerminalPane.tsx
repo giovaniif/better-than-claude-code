@@ -176,6 +176,9 @@ function TermView(props: {
   // scrollback snapshot. Chunks can overlap the snapshot or arrive before it.
   const written = useRef(-1);
   const exited = useRef(false);
+  // Set by the first fit; attaching waits for it.
+  const sized = useRef(false);
+  const wasConnected = useRef(connected);
 
   useEffect(() => {
     const el = host.current;
@@ -192,38 +195,44 @@ function TermView(props: {
     term.loadAddon(fit);
     term.open(el);
     termRef.current = term;
-    // Output waits for the first real fit. Written at xterm's default 80
-    // columns and reflowed to the pane's width afterwards, the scrollback
-    // replayed after a reload came back with wrapped lines garbled and
-    // output overwritten. Right after a reload the renderer has no cell size
-    // yet, so the fit is retried on each frame for a while.
-    let fitted = false;
-    let held: (() => void)[] = [];
+    sized.current = false;
+    // Nothing attaches before the first real fit. Attached at xterm's default
+    // 80 columns, the PTY was resized to 80 and the shell redrew its prompt
+    // for that width into the scrollback; a snapshot written before the fit
+    // was reflowed afterwards. Either way a reload brought wrapped lines back
+    // garbled. Right after a reload the renderer has no cell size yet, so the
+    // fit is retried once per frame for a while (one chain at a time).
     let tries = 0;
+    let waiting = false;
     let gone = false;
-    const flush = () => {
-      fitted = true;
-      const run = held;
-      held = [];
-      run.forEach((f) => f());
+    const attach = () => {
+      if (live.current.connected) live.current.actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
     };
     const refit = () => {
       if (gone) return;
       // Fitting a hidden element would size the PTY to nothing.
       if (el.offsetWidth === 0 || el.offsetHeight === 0) return;
+      let ok = false;
       try {
         if (fit.proposeDimensions()) {
           fit.fit();
-          if (!fitted) flush();
-          return;
+          ok = true;
         }
       } catch {
         /* not laid out yet */
       }
-      if (fitted || held.length === 0) return;
-      // Better a reflowed terminal than an empty one.
-      if (++tries > 120) flush();
-      else requestAnimationFrame(refit);
+      if (sized.current) return;
+      // Better a reflowed terminal than none at all.
+      if (ok || ++tries > 120) {
+        sized.current = true;
+        attach();
+      } else if (!waiting) {
+        waiting = true;
+        requestAnimationFrame(() => {
+          waiting = false;
+          refit();
+        });
+      }
     };
     refit();
 
@@ -241,7 +250,8 @@ function TermView(props: {
       term.write(EXITED_LINE);
     };
 
-    const handle = (msg: any) => {
+    const stop = live.current.actions.onTerm((msg) => {
+      if (msg.termId !== termId) return;
       if (msg.op === "term.opened") {
         if (written.current < 0) written.current = msg.offset;
         write(msg);
@@ -255,12 +265,6 @@ function TermView(props: {
       } else if (msg.op === "term.exit") {
         markExited();
       }
-    };
-    const stop = live.current.actions.onTerm((msg) => {
-      if (msg.termId !== termId) return;
-      if (fitted) return handle(msg);
-      held.push(() => handle(msg));
-      refit();
     });
 
     const onData = term.onData((data) => {
@@ -286,12 +290,13 @@ function TermView(props: {
     };
   }, [termId]);
 
-  // (Re)attach whenever the socket is up: the first time for the scrollback,
-  // after a reconnect for what was missed. Offsets drop the overlap.
+  // Reattach after a reconnect, for what was missed (offsets drop the
+  // overlap). The first attach comes from the first fit, above.
   useEffect(() => {
+    const back = connected && !wasConnected.current;
+    wasConnected.current = connected;
     const term = termRef.current;
-    if (!connected || !term) return;
-    actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
+    if (back && term && sized.current) actions.post({ op: "term.attach", termId, cols: term.cols, rows: term.rows });
   }, [termId, connected]);
 
   useEffect(() => {
