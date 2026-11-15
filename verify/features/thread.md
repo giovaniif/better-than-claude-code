@@ -64,5 +64,22 @@ A Claude session (scripted sidecar) renders like a Codex one.
 yv drive 'session:{{sid_claude}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-hello from Claude"}]'
 ```
 
+### reply-to-part-of-answer
+Selecting part of an agent's answer shows a Reply button over the selection;
+pressing it puts the selection in the reply box as a quote, ready for a reply
+under it. Selecting your own message shows no button.
+
+```sh
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"Echo: TEST-say hello"},{"expect":{"role":"button","name":"Reply","exact":true},"inViewport":true},{"shot":"reply-button"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":"label:Message","value":"> Echo: TEST-say hello\n\n"},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false},{"shot":"quoted"}]'
+```
+
+### no-reply-on-own-message
+Viewports: desktop
+Selecting text in your own prompt bubble offers no Reply button.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { const b = document.querySelector(\".thread .bubble\"); const r = document.createRange(); r.selectNodeContents(b); getSelection().removeAllRanges(); getSelection().addRange(r); return getSelection().toString(); })()","equals":"TEST-say hello"},{"wait":500},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false}]'
+```
+
 ## Gotchas
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.
