@@ -12,6 +12,8 @@
 //   [stuck] streams one chunk, then never ends, whatever it is asked
 //   [fail]  the turn fails with an error
 //   [think] a two-part reasoning summary, then a reply
+//   [tail]  one command, then 1 s of thinking before "Echo: <prompt>":
+//           a message sent in that second has no step left to join
 //   [steps] three commands, 400 ms apart, then "Echo: <prompt>"; input
 //           steered in meanwhile (turn/steer) is appended as " | steered: …"
 //   other   a plain streamed reply: "Echo: <prompt>"
@@ -219,6 +221,19 @@ async function runTurn(threadId, cwd, turn, text) {
     notify("item/agentMessage/delta", { threadId, turnId, itemId, delta: "Working" });
     if (!ctl.interrupted) await new Promise((resolve) => (ctl.wake = resolve));
     return finish("interrupted");
+  }
+
+  if (text.includes("[tail]")) {
+    const ctl = running.get(turnId);
+    const itemId = newId("cmd");
+    const base = { type: "commandExecution", id: itemId, command: "/bin/bash -lc 'echo tail'", cwd, commandActions: [] };
+    item("item/started", { ...base, status: "inProgress" });
+    item("item/completed", { ...base, status: "completed", exitCode: 0, aggregatedOutput: "tail\n" });
+    await new Promise((r) => setTimeout(r, 1000));
+    if (ctl.interrupted) return finish("interrupted");
+    const answer = `Echo: ${text}`;
+    say(answer, [answer]);
+    return finish("completed");
   }
 
   if (text.includes("[steps]")) {
