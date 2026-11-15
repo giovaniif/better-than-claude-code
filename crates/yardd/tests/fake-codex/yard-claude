@@ -5,7 +5,13 @@
 //   [die]   the sidecar exits at once, as when Claude Code is killed
 //   [stuck] streams one chunk, then ignores interrupts
 //   other   replies "Echo: <prompt>"
-// FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id.
+// FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id,
+// and one per one-shot `sessions` / `messages <id>` call.
+//
+// One-shot modes, like the real sidecar's, for importing Claude Code sessions:
+//   sessions        three TEST- sessions: two in FAKE_CLAUDE_CWD (else HOME),
+//                   one whose folder no longer exists
+//   messages <id>   that session's history as yardd events
 
 import { appendFileSync } from "node:fs";
 
@@ -15,6 +21,45 @@ const log = (line) => {
 };
 const out = (msg) => process.stdout.write(JSON.stringify(msg) + "\n");
 const emit = (event) => out({ type: "event", event });
+
+const mode = process.argv[2];
+if (mode === "sessions" || mode === "messages") {
+  log(`${mode} ${process.argv[3] ?? ""}`.trim());
+  const cwd = process.env.FAKE_CLAUDE_CWD || process.env.HOME || "/";
+  const hour = 3600_000;
+  const now = Date.now();
+  const sessions = [
+    { sessionId: "11111111-1111-4111-8111-111111111111", title: "TEST-fix the login redirect", cwd, gitBranch: "main", lastModified: now - hour, createdAt: now - 2 * hour },
+    { sessionId: "22222222-2222-4222-8222-222222222222", title: "TEST-write the release notes", cwd: "/nonexistent/TEST-gone", gitBranch: null, lastModified: now - 5 * hour, createdAt: now - 6 * hour },
+    { sessionId: "33333333-3333-4333-8333-333333333333", title: "TEST-old refactor of the parser", cwd, gitBranch: "parser", lastModified: now - 72 * hour, createdAt: now - 80 * hour },
+  ];
+  if (mode === "sessions") {
+    out({ sessions });
+    process.exit(0);
+  }
+  const session = sessions.find((s) => s.sessionId === process.argv[3]);
+  if (!session) {
+    out({ error: `no Claude Code session ${process.argv[3]}` });
+    process.exit(1);
+  }
+  const t = session.title;
+  out({
+    session,
+    events: [
+      { type: "user_message", text: t },
+      { type: "turn_started" },
+      { type: "tool_started", itemId: "imp-1", kind: "read", title: "Read", detail: "src/login.ts" },
+      { type: "tool_completed", itemId: "imp-1", ok: true, output: "export function login() {}" },
+      { type: "assistant_message", itemId: "imp-2", text: `TEST-answer to: ${t}` },
+      { type: "turn_completed", status: "completed" },
+      { type: "user_message", text: "TEST-and add a test" },
+      { type: "turn_started" },
+      { type: "assistant_message", itemId: "imp-3", text: "TEST-added login.test.ts." },
+      { type: "turn_completed", status: "completed" },
+    ],
+  });
+  process.exit(0);
+}
 
 let n = 0;
 let stuck = false;

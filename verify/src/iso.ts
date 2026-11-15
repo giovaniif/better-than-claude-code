@@ -174,6 +174,8 @@ export async function isoUp(a: Args): Promise<Result> {
     env.HOME = dirs.home;
     env.FAKE_CODEX_DIR = dirs.fake;
     env.FAKE_CODEX_WRITE = "1";
+    // The fake Claude sidecar's importable sessions live here.
+    env.FAKE_CLAUDE_CWD = dirs.work;
     env.YARD_SIDECAR = join(TEST_FAKES, "yard-claude");
     env.YARD_SSH = join(OUR_FAKES, "ssh");
     env.YARD_WORKSPACE = dirs.work;
