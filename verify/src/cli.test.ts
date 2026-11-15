@@ -13,6 +13,7 @@ import { type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
 import { scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
+import { _test as loopTest } from "./loop";
 
 describe("args and json helpers", () => {
   test("flags, bools and positionals", () => {
@@ -277,3 +278,18 @@ describe("evidence proof bar", () => {
     expect(failed(bundle(full.filter((p) => p.kind !== "design")))).toEqual(["design-check"]);
   });
 });
+
+describe("loop budget", () => {
+  const cfg = { budget: { claude: { fiveHourMax: 70, sevenDayMax: 80 }, maxLoadPerCore: 1e9 } };
+  const now = Date.now() / 1000;
+  test("a current 5-hour figure over the cap skips the run", () => {
+    expect(loopTest.skipReason("patrol", "claude", [], { claude: { fiveHour: 0.9, sevenDay: 0.1, resetsAt: now + 600 } }, cfg, false)).toContain("5-hour");
+  });
+  test("a 5-hour figure whose window already reset is ignored", () => {
+    expect(loopTest.skipReason("patrol", "claude", [], { claude: { fiveHour: 0.9, sevenDay: 0.1, resetsAt: now - 600 } }, cfg, false)).toBeNull();
+  });
+  test("the weekly cap still applies", () => {
+    expect(loopTest.skipReason("patrol", "claude", [], { claude: { fiveHour: 0.1, sevenDay: 0.95, resetsAt: now - 600 } }, cfg, false)).toContain("weekly");
+  });
+});
+

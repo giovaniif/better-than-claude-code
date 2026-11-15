@@ -78,7 +78,10 @@ function skipReason(kind: Kind, engine: string, sessions: any[], usage: any, cfg
     if (s !== undefined && s > b.secondaryMax) return `Codex weekly usage ${s}% is above ${b.secondaryMax}%`;
   }
   if (engine === "claude") {
-    const f = usage.claude?.fiveHour;
+    // yardd refreshes Claude usage only during Claude turns: a 5-hour figure
+    // whose window has already reset is stale, not a reason to skip.
+    const reset = usage.claude?.resetsAt;
+    const f = reset && Date.now() / 1000 > reset ? null : usage.claude?.fiveHour;
     const w = usage.claude?.sevenDay;
     if (f != null && f * 100 > b.fiveHourMax) return `Claude 5-hour usage ${(f * 100).toFixed(0)}% is above ${b.fiveHourMax}%`;
     if (w != null && w * 100 > b.sevenDayMax) return `Claude weekly usage ${(w * 100).toFixed(0)}% is above ${b.sevenDayMax}%`;
