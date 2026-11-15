@@ -34,10 +34,12 @@ services:
       # /home/me/code (owned by uid 1000), and it is mounted at the same path,
       # so sessions see the server's own paths. Unset: a volume at /workspace.
       - ${PROJECTS:-switchyard-workspace}:${PROJECTS:-/workspace}
-    # No host ports: Coolify's proxy routes the domain to container port 47717.
-    # With plain Docker, publish it on loopback (or a private interface) only:
-    # ports:
-    #   - 127.0.0.1:47717:47717
+    # Coolify's proxy routes the domain to container port 47717. Publishing it
+    # on the server's loopback too lets the desktop app add this server as an
+    # SSH host and reach this same yardd, so the app and the web page show the
+    # same sessions. Loopback only: nothing new is reachable from the network.
+    ports:
+      - 127.0.0.1:47717:47717
 
 volumes:
   switchyard-home:

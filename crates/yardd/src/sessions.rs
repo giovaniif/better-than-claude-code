@@ -1,11 +1,14 @@
 //! Starting sessions and turns. Shared by everything that can begin work:
 //! the new-session page today, hand-off and the queue next.
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use serde_json::{json, Value};
 
-use crate::{claude, codex, state::App};
+use crate::{claude, codex, state::{App, Backend}};
+
+/// How long Stop waits for the engine to end the turn before ending it itself.
+const STOP_GRACE: Duration = Duration::from_secs(5);
 
 /// Start the engine for a session that was just registered with
 /// `App::new_session`, then run its first turn. Failures become events in the
@@ -90,4 +93,69 @@ async fn start_turn(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]
 pub fn fail_turn(app: &Arc<App>, sid: &str, error: &anyhow::Error) {
     app.emit(sid, json!({ "type": "error", "message": format!("{error:#}") }));
     app.emit(sid, json!({ "type": "turn_completed", "status": "failed" }));
+}
+
+/// Where the session's latest turn starts in its log, if it is still running.
+fn running_turn(app: &App, sid: &str) -> Option<usize> {
+    let map = app.sessions.lock().unwrap();
+    let s = map.get(sid)?;
+    if s.meta.status != "running" && s.meta.status != "needs_approval" {
+        return None;
+    }
+    s.events.iter().rposition(|e| e["type"] == "turn_started")
+}
+
+/// Stop the running turn. Asks the engine first; if it cannot be asked, or
+/// the turn is still open after `STOP_GRACE`, ends the turn here so Stop
+/// always works: a Claude sidecar is killed (its next message resumes the
+/// conversation), a Codex turn is closed on our side.
+pub async fn interrupt(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
+    let meta = app.meta(sid).ok_or_else(|| anyhow::anyhow!("no such session"))?;
+    let Some(turn) = running_turn(app, sid) else {
+        return Ok(());
+    };
+    let asked = match meta.engine.as_str() {
+        // A wedged app-server may never answer.
+        "codex" => match tokio::time::timeout(STOP_GRACE, codex::interrupt(app, sid)).await {
+            Ok(r) => r,
+            Err(_) => Err(anyhow::anyhow!("Codex did not answer turn/interrupt")),
+        },
+        _ => claude::interrupt(app, sid),
+    };
+    if let Err(e) = &asked {
+        eprintln!("yardd: could not interrupt {sid}, ending the turn: {e:#}");
+        force_stop(app, sid, &meta.engine);
+        return Ok(());
+    }
+    let app = app.clone();
+    let sid = sid.to_string();
+    tokio::spawn(async move {
+        tokio::time::sleep(STOP_GRACE).await;
+        if running_turn(&app, &sid) == Some(turn) {
+            force_stop(&app, &sid, &meta.engine);
+        }
+    });
+    Ok(())
+}
+
+fn force_stop(app: &Arc<App>, sid: &str, engine: &str) {
+    if engine == "codex" {
+        if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
+            if let Backend::Codex { turn_id, .. } = &mut s.backend {
+                *turn_id = None;
+            }
+        }
+    }
+    app.guard.turn_done(sid);
+    let text = if engine == "codex" {
+        "Codex did not stop the turn, so it was ended here."
+    } else {
+        "Claude Code did not stop, so its process was ended. The next message resumes the conversation."
+    };
+    app.emit(sid, json!({ "type": "note", "text": text }));
+    // Ended before the kill, so the sidecar's exit does not report a failure.
+    app.emit(sid, json!({ "type": "turn_completed", "status": "interrupted" }));
+    if engine != "codex" {
+        claude::kill(app, sid);
+    }
 }

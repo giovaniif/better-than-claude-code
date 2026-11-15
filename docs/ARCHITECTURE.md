@@ -46,6 +46,8 @@ Both engines are normalized to one event list per session. The UI replays it on 
 
 Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is derived from these.
 
+**Stop** (`session.interrupt`) asks the engine to stop. If it cannot be asked, or the turn is still open 5 s later, yardd ends the turn itself (`turn_completed` `interrupted`, with a note): a Claude sidecar is killed, and its next message starts a new one that resumes the conversation; a Codex turn is closed on our side. A Claude sidecar that exits on its own is also dropped, so the next message starts a fresh one instead of writing into a dead pipe.
+
 - Item ids come from the engine (Codex item ids, Claude `tool_use` ids; the sidecar's own ids carry a per-process prefix). The UI matches an id only within the current turn, after the last user message, so a reused id can never pull new text up into an earlier turn. Order is the log's order.
 - Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
 - The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
@@ -101,6 +103,7 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 - yardd samples CPU, load, memory and disk every 3 s with `sysinfo` and keeps an hour of CPU history in memory.
 - **Per session:** the same sample sums CPU and memory over each session's processes: the Claude sidecar tree, the terminal shell tree, and for Codex the app-server's children matched by command folder and start time. Codex runs as one shared app-server, so two Codex sessions running commands in the same folder at the same moment can be mixed up.
 - **Memory cap:** `YARD_SESSION_MEM_CAP_GB` (default 8, 0 off). Over it, yardd reports an error in the session, interrupts the turn and kills the command and terminal trees. For Claude it kills only what runs below the CLI, so the conversation survives. It is a polling soft cap, not a cgroup.
+- Threads are not processes: on Linux `sysinfo` lists each thread with its process as parent and the process's memory as its own. They are skipped; counting them once made a Claude CLI look 8.7 GB, and the cap's kill of a thread id took the CLI down (2026-11-14).
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
 - Not built: worktree disk sizes with cleanup, cgroups on Linux.
 
@@ -115,6 +118,7 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 - An `ssh` host gets one `ssh -N -L` tunnel shared by all clients, on a free loopback port, restarted with backoff up to 30 s and killed when the host is removed or yardd stops. The destination is passed after `--` and may not start with `-`.
 - A `direct` host is a plain `ws://` URL, for local testing.
 - Remote sessions stay listed but offline while their host is down.
+- **The web version as a host:** its compose file publishes the container's 47717 on the server's loopback, so an `ssh` host for that server reaches the same yardd as the web page. The installer refuses to install over a yardd it did not set up.
 - **Install from the app:** when the ssh tunnel is up but no yardd answers behind it, the host reports `noDaemon` and its card offers "Install Switchyard". The hub runs `scripts/remote-install.sh` (compiled into yardd) over the host's ssh as `bash -s -- <port>`, streaming each line to every client as `host.install`. The script downloads `switchyard-linux-{x64,arm64}.tar.gz` from the `latest` release (built by `.github/workflows/linux-host.yml`), swaps it into `~/.local/share/switchyard`, runs yardd as a systemd user service with lingering (or detached where there is no user systemd), checks `/health`, and reports whether `claude` and `codex` are installed and logged in (`@@engine` lines). The same card offers "Update Switchyard" on a connected SSH host. `YARD_SSH` and `YARD_RELEASE_URL` exist for the tests.
 - `scripts/install-host.sh` builds and installs from a checkout instead, for development.
 
@@ -186,7 +190,8 @@ The right pane has a Terminal tab next to Changes.
 - `CARGO_BUILD_JOBS=2 cargo test -p yardd`: integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. The fake records each `turn/start` input in `turn-inputs.jsonl`, so the attachment tests check what reached the engine, locally and on a `direct` remote through a hub. A fake `ssh` (`YARD_SSH`) runs the remote installer locally against a `file://` release. Unit tests cover the hand-off brief, the hub's id rewriting, the `YARD_ALLOW_ORIGIN` list and attachment names.
 - `cd ui && bun test`: `applyEvent`, the store reducer and the attachment helpers.
 - `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
-- Not covered: anything that needs Claude, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
+- A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop; a `[stuck]` fake Codex turn covers the Codex side of Stop.
+- Not covered: anything that needs the real Claude SDK, the PR pane, SSH hosts, the memory cap, and the UI beyond its reducers.
 
 ## PR pane
 

@@ -1036,8 +1036,10 @@ async fn sessions_are_pinned_and_archived_across_restarts() {
     let mut c = d.client().await;
     let cwd = sb.folder("proj");
     let a = c.create(&cwd, "first", json!({})).await;
-    let b = c.create(&cwd, "second", json!({})).await;
+    // One writer per folder: the second session may start only once the first is done.
     c.wait_turn_done(&a, 0).await;
+    c.wait_status(&a, "idle").await;
+    let b = c.create(&cwd, "second", json!({})).await;
     c.wait_turn_done(&b, 0).await;
 
     c.send(json!({ "op": "session.update", "sessionId": a, "pinned": true })).await;
@@ -1064,4 +1066,81 @@ async fn sessions_are_pinned_and_archived_across_restarts() {
     assert_eq!(find(&a)["pinned"], true);
     assert_eq!(find(&b)["archived"], true);
     assert_eq!(find(&b)["pinned"], false);
+}
+
+#[tokio::test]
+async fn stop_ends_a_codex_turn_that_ignores_the_interrupt() {
+    let sb = Sandbox::new("stuck-codex");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[stuck] spin", json!({})).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "interrupted");
+    c.wait_status(&sid, "idle").await;
+    assert!(c.event_types(&sid).contains(&"note".to_string()), "{:?}", c.event_types(&sid));
+
+    // The thread still takes a new turn.
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hello again" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+}
+
+fn claude_sidecar() -> String {
+    fake_bin().join("yard-claude").to_str().unwrap().to_string()
+}
+
+#[tokio::test]
+async fn a_claude_session_whose_sidecar_died_takes_the_next_message() {
+    let sb = Sandbox::new("claude-died");
+    let sidecar = claude_sidecar();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let extra = json!({ "engine": "claude", "model": "claude-haiku-5-5" });
+    let sid = c.create(&sb.folder("proj"), "first", extra.clone()).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+
+    // Before the fix, the dead sidecar stayed in place: this message went
+    // nowhere and its turn never ended.
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[die] now" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "failed");
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "still there?" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let answer = c.wait_event(&sid, "assistant_message", next).await;
+    assert_eq!(answer["text"], "Echo: still there?");
+
+    // The new sidecar resumed the first one's Claude Code session.
+    let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap();
+    let starts: Vec<&str> = log.lines().filter(|l| l.starts_with("start")).collect();
+    assert_eq!(starts.len(), 2, "{log}");
+    assert!(starts[0].ends_with("resume="), "{log}");
+    assert!(starts[1].contains("resume=fake-claude-"), "{log}");
+}
+
+#[tokio::test]
+async fn stop_kills_a_claude_sidecar_that_ignores_the_interrupt() {
+    let sb = Sandbox::new("claude-stuck");
+    let sidecar = claude_sidecar();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let extra = json!({ "engine": "claude", "model": "claude-haiku-5-5" });
+    let sid = c.create(&sb.folder("proj"), "[stuck] spin", extra).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "interrupted");
+    c.wait_status(&sid, "idle").await;
+    // Ended once: the killed sidecar's exit adds no failure.
+    c.drain_for(Duration::from_millis(500)).await;
+    let types = c.event_types(&sid);
+    assert_eq!(types.iter().filter(|t| *t == "turn_completed").count(), 1, "{types:?}");
+    assert!(!types.contains(&"error".to_string()), "{types:?}");
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hello" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
 }

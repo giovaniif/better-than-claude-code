@@ -38,6 +38,21 @@ fetch() {
   fi
 }
 
+health() {
+  if command -v curl >/dev/null; then
+    curl -fsS "http://127.0.0.1:$port/health" 2>/dev/null || true
+  else
+    wget -qO- "http://127.0.0.1:$port/health" 2>/dev/null || true
+  fi
+}
+
+# A yardd this script did not install (the Docker image with the port
+# published on loopback, say) already answers here. Installing would start a
+# second one that cannot bind, and the check at the end would pass on the old.
+if [ ! -d "$dest" ] && [ -n "$(health)" ]; then
+  fail "a Switchyard this installer did not set up (perhaps the Docker image) already runs on port $port; update it where it runs"
+fi
+
 echo "Downloading $asset"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -119,11 +134,7 @@ fi
 
 health=""
 for _ in $(seq 1 30); do
-  if command -v curl >/dev/null; then
-    health="$(curl -fsS "http://127.0.0.1:$port/health" 2>/dev/null || true)"
-  else
-    health="$(wget -qO- "http://127.0.0.1:$port/health" 2>/dev/null || true)"
-  fi
+  health="$(health)"
   [ -n "$health" ] && break
   sleep 0.5
 done

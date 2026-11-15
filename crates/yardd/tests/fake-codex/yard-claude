@@ -1,0 +1,45 @@
+#!/usr/bin/env bun
+// A scripted stand-in for the Claude sidecar (sidecar/yard-claude), for the
+// tests that need a Claude session. Same JSON lines as the real one, no SDK
+// and no model. A turn's behaviour is picked by a marker in the prompt:
+//   [die]   the sidecar exits at once, as when Claude Code is killed
+//   [stuck] streams one chunk, then ignores interrupts
+//   other   replies "Echo: <prompt>"
+// FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id.
+
+import { appendFileSync } from "node:fs";
+
+const dir = process.env.FAKE_CODEX_DIR;
+const log = (line) => {
+  if (dir) appendFileSync(`${dir}/sidecar.log`, `${line}\n`);
+};
+const out = (msg) => process.stdout.write(JSON.stringify(msg) + "\n");
+const emit = (event) => out({ type: "event", event });
+
+let n = 0;
+let stuck = false;
+for await (const line of console) {
+  let msg;
+  try {
+    msg = JSON.parse(line);
+  } catch {
+    continue;
+  }
+  if (msg.type === "start") {
+    log(`start pid=${process.pid} resume=${msg.resume ?? ""}`);
+    out({ type: "session", claudeSessionId: msg.resume ?? `fake-claude-${process.pid}` });
+  } else if (msg.type === "user") {
+    const text = String(msg.text ?? "");
+    if (text.includes("[die]")) process.exit(1);
+    const itemId = `text-${process.pid}-${++n}`;
+    if (text.includes("[stuck]")) {
+      stuck = true;
+      emit({ type: "assistant_delta", itemId, text: "Stuck" });
+      continue;
+    }
+    emit({ type: "assistant_message", itemId, text: `Echo: ${text}` });
+    emit({ type: "turn_completed", status: "completed" });
+  } else if (msg.type === "interrupt" && !stuck) {
+    emit({ type: "turn_completed", status: "interrupted" });
+  }
+}

@@ -346,11 +346,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         }
         "session.interrupt" => {
             let sid = str_field(msg, "sessionId")?;
-            let meta = app.meta(sid).context("no such session")?;
-            match meta.engine.as_str() {
-                "codex" => codex::interrupt(app, sid).await?,
-                _ => claude::interrupt(app, sid)?,
-            }
+            sessions::interrupt(app, sid).await?;
         }
         "session.approve" => {
             let sid = str_field(msg, "sessionId")?;

@@ -2,6 +2,13 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.2.1 (2026-11-15)
+
+- **Fixed: Stop always stops.** If Claude Code or Codex doesn't end the turn within 5 seconds, Switchyard ends it. A stuck Claude process is ended and the next message resumes the conversation.
+- **Fixed: a session whose Claude Code process died** no longer swallows the next message and stays "Working" forever. The next message starts Claude Code again on the same conversation.
+- **Fixed: the memory cap on Linux** counted every thread as a separate process. A Claude session looked many times its real size (an "8.7 GB, over the 8 GB cap" stop at well under 1 GB), and the stop killed Claude Code itself instead of only the commands it ran.
+- **Web version and desktop app on the same server.** The compose file now publishes the port on the server's loopback, so adding that server as an SSH host in the desktop app shows the web version's sessions instead of offering to install a second Switchyard. The installer now refuses to install over a Switchyard it didn't set up.
+
 ## 0.2.0 (2026-11-15)
 
 - **Log in from the app.** When Claude Code or Codex isn't logged in on a machine, the new-session page and its sessions say so, with **Log in**. Codex shows a link and a code; Claude Code shows a sign-in link and takes the code it gives back. `/login` in a session opens the same dialog, and the Hosts page shows each engine's state.

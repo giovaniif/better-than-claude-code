@@ -20,7 +20,13 @@ The same Switchyard as a web page, in one container: yardd, the UI, the compiled
 YARD_ALLOW_ORIGIN=http://localhost:47717 docker compose up -d
 ```
 
-Uncomment the `ports:` lines in `docker-compose.yml` first. They publish on `127.0.0.1` only; reach it from elsewhere through an SSH forward or a private interface, never `0.0.0.0` on a public machine. `docker compose build` builds the image from this checkout instead of pulling it.
+`docker-compose.yml` publishes the port on `127.0.0.1` only; reach it from elsewhere through an SSH forward or a private interface, never `0.0.0.0` on a public machine. `docker compose build` builds the image from this checkout instead of pulling it.
+
+## The same server in the desktop app
+
+The compose file publishes container port 47717 on the server's `127.0.0.1`, which is where the desktop app looks for Switchyard on an SSH host. Add the server on the app's Hosts page (for example `me@server`) and it connects to this container: the app and the web page show the same sessions. Without that port the app finds nothing on the server and offers to install a second, separate Switchyard there. If you added the web version before this port existed, add `127.0.0.1:47717:47717` under `ports:` and redeploy.
+
+Update the container by redeploying it; the app's **Update Switchyard** button refuses, since it only manages the Switchyard it installed.
 
 ## Projects
 

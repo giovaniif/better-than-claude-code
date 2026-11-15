@@ -16,7 +16,7 @@ use std::{
 use serde_json::{json, Value};
 use sysinfo::{Pid, System};
 
-use crate::{claude, codex, pty, sessions, state::App};
+use crate::{pty, sessions, state::App};
 
 const GB: f64 = 1024.0 * 1024.0 * 1024.0;
 /// After a session is stopped for its memory, wait this long before acting on it again.
@@ -232,6 +232,13 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
     let procs = sys.processes();
     let mut children: HashMap<Pid, Vec<Pid>> = HashMap::new();
     for (pid, p) in procs {
+        // On Linux sysinfo also lists every thread, with its process as the
+        // parent and the process's whole memory as its own. Counted, a CLI
+        // with 30 threads looked 30 times its size; killed, a thread id takes
+        // the whole process down, which is how the cap killed Claude Code.
+        if p.thread_kind().is_some() {
+            continue;
+        }
         if let Some(parent) = p.parent() {
             children.entry(parent).or_default().push(*pid);
         }
@@ -362,16 +369,11 @@ fn enforce(app: &Arc<App>, sys: &System, sid: &str, u: &SessionUse, cap: u64) {
             ),
         }),
     );
-    let Some(meta) = app.meta(sid) else { return };
-    if meta.status == "running" || meta.status == "needs_approval" {
+    {
         let app = app.clone();
         let sid = sid.to_string();
         tokio::spawn(async move {
-            let stopped = match meta.engine.as_str() {
-                "codex" => codex::interrupt(&app, &sid).await,
-                _ => claude::interrupt(&app, &sid),
-            };
-            if let Err(e) = stopped {
+            if let Err(e) = sessions::interrupt(&app, &sid).await {
                 eprintln!("yardd: could not interrupt {sid} after the memory cap: {e:#}");
             }
         });

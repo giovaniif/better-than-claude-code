@@ -69,6 +69,12 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     });
 
     let (stop, mut stopped) = oneshot::channel::<()>();
+    // Before the reader starts, so a sidecar that dies at once is still the
+    // one the reader finds and clears.
+    let own = tx.clone();
+    if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
+        s.backend = Backend::Claude { tx: tx.clone(), _stop: stop };
+    }
     let reader_app = app.clone();
     let reader_sid = sid.to_string();
     tokio::spawn(async move {
@@ -102,6 +108,15 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
         if let Some(pid) = pid {
             reader_app.guard.clear_sidecar(&reader_sid, pid);
         }
+        // A dead sidecar left in place swallows the next message, and that
+        // turn never ends. Pending makes the next message start a new one
+        // that resumes the conversation.
+        if let Some(s) = reader_app.sessions.lock().unwrap().get_mut(&reader_sid) {
+            if matches!(&s.backend, Backend::Claude { tx, .. } if tx.same_channel(&own)) {
+                s.backend = Backend::Pending;
+            }
+        }
+        drop(own);
         // The sidecar is gone: close out whatever turn was open.
         let running = reader_app
             .meta(&reader_sid)
@@ -110,7 +125,7 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
         if running {
             reader_app.emit(
                 &reader_sid,
-                json!({ "type": "error", "message": "The Claude sidecar exited." }),
+                json!({ "type": "error", "message": "The Claude sidecar exited. The next message starts it again." }),
             );
             reader_app.emit(&reader_sid, json!({ "type": "turn_completed", "status": "failed" }));
         }
@@ -127,9 +142,6 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
         })
         .to_string(),
     );
-    if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
-        s.backend = Backend::Claude { tx, _stop: stop };
-    }
     Ok(())
 }
 
@@ -172,6 +184,22 @@ pub fn set_permission(app: &Arc<App>, sid: &str, permission: &str) -> Result<()>
 
 pub fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {
     line(app, sid, json!({ "type": "interrupt" }))
+}
+
+/// Kill the session's sidecar, for a turn that ignored an interrupt. The
+/// conversation is kept: the next message starts a sidecar that resumes it.
+pub fn kill(app: &Arc<App>, sid: &str) {
+    let old = {
+        let mut map = app.sessions.lock().unwrap();
+        match map.get_mut(sid) {
+            Some(s) if matches!(s.backend, Backend::Claude { .. }) => {
+                Some(std::mem::replace(&mut s.backend, Backend::Pending))
+            }
+            _ => None,
+        }
+    };
+    // Dropping it fires `_stop`, and the reader kills the process.
+    drop(old);
 }
 
 pub fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> Result<()> {

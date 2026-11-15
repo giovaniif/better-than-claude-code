@@ -7,6 +7,7 @@
 //   [cmd]   a command that needs approval, then runs or is declined
 //   [edit]  a file change with a diff
 //   [slow]  streams one chunk, then waits for turn/interrupt
+//   [stuck] streams one chunk, then never ends, whatever it is asked
 //   [fail]  the turn fails with an error
 //   [think] a two-part reasoning summary, then a reply
 //   other   a plain streamed reply: "Echo: <prompt>"
@@ -194,6 +195,11 @@ async function runTurn(threadId, cwd, turn, text) {
   };
 
   notify("turn/started", { threadId, turn });
+
+  if (text.includes("[stuck]")) {
+    notify("item/agentMessage/delta", { threadId, turnId, itemId: newId("msg"), delta: "Stuck" });
+    return;
+  }
 
   if (text.includes("[slow]")) {
     const itemId = newId("msg");
