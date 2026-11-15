@@ -77,6 +77,20 @@ async fn client(socket: WebSocket, app: Arc<App>) {
     let mut host_ids = app.remotes.ids();
     let ids = host_ids.borrow_and_update().clone();
     remote::sync_pipes(&app, &mut pipes, &ids, &direct);
+    // Keystrokes and resizes run one after another: each in its own task,
+    // two keys typed in a row could reach the shell swapped.
+    let (keys, mut keys_rx) = mpsc::unbounded_channel::<Value>();
+    {
+        let app = app.clone();
+        let direct = direct.clone();
+        tokio::spawn(async move {
+            while let Some(msg) = keys_rx.recv().await {
+                if let Err(e) = handle(&app, &direct, &msg).await {
+                    let _ = direct.send(error_reply(&msg, &e));
+                }
+            }
+        });
+    }
 
     loop {
         tokio::select! {
@@ -109,6 +123,10 @@ async fn client(socket: WebSocket, app: Arc<App>) {
                         if let Err(e) = sent {
                             let _ = direct.send(error_reply(&msg, &e));
                         }
+                        continue;
+                    }
+                    if matches!(msg["op"].as_str(), Some("term.input" | "term.resize")) {
+                        let _ = keys.send(msg);
                         continue;
                     }
                     let app = app.clone();
