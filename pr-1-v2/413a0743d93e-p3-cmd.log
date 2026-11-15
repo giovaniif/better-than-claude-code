@@ -1,0 +1,40 @@
+$ verify/yv map run terminal --recipe scrollback-matches-after-reloads
+# exit 1 after 17519 ms at a85dcacc908a7c4023e022ca7833cca232c3ade9
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-15T18:28:21.116Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "scrollback-matches-after-reloads",
+          "status": "fail",
+          "ms": 14848,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 18 {\"eval\":\"document.querySelector(\\\".xterm-rows\\\").innerText.split(\\\"\\\\n\\\").map((l) => l.trimEnd()).join(\\\"\\\\n\\\").trimEnd() === localStorage.getItem(\\\"yv-term\\\")\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-28-06-475Z/fail-desktop-step18.png and the aria snapshot"
+            }
+          ],
+          "tail": " TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 4% · 52%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[edit] TEST-fix the greeting\\\" [level=1]\\n  - code: yard/edit-test-fix-the-greeting-e857\\n  - button \\\"Delete\\\"\\n  - text: \\\"[edit] TEST-fix the greeting\\\"\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\\n  - paragraph: Edited src/lib.rs.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Pull request\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 12,\n          \"eval\": \"(() => { const t = document.querySelector(\\\".xterm-rows\\\").innerText.split(\\\"\\\\n\\\").map((l) => l.trimEnd()).join(\\\"\\\\n\\\").trimEnd(); localStorage.setItem(\\\"yv-term\\\", t); return t.length > 0; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 18,\n          \"eval\": \"document.querySelector(\\\".xterm-rows\\\").innerText.split(\\\"\\\\n\\\").map((l) => l.trimEnd()).join(\\\"\\\\n\\\").trimEnd() === localStorage.getItem(\\\"yv-term\\\")\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 18 {\\\"eval\\\":\\\"document.querySelector(\\\\\\\".xterm-rows\\\\\\\").innerText.split(\\\\\\\"\\\\\\\\n\\\\\\\").map((l) => l.trimEnd()).join(\\\\\\\"\\\\\\\\n\\\\\\\").trimEnd() === localStorage.getItem(\\\\\\\"yv-term\\\\\\\")\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-28-06-475Z/fail-desktop-step18.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "terminal/scrollback-matches-after-reloads",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

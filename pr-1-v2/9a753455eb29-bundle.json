@@ -1,0 +1,201 @@
+{
+  "v": 1,
+  "claim": "After reloading the page, a session's terminal replays its scrollback garbled: a prompt that wrapped across lines comes back overwritten by the command typed after it, and a command's output can disappear under the next prompt. On a terminal with history it happens on every reload after a long wrapped command.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay",
+  "base": "31019d4557736db5e06d35af75fb6946885c74f7",
+  "head": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T18:26:54.242Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "31019d4557736db5e06d35af75fb6946885c74f7",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "da165d87d6ab3a38d0116d6d3d8c970376d803d4203052cb307cb0cb1d352f2a"
+        },
+        {
+          "path": "p1-before-reload-desktop.png",
+          "sha256": "9348d863c60036191e3fc3344b7aeff90da822910c1e01b35d644f55b82a1496"
+        },
+        {
+          "path": "p1-after-reload-desktop.png",
+          "sha256": "2c9bcb9e943b6f031743a6e91c1b2423908f41f5dca8ed5fd1e60469b1c6066b"
+        },
+        {
+          "path": "p1-fail-desktop-step10.png",
+          "sha256": "3e4ad79c7f6a25c210d170bcdd87f78e408b276673d9ed51e33ad385138e45a0"
+        }
+      ],
+      "addedAt": "2026-11-15T18:27:07.627Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "regression",
+      "at": "31019d4557736db5e06d35af75fb6946885c74f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-map-terminal.json",
+          "sha256": "cc94605ea356ccd76eadf24d97e084d00057b7635ea7c3071381626df73a6ad4"
+        }
+      ],
+      "addedAt": "2026-11-15T18:27:07.670Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 1,
+      "failingRecipes": [
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines"
+      ],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/second-terminal"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "a85dcacc908a7c4023e022ca7833cca232c3ade9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "413a0743d93e56221b37e7eeec0deb40ef497e848120d50032cffcb2e9b424bb"
+        }
+      ],
+      "addedAt": "2026-11-15T18:28:03.601Z",
+      "cmd": "verify/yv map run terminal --recipe scrollback-matches-after-reloads",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "efeda40081e7b57bccc4afde465dea7a4d33457659bc35f9922d0b6e0fba4900"
+        },
+        {
+          "path": "p4-before-reload-desktop.png",
+          "sha256": "af4b604e7c2d33292f156201e3fe42d6ce4bf21a798fbf2f73fdc15fefa2e232"
+        },
+        {
+          "path": "p4-after-reload-desktop.png",
+          "sha256": "cc11e9fcef601f3e193ef175755c5ee349e5cdb7e28dd4f30c96ce7ff0eadf9e"
+        }
+      ],
+      "addedAt": "2026-11-15T18:28:37.160Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-session.json",
+          "sha256": "550a7d8ec215bdb61e269c32e276ddea99c0ba1ce0807fe58d7a6993db77aee7"
+        },
+        {
+          "path": "p5-session-mobile.png",
+          "sha256": "e908753415575f71efdcc29d5749a12e482d82d131168f279c534a93177f0eeb"
+        }
+      ],
+      "addedAt": "2026-11-15T18:28:37.201Z",
+      "text": "Mobile: the workspace pane (and the terminal) is hidden below 1100 px; the session page renders as before.",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "4a70064c6644df9ca445dae861f33ba3f64560795734acb2370b65eb5be7a57c"
+        }
+      ],
+      "addedAt": "2026-11-15T18:28:37.243Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd && verify/yv map run terminal --recipe scrollback-matches-after-reloads && verify/yv map run terminal --recipe scrollback-matches-after-reloads",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "34380a179b50ed92dc51e65f18b19f418a854928000f7be3e6223730378c1573"
+        }
+      ],
+      "addedAt": "2026-11-15T18:29:27.768Z",
+      "cmd": "verify/yv design-check --base 31019d455773",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-terminal.json",
+          "sha256": "facfc3ad09b2a3264bbf59e12a19baafa57ffae778051eaf6f6eb0fdf9f46ecc"
+        }
+      ],
+      "addedAt": "2026-11-15T18:29:27.845Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads"
+      ]
+    }
+  ]
+}

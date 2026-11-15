@@ -1,0 +1,71 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-15T18:28:03.543Z",
+      "counts": {
+        "pass": 2,
+        "fail": 2,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "runs-command",
+          "status": "pass",
+          "ms": 4753
+        },
+        {
+          "label": "second-terminal",
+          "status": "pass",
+          "ms": 4604
+        },
+        {
+          "label": "scrollback-after-reload",
+          "status": "fail",
+          "ms": 28221,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 7 {\"expect\":\"css:.xterm-rows\",\"text\":\"TEST-before-42\",\"timeout\":20000}: expected \"css:.xterm-rows\" to contain \"TEST-before-42\", got \"To run a command as administrator (user \"root\"), use \"s",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-18-075Z/fail-desktop-step7.png and the aria snapshot"
+            }
+          ],
+          "tail": "in \\\"TEST-before-42\\\", got \\\"To run a command as administrator (user \\\"root\\\"), use \\\"s\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-18-075Z/fail-desktop-step7.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 5% · 51%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[think] TEST-plan the refactor\\\" [level=1]\\n  - code: yard/think-test-plan-the-refactor-c623\\n  - button \\\"Delete\\\"\\n  - text: \\\"[think] TEST-plan the refactor\\\"\\n  - button \\\"Worked for 0s · Thought\\\"\\n  - paragraph: Thought it through.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Pull request\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 7 {\\\"expect\\\":\\\"css:.xterm-rows\\\",\\\"text\\\":\\\"TEST-before-42\\\",\\\"timeout\\\":20000}: expected \\\"css:.xterm-rows\\\" to contain \\\"TEST-before-42\\\", got \\\"To run a command as administrator (user \\\"root\\\"), use \\\"s\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-18-075Z/fail-desktop-step7.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "scrollback-keeps-wrapped-lines",
+          "status": "fail",
+          "ms": 17442,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 8 {\"expect\":\"css:.xterm\",\"text\":\"TEST-wrap-42\"}: expected \"css:.xterm\" to contain \"TEST-wrap-42\", got \"To run a command as administrator (user \"root\"), use \"s",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-46-310Z/fail-desktop-step8.png and the aria snapshot"
+            }
+          ],
+          "tail": "ard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-46-310Z/fail-desktop-step8.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"iso-host 8% · 52%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[fail] TEST-failing turn\\\" [level=1]\\n  - code: yard/fail-test-failing-turn-c151\\n  - button \\\"Delete\\\"\\n  - text: \\\"[fail] TEST-failing turn fake failure: the model is unavailable\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Pull request\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 4,\n          \"eval\": \"document.querySelector(\\\".xterm-rows\\\").innerText.replace(/\\\\s+/g, \\\"\\\").includes(\\\"$echoTEST-wrap-$((6*7))TEST-wrap-42\\\")\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 8 {\\\"expect\\\":\\\"css:.xterm\\\",\\\"text\\\":\\\"TEST-wrap-42\\\"}: expected \\\"css:.xterm\\\" to contain \\\"TEST-wrap-42\\\", got \\\"To run a command as administrator (user \\\"root\\\"), use \\\"s\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay/.verify/drives/2026-11-15T18-27-46-310Z/fail-desktop-step8.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "add-to-message",
+          "status": "manual",
+          "why": "needs a mouse selection inside xterm"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "terminal/scrollback-after-reload",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "terminal/scrollback-keeps-wrapped-lines",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1e0765ed82",
+  "build": {
+    "sha": "bee0c4ad0441266413e72f66483547cdb036c9b4",
+    "short": "bee0c4a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T18:28:23.030Z"
+  },
+  "dir": ".verify/evidence/head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 10516,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head/before-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head/after-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 10,
+          "eval": "document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
