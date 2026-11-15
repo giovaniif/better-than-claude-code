@@ -1,0 +1,46 @@
+$ verify/yv map run approvals
+# exit 0 after 23894 ms at 0224ec23e5e1c5105f570b10b86987eb9a60bd33
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-15T23:53:49.749Z",
+      "counts": {
+        "pass": 5
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "pending-shows-card",
+          "status": "pass",
+          "ms": 5220
+        },
+        {
+          "label": "allow-once",
+          "status": "pass",
+          "ms": 4634
+        },
+        {
+          "label": "allow-then-follow-up",
+          "status": "pass",
+          "ms": 5118
+        },
+        {
+          "label": "deny",
+          "status": "pass",
+          "ms": 3685
+        },
+        {
+          "label": "always-allow",
+          "status": "pass",
+          "ms": 4358
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

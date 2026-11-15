@@ -1,0 +1,46 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1e19b2cf214",
+  "build": {
+    "sha": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+    "short": "0224ec2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T23:41:41.405Z"
+  },
+  "dir": ".verify/evidence/b12-stop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4765,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/b12-stop/queued-before-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/b12-stop/returned-after-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

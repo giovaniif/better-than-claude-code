@@ -1,0 +1,417 @@
+{
+  "v": 1,
+  "claim": "Queued messages did not work like Claude Code: a message sent while the agent worked waited for the whole turn to end and then ran as a separate turn, and Stop kept the queue instead of giving the text back to edit. In Claude Code the agent reads a queued message at its next step in the same turn, and Esc returns queued messages to the input.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude",
+  "base": "ec9c57381064ad21662903d74ed8a99bd5a9e12a",
+  "head": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T19:47:55.126Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "121506538ea5ea761fbbce7f50e1dc42fb98926c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "50b48553fdc3182b491ca5498f2070e55f99807ebb91face36b3913d03cfcdce"
+        },
+        {
+          "path": "p1-queued-before-stop-mobile.png",
+          "sha256": "2274520ece8634fa31002e8082580668a915873e694ac93b40294f5163014f21"
+        },
+        {
+          "path": "p1-fail-mobile-step6.png",
+          "sha256": "9dab52082021d0fc64e867d87a8878d29a0f6e71b0c311656697917a89773903"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "b79f47d7653df936824917b48f9628fac8f88042ab7257282a80dc95388429a6"
+        }
+      ],
+      "addedAt": "2026-11-15T19:48:17.465Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "regression",
+      "at": "121506538ea5ea761fbbce7f50e1dc42fb98926c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-map-thread.json",
+          "sha256": "97821576e887a57ebf551546d4fb6e096ee273499ce22d192b1bbf68731ea766"
+        }
+      ],
+      "addedAt": "2026-11-15T19:48:17.508Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/stop-holds-the-queue"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "854707dd4551a29161a5337c2f5950e1f769b6e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "93e4f1066186f1715fcfb62bf3517f6495fa216e28643204df947a551f745c63"
+        }
+      ],
+      "addedAt": "2026-11-15T19:49:13.304Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon -- stop_hands a_queued_message a_message_sent messages_after messages_queued",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "854707dd4551a29161a5337c2f5950e1f769b6e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "f054d53a4d646bba3c5600f0eb3fe6e2832fb3bd65d391ed3f7cca29e4b8e9bc"
+        }
+      ],
+      "addedAt": "2026-11-15T19:49:34.737Z",
+      "cmd": "verify/yv map run thread --recipe steer-a-running-turn",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive-mobile.json",
+          "sha256": "db1e62a93c85e3e7ec849d955a9571ec855afb651e781700a215496141babc9b"
+        },
+        {
+          "path": "p5-queued-mobile.png",
+          "sha256": "af73ac2a9abc2afab155a69c0830bf191169c16cb62980d8771579739969f4af"
+        },
+        {
+          "path": "p5-sent-mobile.png",
+          "sha256": "d3b254474120c8a437972aa6bc77f31149c4b5ea2904c35cd819822fb8ab6581"
+        },
+        {
+          "path": "p5-queued-mobile.png",
+          "sha256": "af73ac2a9abc2afab155a69c0830bf191169c16cb62980d8771579739969f4af"
+        },
+        {
+          "path": "p5-sent-mobile.png",
+          "sha256": "d3b254474120c8a437972aa6bc77f31149c4b5ea2904c35cd819822fb8ab6581"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:39.341Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive-desktop.json",
+          "sha256": "b1fa76a1e4916995e5867998dddf85a01653565f1b41fa6a4760708d0bc06904"
+        },
+        {
+          "path": "p6-queued-desktop.png",
+          "sha256": "f662662e30fbb38f4214878a5ce9c8199f61da92d6efaea86913faf2f65a9288"
+        },
+        {
+          "path": "p6-sent-desktop.png",
+          "sha256": "7c69036ecfb78cd82bf7b7c347bc621b36049e4b00d0158fe2e79632c650c578"
+        },
+        {
+          "path": "p6-queued-desktop.png",
+          "sha256": "f662662e30fbb38f4214878a5ce9c8199f61da92d6efaea86913faf2f65a9288"
+        },
+        {
+          "path": "p6-sent-desktop.png",
+          "sha256": "7c69036ecfb78cd82bf7b7c347bc621b36049e4b00d0158fe2e79632c650c578"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:39.380Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive-stop.json",
+          "sha256": "021c58935f1d298d91a436e12ef24d452e96c22ab4b364c0618a5e4aa7107443"
+        },
+        {
+          "path": "p7-queued-before-stop-desktop.png",
+          "sha256": "32b925f83b61c5cae14332bd9222b1cda6802bb75c96031fa91b9ff294f3e4b1"
+        },
+        {
+          "path": "p7-returned-after-stop-desktop.png",
+          "sha256": "4ae993d47eacc36162e90fe01bafa5a209c3c76ec6531a47dfbd3cd92213fb8e"
+        },
+        {
+          "path": "p7-queued-before-stop-desktop.png",
+          "sha256": "32b925f83b61c5cae14332bd9222b1cda6802bb75c96031fa91b9ff294f3e4b1"
+        },
+        {
+          "path": "p7-returned-after-stop-desktop.png",
+          "sha256": "4ae993d47eacc36162e90fe01bafa5a209c3c76ec6531a47dfbd3cd92213fb8e"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:39.423Z",
+      "text": "Stop returns the queued message to the reply box.",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-tests.log",
+          "sha256": "082ab567fb9dd0f20691474ad0e270e2253c62ebac7b9e228accffdc3765e151"
+        },
+        {
+          "path": "p8-cmd.log",
+          "sha256": "a1ee631130a88b7cd7b7029193684ac8a48e0e770dd9482fb659937b2a42c20d"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:39.463Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "85e827d639126dc0558f5468c3e5e6d8e10917937cb6124d877979cbb9c3079f"
+        },
+        {
+          "path": "p9-cmd.log",
+          "sha256": "d2e7dde78adb56256cfa6839ad32cc8711625c0b158458274ed946f45d16f0da"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:48.684Z",
+      "failedApi": [],
+      "cmd": "verify/yv design-check --base 960bc2a0a322",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-thread.json",
+          "sha256": "6373628d3776a5f91611ac07d7af6dd784457f44a1cc5c34cb835ac161410d98"
+        },
+        {
+          "path": "p10-cmd.log",
+          "sha256": "72efa916cbba8e1ab1c1b9d61e5338d6e000d7a8f6923f0316c02d2609668ab1"
+        }
+      ],
+      "addedAt": "2026-11-15T23:51:48.761Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message"
+      ],
+      "cmd": "verify/yv map run thread",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-stop.json",
+          "sha256": "74d64967ed3d2bbabcadcbf4ddcc13c0f5c314a762d794d602facae8dbbd9f42"
+        },
+        {
+          "path": "p11-cmd.log",
+          "sha256": "32577881a3545a80d31b4fad1cfbf8b9e95f91776a68ad638c67716273dacf2b"
+        }
+      ],
+      "addedAt": "2026-11-15T23:53:04.493Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn"
+      ],
+      "cmd": "verify/yv map run stop",
+      "exit": 0
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-approvals.json",
+          "sha256": "eac5b1b4299f458c49fb04ee68b89c5c43d5134c9ae984b8df36eb26865194b7"
+        },
+        {
+          "path": "p12-cmd.log",
+          "sha256": "d3ffe9dc3d54c9c832ef832b6efdd2b2ef494c85e30f4f86fb59ba9381288947"
+        }
+      ],
+      "addedAt": "2026-11-15T23:53:25.857Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/allow-then-follow-up",
+        "approvals/deny",
+        "approvals/always-allow"
+      ],
+      "cmd": "verify/yv map run approvals",
+      "exit": 0
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "note",
+      "at": "0224ec23e5e1c5105f570b10b86987eb9a60bd33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-15T23:53:49.790Z",
+      "text": "Real Claude (Haiku) through yardd was run on 8b3037b (same delivery path); not re-run on this head. This head is 188919d merged with main (ec9c573: #4, #10); the only hand-resolved code conflict is App::emit, which keeps main's under-lock broadcast and adds the queue's step/steer delivery. Base proofs (1215065/854707d) kept with --force across the merge; #4 and #10 do not change the queue."
+    }
+  ]
+}
