@@ -40,6 +40,7 @@ export function noticeText(kind: Notice, title: string): { title: string; body: 
 /** Last known status of every session, to tell a change from a snapshot. */
 export class StatusWatcher {
   private seen = new Map<string, { status: Status; host: string }>();
+  private ends = new Map<string, string>();
 
   /** A snapshot of one host's sessions: the new baseline, nothing to report. */
   seed(sessions: SessionMeta[], host = "local") {
@@ -47,14 +48,26 @@ export class StatusWatcher {
     for (const s of sessions) this.seen.set(s.id, { status: s.status, host: s.host || "local" });
   }
 
+  /** How a turn ended (`turn_completed`'s status). yardd sends it just before
+   *  the session goes idle, and a failed turn ends idle too: this tells them apart. */
+  turnEnded(id: string, status: string) {
+    this.ends.set(id, status);
+  }
+
   change(session: SessionMeta): Notice | null {
     const prev = this.seen.get(session.id)?.status;
     this.seen.set(session.id, { status: session.status, host: session.host || "local" });
-    return statusNotice(prev, session.status);
+    const kind = statusNotice(prev, session.status);
+    const end = this.ends.get(session.id);
+    this.ends.delete(session.id);
+    if (kind !== "finished") return kind;
+    // A turn the user stopped needs no banner.
+    return end === "failed" ? "failed" : end === "interrupted" ? null : kind;
   }
 
   forget(id: string) {
     this.seen.delete(id);
+    this.ends.delete(id);
   }
 }
 
@@ -188,6 +201,9 @@ export function createNotifier(opts: { openSessionId(): string | null; open(sess
         break;
       case "host.snapshot":
         watcher.seed(msg.sessions ?? [], msg.hostId);
+        break;
+      case "event":
+        if (msg.event?.type === "turn_completed") watcher.turnEnded(msg.sessionId, String(msg.event.status));
         break;
       case "session.deleted":
         watcher.forget(msg.sessionId);

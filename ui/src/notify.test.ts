@@ -74,6 +74,22 @@ describe("StatusWatcher", () => {
     expect(w.change(meta("a", "idle"))).toBe("finished");
     expect(w.change({ ...meta("h:1", "running"), host: "h" })).toBeNull();
   });
+  test("a failed turn ends idle but is reported as a failure", () => {
+    const w = new StatusWatcher();
+    w.seed([meta("a", "running")]);
+    w.turnEnded("a", "failed");
+    expect(w.change(meta("a", "idle"))).toBe("failed");
+    // The verdict is for that turn only.
+    expect(w.change(meta("a", "running"))).toBeNull();
+    w.turnEnded("a", "completed");
+    expect(w.change(meta("a", "idle"))).toBe("finished");
+  });
+  test("a turn the user stopped is not reported", () => {
+    const w = new StatusWatcher();
+    w.seed([meta("a", "running")]);
+    w.turnEnded("a", "interrupted");
+    expect(w.change(meta("a", "idle"))).toBeNull();
+  });
   test("a deleted session is forgotten", () => {
     const w = new StatusWatcher();
     w.seed([meta("a", "running")]);
