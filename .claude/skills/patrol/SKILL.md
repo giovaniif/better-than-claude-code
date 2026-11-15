@@ -121,5 +121,10 @@ gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
   on that PR). Never `gh pr merge` around the gate, never push to `main`.
 - Changes to CI, `verify/` (except `verify/features/`), skills or CLAUDE.md
   always go to the owner: the gate blocks them as self-or-CI.
+- The land gate's `data-loss` rule matches `remove_dir_all`, `rm -rf` and
+  `fs::remove_file` on any added line under `crates/` or `scripts/`, tests
+  included, so a test that removes its own temp dir blocks the PR for the owner.
+  In daemon tests use `tests/common`'s `Sandbox`, which already cleans up. Don't
+  add your own cleanup unless the owner should judge it.
 - Every surprise becomes a Gotcha in the feature map, a CLI fix, or a rule in
   this file (in a PR). Don't let the same failure happen twice.
