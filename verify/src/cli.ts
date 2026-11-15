@@ -47,7 +47,7 @@ const HELP = `verify/yv <command> [args]   (every command prints one JSON object
   land merge|watch <pr> [--dry-run] | land ledger [pr] | land review [--days 7]
   notify "<message>" [--title t] [--priority n] [--click url]
   loop run patrol|maintain|review|verify|babysit [--pr N] [--engine e --model m --effort x] [--dry-run] [--force]
-  loop status | loop pause | loop resume
+  loop status | loop log <sessionId> [--last n] | loop pause | loop resume
   selftest [--smoke]
 `;
 

@@ -15,7 +15,11 @@ to it or stop it from any Switchyard window.
 | babysit | by hand, per PR | `.claude/skills/babysit/SKILL.md` |
 
 Settings: `verify/loops.json` (engine, model, effort, minutes, usage budget).
-Loops default to Codex because Claude usage is reserved (see CLAUDE.md).
+Loops default to Codex because Claude usage is reserved (see CLAUDE.md). While
+Codex is logged out on the server, runs fall back to Claude Sonnet (`fallback`),
+skipped once Claude's 5-hour window passes 50% or its week passes 30%. Log Codex
+in from Switchyard's Hosts page (or `codex login --device-auth` on the server)
+and the loops use it again; set `"fallback": null` to never use Claude.
 
 ## Install
 

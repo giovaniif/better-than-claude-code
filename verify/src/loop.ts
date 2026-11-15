@@ -144,14 +144,41 @@ async function runLoop(a: Args): Promise<Result> {
     const sessions = sessionsOf(ws);
     const usage = usageOf(ws);
     const tidied = a.flags["dry-run"] ? { archived: [], pruned: [] } : tidy(ws, sessions, cfg.keepFinishedSessions ?? 3);
-    const why = skipReason(kind, l.engine, sessions, usage, cfg, !!a.flags.force);
+    // A logged-out engine cannot run a loop: fall back when the config allows it.
+    let engines: any = null;
+    {
+      const from = ws.log.length;
+      ws.send({ op: "engines.status" });
+      const end = Date.now() + 15000;
+      while (!engines && Date.now() < end) {
+        engines = ws.log.slice(from).find((m) => m.op === "engines")?.engines ?? null;
+        await sleep(100);
+      }
+    }
+    let fellBack: string | null = null;
+    if (engines && engines[l.engine]?.loggedIn === false && !str(a, "engine")) {
+      const fb = cfg.fallback;
+      if (fb && engines[fb.engine]?.loggedIn) {
+        fellBack = `${l.engine} is logged out on this host; using ${fb.engine}`;
+        l.engine = fb.engine;
+        l.model = fb.model ?? "default";
+        l.effort = fb.effort ?? l.effort;
+      } else {
+        const why = `${l.engine} is logged out on this host${fb ? ` and the fallback ${fb.engine} is not logged in either` : ""}; log in from Switchyard's Hosts page`;
+        mkdirSync(join(SHARED, "loops"), { recursive: true });
+        writeFileSync(join(SHARED, "loops", `${kind}.last.json`), JSON.stringify({ at: nowIso(), failed: why }, null, 2));
+        fail("engine-logged-out", why, "Hosts → Log in, or `codex login --device-auth` on the server");
+      }
+    }
+    const budget = fellBack ? { ...cfg, budget: { ...cfg.budget, [l.engine]: cfg.fallback.budget ?? cfg.budget[l.engine] } } : cfg;
+    const why = skipReason(kind, l.engine, sessions, usage, budget, !!a.flags.force);
     const record = (entry: object) => {
       mkdirSync(join(SHARED, "loops"), { recursive: true });
       writeFileSync(join(SHARED, "loops", `${kind}.last.json`), JSON.stringify({ at: nowIso(), ...entry }, null, 2));
     };
     if (why) {
-      record({ skipped: why });
-      return { ok: true, skipped: why, tidied };
+      record({ skipped: why, fellBack });
+      return { ok: true, skipped: why, fellBack, tidied };
     }
     const models = snap.models?.[l.engine] ?? [];
     const model = l.model === "default" ? (models.find((m: any) => m.isDefault) ?? models[0])?.id : l.model;
@@ -159,7 +186,7 @@ async function runLoop(a: Args): Promise<Result> {
     const start = new Date();
     const text = prompt(kind, l, start, pr);
     const create = { op: "session.create", engine: l.engine, model, effort: l.effort, cwd: checkout, worktree: true, base: "origin/main", permission: "full", text };
-    if (a.flags["dry-run"]) return { ok: true, dryRun: true, would: create, usage, tidied };
+    if (a.flags["dry-run"]) return { ok: true, dryRun: true, would: create, fellBack, usage, tidied };
     const from = ws.log.length;
     ws.send(create);
     const end = Date.now() + 60000;
@@ -170,8 +197,8 @@ async function runLoop(a: Args): Promise<Result> {
     }
     if (!reply) fail("timeout", "the live yardd did not answer session.create within 60 s");
     if (reply.op === "error") fail("create-failed", reply.message);
-    record({ started: reply.sessionId, model, effort: l.effort, engine: l.engine, pr });
-    return { ok: true, started: { sessionId: reply.sessionId, kind, engine: l.engine, model, effort: l.effort, pr }, tidied };
+    record({ started: reply.sessionId, model, effort: l.effort, engine: l.engine, pr, fellBack });
+    return { ok: true, started: { sessionId: reply.sessionId, kind, engine: l.engine, model, effort: l.effort, pr }, fellBack, tidied };
   } finally {
     ws.close();
   }
@@ -193,8 +220,42 @@ async function status(): Promise<Result> {
   }
 }
 
+/** Read-only: a loop session's recent events, summarised. */
+async function logOf(a: Args): Promise<Result> {
+  const sid = a.pos[1];
+  if (!sid) throw new Usage("loop log <sessionId> [--last n]");
+  const cfg = loopsConfig();
+  const { ws } = await live(cfg.yardUrl);
+  try {
+    const s = sessionsOf(ws).find((x) => x.id === sid);
+    if (!s || !s.title.startsWith("Loop ")) fail("not-a-loop", `${sid} is not a loop session`);
+    const from = ws.log.length;
+    ws.send({ op: "session.open", sessionId: sid });
+    const end = Date.now() + 10000;
+    let h: any = null;
+    while (!h && Date.now() < end) {
+      h = ws.log.slice(from).find((m) => m.op === "history" && m.sessionId === sid);
+      await sleep(50);
+    }
+    if (!h) fail("timeout", "no history");
+    const lines = (h.events as any[])
+      .map((e) => {
+        if (e.type === "assistant_message") return { t: "say", text: String(e.text).slice(0, 1500) };
+        if (e.type === "tool_started") return { t: "tool", text: String(e.title ?? e.detail ?? "").slice(0, 300) };
+        if (e.type === "error") return { t: "error", text: String(e.message ?? e.text).slice(0, 500) };
+        if (e.type === "turn_completed") return { t: "turn", text: e.status };
+        return null;
+      })
+      .filter(Boolean);
+    return { ok: true, session: { id: s.id, title: s.title, status: s.status, branch: s.branch }, events: lines.slice(-Number(str(a, "last", "30"))) };
+  } finally {
+    ws.close();
+  }
+}
+
 export async function loop(a: Args): Promise<Result> {
   const sub = a.pos[0];
+  if (sub === "log") return logOf(a);
   if (sub === "run") return runLoop(a);
   if (sub === "status") return status();
   if (sub === "pause") {
@@ -206,7 +267,7 @@ export async function loop(a: Args): Promise<Result> {
     if (existsSync(PAUSED())) unlinkSync(PAUSED());
     return { ok: true, paused: false };
   }
-  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop status | loop pause | loop resume");
+  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop status | loop log <sessionId> [--last n] | loop pause | loop resume");
 }
 
 export const _test = { skipReason, prompt, matches, statSync };

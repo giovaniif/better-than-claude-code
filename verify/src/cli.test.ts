@@ -139,6 +139,10 @@ describe("land gate scan", () => {
     expect(codes([file("crates/yardd/src/git.rs", '@@\n+    std::fs::remove_dir_all(&p)?;')])).toContain("data-loss");
     expect(codes([file("ui/src/x.ts", "@@\n+const t = 'ghp_" + "a".repeat(36) + "'")])).toContain("secret");
   });
+  test("a fix with its recipe keeps its category", () => {
+    expect(scanFiles([file("ui/src/TerminalPane.tsx", "@@\n+x"), file("verify/features/terminal.md", "@@\n+- gotcha")]).category).toBe("ui-fix-small");
+    expect(scanFiles([file("verify/features/terminal.md", "@@\n+- gotcha")]).category).toBe("feature-map");
+  });
   test("docs-only is its own category", () => {
     expect(scanFiles([file("docs/web.md", "@@\n+x")]).category).toBe("docs");
   });

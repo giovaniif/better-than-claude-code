@@ -8,6 +8,13 @@
     "claude": { "fiveHourMax": 50, "sevenDayMax": 60 },
     "maxLoadPerCore": 0.7
   },
+  "fallback": {
+    "$comment": "Used only while the loop's own engine is logged out on this host. Claude is reserved for the owner, so the cap is tight: a run is skipped once Claude's 5-hour window passes 50% or its week passes 30%.",
+    "engine": "claude",
+    "model": "claude-sonnet-5-5",
+    "effort": "high",
+    "budget": { "fiveHourMax": 50, "sevenDayMax": 30 }
+  },
   "loops": {
     "patrol": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/patrol/SKILL.md" },
     "maintain": { "engine": "codex", "model": "default", "effort": "medium", "minutes": 50, "skill": ".claude/skills/map-maintenance/SKILL.md" },

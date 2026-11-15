@@ -111,7 +111,9 @@ export function scanFiles(files: PrFile[]): { blockers: Blocker[]; category: str
     }
   }
   const total = files.reduce((n, f) => n + f.additions + f.deletions, 0);
-  const areas = Object.keys(touched);
+  // A fix that also updates its feature-map recipe is still a fix of its own area.
+  const code = files.filter((f) => !f.filename.startsWith("verify/features/"));
+  const areas = [...new Set((code.length ? code : files).map((f) => f.filename.split("/")[0]))];
   const only = (...xs: string[]) => areas.every((a) => xs.includes(a));
   const docsOnly = files.every((f) => /\.md$/.test(f.filename) && !/^verify\//.test(f.filename) && !/^(CLAUDE|AGENTS)\.md$/.test(f.filename));
   const cfg = landConfig();
