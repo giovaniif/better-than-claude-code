@@ -1,0 +1,88 @@
+# Tests on every pull request and every push to main. The job names (yardd,
+# ui, sidecar, verify) are the land gate's required checks (verify/land.json).
+# Nothing here needs a login or spends a subscription: engines are the scripted
+# fakes in crates/yardd/tests/fake-codex.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  yardd:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test -p yardd
+        env:
+          CARGO_BUILD_JOBS: "4"
+        run: cargo test -p yardd
+
+  ui:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - working-directory: ui
+        run: |
+          bun install --frozen-lockfile
+          bun test
+          bunx vite build
+
+  sidecar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - working-directory: sidecar/yard-claude
+        run: |
+          bun install --frozen-lockfile
+          bun test
+
+  # The verification CLI's own tests, then a real round trip: an isolated
+  # yardd built from this commit, seeded, screenshotted and driven in Chromium.
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install
+        run: |
+          (cd verify && bun install --frozen-lockfile && bunx playwright install --with-deps chromium)
+          (cd ui && bun install --frozen-lockfile)
+          (cd sidecar/yard-claude && bun install --frozen-lockfile)
+      - name: yv selftest --smoke
+        env:
+          CARGO_BUILD_JOBS: "4"
+        run: |
+          git config --global user.name ci && git config --global user.email ci@example.com
+          verify/yv selftest --smoke > selftest.json || { cat selftest.json; exit 1; }
+          cat selftest.json
+      - name: Feature map (security, approvals)
+        run: |
+          verify/yv map run security > map.json || { cat map.json; exit 1; }
+          verify/yv map run approvals > map2.json || { cat map2.json; exit 1; }
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: verify-artifacts
+          path: .verify/
+          retention-days: 7
