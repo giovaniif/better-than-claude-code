@@ -39,6 +39,7 @@ const Icon = ({ d, size = 14, width = 2 }: { d: string; size?: number; width?: n
   </svg>
 );
 const PLUS = "M12 5v14M5 12h14";
+const IMPORT = "M12 3v12M7 10l5 5 5-5M5 21h14";
 const CHEVRON_RIGHT = "M9 6l6 6-6 6";
 const CHEVRON_DOWN = "M6 9l6 6 6-6";
 const ARROW_UP = "M12 19V5M5 12l7-7 7 7";
@@ -353,6 +354,7 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
   // Opening an archived session shows the section, so its row stays in view.
   const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
+  const [importing, setImporting] = useState(false);
   useEffect(() => {
     if (openArchived) setShowArchived(true);
   }, [openArchived]);
@@ -367,6 +369,11 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
           <Icon d={PLUS} />
           New session
         </button>
+        <button className="nav-row" onClick={() => setImporting(true)}>
+          <Icon d={IMPORT} />
+          Import
+        </button>
+        {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
       </div>
       <div className="session-list">
         {pinned.length > 0 && <div className="list-head">Pinned</div>}
@@ -2275,6 +2282,126 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
         {body}
       </div>
     </div>
+  );
+}
+
+/** A Claude Code session touched this recently may still be open somewhere. */
+const RECENT_MS = 10 * 60_000;
+
+/** "5 min ago": when a Claude Code session was last used. */
+function ago(ms: number): string {
+  const min = Math.round((Date.now() - ms) / 60000);
+  if (min < 1) return "just now";
+  if (min < 60) return `${min} min ago`;
+  if (min < 48 * 60) return `${Math.round(min / 60)} h ago`;
+  if (min < 30 * 24 * 60) return `${Math.round(min / 1440)} d ago`;
+  return new Date(ms).toLocaleDateString();
+}
+
+/**
+ * Import a Claude Code session run outside Switchyard: the host's sessions
+ * (from the Agent SDK) newest first; importing one opens it here, in its own
+ * folder, and its next message continues the same conversation.
+ */
+function ImportDialog({ state, actions, onClose }: { state: State; actions: Actions; onClose(): void }) {
+  const [host, setHost] = useState("local");
+  const [filter, setFilter] = useState("");
+  const [pending, setPending] = useState<string | null>(null);
+  const list = state.claudeSessions[host];
+  const machine = hostName(state, host);
+  const close = () => {
+    actions.clearImportError();
+    onClose();
+  };
+  useEscape(true, close);
+  useEffect(() => {
+    actions.clearImportError();
+    setPending(null);
+    actions.listClaudeSessions(host);
+  }, [host]);
+  // The import's `created` reply opens the session: the dialog's work is done.
+  const opened = state.route.page === "session" ? state.route.id : null;
+  const first = useRef(opened);
+  useEffect(() => {
+    if (pending && opened && opened !== first.current) onClose();
+  }, [opened]);
+  useEffect(() => {
+    if (state.importError) setPending(null);
+  }, [state.importError]);
+  const words = filter.toLowerCase().split(/\s+/).filter(Boolean);
+  const rows = (list?.sessions ?? []).filter((s) => words.every((w) => `${s.title} ${s.cwd ?? ""} ${s.gitBranch ?? ""}`.toLowerCase().includes(w)));
+  const open = (id: string) => {
+    actions.go({ page: "session", id: host === "local" ? id : `${host}~${id}` });
+    close();
+  };
+  return createPortal(
+    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}>
+      <div className="modal import-modal" role="dialog" aria-modal="true" aria-label="Import from Claude Code">
+        <header className="modal-head">
+          <h2>Import from Claude Code</h2>
+          <span className="spacer" />
+          <button className="btn-icon" aria-label="Close" onClick={close}>
+            <Icon d={CLOSE} size={14} />
+          </button>
+        </header>
+        <p className="muted small">Sessions you ran with Claude Code on {machine}. An imported session opens in its own folder and its next message continues that conversation.</p>
+        <div className="row">
+          {state.hosts.length > 0 && <HostPicker state={state} value={host} onChange={setHost} onAddHost={() => (actions.go({ page: "hosts" }), close())} />}
+          <input
+            className="import-filter"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Filter by title, folder or branch"
+            aria-label="Filter sessions"
+            spellCheck={false}
+            autoFocus
+          />
+        </div>
+        {state.importError && <p className="bad">{state.importError}</p>}
+        {list?.error && <p className="bad">{list.error}</p>}
+        {!list && <p className="muted">Loading Claude Code sessions…</p>}
+        {list && !list.error && rows.length === 0 && (
+          <p className="muted">{list.sessions.length ? "No session matches." : `No Claude Code sessions on ${machine}.`}</p>
+        )}
+        {rows.length > 0 && (
+          <ul className="import-list">
+            {rows.map((s) => (
+              <li key={s.sessionId} className="import-row">
+                <div className="import-text">
+                  <div className="import-title">{s.title}</div>
+                  <div className="muted small import-meta">
+                    {s.cwd ? tilde(s.cwd, homeOn(state, host)) : "unknown folder"}
+                    {s.gitBranch ? ` · ${s.gitBranch}` : ""} · {ago(s.lastModified)}
+                  </div>
+                  {!s.importedAs && Date.now() - s.lastModified < RECENT_MS && (
+                    // Two writers on one Claude Code conversation would interleave.
+                    <div className="warn small">Used in the last 10 minutes: if it is still open in Claude Code, close it there first.</div>
+                  )}
+                </div>
+                {s.importedAs ? (
+                  <button className="btn" aria-label={`Open ${s.title}`} onClick={() => open(s.importedAs!)}>
+                    Open
+                  </button>
+                ) : (
+                  <button
+                    className="btn"
+                    aria-label={`Import ${s.title}`}
+                    disabled={pending !== null}
+                    onClick={() => {
+                      setPending(s.sessionId);
+                      actions.importClaudeSession(host, s.sessionId);
+                    }}
+                  >
+                    {pending === s.sessionId ? "Importing…" : "Import"}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>,
+    document.body,
   );
 }
 

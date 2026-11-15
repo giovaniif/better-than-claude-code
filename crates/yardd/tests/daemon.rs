@@ -1283,3 +1283,90 @@ async fn stop_kills_a_claude_sidecar_that_ignores_the_interrupt() {
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hello" })).await;
     assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
 }
+
+#[tokio::test]
+async fn claude_code_sessions_are_listed_and_imported_with_their_history() {
+    let sb = Sandbox::new("claude-import");
+    let sidecar = claude_sidecar();
+    let work = sb.folder("claude-home");
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar), ("FAKE_CLAUDE_CWD", &work)]);
+    let mut c = d.client().await;
+    let found = "11111111-1111-4111-8111-111111111111";
+    let gone = "22222222-2222-4222-8222-222222222222";
+
+    // The list comes from the sidecar (the SDK's listSessions), newest first.
+    c.send(json!({ "op": "claude.sessions" })).await;
+    let list = c.wait_for("the session list", |m| m["op"] == "claude.sessions").await;
+    let sessions = list["sessions"].as_array().unwrap_or_else(|| panic!("{list}"));
+    assert_eq!(sessions.len(), 3, "{list}");
+    assert_eq!(sessions[0]["sessionId"], found);
+    assert_eq!(sessions[0]["title"], "TEST-fix the login redirect");
+    assert_eq!(sessions[0]["cwd"], work.as_str());
+    assert!(sessions[0]["importedAs"].is_null(), "{list}");
+
+    // Importing makes a Claude session in that folder, in place, with the history.
+    let from = c.mark();
+    c.send(json!({ "op": "session.import", "claudeSessionId": found })).await;
+    let created = c.wait_after(from, "the import", |m| m["op"] == "created" || m["op"] == "error").await;
+    assert_eq!(created["op"], "created", "{created}");
+    let sid = created["sessionId"].as_str().unwrap().to_string();
+    let history = c.history(&sid).await;
+    let texts: Vec<&str> = history.iter().filter_map(|e| e["text"].as_str()).collect();
+    assert!(texts.contains(&"TEST-fix the login redirect"), "{history:?}");
+    assert!(texts.contains(&"TEST-added login.test.ts."), "{history:?}");
+    assert!(history.iter().any(|e| e["type"] == "note" && e["text"].as_str().unwrap_or("").contains("Imported from Claude Code")), "{history:?}");
+    let meta = saved_meta(&sb, &sid).expect("saved");
+    assert_eq!(meta["engine"], "claude");
+    assert_eq!(meta["cwd"], work.as_str());
+    assert!(meta["branch"].is_null(), "imports run in place: {meta}");
+
+    // Listed as imported; a second import answers with the same session.
+    let from = c.mark();
+    c.send(json!({ "op": "claude.sessions" })).await;
+    let list = c.wait_after(from, "the list again", |m| m["op"] == "claude.sessions" && m["sessions"][0]["importedAs"].is_string()).await;
+    assert_eq!(list["sessions"][0]["importedAs"], sid.as_str());
+    let from = c.mark();
+    c.send(json!({ "op": "session.import", "claudeSessionId": found })).await;
+    let again = c.wait_after(from, "the second import", |m| m["op"] == "created" || m["op"] == "error").await;
+    assert_eq!(again["sessionId"], sid.as_str(), "{again}");
+
+    // A session whose folder is gone is refused.
+    let from = c.mark();
+    c.send(json!({ "op": "session.import", "claudeSessionId": gone })).await;
+    let err = c.wait_error(from, "session.import").await;
+    assert!(err.contains("no longer exists"), "{err}");
+
+    // The next message resumes the same Claude Code conversation.
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "carry on" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap();
+    assert!(log.lines().any(|l| l.starts_with("start") && l.ends_with(&format!("resume={found}"))), "{log}");
+}
+
+#[tokio::test]
+async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
+    let sb = Sandbox::new("claude-import-race");
+    let sidecar = claude_sidecar();
+    let work = sb.folder("claude-home");
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar), ("FAKE_CLAUDE_CWD", &work)]);
+    let id = "11111111-1111-4111-8111-111111111111";
+    // Two clients (the desktop app and a phone), each importing at the same moment.
+    let mut a = d.client().await;
+    let mut b = d.client().await;
+    let (fa, fb) = (a.mark(), b.mark());
+    a.send(json!({ "op": "session.import", "claudeSessionId": id })).await;
+    b.send(json!({ "op": "session.import", "claudeSessionId": id })).await;
+    let ra = a.wait_after(fa, "a's import", |m| m["op"] == "created" || m["op"] == "error").await;
+    let rb = b.wait_after(fb, "b's import", |m| m["op"] == "created" || m["op"] == "error").await;
+    assert_eq!(ra["op"], "created", "{ra}");
+    assert_eq!(rb["op"], "created", "{rb}");
+    assert_eq!(ra["sessionId"], rb["sessionId"], "two sessions for one Claude Code conversation: {ra} {rb}");
+    let claude_sessions = a
+        .log
+        .iter()
+        .filter(|m| m["op"] == "session" && m["session"]["engine"] == "claude")
+        .map(|m| m["session"]["id"].as_str().unwrap_or("").to_string())
+        .collect::<std::collections::HashSet<_>>();
+    assert!(claude_sessions.len() <= 1, "{claude_sessions:?}");
+}
