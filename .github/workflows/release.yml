@@ -1,0 +1,81 @@
+# Publishes a numbered release when a version tag (v0.1.0) is pushed:
+# the signed DMG and both Linux packages, under stable asset names so
+# releases/latest/download/<name> always reaches the newest release (the README
+# and scripts/remote-install.sh rely on that). Notes come from CHANGELOG.md.
+# scripts/release.sh makes the tag.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      # The app, yardd and the tag must agree, or the app reports one version
+      # while the release page shows another.
+      - name: Versions match the tag
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          app="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' app/src-tauri/tauri.conf.json)"
+          yardd="$(sed -n 's/^version = "\(.*\)"/\1/p' crates/yardd/Cargo.toml | head -1)"
+          echo "tag $want, app $app, yardd $yardd"
+          [ "$app" = "$want" ] && [ "$yardd" = "$want" ]
+          grep -q "^## $want\b" CHANGELOG.md || { echo "CHANGELOG.md has no '## $want' section"; exit 1; }
+
+  macos:
+    needs: check
+    uses: ./.github/workflows/macos-app.yml
+    secrets: inherit
+
+  linux:
+    needs: check
+    uses: ./.github/workflows/linux-host.yml
+
+  publish:
+    needs: [macos, linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v6
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          ls -l dist
+          dmg="$(ls dist/Switchyard-*.dmg)"
+          case "$dmg" in
+            *-unsigned.dmg) echo "The DMG is not signed; check the signing secrets"; exit 1 ;;
+          esac
+          mv "$dmg" dist/Switchyard.dmg
+          {
+            awk -v v="$version" '$0 ~ "^## " v "( |$)" { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md
+            cat <<'EOF'
+
+          ### Install
+
+          - **Mac (Apple Silicon):** download `Switchyard.dmg`, open it and drag Switchyard to Applications. Signed and notarized.
+          - **A server:** in the app, open Hosts → Add host and click Install Switchyard. Or see [docs/remote-hosts.md](https://github.com/giovaniif/better-than-claude-code/blob/main/docs/remote-hosts.md).
+          - **A browser:** `ghcr.io/giovaniif/switchyard` with Docker Compose or Coolify. See [docs/web.md](https://github.com/giovaniif/better-than-claude-code/blob/main/docs/web.md).
+
+          Needs `claude` and/or `codex` installed and logged in.
+          EOF
+          } > notes.md
+          cat notes.md
+          gh release create "$GITHUB_REF_NAME" --verify-tag --latest \
+            --title "Switchyard $version" --notes-file notes.md \
+            dist/Switchyard.dmg dist/switchyard-linux-x64.tar.gz dist/switchyard-linux-arm64.tar.gz

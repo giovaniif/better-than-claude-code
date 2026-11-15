@@ -1,12 +1,14 @@
 # Builds the web image (Dockerfile) and pushes it to
-# ghcr.io/giovaniif/switchyard: `latest` from main and the short sha on every
-# build. docker-compose.yml pulls `latest`.
+# ghcr.io/giovaniif/switchyard: `latest` from main, the version (`0.1.0`) from
+# a release tag, and the short sha on every build. docker-compose.yml pulls
+# `latest`.
 name: Docker image
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
+    tags: ["v*"]
     paths-ignore: ["docs/**", "design/**", "**.md"]
 
 permissions:
@@ -41,9 +43,10 @@ jobs:
           sha="$(git rev-parse --short HEAD)"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           tags="$IMAGE:$sha"
-          if [ "$GITHUB_REF" = refs/heads/main ]; then
-            tags="$tags,$IMAGE:latest"
-          fi
+          case "$GITHUB_REF" in
+            refs/heads/main) tags="$tags,$IMAGE:latest" ;;
+            refs/tags/v*) tags="$tags,$IMAGE:${GITHUB_REF#refs/tags/v}" ;;
+          esac
           echo "tags=$tags" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v6

@@ -1,17 +1,18 @@
 # Builds a Developer ID signed, notarized Switchyard.dmg on a macOS runner, so
-# the app runs on a Mac with no checkout, Rust or Bun. Download it from the
-# "latest" release (signed builds of main) or the run's artifacts. Signing
-# secrets: see .github/scripts/macos-sign.sh.
+# the app runs on a Mac with no checkout, Rust or Bun. Every push to main
+# leaves one in the run's artifacts; release.yml calls this for a version tag
+# and publishes it. Signing secrets: see .github/scripts/macos-sign.sh.
 name: macOS app
 
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches: [main]
     paths-ignore: ["docs/**", "design/**", "**.md"]
 
 permissions:
-  contents: write # move the "latest" tag and replace its DMG
+  contents: read
 
 concurrency:
   group: macos-app-${{ github.ref }}
@@ -51,27 +52,3 @@ jobs:
           retention-days: 14
           compression-level: 0
 
-      # One rolling release with a stable asset name, so
-      # releases/latest/download/Switchyard.dmg always points at the newest
-      # signed build. Updated in place: there is never a moment without it.
-      - name: Publish the "latest" release
-        if: github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          sha="$(git rev-parse --short HEAD)"
-          dmg="Switchyard-$sha.dmg"
-          if [ ! -f "$dmg" ]; then
-            echo "Unsigned build: not published"
-            exit 0
-          fi
-          cp "$dmg" Switchyard.dmg
-          notes="Signed and notarized build of \`$sha\` for Apple Silicon Macs. Open the DMG and drag Switchyard into Applications. Needs \`codex\` and \`claude\` installed and logged in. Rebuilt on every push to \`main\`."
-          git push --force origin "HEAD:refs/tags/latest"
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest Switchyard.dmg --clobber
-            gh release edit latest --title "Switchyard ($sha)" --notes "$notes" --latest
-          else
-            gh release create latest Switchyard.dmg --verify-tag --latest \
-              --title "Switchyard ($sha)" --notes "$notes"
-          fi
