@@ -1,0 +1,200 @@
+{
+  "v": 1,
+  "claim": "After reloading the page, a session's terminal replays its scrollback garbled: a prompt that wrapped across lines comes back overwritten by the command typed after it, and a command's output can disappear under the next prompt.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/patrol-terminal-replay",
+  "base": "33c588f3cfe74836c3ddc21669519ae0d5263bb5",
+  "head": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-15T04:57:17.641Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "33c588f3cfe74836c3ddc21669519ae0d5263bb5",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "fe3fd6d03e8c5c402b6db51e1dd8da37276817f0b2eb3c2d6c0cdbe1f7f363fb"
+        },
+        {
+          "path": "p1-before-reload-desktop.png",
+          "sha256": "3d293412824e2935d3c13d903d32382dd8299fee8a21a1eb8b2433696c502c87"
+        },
+        {
+          "path": "p1-after-reload-desktop.png",
+          "sha256": "e1bedfe06deb1a24689d7c16c904d38d4f82d009c6abefc49a3d1e00e2ced76d"
+        },
+        {
+          "path": "p1-fail-desktop-step10.png",
+          "sha256": "e8cd4fa88c864c590acccbf5c8a03d7f3dda943641b53d9d080eae5c7eb87eef"
+        }
+      ],
+      "addedAt": "2026-11-15T04:57:31.073Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "33c588f3cfe74836c3ddc21669519ae0d5263bb5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "20d8367ed630cc7989322e02f2e4303744f0e2d9855a8a7a9030738daf385ec6"
+        }
+      ],
+      "addedAt": "2026-11-15T04:57:31.115Z",
+      "cmd": "verify/yv map run terminal --recipe scrollback-keeps-wrapped-lines",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "regression",
+      "at": "33c588f3cfe74836c3ddc21669519ae0d5263bb5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-terminal.json",
+          "sha256": "013a4b1e17088d41dd62fa4b73f891485a33f1e49cfcc8cd31e88f650d6ae4c8"
+        }
+      ],
+      "addedAt": "2026-11-15T04:57:49.622Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 1,
+      "failingRecipes": [
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines"
+      ],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/second-terminal"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4f425f5ed534319763a158c41540e0f94dbb1886ee64448b477f479525efdbd5"
+        },
+        {
+          "path": "p4-before-reload-desktop.png",
+          "sha256": "cd4f81995008c49809d832dc8fa975cff7cc78154ad365a4b40feb41779acfa6"
+        },
+        {
+          "path": "p4-after-reload-desktop.png",
+          "sha256": "4d06f79634d24f5a80f4dd19102b4597bf872ee1a2569c3eb86b9bbd2a25945e"
+        }
+      ],
+      "addedAt": "2026-11-15T04:59:09.825Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-session.json",
+          "sha256": "152945641e52e3b8b59ff109413062b05c3f9f3afffd034325936560ef31772e"
+        },
+        {
+          "path": "p5-session-mobile.png",
+          "sha256": "ff4dcda52ffff4a8c28ce06aa62f9f62bde24be01a7d8edbefa46b8bac717342"
+        }
+      ],
+      "addedAt": "2026-11-15T04:59:09.864Z",
+      "text": "Mobile: the workspace pane (and the terminal) is hidden below 1100 px; the session page renders as before.",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "e34661d9efbe93e317dfeac74cb8f4a6ee39ef0421a477adf7dd7d25c2eb6fab"
+        }
+      ],
+      "addedAt": "2026-11-15T04:59:09.901Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && verify/yv map run terminal --recipe scrollback-keeps-wrapped-lines",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "f80c0002c1723e1bc52266b546b40f2db1af73cfdd710c3d84c1c31e178f027e"
+        }
+      ],
+      "addedAt": "2026-11-15T04:59:29.941Z",
+      "cmd": "verify/yv design-check --base 33c588f3cfe7",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-terminal.json",
+          "sha256": "b943aa99669526bb7b7ea58beaed86b89cb20c042b352786be4556227294cc37"
+        }
+      ],
+      "addedAt": "2026-11-15T04:59:30.019Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines"
+      ]
+    }
+  ]
+}

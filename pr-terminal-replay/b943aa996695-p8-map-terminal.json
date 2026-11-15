@@ -1,0 +1,43 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-15T04:59:54.162Z",
+      "counts": {
+        "pass": 4,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "runs-command",
+          "status": "pass",
+          "ms": 4795
+        },
+        {
+          "label": "second-terminal",
+          "status": "pass",
+          "ms": 4604
+        },
+        {
+          "label": "scrollback-after-reload",
+          "status": "pass",
+          "ms": 6949
+        },
+        {
+          "label": "scrollback-keeps-wrapped-lines",
+          "status": "pass",
+          "ms": 6945
+        },
+        {
+          "label": "add-to-message",
+          "status": "manual",
+          "why": "needs a mouse selection inside xterm"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "route": "session:s1a1dd929e1c2",
+  "build": {
+    "sha": "98927c980144e6094914e9f3d1a7165e12ad8b00",
+    "short": "98927c9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T04:58:55.682Z"
+  },
+  "dir": ".verify/evidence/head-mobile",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/evidence/head-mobile/session-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2487,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
