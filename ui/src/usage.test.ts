@@ -73,7 +73,7 @@ describe("metersFor", () => {
     expect(metersFor("codex", { codex: { primary: null } })).toEqual([]);
   });
 
-  test("Claude: utilization is a fraction; windows come in a fixed order with per-model weeks last", () => {
+  test("Claude: utilization is a fraction; windows come in a fixed order with per-model weeks last, by name", () => {
     const meters = metersFor("claude", {
       claude: {
         status: "allowed",
@@ -88,8 +88,8 @@ describe("metersFor", () => {
     expect(meters.map((m) => [m.label, m.percent])).toEqual([
       ["5-hour", 47],
       ["Week", 17],
-      ["Week · Sonnet", 8],
       ["Week · Opus", 50],
+      ["Week · Sonnet", 8],
     ]);
     expect(meters[0].resetsAt).toBe(1_800_010_000_000);
   });

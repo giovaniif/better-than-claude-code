@@ -15,6 +15,7 @@ import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
 import { relative } from "node:path";
 import { userMessage } from "./message";
+import { mergeUsage, type ClaudeUsage } from "./usage";
 
 type Decision = "allow" | "allow_always" | "deny";
 
@@ -41,6 +42,8 @@ async function* input() {
 
 const waiting = new Map<string, (d: Decision) => void>();
 let q: any = null;
+// Plan usage so far: each rate_limit_event reports one window.
+let usage: ClaudeUsage | null = null;
 let cwd = process.cwd();
 
 const EDIT_TOOLS = new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
@@ -262,16 +265,8 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
     }
 
     if (m.type === "rate_limit_event") {
-      const info = m.rate_limit_info ?? {};
-      out({
-        type: "usage",
-        usage: {
-          status: info.status,
-          fiveHour: info.unifiedWindows?.five_hour?.utilization ?? null,
-          sevenDay: info.unifiedWindows?.seven_day?.utilization ?? null,
-          resetsAt: info.resetsAt ?? null,
-        },
-      });
+      usage = mergeUsage(usage, m.rate_limit_info);
+      out({ type: "usage", usage });
       continue;
     }
 

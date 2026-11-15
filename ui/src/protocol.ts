@@ -91,9 +91,26 @@ export interface SessionUsage {
   memBytes: number;
 }
 
+/** One plan window as an engine reports it. */
+export interface RateWindow {
+  usedPercent: number;
+  windowDurationMins?: number | null;
+  /** Epoch seconds. */
+  resetsAt?: number | null;
+}
+
+/** What each engine says about the plan limits; see ui/src/usage.ts. */
 export interface Usage {
-  claude?: { status?: string; fiveHour: number | null; sevenDay: number | null };
-  codex?: { primary?: { usedPercent: number; windowDurationMins: number } | null };
+  claude?: {
+    status?: string;
+    /** By the SDK's window name (five_hour, seven_day, seven_day_sonnet, ...). */
+    windows?: Record<string, { utilization: number | null; resetsAt: number | null }>;
+    /** Fractions, from a yardd older than `windows`. */
+    fiveHour?: number | null;
+    sevenDay?: number | null;
+  };
+  /** Codex: primary is the short window (5 hours), secondary the week. */
+  codex?: { primary?: RateWindow | null; secondary?: RateWindow | null };
 }
 
 export interface ChangedFile {
