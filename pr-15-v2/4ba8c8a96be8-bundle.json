@@ -1,0 +1,283 @@
+{
+  "v": 1,
+  "claim": "Sessions cannot be grouped, so a long sidebar has no structure, and the Archived section scrolls away at the end of the list instead of staying at the bottom of the sidebar.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-session-groups",
+  "base": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+  "head": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T01:30:38.392Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "ca6affc97b5e29352c3d64f6f3e08a34230896e6edc35cbee2bb7401d7373806"
+        },
+        {
+          "path": "p1-fail-desktop-step1.png",
+          "sha256": "50c8218442f4d9f470f2989804f5e051f1a0e4d700589e82ac0119ae0bbce5f6"
+        }
+      ],
+      "addedAt": "2026-11-16T01:31:04.890Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "995f3f1847c991a47b5ea7b9aaba3e21de476164be3193fa537c01adadc6c74b"
+        },
+        {
+          "path": "p2-fail-desktop-step2.png",
+          "sha256": "58e15d60a06f9444eadd618731694321658ee46ee9e62e1ad355260d7654ced6"
+        }
+      ],
+      "addedAt": "2026-11-16T01:31:04.931Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "157b3c2472edc22f52622f7f1a328063dc2e3588",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "8297bb35132c003c938a7de08653310a91585007a89bc713e446b46281965ffa"
+        }
+      ],
+      "addedAt": "2026-11-16T01:31:04.983Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon -- group && (cd ui && bun test src/store.test.ts)",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "regression",
+      "at": "157b3c2472edc22f52622f7f1a328063dc2e3588",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-map-sidebar.json",
+          "sha256": "aa35720be6e994b84e40d27f9c47c4994b826fba80c62b5499db22f1f1f6bfef"
+        }
+      ],
+      "addedAt": "2026-11-16T01:31:26.502Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 1,
+      "failingRecipes": [
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom"
+      ],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "182a6ed48c3ef80e486e8fd2a820f0148bfa698f911a5fdd91a365fa1cc1009c"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:20.607Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "5c6f4c364a656371ba04b848e31da73737ac998fb503933b8122e05e5509f9b0"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:20.648Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "1b6c3dc34d7b136f5c2ba559d87d53a4c70c344af6ab48a206c5b921a7748cac"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:34.112Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "a8d9f98cc17ec4a5ef896d43c6f892dff218735747bc4fd84a641784df2bdb59"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:34.160Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "24e7829ba8666dc6736b8dac22d7367142e298ec740e6ffc1a49964e27a7d67a"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:34.199Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "3fa6ee403fa3677adbcb193f51a4013a51275c89627d601cc78244d6c2b00473"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:44.244Z",
+      "cmd": "verify/yv design-check --base db032d55310f",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-sidebar.json",
+          "sha256": "6c92959cb080d4d24f004b8e478025fe1035d235e5f685ec16ab22f354efe82b"
+        }
+      ],
+      "addedAt": "2026-11-16T01:35:44.322Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom"
+      ]
+    }
+  ]
+}

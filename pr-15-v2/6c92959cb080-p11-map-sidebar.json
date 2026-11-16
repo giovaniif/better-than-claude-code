@@ -1,0 +1,72 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-16T01:36:32.001Z",
+      "counts": {
+        "pass": 11
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 3713
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6111
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 6026
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 3594
+        },
+        {
+          "label": "group-new",
+          "status": "pass",
+          "ms": 3593
+        },
+        {
+          "label": "group-move-to-existing",
+          "status": "pass",
+          "ms": 2999
+        },
+        {
+          "label": "group-collapse-persists",
+          "status": "pass",
+          "ms": 2727
+        },
+        {
+          "label": "group-rename",
+          "status": "pass",
+          "ms": 3279
+        },
+        {
+          "label": "group-remove-from-group",
+          "status": "pass",
+          "ms": 3032
+        },
+        {
+          "label": "group-ungroup",
+          "status": "pass",
+          "ms": 3001
+        },
+        {
+          "label": "archived-header-stays-at-bottom",
+          "status": "pass",
+          "ms": 8753
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

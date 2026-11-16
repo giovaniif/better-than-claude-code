@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+    "short": "a841447",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:35:07.093Z"
+  },
+  "dir": ".verify/ev2/head-new-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2713,
+      "steps": 6,
+      "failed": null,
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

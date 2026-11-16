@@ -1,0 +1,42 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+    "short": "db032d5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:30:43.326Z"
+  },
+  "dir": ".verify/ev2/base-new-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11375,
+      "steps": 6,
+      "failed": {
+        "step": 1,
+        "action": {
+          "click": "role:menuitem:Move to group…"
+        },
+        "reason": "click: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/ev2/base-new-desktop/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Import\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\" [expanded]\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 18% · 78%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself\n- menu:\n  - menuitem \"Pin\"\n  - menuitem \"Archive\"\n  - menuitem \"Delete…\""
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"click\":\"role:menuitem:Move to group…\"}: click: Timeout 10000ms exceeded.",
+      "hint": "see .verify/ev2/base-new-desktop/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

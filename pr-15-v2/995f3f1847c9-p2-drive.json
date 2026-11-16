@@ -1,0 +1,49 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+    "short": "db032d5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:30:43.326Z"
+  },
+  "dir": ".verify/ev2/base-arch-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1386,
+      "steps": 6,
+      "failed": {
+        "step": 2,
+        "action": {
+          "eval": "Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".sidebar-bottom\").getBoundingClientRect().top) < 2",
+          "equals": true
+        },
+        "reason": "evaluate: TypeError: Cannot read properties of null (reading 'getBoundingClientRect')",
+        "screenshot": ".verify/ev2/base-arch-desktop/fail-desktop-step2.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Import\"\n  - button \"TEST-many 14 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 14\"\n  - button \"TEST-many 13 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 13\"\n  - button \"TEST-many 12 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 12\"\n  - button \"TEST-many 11 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 11\"\n  - button \"TEST-many 10 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 10\"\n  - button \"TEST-many 9 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 9\"\n  - button \"TEST-many 8 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 8\"\n  - button \"TEST-many 7 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 7\"\n  - button \"TEST-many 6 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 6\"\n  - button \"TEST-many 5 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 5\"\n  - button \"TEST-many 4 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 4\"\n  - button \"TEST-many 3 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 3\"\n  - button \"TEST-many 2 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 2\"\n  - button \"TEST-many 1 Fake Fast · Idle\"\n  - button \"Actions for TEST-many 1\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Archived 1\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 20% · 79%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 2 {\"eval\":\"Math.abs(document.querySelector(\\\".archived-dock\\\").getBoundingClientRect().bottom - document.querySelector(\\\".sidebar-bottom\\\").getBoundingClientRect().top) < 2\",\"equals\":true}: evaluate: TypeError: Cannot read properties of null (reading 'getBoundingClientRect')",
+      "hint": "see .verify/ev2/base-arch-desktop/fail-desktop-step2.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "a84144727e80db8be7e625d8cad3d190f9921d0b",
+    "short": "a841447",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:35:07.093Z"
+  },
+  "dir": ".verify/ev2/head-arch-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1847,
+      "steps": 6,
+      "failed": null,
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)",
+          "value": true
+        },
+        {
+          "step": 2,
+          "eval": "Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
