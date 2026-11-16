@@ -43,10 +43,18 @@ export interface Args {
   flags: Record<string, string | true>;
 }
 
+/** Flags that may repeat; their values are joined with commas, as `--file a,b` would be. */
+const LISTS = ["file"];
+
 /** `--flag value`, `--flag=value`, and boolean flags named in `bools`. */
 export function parseArgs(argv: string[], bools: string[] = []): Args {
   const pos: string[] = [];
   const flags: Record<string, string | true> = {};
+  // A plain overwrite would keep only the last `--file` and drop the others silently.
+  const set = (name: string, value: string) => {
+    const prev = flags[name];
+    flags[name] = LISTS.includes(name) && typeof prev === "string" ? `${prev},${value}` : value;
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--") {
@@ -56,7 +64,7 @@ export function parseArgs(argv: string[], bools: string[] = []): Args {
     if (a.startsWith("--")) {
       const eq = a.indexOf("=");
       if (eq > 0) {
-        flags[a.slice(2, eq)] = a.slice(eq + 1);
+        set(a.slice(2, eq), a.slice(eq + 1));
         continue;
       }
       const name = a.slice(2);
@@ -66,7 +74,7 @@ export function parseArgs(argv: string[], bools: string[] = []): Args {
       }
       const next = argv[i + 1];
       if (next === undefined) throw new Usage(`--${name} needs a value`);
-      flags[name] = next;
+      set(name, next);
       i++;
       continue;
     }
