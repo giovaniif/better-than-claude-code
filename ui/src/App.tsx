@@ -10,6 +10,7 @@ import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
 import { appendToComposer, onAppend, quoted } from "./compose";
+import { tableSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
@@ -2447,6 +2448,37 @@ function inline(text: string): ReactNode[] {
   });
 }
 
+/** Wide tables scroll sideways in their own box, not the whole thread. */
+function MdTableView({ table }: { table: MdTable }) {
+  const cls = (k: number) => (table.align[k] ? `align-${table.align[k]}` : undefined);
+  return (
+    <div className="md-table">
+      <table>
+        <thead>
+          <tr>
+            {table.header.map((c, k) => (
+              <th key={k} className={cls(k)}>
+                {inline(c)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row, r) => (
+            <tr key={r}>
+              {row.map((c, k) => (
+                <td key={k} className={cls(k)}>
+                  {inline(c)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
   const blocks = text.split(/```/);
   return (
@@ -2486,15 +2518,19 @@ function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
             }
             const heading = para.match(/^#{1,4} (.+)$/);
             if (heading) return <h3 key={`${i}-${j}`}>{inline(heading[1])}</h3>;
-            return (
-              <p key={`${i}-${j}`}>
-                {lines.map((l, k) => (
-                  <span key={k}>
-                    {k > 0 && <br />}
-                    {inline(l)}
-                  </span>
-                ))}
-              </p>
+            return tableSegments(lines).map((seg, s) =>
+              seg.kind === "table" ? (
+                <MdTableView key={`${i}-${j}-${s}`} table={seg.table} />
+              ) : (
+                <p key={`${i}-${j}-${s}`}>
+                  {seg.lines.map((l, k) => (
+                    <span key={k}>
+                      {k > 0 && <br />}
+                      {inline(l)}
+                    </span>
+                  ))}
+                </p>
+              ),
             );
           });
       })}
