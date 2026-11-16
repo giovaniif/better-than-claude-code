@@ -118,5 +118,16 @@ yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":true}'
 yv drive new --viewport desktop --steps '[{"eval":"(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)","equals":true},{"expect":"role:button:Archived","inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2","equals":true},{"click":"role:button:Archived"},{"expect":{"css":".session-row","hasText":"[think] TEST-plan"},"inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2","equals":true}]'
 ```
 
+### hand-off-keeps-the-group
+A hand-off from a grouped session puts the new session in the same group.
+It uses the Claude session: earlier recipes delete `sid_fail` and archive `sid_think`.
+
+```sh
+yv api '{"op":"session.update","sessionId":"{{sid_claude}}","group":"TEST-handoff"}' --wait '{"op":"session","session":{"id":"{{sid_claude}}","group":"TEST-handoff"}}'
+yv api '{"op":"session.handoff","sessionId":"{{sid_claude}}","engine":"codex","model":"fake-fast","effort":"low"}' --wait '{"op":"created"}'
+yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-hello from Claude","group":"TEST-handoff"}]}'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-handoff"},"text":"2"}]'
+```
+
 ## Gotchas
 - Row menus render on document.body (a portal), so find menu items by role, not inside the row.
