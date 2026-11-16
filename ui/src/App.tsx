@@ -1618,6 +1618,12 @@ export function FolderPicker(props: {
           </div>,
         ])}
         {browsing && listing?.error && <div className="picker-empty">{listing.error}</div>}
+        {/* Only a typed last segment can leave this list empty ("Use <dir>" is offered otherwise); say why Enter does nothing. */}
+        {browsing && listing && !listing.error && rows.length === 0 && (
+          <div className="picker-empty">
+            No folder in {tilde(dir, home)} starts with “{stem}”.
+          </div>
+        )}
         {browsing && !listing && <div className="picker-empty">Loading…</div>}
         {!browsing && rows.length === 0 && (
           <div className="picker-empty">{!projects && !query ? "Loading…" : query ? "No folder matches. Start with / or ~ to type a path." : "No folders here yet. Start with / or ~ to type a path."}</div>
