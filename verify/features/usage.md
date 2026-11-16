@@ -68,5 +68,16 @@ yv drive new --steps '[{"expect":{"css":".usage-line","hasText":"Codex"},"text":
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"click":"role:button:Fake Fast Low"},{"expect":{"css":".popover .usage-meter","hasText":"5-hour"},"text":"0%"},{"expect":{"css":".popover"},"text":"resets in 3 d"},{"expect":{"css":".popover","hasText":"resets now"},"visible":false},{"shot":"picker-after-reset"}]'
 ```
 
+### claude-usage-after-restart
+Viewports: both
+Claude reports its limits only during a turn. After yardd restarts, the
+sidebar strip still shows the Claude meters from before (saved in
+`usage.json`), not Codex alone.
+
+```sh
+yv iso restart
+yv drive new --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"shot":"strip-after-restart"}]'
+```
+
 ## Gotchas
-- The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a fresh yardd shows no Claude meters until then.
+- The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a yardd on a fresh data dir shows no Claude meters until then (later restarts keep the last ones, from `usage.json`).

@@ -2205,3 +2205,21 @@ async fn session_procs_goes_through_the_hub() {
     // The reply carries the hub's id for the session, like every session op.
     procs_with(&mut c, &sid, "sleep 30").await;
 }
+
+#[tokio::test]
+async fn claude_usage_survives_a_restart() {
+    // Claude reports its limits only during a turn, so without saving them a
+    // restart blanks the meters and lets a usage-capped automation run.
+    let sb = Sandbox::new("usage-restart");
+    let sidecar = claude_sidecar();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({ "engine": "claude", "model": "claude-haiku-5-5" })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    c.wait_for("claude usage", |m| m["op"] == "usage" && m["usage"]["claude"]["windows"]["five_hour"]["utilization"] == 0.47).await;
+    d.stop();
+
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let snapshot = d.client().await.log[0].clone();
+    assert_eq!(snapshot["usage"]["claude"]["windows"]["five_hour"]["utilization"], 0.47, "{}", snapshot["usage"]);
+}

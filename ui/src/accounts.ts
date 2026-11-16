@@ -1,6 +1,6 @@
 // Accounts: more than one login per engine on a host (see docs/ARCHITECTURE.md,
 // Accounts). Default is every engine's own login and is never listed by yardd.
-import type { AccountEntry, Engine, Usage } from "./protocol";
+import type { AccountEntry, Engine, Models, Usage } from "./protocol";
 
 export const DEFAULT_ACCOUNT = "default";
 
@@ -47,4 +47,17 @@ export function usageForPicks(usage: Usage, picks: Partial<Record<Engine, string
     if (account !== DEFAULT_ACCOUNT) (out as any)[engine] = usage.accounts?.[account];
   }
   return out;
+}
+
+/** Where a pick of an account under another engine moves the choice: that
+ *  engine's default model, keeping the effort where the model has it. An
+ *  account only runs on its own engine, so leaving the choice on the old one
+ *  would start the session on the old engine's Default instead. Null when the
+ *  engine has no models to move to. */
+export function choiceOnEngine(models: Models, engine: Engine, effort: string): { engine: Engine; model: string; effort: string } | null {
+  const list = models[engine] ?? [];
+  const model = list.find((m) => m.isDefault) ?? list[0];
+  if (!model) return null;
+  const kept = model.efforts.includes(effort) ? effort : (model.defaultEffort ?? model.efforts[0] ?? effort);
+  return { engine, model: model.id, effort: kept };
 }

@@ -98,6 +98,14 @@ yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"
 yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"name":"TEST-mobile one"},{"name":"TEST-desktop one"}]}'
 ```
 
+### claude-usage-limit-skips
+A scheduled-style run (not Run now) of a Claude automation whose 5-hour limit is below Claude's usage (47% after seed) skips with the reason, like a Codex one does. Daemon only.
+
+```sh
+yv api '{"op":"automation.save","automation":{"name":"TEST-Claude capped","prompt":"TEST-capped","cwd":"{{repo}}","engine":"claude","model":"claude-haiku-5-5","effort":"low","permission":"ask","enabled":false,"maxFiveHour":10,"schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}' --save claude_capped=automation.id
+yv api '{"op":"automation.run","id":"{{claude_capped}}","force":false}' --wait '{"op":"automation.ran"}' --expect '{"op":"automation.ran","outcome":"skipped","reason":"~Claude 5-hour usage 47% is above 10%"}'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
