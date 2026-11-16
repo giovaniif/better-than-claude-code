@@ -227,8 +227,12 @@ pub fn input(app: &Arc<App>, term_id: &str, data: &str) -> Result<()> {
 
 pub fn resize(app: &Arc<App>, term_id: &str, cols: u16, rows: u16) -> Result<()> {
     let inner = app.terms.inner.lock().unwrap();
-    let term = inner.map.get(term_id).filter(|t| !t.exited).context("terminal is closed")?;
-    term.master.resize(size(cols, rows))?;
+    let term = inner.map.get(term_id).context("terminal is closed")?;
+    // A reloaded pane fits its xterm before `term.opened` tells it the shell
+    // exited, so that first resize is expected; there is no shell to size.
+    if !term.exited {
+        term.master.resize(size(cols, rows))?;
+    }
     Ok(())
 }
 

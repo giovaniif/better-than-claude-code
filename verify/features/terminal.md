@@ -85,6 +85,17 @@ yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"b
 yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 1'
 ```
 
+### exited-shell-after-reload
+Viewports: desktop
+A shell that exited still shows its tab after a reload, marked as exited, and
+no "terminal is closed" banner (finding #64): the pane fits the xterm before it
+learns the shell exited, so yardd gets a resize for it. Without
+`--allow-errors`, that refused resize alone fails the drive.
+
+```sh
+yv drive 'session:{{sid_claude}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"exit\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"shell exited"},{"reload":true},{"goto":"session:{{sid_claude}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"shell exited"},{"wait":1500},{"expect":"css:.banner-error","count":0},{"shot":"exited-after-reload"}]'
+```
+
 ### folder-gone
 Viewports: desktop
 When the session's folder was removed outside Switchyard, the Changes pane and
