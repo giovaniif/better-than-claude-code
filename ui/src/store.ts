@@ -174,7 +174,7 @@ const NO_USAGE: Usage = {};
 export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
 export const loginKey = (host: string, engine: Engine) => `${host}\n${engine}`;
 
-/** The host a session runs on, `local` for this machine. */
+/** Longest group name yardd keeps. */
 export const GROUP_NAME_MAX = 60;
 /** What yardd stores for a typed group name: trimmed and capped; empty means no group. */
 export const cleanGroupName = (name: string) => name.trim().slice(0, GROUP_NAME_MAX);
@@ -208,6 +208,7 @@ export function sidebarLayout(sessions: SessionMeta[]): SidebarLayout {
   };
 }
 
+/** The host a session runs on, `local` for this machine. */
 export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
 export const modelsOn = (state: State, host: string): Models => state.models[host] ?? EMPTY_MODELS;
 export const usageOn = (state: State, host: string): Usage => state.usage[host] ?? NO_USAGE;

@@ -477,6 +477,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .row-menu .menu-item { height: 30px; gap: 8px; }
 .row-menu .danger { color: var(--bad-ink); }
 .row-menu .menu-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-menu .menu-item svg { flex-shrink: 0; }
 .row-menu-form { padding: 2px; }
 .group-head { margin-top: 4px; }
 .group-head .group-toggle { width: 100%; padding-top: 6px; padding-bottom: 6px; }
