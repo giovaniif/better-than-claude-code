@@ -125,5 +125,9 @@ gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
   on that PR). Never `gh pr merge` around the gate, never push to `main`.
 - Changes to CI, `verify/` (except `verify/features/`), skills or CLAUDE.md
   always go to the owner: the gate blocks them as self-or-CI.
+- A map-only PR (only `verify/features/`) still needs an evidence bundle:
+  base notes `no-repro: map-only …` and `no-failing-test: the recipe is the
+  test`, the head `map run <area>` output as `--kind fix`, and the recipe as a
+  `--kind test --cmd`. Without one the verifier must answer FAIL.
 - Every surprise becomes a Gotcha in the feature map, a CLI fix, or a rule in
   this file (in a PR). Don't let the same failure happen twice.
