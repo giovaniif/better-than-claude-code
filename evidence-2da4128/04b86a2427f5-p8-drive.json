@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5f979106",
+  "build": {
+    "sha": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+    "short": "2da4128",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:32:31.181Z"
+  },
+  "dir": ".verify/evidence/voice-mode-head-blocked",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2472,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/voice-mode-head-blocked/blocked-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{class B{start(){setTimeout(()=>{this.onerror&&this.onerror({error:'not-allowed'});this.onend&&this.onend()},20)}stop(){}abort(){}};window.SpeechRecognition=B;window.webkitSpeechRecognition=B;return 1})()",
+          "value": 1
+        },
+        {
+          "step": 7,
+          "eval": "document.querySelector('.voice-btn').getAttribute('aria-pressed')",
+          "value": "false"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3067,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/voice-mode-head-blocked/blocked-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{class B{start(){setTimeout(()=>{this.onerror&&this.onerror({error:'not-allowed'});this.onend&&this.onend()},20)}stop(){}abort(){}};window.SpeechRecognition=B;window.webkitSpeechRecognition=B;return 1})()",
+          "value": 1
+        },
+        {
+          "step": 7,
+          "eval": "document.querySelector('.voice-btn').getAttribute('aria-pressed')",
+          "value": "false"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

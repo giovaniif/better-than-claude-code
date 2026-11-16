@@ -1,0 +1,41 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "6685048b2a22686f67c899f98fcf15c7bb9a79eb",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/useVoice.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/voice.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/voice.ts"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

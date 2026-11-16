@@ -1,0 +1,48 @@
+{
+  "ok": false,
+  "route": "session:s1a1e5f979106",
+  "build": {
+    "sha": "41423f2987208e532ce3f3ea1fb1e2d12790f0df",
+    "short": "41423f2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:32:04.289Z"
+  },
+  "dir": ".verify/evidence/voice-mode-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 12767,
+      "steps": 14,
+      "failed": {
+        "step": 1,
+        "action": {
+          "click": "role:button:Dictate"
+        },
+        "reason": "click: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/voice-mode-base/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"TEST-voice start Fake Fast · Idle\"\n  - button \"Actions for TEST-voice start\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 7% · 50%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-8fa5\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - text: No changes in this folder."
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{window.__recs=[];window.__said=[];window.__hush=0;window.__speakMs=300;class R{constructor(){this.results=[];this.running=false;window.__recs.push(this)}start(){this.running=true;window.__live=this}stop(){this.running=false;setTimeout(()=>this.onend&&this.onend(),10)}abort(){this.running=false;setTimeout(()=>this.onend&&this.onend(),0)}}window.__say=(t,f)=>{const r=window.__live;if(!r||!r.running)return 'not listening';const l=r.results[r.results.length-1];if(l&&!l.isFinal)r.results.pop();const x=[{transcript:t}];x.isFinal=!!f;r.results.push(x);r.onresult&&r.onresult({results:r.results});return 'ok'};window.SpeechRecognition=R;window.webkitSpeechRecognition=R;window.SpeechSynthesisUtterance=class{constructor(t){this.text=t}};Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{speak(u){window.__said.push(u.text);setTimeout(()=>u.onend&&u.onend(),window.__speakMs)},cancel(){window.__hush++}}});return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"click\":\"role:button:Dictate\"}: click: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/voice-mode-base/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

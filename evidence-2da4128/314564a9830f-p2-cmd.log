@@ -1,0 +1,18 @@
+$ cd ui && bun test src/voice.test.ts
+# exit 1 after 8 ms at 41423f2987208e532ce3f3ea1fb1e2d12790f0df
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/voice.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './voice' from '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ab831506a5270ec9c/ui/src/voice.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [4.00ms]

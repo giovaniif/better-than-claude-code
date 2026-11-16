@@ -1,0 +1,144 @@
+{
+  "ok": true,
+  "route": "session:s1a1e6100e782",
+  "build": {
+    "sha": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+    "short": "2da4128",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:32:31.181Z"
+  },
+  "dir": ".verify/evidence/voice-mode-head-voice-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 20190,
+      "steps": 60,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/voice-mode-head-voice-desktop/voice-listening-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/voice-mode-head-voice-desktop/voice-approval-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/voice-mode-head-voice-desktop/voice-speaking-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{window.__recs=[];window.__said=[];window.__hush=0;window.__speakMs=300;class R{constructor(){this.results=[];this.running=false;window.__recs.push(this)}start(){this.running=true;window.__live=this}stop(){this.running=false;setTimeout(()=>this.onend&&this.onend(),10)}abort(){this.running=false;setTimeout(()=>this.onend&&this.onend(),0)}}window.__say=(t,f)=>{const r=window.__live;if(!r||!r.running)return 'not listening';const l=r.results[r.results.length-1];if(l&&!l.isFinal)r.results.pop();const x=[{transcript:t}];x.isFinal=!!f;r.results.push(x);r.onresult&&r.onresult({results:r.results});return 'ok'};window.SpeechRecognition=R;window.webkitSpeechRecognition=R;window.SpeechSynthesisUtterance=class{constructor(t){this.text=t}};Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{speak(u){window.__said.push(u.text);setTimeout(()=>u.onend&&u.onend(),window.__speakMs)},cancel(){window.__hush++}}});return 1})()",
+          "value": 1
+        },
+        {
+          "step": 4,
+          "eval": "window.__said.join('|')",
+          "value": "Voice mode on."
+        },
+        {
+          "step": 7,
+          "eval": "window.__say('TEST-voice hello',true)",
+          "value": "ok"
+        },
+        {
+          "step": 14,
+          "eval": "window.__said.join('|')",
+          "value": "Voice mode on.|Echo: TEST-voice hello"
+        },
+        {
+          "step": 17,
+          "eval": "window.__live.running && window.__recs.length>=2",
+          "value": true
+        },
+        {
+          "step": 18,
+          "eval": "window.__say('[cmd] TEST-voice approve',true)",
+          "value": "ok"
+        },
+        {
+          "step": 22,
+          "eval": "window.__said[window.__said.length-1]",
+          "value": "Needs your approval: echo approved: needs to run a command"
+        },
+        {
+          "step": 24,
+          "eval": "window.__live.running",
+          "value": false
+        },
+        {
+          "step": 31,
+          "eval": "window.__said[window.__said.length-1]",
+          "value": "Ran it."
+        },
+        {
+          "step": 33,
+          "eval": "(window.__speakMs=60000,1)",
+          "value": 1
+        },
+        {
+          "step": 34,
+          "eval": "window.__say('TEST-barge one',true)",
+          "value": "ok"
+        },
+        {
+          "step": 38,
+          "eval": "(window.__h0=window.__hush,window.__say('echo test barge one',true))",
+          "value": "ok"
+        },
+        {
+          "step": 42,
+          "eval": "window.__say('TEST-wait actually',false)",
+          "value": "ok"
+        },
+        {
+          "step": 45,
+          "eval": "window.__hush>window.__h0",
+          "value": true
+        },
+        {
+          "step": 47,
+          "eval": "window.__say('TEST-wait actually',true)",
+          "value": "ok"
+        },
+        {
+          "step": 50,
+          "eval": "window.__say('TEST-barge two',true)",
+          "value": "ok"
+        },
+        {
+          "step": 55,
+          "eval": "(window.__h1=window.__hush,1)",
+          "value": 1
+        },
+        {
+          "step": 59,
+          "eval": "window.__live.running===false && window.__hush>window.__h1",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

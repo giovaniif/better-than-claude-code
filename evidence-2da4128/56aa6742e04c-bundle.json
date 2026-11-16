@@ -1,0 +1,329 @@
+{
+  "v": 1,
+  "claim": "The reply box and the new-session prompt take no speech: there is no dictation and no hands-free voice mode. Now a mic dictates into the box, and voice mode sends after a pause, reads the answer aloud, announces approvals without answering them, and says why when speech is unavailable or blocked.",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ab831506a5270ec9c",
+  "base": "6685048b2a22686f67c899f98fcf15c7bb9a79eb",
+  "head": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+  "changed": [
+    {
+      "status": "A",
+      "path": ".github/scripts/app-entitlements.plist"
+    },
+    {
+      "status": "M",
+      "path": ".github/scripts/macos-sign.sh"
+    },
+    {
+      "status": "M",
+      "path": "app/src-tauri/Info.plist"
+    },
+    {
+      "status": "M",
+      "path": "app/src-tauri/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/useVoice.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/voice.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/voice.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/voice.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T20:31:58.809Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "41423f2987208e532ce3f3ea1fb1e2d12790f0df",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "94f8526ce15564700c3f93a1e2168291a30a3cd724dc4e85e5c7fc97c2eedc7e"
+        },
+        {
+          "path": "p1-fail-desktop-step1.png",
+          "sha256": "4d3566bd76589d3cc9e4c72575fd197c0ec9ed4b33f7058e5eb2d7ab369d98d4"
+        }
+      ],
+      "addedAt": "2026-11-16T20:32:25.965Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "41423f2987208e532ce3f3ea1fb1e2d12790f0df",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "314564a9830f57dc60e4529860a81703f26b1efaa9f09c9602ba29a12352b00b"
+        }
+      ],
+      "addedAt": "2026-11-16T20:32:26.005Z",
+      "cmd": "cd ui && bun test src/voice.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "dd4dcad12895e12191ecc7605d8f1323656bbebc069d0f275b5c988b9df79ef6"
+        },
+        {
+          "path": "p3-dictating-mobile.png",
+          "sha256": "668f3dfdf9cdd9bf36cf3c269d286b4397d5256dc0569f445e069ae88211efa7"
+        },
+        {
+          "path": "p3-dictating-desktop.png",
+          "sha256": "df46d5a12bc7b8f4e4a5f5200a86fd62c0d35df8a6c2f08f60837c8b9c99c8d2"
+        }
+      ],
+      "addedAt": "2026-11-16T20:32:48.128Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "225c145bb65c3eba9d06d5f7a13da173e510ba74f590aaba93ee6b15d7de9468"
+        },
+        {
+          "path": "p4-new-dictating-mobile.png",
+          "sha256": "585b8fa44b7b558a512fceba3e707766818dbf364b122d27e49c66968d0f5b3e"
+        },
+        {
+          "path": "p4-new-dictating-desktop.png",
+          "sha256": "4384ef161540942a6d0bea47f6844667379bd8e122c5976f536473758ed4058c"
+        }
+      ],
+      "addedAt": "2026-11-16T20:32:54.292Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "48ef6b5353d9eab5165b5357395830cf96b5332b54dbc7b2337cfd95e2666f5c"
+        },
+        {
+          "path": "p5-voice-listening-desktop.png",
+          "sha256": "3be36d84c555c3ee3cf5db4d6fecd9d877f9edcc649782ee82f4b6346ce55efc"
+        },
+        {
+          "path": "p5-voice-approval-desktop.png",
+          "sha256": "c7250e8551621d6e1a3befa0c91a6f1e6765e6fd1e9c086dea52affbbdefc099"
+        },
+        {
+          "path": "p5-voice-speaking-desktop.png",
+          "sha256": "7ffc35083f83521f1cc1af0213811774783154d0f24259b71a22e22f80f3ae3f"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:15.199Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "2163a9c9f5a521c1592de1127c7a35fcc51604141a39692c40c0c42436f9c101"
+        },
+        {
+          "path": "p6-voice-listening-mobile.png",
+          "sha256": "43e9c77d49184b6c34c719c8c7fcb338d35207f307cfcf802e08c45698e1c0df"
+        },
+        {
+          "path": "p6-voice-approval-mobile.png",
+          "sha256": "e540849ddad5d5104a1a92281bef87841de016517fe89dbda9cba8453ba159b9"
+        },
+        {
+          "path": "p6-voice-speaking-mobile.png",
+          "sha256": "b198b85061010c9fe469071b09e6896f79aae80891efbcc6e9c05d6df177ee0e"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:36.149Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "4792f6f4d71f2588b65cbe6a1f3cfbd75d028aac426e3fb130d62e59bdae0f86"
+        },
+        {
+          "path": "p7-unavailable-mobile.png",
+          "sha256": "a180c015704970007377d7baf531cbe1688f11aa4d8757fdb1a979aaae83bf57"
+        },
+        {
+          "path": "p7-unavailable-desktop.png",
+          "sha256": "5b05a01e9bb828a48e973e10fe4e58486a6bae7555d5768c2cdb482cc4473dc9"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:42.255Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "04b86a2427f50c610caac4c5522773423044806458c8902840738067cb35a908"
+        },
+        {
+          "path": "p8-blocked-mobile.png",
+          "sha256": "ccd606648b62505504768d7d900d6217d009c41ffa39cb0abf54f0f731c172cc"
+        },
+        {
+          "path": "p8-blocked-desktop.png",
+          "sha256": "eba6906cc58e492b19066cd44b31c9e73a650429b0226067b799ae74c1ba44b6"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:48.421Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "81c89b66be7071752235352b6ad94be023e27138aefd5ae4931662508a0156d6"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:52.074Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "3ad9e66e0bef8516e65b922cb12413ac931ecd7e7b5d7e31dbe6662398b0f421"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:52.551Z",
+      "cmd": "verify/yv design-check --base 6685048b2a22",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-voice.json",
+          "sha256": "d0409769650dba943a9a5f4c741160486d0b4d560361a2cb21dcb0981aaa6fb2"
+        }
+      ],
+      "addedAt": "2026-11-16T20:33:52.634Z",
+      "cmd": "verify/yv map run voice",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "voice/dictation",
+        "voice/dictation-new-session",
+        "voice/voice-mode-hands-free",
+        "voice/voice-stop-word",
+        "voice/voice-with-quote",
+        "voice/voice-unavailable",
+        "voice/voice-mic-blocked"
+      ]
+    }
+  ]
+}

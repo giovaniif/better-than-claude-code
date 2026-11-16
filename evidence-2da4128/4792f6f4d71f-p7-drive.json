@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5f979106",
+  "build": {
+    "sha": "2da41283e50c82625940dfbcb8169ef5a4cfcf80",
+    "short": "2da4128",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:32:31.181Z"
+  },
+  "dir": ".verify/evidence/voice-mode-head-unavailable",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2492,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/voice-mode-head-unavailable/unavailable-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{delete window.SpeechRecognition;delete window.webkitSpeechRecognition;return typeof window.webkitSpeechRecognition})()",
+          "value": "undefined"
+        },
+        {
+          "step": 4,
+          "eval": "document.querySelector('.mic-btn').getAttribute('aria-disabled')",
+          "value": "true"
+        },
+        {
+          "step": 5,
+          "eval": "document.querySelector('.mic-btn').title",
+          "value": "Voice input is not available in this browser. Chrome, Edge and Safari have it."
+        },
+        {
+          "step": 6,
+          "eval": "(document.querySelector('.mic-btn').click(),1)",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2994,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/voice-mode-head-unavailable/unavailable-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{delete window.SpeechRecognition;delete window.webkitSpeechRecognition;return typeof window.webkitSpeechRecognition})()",
+          "value": "undefined"
+        },
+        {
+          "step": 4,
+          "eval": "document.querySelector('.mic-btn').getAttribute('aria-disabled')",
+          "value": "true"
+        },
+        {
+          "step": 5,
+          "eval": "document.querySelector('.mic-btn').title",
+          "value": "Voice input is not available in this browser. Chrome, Edge and Safari have it."
+        },
+        {
+          "step": 6,
+          "eval": "(document.querySelector('.mic-btn').click(),1)",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
