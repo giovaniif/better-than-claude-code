@@ -38,6 +38,19 @@ yv drive 'session:{{q2_sid}}' --viewport desktop --steps '[{"click":"role:button
 yv state --expect '{"sessions":[{"id":"{{q2_sid}}","status":"idle"}]}'
 ```
 
+### double-click-start-anyway
+A double click on "Start anyway" starts the session once and shows no error:
+the button is disabled from the first click until the session leaves the
+queue. (It used to stay live, and the second click got "this session is not
+queued".) The two clicks are a task apart, so React renders in between, as it
+does for a real double click.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-start me once"}' --wait '{"op":"created"}' --save q3_sid=sessionId
+yv drive 'session:{{q3_sid}}' --viewport desktop --steps '[{"expect":"role:button:Start anyway"},{"eval":"(async () => { const b = [...document.querySelectorAll(\".queued-line button\")].find((x) => x.textContent.trim() === \"Start anyway\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \"clicked twice\"; })()","equals":"clicked twice"},{"expect":"css:.thread","text":"Echo: TEST-start me once"},{"wait":500}]'
+yv state --expect '{"sessions":[{"id":"{{q3_sid}}","status":"idle"}]}'
+```
+
 ### hosts-page-shows-pressure
 The Hosts page says why new sessions wait.
 

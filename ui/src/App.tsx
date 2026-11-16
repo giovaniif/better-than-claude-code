@@ -1740,13 +1740,23 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     else actions.send(meta.id, text, attachments.map((a) => a.id));
   };
   const loadAttachment = (a: Attachment) => actions.attachmentUrl(meta.id, a);
+  // Start anyway is out: hold the button until the session leaves the queue or
+  // yardd refuses, or a double click sends a second startNow that yardd
+  // answers with "this session is not queued".
+  const [starting, setStarting] = useState(false);
+  useEffect(() => setStarting(false), [meta.status, state.errorCount, state.connected]);
   const renderItem = (item: Item) => (
     <ItemView
       key={item.key}
       item={item}
       queued={meta.status === "queued"}
+      starting={starting}
       loadAttachment={loadAttachment}
-      onStart={() => actions.startNow(meta.id)}
+      onStart={() => {
+        if (starting) return;
+        setStarting(true);
+        actions.startNow(meta.id);
+      }}
       onDecide={(id, d) => actions.approve(meta.id, id, d)}
     />
   );
@@ -2140,6 +2150,8 @@ function ItemView(props: {
   item: Item;
   /** The session is still waiting in the queue. */
   queued: boolean;
+  /** Start anyway was clicked and yardd has not answered yet. */
+  starting: boolean;
   loadAttachment(a: Attachment): Promise<string>;
   onStart(): void;
   onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
@@ -2205,7 +2217,7 @@ function ItemView(props: {
         <div className="queued-line">
           <span>{props.queued ? `Queued: ${item.reason}.` : `Was queued: ${item.reason}.`}</span>
           {props.queued && (
-            <button className="btn" onClick={props.onStart}>
+            <button className="btn" disabled={props.starting} onClick={props.onStart}>
               Start anyway
             </button>
           )}
