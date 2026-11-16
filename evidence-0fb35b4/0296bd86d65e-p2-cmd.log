@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon resizing_an_exited_terminal_is_not_an_error
+# exit 101 after 1101 ms at 3189b2add62c63854d57751aa1819ec135d76415
+
+
+running 1 test
+test resizing_an_exited_terminal_is_not_an_error ... FAILED
+
+failures:
+
+---- resizing_an_exited_terminal_is_not_an_error stdout ----
+
+thread 'resizing_an_exited_terminal_is_not_an_error' (63403) panicked at crates/yardd/tests/daemon.rs:826:5:
+resizing an exited terminal was refused: [Object {"for": String("term.resize"), "message": String("terminal is closed"), "op": String("error"), "ref": String("exited")}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-63402-term-exited-0 for inspection
+
+
+failures:
+    resizing_an_exited_terminal_is_not_an_error
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.22s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.83s
+     Running tests/daemon.rs (target/debug/build/yardd/7bf3bc1ebbbe5c02/out/daemon-7bf3bc1ebbbe5c02)
+error: test failed, to rerun pass `-p yardd --test daemon`

@@ -1,0 +1,150 @@
+{
+  "v": 1,
+  "claim": "Reloading a session whose terminal shell has exited shows a red \"terminal is closed\" error banner: the pane fits the terminal (sending term.resize) before it learns the shell exited, and yardd refuses resizing an exited terminal",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1",
+  "base": "968dfd09609bef5c545a8ee8b78cb81e688f39de",
+  "head": "0fb35b4ae57949bffe4dc8d64ed68827cf9be344",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pty.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T12:42:55.764Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3189b2add62c63854d57751aa1819ec135d76415",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "90a14bddc0dc8d8246e58814ecabe3ef4520a368ea9aecacf52aa52806e28eb8"
+        },
+        {
+          "path": "p1-base-banner-desktop.png",
+          "sha256": "be66cac576e994624bf686f9d315e63397dab1dd3bae1c8289d4c682528d57bb"
+        }
+      ],
+      "addedAt": "2026-11-16T12:43:05.448Z",
+      "failedApi": [
+        "term.resize: terminal is closed"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "3189b2add62c63854d57751aa1819ec135d76415",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "0296bd86d65e7be26a9f40f013bde38c6438ef70c9acc83b52ae53edff4514f7"
+        }
+      ],
+      "addedAt": "2026-11-16T12:43:05.496Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon resizing_an_exited_terminal_is_not_an_error",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "3189b2add62c63854d57751aa1819ec135d76415",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "66fd2c527446917dc572480269bb26517fb3e4c672443c031b98fd270d67824b"
+        }
+      ],
+      "addedAt": "2026-11-16T12:43:06.646Z",
+      "cmd": "verify/yv map run terminal --recipe exited-shell-survives-reload",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0fb35b4ae57949bffe4dc8d64ed68827cf9be344",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "d27957133b70ff905302601d93f869bc0b7e7eca75115360f6dd0fa0cd4d67ba"
+        },
+        {
+          "path": "p4-head-no-banner-desktop.png",
+          "sha256": "a60c01a0bee91c4743fa236b06d04393745ade2f6c9de309fc0d0af4a037f092"
+        }
+      ],
+      "addedAt": "2026-11-16T12:43:45.696Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "0fb35b4ae57949bffe4dc8d64ed68827cf9be344",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "c6cb7efa2c30ab27b571f7752e7202b88c0e217b5e2f8cba4f9c72e7ad130731"
+        }
+      ],
+      "addedAt": "2026-11-16T12:43:45.881Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0fb35b4ae57949bffe4dc8d64ed68827cf9be344",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-terminal.json",
+          "sha256": "c657640c7d72e439d55332f5191e156898fcbe9d263dd2c102a32c59ea3e407d"
+        }
+      ],
+      "addedAt": "2026-11-16T12:44:03.749Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads",
+        "terminal/exited-shell-survives-reload",
+        "terminal/close-terminal"
+      ]
+    }
+  ]
+}
