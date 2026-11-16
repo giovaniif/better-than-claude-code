@@ -1694,6 +1694,35 @@ async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
 }
 
 #[tokio::test]
+async fn a_runs_finish_time_stays_put_when_it_is_pinned_later() {
+    // The Automations page shows how long a run took. `updatedAt` moves on any
+    // later change (a pin, a rename, a reply), so the run's end is kept apart.
+    let sb = Sandbox::new("auto-finished");
+    let repo = make_repo(&sb, "repo");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&repo, json!({}))).await.unwrap();
+    let ran = run_automation(&mut c, a["id"].as_str().unwrap(), true).await;
+    let sid = ran["sessionId"].as_str().unwrap().to_string();
+
+    let done = c
+        .wait_for("the run archived", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["archived"] == true)
+        .await["session"]
+        .clone();
+    let finished = done["finishedAt"].as_u64().unwrap_or_else(|| panic!("a finished run says when it ended: {done}"));
+    assert!(finished >= done["createdAt"].as_u64().unwrap(), "{done}");
+
+    tokio::time::sleep(Duration::from_millis(1100)).await;
+    c.send(json!({ "op": "session.update", "sessionId": sid, "pinned": true })).await;
+    let pinned = c
+        .wait_for("the run pinned", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pinned"] == true)
+        .await["session"]
+        .clone();
+    assert!(pinned["updatedAt"].as_u64().unwrap() >= finished + 1000, "the pin moved updatedAt: {pinned}");
+    assert_eq!(pinned["finishedAt"].as_u64(), Some(finished), "a pin does not move the run's end: {pinned}");
+}
+
+#[tokio::test]
 async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
     let sb = Sandbox::new("auto-skip");
     let cwd = make_repo(&sb, "repo");
