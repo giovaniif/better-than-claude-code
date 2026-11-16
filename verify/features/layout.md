@@ -74,6 +74,17 @@ The menu button is on screen on the new-session, Hosts and Automations pages too
 yv drive new --viewport mobile --steps '[{"expect":"role:button:Open sessions","inViewport":true},{"goto":"hosts"},{"expect":"role:button:Open sessions","inViewport":true},{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"expect":"role:button:Open sessions","inViewport":true}]'
 ```
 
+### mobile-delete-confirm-fits-the-bar
+Viewports: mobile
+At 390 px, Delete on a session with its own worktree arms two choices in the
+bar. Each stays on one line inside the bar (nothing spills over the thread or
+off the screen), and the first click still only arms them.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":{"role":"button","name":"Delete","exact":true}},{"expect":{"css":".main header.bar .btn-text"},"count":2},{"eval":"(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()","equals":true},{"shot":"delete-armed"}]'
+yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
+```
+
 ### desktop-sidebar-is-a-column
 Viewports: desktop
 At 1440 px nothing changes: no menu button, and the sidebar is a 248 px column
