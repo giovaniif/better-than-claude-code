@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { appendToComposer, cleanQuote, onAppend, quoteInComposer, quoteSegments, returnToComposer, SELECTION_CAP, splitQuotes, withQuotes, type Addition, snippetBlock, fenceSegments } from "./compose";
+import { appendToComposer, cleanQuote, draftOf, keepDraft, onAppend, quoteInComposer, quoteSegments, returnToComposer, SELECTION_CAP, splitQuotes, withQuotes, type Addition, snippetBlock, fenceSegments } from "./compose";
 
 describe("cleanQuote", () => {
   test("keeps a selection's lines as they are", () => {
@@ -115,6 +115,18 @@ describe("composer additions", () => {
     quoteInComposer("other", "x");
     stop();
     expect(got).toEqual([]);
+  });
+});
+
+describe("drafts", () => {
+  test("a session's draft is kept until cleared, apart from others", () => {
+    keepDraft("s1", { text: "half a reply" });
+    keepDraft("s2", { text: "other" });
+    expect(draftOf<{ text: string }>("s1")?.text).toBe("half a reply");
+    keepDraft("s1", null);
+    expect(draftOf("s1")).toBeUndefined();
+    expect(draftOf<{ text: string }>("s2")?.text).toBe("other");
+    expect(draftOf(undefined)).toBeUndefined();
   });
 });
 

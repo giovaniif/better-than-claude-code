@@ -178,3 +178,17 @@ export function fenceSegments(message: string): FenceSegment[] {
   if (!out.some((s) => s.code)) return [{ code: false, text: message }];
   return out;
 }
+
+// A session's reply box as it was when the user looked away. The session
+// view remounts on every switch, so without this a half-written reply, its
+// quotes and its files would be dropped. Memory only: a reload clears it.
+const drafts = new Map<string, unknown>();
+
+export function keepDraft<D>(sessionId: string, draft: D | null) {
+  if (draft) drafts.set(sessionId, draft);
+  else drafts.delete(sessionId);
+}
+
+export function draftOf<D>(sessionId: string | undefined): D | undefined {
+  return sessionId === undefined ? undefined : (drafts.get(sessionId) as D | undefined);
+}

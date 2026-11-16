@@ -11,7 +11,7 @@ import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from ".
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
-import { fenceSegments, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
+import { draftOf, fenceSegments, keepDraft, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
@@ -1101,6 +1101,16 @@ interface PendingFile {
   error?: string;
 }
 
+type Upload = { target: string; promise: Promise<Attachment> };
+/** What a session's reply box keeps while another session is open (compose.ts). */
+type ComposerDraft = {
+  text: string;
+  quotes: { key: string; text: string }[];
+  snippets: (Snippet & { key: string })[];
+  files: PendingFile[];
+  uploads: Map<string, Upload>;
+};
+
 function Composer(props: {
   placeholder: string;
   rows: number;
@@ -1120,17 +1130,18 @@ function Composer(props: {
   onSubmit(text: string, attachments: Attachment[]): void;
   children: ReactNode;
 }) {
-  const [text, setText] = useState("");
+  const [kept] = useState(() => draftOf<ComposerDraft>(props.appendFor));
+  const [text, setText] = useState(kept?.text ?? "");
   // Parts of answers being replied to: cards above the text, sent as
   // blockquotes before it (compose.ts).
-  const [quotes, setQuotes] = useState<{ key: string; text: string }[]>([]);
+  const [quotes, setQuotes] = useState<{ key: string; text: string }[]>(kept?.quotes ?? []);
   // Terminal rows attached as context: cards too, sent as fenced blocks.
-  const [snippets, setSnippets] = useState<(Snippet & { key: string })[]>([]);
-  const [files, setFiles] = useState<PendingFile[]>([]);
+  const [snippets, setSnippets] = useState<(Snippet & { key: string })[]>(kept?.snippets ?? []);
+  const [files, setFiles] = useState<PendingFile[]>(kept?.files ?? []);
   const [sending, setSending] = useState(false);
   const [dragging, setDragging] = useState(false);
   // The upload under way or done for each file, and the target it went to.
-  const uploads = useRef(new Map<string, { target: string; promise: Promise<Attachment> }>());
+  const uploads = useRef(kept?.uploads ?? new Map<string, Upload>());
   const picker = useRef<HTMLInputElement>(null);
   const targetKey = JSON.stringify(props.target);
   // Start one line tall and grow with the text, up to a cap.
@@ -1165,18 +1176,35 @@ function Composer(props: {
   const patch = (key: string, change: Partial<PendingFile>) =>
     setFiles((list) => list.map((f) => (f.key === key ? { ...f, ...change } : f)));
 
+  const settle = (key: string, entry: Upload) =>
+    entry.promise.then(
+      // A newer upload of the same file (the host changed) owns the chip.
+      () => uploads.current.get(key) === entry && patch(key, { state: "ready" }),
+      (e) => uploads.current.get(key) === entry && patch(key, { state: "error", error: String(e?.message ?? e) }),
+    );
+
   const startUpload = (f: PendingFile) => {
     const promise = props.upload(f.file, props.target);
     const entry = { target: targetKey, promise };
     uploads.current.set(f.key, entry);
     patch(f.key, { state: "uploading", error: undefined });
-    promise.then(
-      // A newer upload of the same file (the host changed) owns the chip.
-      () => uploads.current.get(f.key) === entry && patch(f.key, { state: "ready" }),
-      (e) => uploads.current.get(f.key) === entry && patch(f.key, { state: "error", error: String(e?.message ?? e) }),
-    );
+    settle(f.key, entry);
     return promise;
   };
+
+  // A kept draft's uploads may have finished while its session was not shown.
+  useEffect(() => {
+    kept?.files.forEach((f) => {
+      const u = uploads.current.get(f.key);
+      if (f.state === "uploading" && u) settle(f.key, u);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!props.appendFor) return;
+    const empty = text === "" && quotes.length === 0 && snippets.length === 0 && files.length === 0;
+    keepDraft<ComposerDraft>(props.appendFor, empty ? null : { text, quotes, snippets, files, uploads: uploads.current });
+  }, [props.appendFor, text, quotes, snippets, files]);
 
   const addFiles = (list: File[]) => {
     if (!list.length) return;
@@ -1212,10 +1240,11 @@ function Composer(props: {
     });
   }, [targetKey]);
 
-  // Previews are freed when the composer goes away.
+  // Previews are freed when the composer goes away, unless its session keeps
+  // them in a draft (then removing or sending the file frees them).
   const live = useRef(files);
   live.current = files;
-  useEffect(() => () => live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
+  useEffect(() => () => !props.appendFor && live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
 
   const failed = files.some((f) => f.state === "error");
   // Quotes alone can go, like files alone: "this" with the part pointed at.
@@ -1243,6 +1272,8 @@ function Composer(props: {
         files.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
         uploads.current.clear();
         setFiles([]);
+        // Cleared here too: the box may have unmounted while the send waited on uploads.
+        if (props.appendFor) keepDraft(props.appendFor, null);
       }
     } catch {
       // The chip that failed says why.
