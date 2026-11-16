@@ -730,6 +730,30 @@ async fn handoff_to_the_same_engine_or_mid_turn_is_refused() {
 }
 
 #[tokio::test]
+async fn handoff_keeps_the_sidebar_group() {
+    let sb = Sandbox::new("handoff-group");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "TEST-hi", json!({})).await;
+    c.wait_turn_done(&sid, 0).await;
+    c.wait_status(&sid, "idle").await;
+    c.send(json!({ "op": "session.update", "sessionId": sid, "group": "TEST-grp" })).await;
+    c.wait_for("the group saved", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["group"] == "TEST-grp")
+        .await;
+
+    // The work goes on in the new session, so it belongs where the user filed the old one.
+    let from = c.mark();
+    c.send(json!({ "op": "session.handoff", "sessionId": sid, "engine": "claude", "model": "claude-haiku-5-5", "effort": "low" }))
+        .await;
+    let created = c.wait_after(from, "created", |m| m["op"] == "created").await;
+    let new_sid = created["sessionId"].as_str().unwrap().to_string();
+    let meta = c
+        .wait_for("the new session's meta", |m| m["op"] == "session" && m["session"]["id"] == new_sid && m["session"]["parent"] == sid)
+        .await;
+    assert_eq!(meta["session"]["group"], "TEST-grp");
+}
+
+#[tokio::test]
 async fn terminal_runs_commands_and_replays_its_scrollback() {
     let sb = Sandbox::new("term");
     let d = sb.start();

@@ -95,7 +95,7 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 
 Claude switches at once with `setPermissionMode` (the sidecar always passes `allowDangerouslySkipPermissions` so a later switch to full access works); Codex takes the mode from its next turn. Approving Claude's plan-mode exit leaves the picker showing Plan only until it is changed.
 
-**Switching engine** cannot share a thread, so it is a hand-off. Picking a model of the other engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch and title and a `parent` pointing back.
+**Switching engine** cannot share a thread, so it is a hand-off. Picking a model of the other engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch, title and sidebar group and a `parent` pointing back.
 
 - yardd builds the first message from the source session's event log, with no model call, because the source is usually out of quota.
 - The brief holds the original task, each later prompt, each turn's final answer, the uncommitted changed files and any unresolved state. It is capped at 12,000 characters, keeping the task and the most recent turns.

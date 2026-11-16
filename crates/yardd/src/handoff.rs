@@ -79,6 +79,8 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
     app.update_meta(&new_sid, |m| {
         m.parent = Some(sid.to_string());
         m.permission = source.permission.clone();
+        // The work goes on here, so it sits where the user filed the source.
+        m.group = source.group.clone();
     });
     app.emit(sid, json!({ "type": "note", "text": format!("Handed off to {}.", engine_name(engine)) }));
     app.emit(
