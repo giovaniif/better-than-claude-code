@@ -329,3 +329,118 @@ async fn an_added_opencode_account_has_its_own_logins_and_sessions() {
     c.wait_turn_done(&sid, 0).await;
     assert_eq!(prompts(&sb)[0]["account"], json!(id));
 }
+
+fn grok() -> Value {
+    on("grok", "fake-small", "high")
+}
+
+async fn grok_login(c: &mut Client, account: Option<&str>) {
+    let mark = c.mark();
+    let mut msg = json!({ "op": "login.start", "engine": "grok" });
+    if let Some(a) = account {
+        msg["account"] = json!(a);
+    }
+    c.send(msg).await;
+    let code = login_state(c, mark, "grok", "code").await;
+    assert_eq!(code["code"], "GROK-1234");
+    assert_eq!(code["url"], "https://accounts.x.ai/oauth2/device?user_code=GROK-1234");
+    login_state(c, mark, "grok", "done").await;
+}
+
+#[tokio::test]
+async fn grok_lists_models_logs_in_with_a_device_code_and_runs_a_turn() {
+    let sb = Sandbox::new("grok-login");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let models = c
+        .wait_for("grok models", |m| (m["op"] == "snapshot" || m["op"] == "models") && m["models"]["grok"].as_array().is_some_and(|l| !l.is_empty()))
+        .await["models"]["grok"]
+        .clone();
+    assert_eq!(
+        models,
+        json!([
+            { "id": "fake-small", "name": "Fake Small", "efforts": ["low", "high"], "defaultEffort": "high", "isDefault": true },
+            { "id": "fake-large", "name": "Fake Large", "efforts": [], "isDefault": false },
+        ])
+    );
+    c.send(json!({ "op": "engines.status" })).await;
+    let st = c.wait_for("engine status", |m| m["op"] == "engines").await;
+    assert_eq!(st["engines"]["grok"], json!({ "installed": true, "loggedIn": false }), "{st}");
+
+    // Logged out: the session says why.
+    let cwd = sb.folder("proj");
+    // The agent refuses the session, so no turn starts.
+    let sid = c.try_create(&cwd, "hello", grok()).await.unwrap();
+    let err = c.wait_event(&sid, "error", 0).await;
+    assert!(err["message"].as_str().unwrap().contains("Authentication required"), "{err}");
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "failed");
+
+    let mark = c.mark();
+    grok_login(&mut c, None).await;
+    let st = c.wait_after(mark, "grok logged in", |m| m["op"] == "engines" && m["engines"]["grok"]["loggedIn"] == true).await;
+    assert_eq!(st["engines"]["grok"]["account"], "default@grok.example");
+
+    // The same session now works: it never reached the agent, so it starts there now.
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hello again" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let p = prompts(&sb);
+    assert_eq!((p[0]["engine"].as_str(), p[0]["effort"].as_str(), p[0]["mode"].as_str()), (Some("grok"), Some("high"), Some("default")));
+    assert!(acp_log(&sb).contains(r#"grok req session/set_config_option reasoning_effort="high""#), "{}", acp_log(&sb));
+}
+
+#[tokio::test]
+async fn a_failed_grok_login_says_why() {
+    let sb = Sandbox::new("grok-login-fail");
+    let d = sb.start_with(&[("FAKE_GROK_LOGIN_FAIL", "1")]);
+    let mut c = d.client().await;
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "grok" })).await;
+    login_state(&mut c, mark, "grok", "code").await;
+    let failed = login_state(&mut c, mark, "grok", "failed").await;
+    assert_eq!(failed["error"], "Error: the code expired");
+}
+
+#[tokio::test]
+async fn grok_follows_the_permission_mode_with_its_own_modes() {
+    let sb = Sandbox::new("grok-modes");
+    let d = sb.start();
+    let mut c = d.client().await;
+    grok_login(&mut c, None).await;
+    let cwd = sb.folder("proj");
+    let sid = c.create(&cwd, "[edit] change it", json!({ "engine": "grok", "model": "fake-small", "effort": "high", "permission": "acceptEdits" })).await;
+    c.wait_turn_done(&sid, 0).await;
+    assert!(!c.event_types(&sid).contains(&"approval_request".to_string()));
+    assert_eq!(prompts(&sb)[0]["mode"], "acceptEdits");
+
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "plan" })).await;
+    c.send(json!({ "op": "session.setModel", "sessionId": sid, "model": "fake-large", "effort": "high" })).await;
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[cmd] look" })).await;
+    let req = c.wait_event(&sid, "approval_request", next).await;
+    assert_eq!(req["title"], "echo hi", "Plan only still asks before commands");
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let p = prompts(&sb);
+    assert_eq!((p[1]["mode"].as_str(), p[1]["model"].as_str()), (Some("plan"), Some("fake-large")));
+    assert!(acp_log(&sb).contains("grok req session/set_mode plan"), "{}", acp_log(&sb));
+}
+
+#[tokio::test]
+async fn an_added_grok_account_logs_in_on_its_own() {
+    let sb = Sandbox::new("grok-account");
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "account.add", "engine": "grok", "name": "Work" })).await;
+    let accounts = c.wait_for("the new account", |m| m["op"] == "accounts" && m["accounts"].as_array().is_some_and(|l| !l.is_empty())).await;
+    let id = accounts["accounts"][0]["id"].as_str().unwrap().to_string();
+    let mark = c.mark();
+    grok_login(&mut c, Some(&id)).await;
+    let st = c.wait_after(mark, "the account logged in", |m| m["op"] == "engines" && m["accounts"][&id]["loggedIn"] == true).await;
+    assert_eq!(st["engines"]["grok"]["loggedIn"], false, "Default is still logged out");
+    assert_eq!(st["accounts"][&id]["account"], json!(format!("{id}@grok.example")));
+
+    let sid = c.create(&sb.folder("proj"), "hi", json!({ "engine": "grok", "model": "fake-small", "effort": "low", "account": id })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    assert_eq!(prompts(&sb)[0]["account"], json!(id));
+}

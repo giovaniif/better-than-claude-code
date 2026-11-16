@@ -9,6 +9,7 @@ mod claude;
 mod codex;
 mod engines;
 mod git;
+mod grok;
 mod handoff;
 mod guard;
 mod hosts;
@@ -117,6 +118,13 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(async move {
         if let Err(e) = opencode::load_models(&boot).await {
             eprintln!("yardd: opencode unavailable: {e:#}");
+        }
+    });
+    // Grok lists its models when its agent starts, logged in or not.
+    let boot = app.clone();
+    tokio::spawn(async move {
+        if let Err(e) = grok::load_models(&boot).await {
+            eprintln!("yardd: grok unavailable: {e:#}");
         }
     });
 

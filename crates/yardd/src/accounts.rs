@@ -3,7 +3,8 @@
 //! yardd was started in) plus added ones, each with its own config folder
 //! under `<data dir>/accounts/<id>`: `CLAUDE_CONFIG_DIR` for Claude Code,
 //! `CODEX_HOME` for Codex, `XDG_DATA_HOME` for OpenCode (its logins and
-//! sessions live in `opencode/` there; its config stays the user's). yardd never reads what is in those folders; the
+//! sessions live in `opencode/` there; its config stays the user's), `GROK_HOME`
+//! for Grok. yardd never reads what is in those folders; the
 //! CLIs keep their own login files there. Saved in `accounts.json`.
 
 use std::{
@@ -38,6 +39,7 @@ pub fn env_var(engine: &str) -> &'static str {
         // OpenCode has no variable of its own for this. Commands its agent
         // runs see the moved data folder too.
         "opencode" => "XDG_DATA_HOME",
+        "grok" => "GROK_HOME",
         _ => "CLAUDE_CONFIG_DIR",
     }
 }
