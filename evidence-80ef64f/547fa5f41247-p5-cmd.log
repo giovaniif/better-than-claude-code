@@ -1,0 +1,41 @@
+$ verify/yv map run changes-pane
+# exit 0 after 14443 ms at 80ef64f18d44f13f17dccb5f1532800f7187d458
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-16T07:54:36.921Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-diff",
+          "status": "pass",
+          "ms": 2821
+        },
+        {
+          "label": "empty-folder",
+          "status": "pass",
+          "ms": 2517
+        },
+        {
+          "label": "refresh-picks-up-new-file",
+          "status": "pass",
+          "ms": 4002
+        },
+        {
+          "label": "non-ascii-file-names",
+          "status": "pass",
+          "ms": 4191
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

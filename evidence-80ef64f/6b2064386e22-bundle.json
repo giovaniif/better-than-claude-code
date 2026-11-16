@@ -1,0 +1,137 @@
+{
+  "v": 1,
+  "claim": "The Changes pane lists a file with a non-ASCII name (configuração.md) as git's quoted octal (\"configura\\303\\247\\303\\243o.md\"), because yardd passes git's default quotePath output through.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b",
+  "base": "0c1f1c2384bc7532b1cee03dfa5a5523aea95975",
+  "head": "80ef64f18d44f13f17dccb5f1532800f7187d458",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T07:53:43.489Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "0699b701dc3544832de5bbfbef363baa2907491c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "9ae9cc28ad9e43a1513b5b816ff2a8b8c123978b2ced72eac6a3f1ab153b59f7"
+        },
+        {
+          "path": "p1-base-desktop.png",
+          "sha256": "4252b3e3198af537621716e8470a468d8afe9c0f4b99bac7f0d0a15d0f8b3288"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "64b8cbb467ba0235d7a308c189fea2a42c2eb2ec1b3ee18c185653c1c1224024"
+        }
+      ],
+      "addedAt": "2026-11-16T07:53:56.808Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "0699b701dc3544832de5bbfbef363baa2907491c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "db128b189e4658c6c32cd0fcbd770b6ac5eb1d6f898e3a88e6bf0725d6f0a0d9"
+        }
+      ],
+      "addedAt": "2026-11-16T07:53:56.858Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd non_ascii_paths_come_out_as_written",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "0699b701dc3544832de5bbfbef363baa2907491c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "fdb38a3c0b07caad88d759adc8567fcdad635b2d94fc786aac7b9c3749c15a05"
+        }
+      ],
+      "addedAt": "2026-11-16T07:53:59.081Z",
+      "cmd": "verify/yv map run changes-pane --recipe non-ascii-file-names",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "80ef64f18d44f13f17dccb5f1532800f7187d458",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "29a55d0032ff9189847022787128c0c057fafd4ae39d96abab5f7c207d196ff0"
+        },
+        {
+          "path": "p4-head-desktop.png",
+          "sha256": "692f757a3418ff17bece0f172ae08d79b6feb7752a8f879c9fb0896e9b21851a"
+        }
+      ],
+      "addedAt": "2026-11-16T07:54:22.438Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "80ef64f18d44f13f17dccb5f1532800f7187d458",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "547fa5f41247fdb5a0f7b0735c8a2d29a3f6faad79b20c1c81b31b3475692d84"
+        }
+      ],
+      "addedAt": "2026-11-16T07:54:22.482Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "80ef64f18d44f13f17dccb5f1532800f7187d458",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "517e160d93484527c4171e3fb78233f87d48d439a939b820fe788c5b47f23e56"
+        }
+      ],
+      "addedAt": "2026-11-16T07:54:36.976Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    }
+  ]
+}

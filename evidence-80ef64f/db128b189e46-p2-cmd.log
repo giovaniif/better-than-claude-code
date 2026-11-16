@@ -1,0 +1,28 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd non_ascii_paths_come_out_as_written
+# exit 101 after 2164 ms at 0699b701dc3544832de5bbfbef363baa2907491c
+
+
+running 1 test
+test git::tests::non_ascii_paths_come_out_as_written ... FAILED
+
+failures:
+
+---- git::tests::non_ascii_paths_come_out_as_written stdout ----
+
+thread 'git::tests::non_ascii_paths_come_out_as_written' (344659) panicked at crates/yardd/src/git.rs:440:9:
+assertion `left == right` failed
+  left: ["\"a\\303\\247\\303\\243o.txt\"", "\"caf\\303\\251.txt\""]
+ right: ["ação.txt", "café.txt"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    git::tests::non_ascii_paths_come_out_as_written
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.04s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.05s
+     Running unittests src/main.rs (target/debug/build/yardd/faa385782cd2ce48/out/yardd-faa385782cd2ce48)
+error: test failed, to rerun pass `-p yardd --bin yardd`
