@@ -1,0 +1,65 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-16T01:34:51.332Z",
+      "counts": {
+        "pass": 2,
+        "fail": 2
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-three-columns",
+          "status": "pass",
+          "ms": 2650
+        },
+        {
+          "label": "narrow-hides-pane",
+          "status": "pass",
+          "ms": 2460
+        },
+        {
+          "label": "mobile-main-column-usable",
+          "status": "fail",
+          "ms": 2572,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"eval\":\"Math.round(document.querySelector(\\\".main\\\").getBoundingClientRect().width) >= 300\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/.verify/drives/2026-11-16T01-34-36-950Z/fail-mobile-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": " 0,\n        \"action\": {\n          \"eval\": \"Math.round(document.querySelector(\\\".main\\\").getBoundingClientRect().width) >= 300\",\n          \"equals\": true\n        },\n        \"reason\": \"eval returned false, expected true\",\n        \"screenshot\": \"/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/.verify/drives/2026-11-16T01-34-36-950Z/fail-mobile-step0.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 22% · 82%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-5105\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"Math.round(document.querySelector(\\\".main\\\").getBoundingClientRect().width) >= 300\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"eval\\\":\\\"Math.round(document.querySelector(\\\\\\\".main\\\\\\\").getBoundingClientRect().width) >= 300\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/.verify/drives/2026-11-16T01-34-36-950Z/fail-mobile-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "mobile-hosts-page",
+          "status": "fail",
+          "ms": 12015,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":\"role:heading:Hosts\",\"inViewport\":true}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/.verify/drives/2026-11-16T01-34-39-557Z/fail-mobile-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": " migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 19% · 81%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Hosts\\\" [level=1]\\n  - button \\\"Add host\\\"\\n- region \\\"iso-host\\\":\\n  - heading \\\"iso-host\\\" [level=2]\\n  - text: Healthy CPU 19% load 7.0 of 28 Memory 19.0 GB of 23.4 GB Disk 66.6 GB of 97.9 GB\\n  - img \\\"CPU over the last hour\\\"\\n  - region \\\"Sessions\\\":\\n    - heading \\\"Sessions\\\" [level=2]\\n    - table:\\n      - rowgroup:\\n        - row \\\"Session CPU Memory\\\":\\n          - cell \\\"Session\\\"\\n          - cell \\\"CPU\\\"\\n          - cell \\\"Memory\\\"\\n      - rowgroup:\\n        - row \\\"TEST-hello from Claude 0.0 cores 24 MB\\\":\\n          - cell \\\"TEST-hello from Claude\\\"\\n          - cell \\\"0.0 cores\\\"\\n          - cell \\\"24 MB\\\"\\n    - text: New sessions are queued while load is above 28 or less than 0 GB of memory is free.\\n  - text: Claude Code logged in as me@example.com Codex logged in as me@example.com\\n- button \\\"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\\\":\\n  - strong: Run sessions on another machine\\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":\\\"role:heading:Hosts\\\",\\\"inViewport\\\":true}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/.verify/drives/2026-11-16T01-34-39-557Z/fail-mobile-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/mobile-main-column-usable",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "layout/mobile-hosts-page",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}

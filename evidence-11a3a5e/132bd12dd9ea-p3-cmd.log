@@ -1,0 +1,19 @@
+$ cd sidecar/yard-claude && bun test
+# exit 1 after 195 ms at 8e0d429bf5dd9bae2b4c518a5c1afb25d7559605
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/subagents.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './subagents' from '/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/sidecar/yard-claude/src/subagents.test.ts'
+-------------------------------
+
+
+ 18 pass
+ 1 fail
+ 1 error
+ 37 expect() calls
+Ran 19 tests across 5 files. [182.00ms]
