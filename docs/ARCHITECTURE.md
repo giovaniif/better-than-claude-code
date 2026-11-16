@@ -211,6 +211,10 @@ Every new session in a git repository with at least one commit gets its own bran
 - Uncommitted changes in the original checkout are not carried over.
 - Files a setup script creates count as untracked unless gitignored, so they block removal.
 
+## Terminal output as context
+
+The Terminal tab's **Attach** menu puts terminal output in a card above the reply box: the selection, the rows on screen, or the last 100 or 500 lines (`ui/src/termRows.ts` reads xterm's buffer: wrapped rows join their line, the blank screen under the prompt is dropped). A card names the terminal and its line count, shows three monospace lines with More, and has ×; several stack next to quote cards. Sending puts each after any quotes and before the typed text as `Terminal 1, 8 lines:` and a fenced `text` block whose fence is longer than any backtick run inside (`snippetBlock` in `compose.ts`), so engines and older yardds read plain Markdown. A sent bubble shows closed fenced blocks as code (`fenceSegments`). Cut to the selection cap (20,000 characters).
+
 ## Attachments
 
 Files and images go with a prompt, on the new-session page and in the reply box: paste (clipboard images and files), drop on the composer, or the paperclip. Pending files show as chips above the text (a local preview for images) and can be removed. A prompt can be attachments alone.

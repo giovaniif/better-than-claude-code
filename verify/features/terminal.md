@@ -2,7 +2,7 @@
 
 The Terminal tab runs the user's shell in the session folder through yardd's
 PTY. Several terminals per session ("1", "2"...), 256 KB of scrollback replayed
-after a reload, and "Add to message" for a selection. Desktop only (the pane
+after a reload, and Attach (terminal output as a card in the reply box). Desktop only (the pane
 is hidden below 1100 px).
 
 ## Setup
@@ -120,9 +120,23 @@ yv drive 'session:{{sid_cmd}}' --viewport desktop --allow-errors --steps '[{"exp
 yv api '{"op":"term.list","sessionId":"{{sid_cmd}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 0'
 ```
 
-### add-to-message (manual: needs a mouse selection inside xterm)
-Select text in the terminal, press "Add to message": the reply box gets a
-fenced block. Selecting through xterm's renderer is not scripted yet.
+### attach-terminal-rows
+Viewports: desktop
+The Terminal's Attach menu puts terminal output in a card above the reply box
+(where from, line count, monospace, More, ×): the rows on screen, or the last
+100 or 500 lines (wrapped rows joined, the blank screen under the prompt left
+out). Several stack; × removes one. Sending puts each before the typed text
+as a labelled fenced block, and the cards go; the sent bubble shows the
+block as code.
+
+```sh
+yv drive 'session:{{sid_claude}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"wait":1500},{"type":"seq -f TEST-row-%g 3\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-row-3"},{"wait":500},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Rows on screen"}},{"expect":"css:.quote-card.snippet","text":"TEST-row-3"},{"expect":"css:.quote-card.snippet .quote-card-label","text":"Terminal 1 · "},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Last 100 lines"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":2},{"click":{"role":"button","name":"Remove terminal output"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":1},{"shot":"attached"},{"fill":"label:Message","value":"TEST-what failed?"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"TEST-what failed?"},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":0},{"expect":"css:.bubble-code","text":"TEST-row-3"},{"shot":"sent"}]'
+yv api '{"op":"session.open","sessionId":"{{sid_claude}}"}' --wait '{"op":"history"}' | jq -e '[.reply.events[] | select(.type=="user_message") | .text] | last | test("^Terminal 1, [0-9]+ lines:\\n\\x60{3}text\\n(.|\\n)*TEST-row-3\\n(.|\\n)*\\x60{3}\\n\\nTEST-what failed\\?$")'
+```
+
+### attach-terminal-selection (manual: needs a mouse selection inside xterm)
+Select text in the terminal, open Attach, pick Selection: the card holds the
+selection. Selecting through xterm's renderer is not scripted yet.
 
 ## Gotchas
 - Fixed 2026-11-15: the scrollback replayed after a reload used to be written at xterm's default 80 columns before the first fit and then reflowed, garbling wrapped lines and overwriting output. scrollback-after-reload and scrollback-keeps-wrapped-lines guard it.

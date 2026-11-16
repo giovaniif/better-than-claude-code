@@ -1,10 +1,17 @@
 // Lets other panes add to a session's reply box without lifting the
 // composer's state: the composer listens for its own session id.
 
-/** Text goes into the box; quotes become cards above it. */
+/** Terminal rows attached as context: `label` names where they came from. */
+export interface Snippet {
+  label: string;
+  text: string;
+}
+
+/** Text goes into the box; quotes and snippets become cards above it. */
 export interface Addition {
   text?: string;
   quotes?: string[];
+  snippets?: Snippet[];
 }
 
 type Listener = (added: Addition) => void;
@@ -28,6 +35,12 @@ function add(sessionId: string, added: Addition) {
 /** Text for the box, as is (a terminal selection). */
 export function appendToComposer(sessionId: string, text: string) {
   add(sessionId, { text });
+}
+
+/** Terminal rows, as a card above the reply box. Cut to the cap. */
+export function snippetInComposer(sessionId: string, label: string, text: string) {
+  const body = text.slice(0, SELECTION_CAP).replace(/\n+$/, "");
+  if (body.trim()) add(sessionId, { snippets: [{ label, text: body }] });
 }
 
 /** Part of an agent's answer, as a quote card for a reply. */
@@ -66,8 +79,19 @@ function blockquote(quote: string): string {
 /** What a reply sends: each quote as a Markdown blockquote, then the text,
  *  a blank line apart. Plain Markdown, so engines and older yardds read it
  *  as they always have. */
-export function withQuotes(quotes: string[], text: string): string {
-  return [...quotes.map(blockquote), ...(text ? [text] : [])].join("\n\n");
+export function withQuotes(quotes: string[], text: string, snippets: Snippet[] = []): string {
+  return [...quotes.map(blockquote), ...snippets.map(snippetBlock), ...(text ? [text] : [])].join("\n\n");
+}
+
+export const lineCount = (text: string) => text.split("\n").length;
+
+/** A snippet as a labelled fenced block. The fence is longer than any run of
+ *  backticks in the output, so terminal text cannot close it early. */
+export function snippetBlock(s: Snippet): string {
+  const longest = Math.max(0, ...(s.text.match(/`+/g) ?? []).map((run) => run.length));
+  const fence = "`".repeat(Math.max(3, longest + 1));
+  const lines = lineCount(s.text);
+  return `${s.label}, ${lines === 1 ? "1 line" : `${lines} lines`}:\n${fence}text\n${s.text}\n${fence}`;
 }
 
 const QUOTE_LINE = /^>/;
@@ -122,8 +146,35 @@ export function quoteSegments(message: string): QuoteSegment[] {
   return out;
 }
 
-/** A terminal selection as a fenced block, cut to the cap. */
-export function fenced(selection: string): string {
-  const body = selection.slice(0, SELECTION_CAP).replace(/\n+$/, "");
-  return "```\n" + body + "\n```\n";
+export interface FenceSegment {
+  code: boolean;
+  text: string;
+}
+
+/** A sent message in runs of text and closed fenced blocks, for the bubble
+ *  (terminal output attached to a reply). A fence closes only on a line of
+ *  at least as many backticks; an unclosed one stays text. */
+export function fenceSegments(message: string): FenceSegment[] {
+  const lines = message.split("\n");
+  const out: FenceSegment[] = [];
+  let text: string[] = [];
+  const flushText = () => {
+    const t = text.join("\n").replace(/^\n+|\n+$/g, "");
+    if (t) out.push({ code: false, text: t });
+    text = [];
+  };
+  for (let i = 0; i < lines.length; i++) {
+    const open = /^(`{3,})[^`]*$/.exec(lines[i]);
+    const end = open ? lines.findIndex((l, j) => j > i && new RegExp(`^\`{${open[1].length},}\\s*$`).test(l)) : -1;
+    if (!open || end < 0) {
+      text.push(lines[i]);
+      continue;
+    }
+    flushText();
+    out.push({ code: true, text: lines.slice(i + 1, end).join("\n") });
+    i = end;
+  }
+  flushText();
+  if (!out.some((s) => s.code)) return [{ code: false, text: message }];
+  return out;
 }

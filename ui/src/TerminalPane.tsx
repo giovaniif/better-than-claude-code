@@ -4,7 +4,8 @@ import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import type { TermInfo } from "./protocol";
 import type { Actions } from "./store";
-import { appendToComposer, fenced, SELECTION_CAP } from "./compose";
+import { SELECTION_CAP, snippetInComposer } from "./compose";
+import { joinRows, pickRows, type RowPick } from "./termRows";
 
 // ANSI colors that stay readable on a white ground.
 const THEME = {
@@ -41,6 +42,10 @@ const Glyph = ({ d, size = 12 }: { d: string; size?: number }) => (
   </svg>
 );
 const PLUS = "M12 5v14M5 12h14";
+const CHEVRON = "m6 9 6 6 6-6";
+
+/** Reads a terminal's rows as text, for attaching to the reply. */
+type RowReader = (pick: RowPick) => string;
 const CROSS = "M18 6 6 18M6 6l12 12";
 
 /**
@@ -61,6 +66,20 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
   // After `+`, the tabs that existed then: the first `term.opened` for another
   // terminal is the new one (an attach reply is for a tab we already had).
   const awaiting = useRef<Set<string> | null>(null);
+  const readers = useRef(new Map<string, RowReader>());
+  const [menu, setMenu] = useState(false);
+  const menuBox = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const outside = (e: PointerEvent) => menuBox.current?.contains(e.target as Node) || setMenu(false);
+    const escape = (e: KeyboardEvent) => e.key === "Escape" && setMenu(false);
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [menu]);
   const expectNew = () => (awaiting.current = new Set(shown.current.map((t) => t.termId)));
 
   useEffect(() => {
@@ -110,6 +129,16 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
     actions.post({ op: "term.close", termId });
   };
   const cut = selection.length > SELECTION_CAP;
+  const activeTab = (tabs ?? []).find((t) => t.termId === active);
+  const attach = (text: string) => {
+    setMenu(false);
+    // Tabs are titled by number; "Terminal 2" says where the rows came from.
+    snippetInComposer(sessionId, activeTab?.title ? `Terminal ${activeTab.title}` : "Terminal", text);
+  };
+  const attachRows = (pick: RowPick) => {
+    const read = active ? readers.current.get(active) : undefined;
+    if (read) attach(read(pick));
+  };
 
   return (
     <div className="term-pane" style={{ display: visible ? "flex" : "none" }}>
@@ -133,14 +162,36 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
           <Glyph d={PLUS} />
         </button>
         <span className="spacer" />
-        {selection && active && (
-          <button
-            className="btn-text"
-            title={cut ? `The selection is ${selection.length.toLocaleString()} characters; only the first ${SELECTION_CAP.toLocaleString()} are added.` : "Add the selection to your reply"}
-            onClick={() => appendToComposer(sessionId, fenced(selection))}
-          >
-            Add to message
-          </button>
+        {active && (
+          <span className="term-attach" ref={menuBox}>
+            <button className="btn-text" aria-haspopup="menu" aria-expanded={menu} title="Attach terminal output to your reply" onClick={() => setMenu(!menu)}>
+              Attach
+              <Glyph d={CHEVRON} size={11} />
+            </button>
+            {menu && (
+              <div className="row-menu term-attach-menu" role="menu">
+                {selection.trim() && (
+                  <button
+                    className="picker-item menu-item"
+                    role="menuitem"
+                    title={cut ? `The selection is ${selection.length.toLocaleString()} characters; only the first ${SELECTION_CAP.toLocaleString()} are attached.` : undefined}
+                    onClick={() => attach(selection)}
+                  >
+                    Selection
+                  </button>
+                )}
+                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "screen" })}>
+                  Rows on screen
+                </button>
+                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 100 })}>
+                  Last 100 lines
+                </button>
+                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 500 })}>
+                  Last 500 lines
+                </button>
+              </div>
+            )}
+          </span>
         )}
       </div>
       {/* Closing the last tab leaves no terminal; a blank pane with only the
@@ -165,6 +216,7 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
           actions={actions}
           onSelection={t.termId === active ? setSelection : undefined}
           onSize={(cols, rows) => (dims.current = { cols, rows })}
+          onReader={(read) => (read ? readers.current.set(t.termId, read) : readers.current.delete(t.termId))}
         />
       ))}
     </div>
@@ -179,6 +231,7 @@ function TermView(props: {
   actions: Actions;
   onSelection?: (text: string) => void;
   onSize(cols: number, rows: number): void;
+  onReader(read: RowReader | null): void;
 }) {
   const { termId, connected, visible, actions } = props;
   const host = useRef<HTMLDivElement>(null);
@@ -288,6 +341,19 @@ function TermView(props: {
       if (!exited.current) live.current.actions.post({ op: "term.resize", termId, cols, rows });
     });
     const onSelect = term.onSelectionChange(() => live.current.onSelection?.(term.getSelection()));
+    live.current.onReader((pick) => {
+      const b = term.buffer.active;
+      const [start, end] = pickRows({ length: b.length, viewportY: b.viewportY, rows: term.rows }, pick);
+      const rows = [];
+      for (let i = start; i < end; i++) {
+        const line = b.getLine(i);
+        if (!line) continue;
+        // A row that wraps onto the next keeps its trailing spaces: they are
+        // part of the line, not padding.
+        rows.push({ text: line.translateToString(!b.getLine(i + 1)?.isWrapped), wrapped: line.isWrapped });
+      }
+      return joinRows(rows);
+    });
     const observer = new ResizeObserver(refit);
     observer.observe(el);
 
@@ -297,6 +363,7 @@ function TermView(props: {
       onData.dispose();
       onResize.dispose();
       onSelect.dispose();
+      live.current.onReader(null);
       observer.disconnect();
       term.dispose();
       termRef.current = null;

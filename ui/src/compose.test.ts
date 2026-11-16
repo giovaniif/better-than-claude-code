@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { appendToComposer, cleanQuote, onAppend, quoteInComposer, quoteSegments, returnToComposer, SELECTION_CAP, splitQuotes, withQuotes, type Addition } from "./compose";
+import { appendToComposer, cleanQuote, onAppend, quoteInComposer, quoteSegments, returnToComposer, SELECTION_CAP, splitQuotes, withQuotes, type Addition, snippetBlock, fenceSegments } from "./compose";
 
 describe("cleanQuote", () => {
   test("keeps a selection's lines as they are", () => {
@@ -115,5 +115,36 @@ describe("composer additions", () => {
     quoteInComposer("other", "x");
     stop();
     expect(got).toEqual([]);
+  });
+});
+
+describe("terminal snippets", () => {
+  test("go after the quotes and before the text, as a labelled fenced block", () => {
+    expect(withQuotes(["why?"], "look", [{ label: "Terminal 1", text: "$ ls\na b" }])).toBe("> why?\n\nTerminal 1, 2 lines:\n```text\n$ ls\na b\n```\n\nlook");
+  });
+  test("alone they still send", () => {
+    expect(withQuotes([], "", [{ label: "Terminal 1", text: "ok" }])).toBe("Terminal 1, 1 line:\n```text\nok\n```");
+  });
+  test("backticks in the output get a longer fence", () => {
+    expect(snippetBlock({ label: "T", text: "a ```b``` c" })).toBe("T, 1 line:\n````text\na ```b``` c\n````");
+  });
+});
+
+describe("fenceSegments", () => {
+  test("a closed fenced block is code; the text around it stays text", () => {
+    expect(fenceSegments("Terminal 1, 2 lines:\n```text\n$ ls\na b\n```\n\nwhy?")).toEqual([
+      { code: false, text: "Terminal 1, 2 lines:" },
+      { code: true, text: "$ ls\na b" },
+      { code: false, text: "why?" },
+    ]);
+  });
+  test("a longer fence holds shorter backtick runs", () => {
+    expect(fenceSegments("````text\na ```\nb\n````")).toEqual([{ code: true, text: "a ```\nb" }]);
+  });
+  test("an unclosed fence is plain text", () => {
+    expect(fenceSegments("look:\n```\nno end")).toEqual([{ code: false, text: "look:\n```\nno end" }]);
+  });
+  test("no fence: one text segment, untouched", () => {
+    expect(fenceSegments("  one\n\ntwo")).toEqual([{ code: false, text: "  one\n\ntwo" }]);
   });
 });

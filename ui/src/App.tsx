@@ -11,7 +11,7 @@ import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from ".
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
-import { onAppend, quoteInComposer, quoteSegments, splitQuotes, withQuotes } from "./compose";
+import { fenceSegments, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
@@ -1013,6 +1013,8 @@ function Composer(props: {
   // Parts of answers being replied to: cards above the text, sent as
   // blockquotes before it (compose.ts).
   const [quotes, setQuotes] = useState<{ key: string; text: string }[]>([]);
+  // Terminal rows attached as context: cards too, sent as fenced blocks.
+  const [snippets, setSnippets] = useState<(Snippet & { key: string })[]>([]);
   const [files, setFiles] = useState<PendingFile[]>([]);
   const [sending, setSending] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -1026,7 +1028,10 @@ function Composer(props: {
     if (!props.appendFor) return;
     return onAppend(props.appendFor, (added) => {
       const more = added.quotes ?? [];
-      if (more.length) setQuotes((q) => [...q, ...more.map((text) => ({ key: `q${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`, text }))]);
+      const newKey = () => `q${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+      if (more.length) setQuotes((q) => [...q, ...more.map((text) => ({ key: newKey(), text }))]);
+      const rows = added.snippets ?? [];
+      if (rows.length) setSnippets((list) => [...list, ...rows.map((r) => ({ ...r, key: newKey() }))]);
       const typed = added.text;
       if (typed) setText((t) => (t && !t.endsWith("\n") ? t + "\n" : t) + typed);
       const el = area.current;
@@ -1103,11 +1108,12 @@ function Composer(props: {
 
   const failed = files.some((f) => f.state === "error");
   // Quotes alone can go, like files alone: "this" with the part pointed at.
-  const canSend = (text.trim() !== "" || quotes.length > 0 || files.length > 0) && !failed && !props.busy && !sending;
+  const canSend = (text.trim() !== "" || quotes.length > 0 || snippets.length > 0 || files.length > 0) && !failed && !props.busy && !sending;
   const submit = async () => {
     const value = withQuotes(
       quotes.map((q) => q.text),
       text.trim(),
+      snippets.map(({ label, text }) => ({ label, text })),
     );
     if (!canSend) return;
     setSending(true);
@@ -1122,6 +1128,7 @@ function Composer(props: {
       if (!props.keepText) {
         setText("");
         setQuotes([]);
+        setSnippets([]);
         files.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
         uploads.current.clear();
         setFiles([]);
@@ -1182,6 +1189,22 @@ function Composer(props: {
           ))}
         </div>
       )}
+      {snippets.length > 0 && (
+        <div className="composer-quotes" aria-label="Terminal output">
+          {snippets.map((sn) => (
+            <QuoteCard
+              key={sn.key}
+              text={sn.text}
+              label={`${sn.label} · ${lineCount(sn.text) === 1 ? "1 line" : `${lineCount(sn.text)} lines`}`}
+              removeLabel="Remove terminal output"
+              onRemove={() => {
+                setSnippets((list) => list.filter((x) => x.key !== sn.key));
+                area.current?.focus();
+              }}
+            />
+          ))}
+        </div>
+      )}
       <textarea
         ref={area}
         aria-label="Message"
@@ -1231,7 +1254,7 @@ function Composer(props: {
 }
 
 /** A quote waiting in the reply box: two lines, More shows the rest. */
-function QuoteCard({ text, onRemove }: { text: string; onRemove(): void }) {
+function QuoteCard({ text, label, removeLabel = "Remove quote", onRemove }: { text: string; label?: string; removeLabel?: string; onRemove(): void }) {
   const [open, setOpen] = useState(false);
   const [cut, setCut] = useState(false);
   const body = useRef<HTMLDivElement>(null);
@@ -1240,7 +1263,8 @@ function QuoteCard({ text, onRemove }: { text: string; onRemove(): void }) {
     if (el && !open) setCut(el.scrollHeight > el.clientHeight + 1);
   }, [text, open]);
   return (
-    <div className={`quote-card${open ? " open" : ""}`}>
+    <div className={`quote-card${open ? " open" : ""}${label ? " snippet" : ""}`}>
+      {label && <div className="quote-card-label">{label}</div>}
       <div ref={body} className="quote-card-text">
         {text}
       </div>
@@ -1249,7 +1273,7 @@ function QuoteCard({ text, onRemove }: { text: string; onRemove(): void }) {
           {open ? "Less" : "More"}
         </button>
       )}
-      <button className="btn-icon" aria-label="Remove quote" title="Remove quote" onClick={onRemove}>
+      <button className="btn-icon" aria-label={removeLabel} title={removeLabel} onClick={onRemove}>
         <Icon d={CLOSE} size={12} />
       </button>
     </div>
@@ -2095,8 +2119,28 @@ function PendingList({ pending, busy, onEdit, onRemove }: { pending: PendingMess
 /** `> ` lines in your own message show as quotes, not as `>` characters.
  *  Your text stays text: only the quote lines are picked out. */
 function BubbleText({ text }: { text: string }) {
+  // Attached terminal output arrives as fenced blocks: shown as code, the
+  // text around them as before.
+  const blocks = fenceSegments(text);
+  if (blocks.length === 1 && !blocks[0].code) return <QuotedText text={text} />;
+  return (
+    <div className="bubble-parts">
+      {blocks.map((b, i) =>
+        b.code ? (
+          <pre key={i} className="bubble-code">
+            {b.text}
+          </pre>
+        ) : (
+          <QuotedText key={i} text={b.text} block />
+        ),
+      )}
+    </div>
+  );
+}
+
+function QuotedText({ text, block }: { text: string; block?: boolean }) {
   const parts = quoteSegments(text);
-  if (parts.length === 1 && !parts[0].quote) return <>{text}</>;
+  if (parts.length === 1 && !parts[0].quote) return block ? <div>{text}</div> : <>{text}</>;
   return (
     <div className="bubble-parts">
       {parts.map((part, i) =>
@@ -2128,7 +2172,7 @@ function UserBubble({ text }: { text: string }) {
     <div className="bubble">
       <BubbleText text={expanded ? text : lines.slice(0, FOLD_LINES).join("\n")} />
       <button className="btn-text bubble-toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
-        {expanded ? "Show less" : `Show more (${lines.length - FOLD_LINES} lines)`}
+        {expanded ? "Show less" : `Show more (${lines.length - FOLD_LINES === 1 ? "1 line" : `${lines.length - FOLD_LINES} lines`})`}
       </button>
     </div>
   );
