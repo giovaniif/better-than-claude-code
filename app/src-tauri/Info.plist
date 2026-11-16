@@ -8,5 +8,11 @@
     <key>NSAllowsLocalNetworking</key>
     <true/>
   </dict>
+  <!-- Dictation and voice mode use the page's Web Speech API. WebKit refuses
+       recognition outright (no prompt) when either string is missing. -->
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Switchyard listens while you dictate a message or use voice mode.</string>
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>Switchyard turns what you say into the text of your message.</string>
 </dict>
 </plist>

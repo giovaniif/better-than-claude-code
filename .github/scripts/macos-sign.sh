@@ -78,7 +78,7 @@ sign() { codesign --force --timestamp --options runtime --sign "$identity" "$@";
 # Inside out: nested executables first, the bundle last, no --deep.
 sign "$bin/yardd"
 sign --entitlements "$here/bun-entitlements.plist" "$bin/yard-claude"
-sign "$app"
+sign --entitlements "$here/app-entitlements.plist" "$app"
 codesign --verify --deep --strict --verbose=2 "$app"
 
 notarize() {

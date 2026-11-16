@@ -23,7 +23,7 @@ use std::{
 
 use tauri::{
     menu::{Menu, MenuItem},
-    webview::NewWindowResponse,
+    webview::{NewWindowResponse, PermissionKind, PermissionResponse},
     AppHandle, Manager, Url, WebviewUrl, WebviewWindowBuilder,
 };
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
@@ -353,6 +353,17 @@ fn main() {
                 .on_new_window(|url, _| {
                     open_outside(&url);
                     NewWindowResponse::Deny
+                })
+                // Dictation and voice mode: WebKit asks the host app before
+                // the page opens the microphone. The window shows yardd's
+                // page (links leave for the browser above), so the microphone
+                // is granted without a WebKit prompt on top of macOS's own.
+                // Without a handler wry grants every capture request; the
+                // camera, which nothing uses, is now refused.
+                .on_permission_request(|_, kind| match kind {
+                    PermissionKind::Microphone => PermissionResponse::Allow,
+                    PermissionKind::Camera => PermissionResponse::Deny,
+                    _ => PermissionResponse::Default,
                 })
                 .build()?;
 
