@@ -47,5 +47,17 @@ yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","eff
 yv drive 'session:{{cstuck_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"css:.thread","text":"Claude Code did not stop, so its process was ended.","timeout":15000},{"fill":"label:Message","value":"TEST-after stop"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-after stop"}]'
 ```
 
+### stop-while-asking
+Stop also ends a turn that is waiting for an approval: the card's buttons go
+away and the session is idle. (The fake Codex does not answer the interrupt
+while it waits, so yardd ends the turn after its grace period.)
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-stop while asking"}' --wait '{"op":"created"}' --save ask_stop_sid=sessionId
+yv drive 'session:{{ask_stop_sid}}' --viewport desktop --steps '[{"expect":"role:button:Allow once"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false,"timeout":15000},{"expect":"role:button:Allow once","visible":false}]'
+yv state --expect '{"sessions":[{"id":"{{ask_stop_sid}}","status":"idle"}]}'
+```
+
 ## Gotchas
 - The Stop button only shows while the session is running or waiting for approval.
+- `role:button:Stop` matches by substring, so it also hits a sidebar row whose title contains "stop" (such as "TEST-stop while asking") and opens that session instead. Use `{"role":"button","name":"Stop","exact":true}`.
