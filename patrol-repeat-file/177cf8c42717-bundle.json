@@ -1,0 +1,87 @@
+{
+  "v": 1,
+  "claim": "evidence add with two --file flags keeps only the last file as an artifact and drops the others without a word, though the help shows [--file f]...",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5",
+  "base": "7269954298453ea010d42218d77fd05d74390e05",
+  "head": "15e5146bca2cdf9c022015777a972fb32eeb8a81",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/common.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T10:05:35.569Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "af0db721df71692f55a1c07fdb6539decf07b8d4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-repeat-file-base.txt",
+          "sha256": "cbde7c47ba26a1903a0aaa7ea1f5cc5bc3ba858648b0031b654d180cb87ae854"
+        }
+      ],
+      "addedAt": "2026-11-16T10:05:35.629Z",
+      "text": "base af0db72 (test only): evidence add --file one.json --file two.json kept 1 artifact (p1-two.json)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "af0db721df71692f55a1c07fdb6539decf07b8d4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f443fedeeb5fbdeb1f00057489c4579764c0146983be067f79d5151c5e7d10e6"
+        }
+      ],
+      "addedAt": "2026-11-16T10:05:35.670Z",
+      "cmd": "cd verify && bun test src/cli.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "15e5146bca2cdf9c022015777a972fb32eeb8a81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-repeat-file-head.txt",
+          "sha256": "319e41d2fb94f5d085065ed27ff60d2fd403cee86cd645216510210b49baaa02"
+        }
+      ],
+      "addedAt": "2026-11-16T10:05:40.337Z",
+      "text": "head 15e5146: the same two --file flags keep both artifacts (p1-one.json, p1-two.json)"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "15e5146bca2cdf9c022015777a972fb32eeb8a81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "233f1885e1a2cda1534c17a82529f7e6b0b005ca5062bd789066a3ecb1441475"
+        }
+      ],
+      "addedAt": "2026-11-16T10:05:40.374Z",
+      "cmd": "cd verify && bun test && cd .. && verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}

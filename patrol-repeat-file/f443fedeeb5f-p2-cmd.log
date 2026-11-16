@@ -1,0 +1,26 @@
+$ cd verify && bun test src/cli.test.ts
+# exit 1 after 419 ms at af0db721df71692f55a1c07fdb6539decf07b8d4
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/cli.test.ts:
+21 |     expect(a.pos).toEqual(["run", "x", "--raw"]);
+22 |     expect(a.flags).toEqual({ iso: "n", all: true, k: "v" });
+23 |   });
+24 |   test("a repeated --file keeps every file, as `[--file f]...` promises", () => {
+25 |     const a = parseArgs(["add", "d", "--file", "a.json", "--file", "b.png", "--file=c.png"]);
+26 |     expect(a.flags.file).toBe("a.json,b.png,c.png");
+                              ^
+error: expect(received).toBe(expected)
+
+Expected: "a.json,b.png,c.png"
+Received: "c.png"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/verify/src/cli.test.ts:26:26)
+(fail) args and json helpers > a repeated --file keeps every file, as `[--file f]...` promises [4.70ms]
+
+ 36 pass
+ 1 fail
+ 79 expect() calls
+Ran 37 tests across 1 file. [410.00ms]
