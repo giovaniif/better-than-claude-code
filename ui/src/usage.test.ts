@@ -62,6 +62,27 @@ describe("metersFor", () => {
     expect(meters[0].resetsAt).toBe(at * 1000);
   });
 
+  test("a window whose reset time has passed reads as 0%, with no reset time", () => {
+    const past = NOW / 1000 - 60;
+    const later = NOW / 1000 + 3 * 86400;
+    const codex = metersFor(
+      "codex",
+      {
+        codex: {
+          primary: { usedPercent: 95, windowDurationMins: 300, resetsAt: past },
+          secondary: { usedPercent: 34, windowDurationMins: 10080, resetsAt: later },
+        },
+      },
+      NOW,
+    );
+    expect(codex.map((m) => [m.label, m.percent, m.level, m.resetsAt])).toEqual([
+      ["5-hour", 0, "ok", null],
+      ["Week", 34, "ok", later * 1000],
+    ]);
+    const claude = metersFor("claude", { claude: { windows: { five_hour: { utilization: 0.91, resetsAt: past } } } }, NOW);
+    expect(claude.map((m) => [m.label, m.percent, m.level, m.resetsAt])).toEqual([["5-hour", 0, "ok", null]]);
+  });
+
   test("Codex: a lone weekly window is labelled by its length, not by its slot", () => {
     const meters = metersFor("codex", { codex: { primary: { usedPercent: 60, windowDurationMins: 10080, resetsAt: null }, secondary: null } });
     expect(meters.map((m) => m.label)).toEqual(["Week"]);
