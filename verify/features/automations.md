@@ -64,6 +64,18 @@ yv api '{"op":"session.update","sessionId":"{{run_sid}}","pinned":true}'
 yv drive new --viewport desktop --steps '[{"expect":"css:.list-head","text":"Pinned"},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"}}]'
 ```
 
+### run-time-is-how-long-it-ran
+Viewports: both
+A run's time on the Automations page is how long it ran, not how long since
+it last changed: moving the run into a group a few seconds later (a pin, a
+rename, a reply also count) leaves the fake's under-a-second run at 0-2 s.
+
+```sh
+yv drive new --viewport desktop --steps '[{"wait":4000}]'
+yv api '{"op":"session.update","sessionId":"{{run_sid}}","group":"TEST-later"}' --wait '{"op":"session","session":{"id":"{{run_sid}}","group":"TEST-later"}}'
+yv drive new --steps '[{"click":"role:button:Automations"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"eval":"[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).filter((t) => !/^[0-2]s$/.test(t)).join(\", \") || \"all short\"","equals":"all short"},{"shot":"run-times"}]'
+```
+
 ### edit-changes-the-schedule
 Edit opens the form with the saved values; saving a new time updates the words in the list.
 
