@@ -68,6 +68,16 @@ yv api '{"op":"host.add","name":"TEST-gone","kind":"ssh","destination":"test@gon
 yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-gone"},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Remove host"}},{"expect":"role:region:TEST-gone","text":"Its sessions keep running there."},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Click again to remove"}},{"expect":"role:region:TEST-gone","count":0},{"expect":{"css":".host-row","hasText":"TEST-gone"},"count":0},{"reload":true},{"expect":"role:heading:Hosts"},{"expect":"role:region:TEST-gone","count":0}]'
 ```
 
+### refused-add-keeps-the-form
+Viewports: desktop
+A value yardd refuses (remote port 99999) shows the error and keeps the form
+with what was typed; fixing the field and adding again closes it once the host
+appears.
+
+```sh
+yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Add host"},{"fill":"label:SSH destination","value":"test@TEST-devbox"},{"click":"role:button:Options"},{"fill":"label:Remote port","value":"99999"},{"click":"role:button:Add TEST-devbox"},{"expect":"css:.banner-error","text":"remote port must be a number"},{"expect":"label:SSH destination","value":"test@TEST-devbox"},{"expect":"label:Remote port","value":"99999"},{"shot":"refused"},{"fill":"label:Remote port","value":"2222"},{"click":"role:button:Add TEST-devbox"},{"expect":"role:region:TEST-devbox"},{"expect":"role:region:Add host","visible":false},{"shot":"added"}]'
+```
+
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
