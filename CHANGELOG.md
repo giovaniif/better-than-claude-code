@@ -2,6 +2,18 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.4.0 (2026-11-16)
+
+- **Automations.** Schedule a prompt on a repository: every N minutes or hours, daily or weekly at a time, with its engine, model and permission mode. Each run gets its own worktree, is archived when it ends, and is listed under its automation on the new Automations page, so runs don't fill the sidebar. Run now, pause, edit; optionally skip a run while the last one is going or when usage is high.
+- **Several accounts per engine.** Add a second Claude Code or Codex login (say, your company's) on any host from the Hosts page, log in to it from the app, and pick the account per session. Each account keeps its own login and usage; your existing login stays the Default.
+- **Import Claude Code sessions.** "Import" in the sidebar lists the Claude Code sessions on a host; importing one opens it with its history, and your next message continues the same conversation.
+- **The message queue works like Claude Code's.** A message you send while the agent works reaches it at its next step, in the same turn, and shows in the thread where it went in. Several queued messages go as one. Stop puts what's queued back in the reply box; Edit (or ↑ in an empty box) takes one back.
+- **OS notifications.** Turn on Notifications in the sidebar to get a system notification when a session needs an approval, finishes or fails while you're looking elsewhere; clicking it opens the session.
+- **Usage you can see.** Meters for the 5-hour window and the week, with when each resets, in the sidebar and the model picker. The model picker is tidier: the other engine folds into one row.
+- **Subagents and processes.** A Claude subagent shows as one entry under the call that started it, with its own steps and report. A Processes tab lists what the session is running right now.
+- **Group sessions.** "Move to group…" in a session's menu; groups fold, can be renamed or ungrouped. Archived stays at the bottom of the sidebar.
+- **Fixed:** a reload or Back keeps you in the session you had open; a quick approval no longer leaves a session stuck as running; a double click on Allow once no longer shows an error; usage meters read 0% once a window has reset.
+
 ## 0.3.0 (2026-11-15)
 
 - **Reply to part of an answer.** Select text in one of the agent's answers and a Reply button appears over it. It puts the selection in the reply box as a quote, ready for your reply underneath.
