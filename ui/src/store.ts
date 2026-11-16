@@ -540,8 +540,10 @@ export interface Actions {
   place(sessionId: string, update: { pinned?: boolean; group?: string | null }): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine, account?: string): void;
-  /** The code Claude's sign-in page gives back. */
+  /** The code Claude's sign-in page gives back; for OpenCode, an API key or a sign-in code. */
   loginCode(host: string, engine: Engine, code: string, account?: string): void;
+  /** OpenCode: the provider and way in picked from those its login offered. */
+  loginChoose(host: string, provider: string, method: number, account?: string): void;
   /** Ask a host for its Claude Code sessions (`claude.sessions`). */
   listClaudeSessions(host: string): void;
   /** Import one as a session there; `created` opens it. */
@@ -772,6 +774,7 @@ export function useYard(): { state: State; actions: Actions } {
       place: (sessionId, update) => post({ op: "session.update", sessionId, ...update }),
       login: (host, engine, account) => post(onHost(host, { op: "login.start", engine, account })),
       loginCode: (host, engine, code, account) => post(onHost(host, { op: "login.code", engine, code, account })),
+      loginChoose: (host, provider, method, account) => post(onHost(host, { op: "login.choose", engine: "opencode", provider, method, account })),
       listClaudeSessions: (host) => post(onHost(host, { op: "claude.sessions" })),
       importClaudeSession: (host, claudeSessionId) => {
         dispatch({ t: "server", msg: { op: "import.started" } });

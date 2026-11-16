@@ -13,7 +13,7 @@
 // folder) or else FAKE_CODEX_DIR/opencode-default, as `connected.json`, the
 // provider ids only. `fakeauth` signs in two ways: method 0 shows a link and
 // takes the code "good-code"; method 1 shows a device code and finishes by
-// itself after 300 ms.
+// itself after 2.5 s.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { runAgent } from "./acp-agent.mjs";
@@ -81,7 +81,8 @@ if (args[0] === "--version") {
       }
       if ((m = path.match(/^\/provider\/([^/]+)\/oauth\/callback$/))) {
         if (body.method === 0 && body.code !== "good-code") return json({ message: "That code was not accepted" }, 400);
-        if (body.method === 1) await Bun.sleep(300);
+        // Slow enough to see the device code, as a person would.
+        if (body.method === 1) await Bun.sleep(2500);
         connect(m[1]);
         return json(true);
       }

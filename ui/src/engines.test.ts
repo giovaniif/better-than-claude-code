@@ -20,6 +20,16 @@ describe("engines", () => {
     expect(pickerEngines(none, "codex")).toEqual(["codex", "claude"]);
   });
 
+  test("OpenCode and Grok are offered only where their host lists models for them", () => {
+    expect(pickerEngines({ grok: [m("g")] })).toEqual(["claude", "codex", "grok"]);
+    expect(pickerEngines({ opencode: [m("o")], grok: [] }, "opencode")).toEqual(["opencode", "claude", "codex"]);
+  });
+
+  test("work on OpenCode or Grok is reviewed by Claude, else whoever has models", () => {
+    expect(reviewEngine("opencode", { claude: [m("c")], grok: [m("g")] })).toBe("claude");
+    expect(reviewEngine("grok", { opencode: [m("o")] })).toBe("opencode");
+  });
+
   test("Claude and Codex review each other", () => {
     const both: Models = { claude: [m("c")], codex: [m("x")] };
     expect(reviewEngine("claude", both)).toBe("codex");

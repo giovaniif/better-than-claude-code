@@ -2,19 +2,35 @@
 import type { Engine, Models } from "./protocol";
 
 /** Every engine, in the order pickers and the Hosts page list them. */
-export const ENGINES: Engine[] = ["claude", "codex"];
+export const ENGINES: Engine[] = ["claude", "codex", "opencode", "grok"];
 
 /** Short names: "Hand off to Codex". */
-export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
+export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex", opencode: "OpenCode", grok: "Grok" };
 
 /** Product names, for logins and the Hosts page. */
-export const ENGINE_LABEL: Record<Engine, string> = { claude: "Claude Code", codex: "Codex" };
+export const ENGINE_LABEL: Record<Engine, string> = { claude: "Claude Code", codex: "Codex", opencode: "OpenCode", grok: "Grok" };
 
 /** How to install each CLI on a host. */
-export const ENGINE_INSTALL: Record<Engine, string> = { claude: "npm i -g @anthropic-ai/claude-code", codex: "npm i -g @openai/codex" };
+export const ENGINE_INSTALL: Record<Engine, string> = {
+  claude: "npm i -g @anthropic-ai/claude-code",
+  codex: "npm i -g @openai/codex",
+  opencode: "npm i -g opencode-ai",
+  grok: "npm i -g @xai-official/grok",
+};
 
 /** How to log each CLI in from a terminal, for a host the app cannot reach yet. */
-export const ENGINE_LOGIN: Record<Engine, string> = { claude: "claude setup-token", codex: "codex login --device-auth" };
+export const ENGINE_LOGIN: Record<Engine, string> = {
+  claude: "claude setup-token",
+  codex: "codex login --device-auth",
+  opencode: "opencode auth login",
+  grok: "grok login --device-auth",
+};
+
+/** Where a device-code login signs in, for "sign in with your … account". */
+export const ENGINE_ACCOUNT: Partial<Record<Engine, string>> = { codex: "ChatGPT", grok: "Grok (x.ai)", claude: "Claude" };
+
+/** OpenCode runs on providers, each logged in on its own: its Log in adds one. */
+export const addsProviders = (engine: Engine) => engine === "opencode";
 
 /** Claude and Codex are always offered, as before there were more; any other
  *  engine only once its host reports models for it (it is installed there). */

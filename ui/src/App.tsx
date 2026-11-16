@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
@@ -16,15 +17,36 @@ import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
-import { ENGINES, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines } from "./engines";
+import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines } from "./engines";
 import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
 /** Permission modes, as Claude Code names them, and what each means per engine. */
-export const PERMISSIONS: { id: Permission; label: string; claude: string; codex: string }[] = [
-  { id: "ask", label: "Ask first", claude: "Asks before commands and edits", codex: "Sandboxed to the folder, asks to go further" },
-  { id: "acceptEdits", label: "Accept edits", claude: "Edits files freely, asks before commands", codex: "Edits in the folder freely, asks to go further" },
-  { id: "plan", label: "Plan only", claude: "Reads and plans, changes nothing", codex: "Read-only: looks, never changes" },
-  { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks" },
+export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, string>)[] = [
+  {
+    id: "ask",
+    label: "Ask first",
+    claude: "Asks before commands and edits",
+    codex: "Sandboxed to the folder, asks to go further",
+    opencode: "Asks before commands, edits and web fetches",
+    grok: "Asks before commands and edits",
+  },
+  {
+    id: "acceptEdits",
+    label: "Accept edits",
+    claude: "Edits files freely, asks before commands",
+    codex: "Edits in the folder freely, asks to go further",
+    opencode: "Edits files freely, asks before commands",
+    grok: "Edits files freely, asks before commands",
+  },
+  {
+    id: "plan",
+    label: "Plan only",
+    claude: "Reads and plans, changes nothing",
+    codex: "Read-only: looks, never changes",
+    opencode: "OpenCode's plan agent: edits are refused",
+    grok: "Grok's plan mode: edits are refused",
+  },
+  { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks", opencode: "Never asks. Runs anything", grok: "Never asks. Runs anything" },
 ];
 export const STATUS_LABEL: Record<Status, string> = {
   idle: "Idle",
@@ -939,6 +961,9 @@ export function ModelPicker(props: {
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
   const [expanded, setExpanded] = useState<Engine[]>([]);
+  // OpenCode can list a hundred models across its providers.
+  const [filter, setFilter] = useState("");
+  const words = filter.toLowerCase().split(/\s+/).filter(Boolean);
   const ordered = [value.engine, ...engines.filter((e) => e !== value.engine)];
   // The confirmation sits at the top of the list, which is usually scrolled
   // down to the model that was just clicked. Bring it into view.
@@ -951,13 +976,15 @@ export function ModelPicker(props: {
     setOpen(false);
     setConfirm(null);
     setExpanded([]);
+    setFilter("");
   };
   useEscape(open, close);
   return (
     <div className="picker">
       <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
         <span>{current?.name ?? value.model}</span>
-        <span className="muted">{capitalize(value.effort)}</span>
+        {/* A model without efforts (some OpenCode and Grok ones) runs as it is. */}
+        {(!current || current.efforts.length > 0) && <span className="muted">{capitalize(value.effort)}</span>}
         {triggerAccount && <span className="muted picker-account">{triggerAccount}</span>}
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
@@ -1038,7 +1065,17 @@ export function ModelPicker(props: {
                         <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
                       )}
                       {list.length === 0 && <div className="picker-empty">Not available</div>}
-                      {list.map((m) => {
+                      {list.length > 12 && (
+                        <input
+                          className="picker-filter"
+                          value={filter}
+                          onChange={(e) => setFilter(e.target.value)}
+                          placeholder={`Filter ${ENGINE_NAME[engine]} models`}
+                          aria-label={`Filter ${ENGINE_NAME[engine]} models`}
+                          spellCheck={false}
+                        />
+                      )}
+                      {(list.length > 12 ? list.filter((m) => words.every((w) => `${m.name} ${m.id}`.toLowerCase().includes(w))) : list).map((m) => {
                         const isCurrent = engine === value.engine && m.id === value.model;
                         return (
                           <button
@@ -2973,6 +3010,39 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
   let body: ReactNode;
   if (!login || login.state === "starting" || login.state === "cancelled") {
     body = <p className="muted">Starting the login on {machine}…</p>;
+  } else if (login.state === "providers") {
+    body = <ProviderPicker providers={login.providers ?? []} onPick={(provider, method) => actions.loginChoose(host, provider, method, account)} />;
+  } else if (login.state === "key") {
+    body = (
+      <form
+        className="login-key"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (code.trim()) actions.loginCode(host, engine, code.trim(), account);
+        }}
+      >
+        <label className="muted small" htmlFor="login-key">
+          {login.label || "API key"} for {login.provider}. OpenCode keeps it in its own files on {machine}; Switchyard does not.
+        </label>
+        <div className="login-code">
+          <input
+            id="login-key"
+            autoFocus
+            type="password"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Paste the key"
+            spellCheck={false}
+            autoComplete="off"
+          />
+          <button className="btn-primary" type="submit" disabled={!code.trim()}>
+            Save
+          </button>
+        </div>
+      </form>
+    );
+  } else if (login.state === "checking" && engine === "opencode") {
+    body = <p className="muted">Checking with OpenCode on {machine}…</p>;
   } else if (login.state === "code") {
     body = (
       <>
@@ -2982,17 +3052,21 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
             <a href={login.url} target="_blank" rel="noreferrer">
               {login.url}
             </a>{" "}
-            and sign in with your ChatGPT account.
+            {engine === "opencode" ? `and sign in to ${login.provider ?? "the provider"}.` : `and sign in with your ${ENGINE_ACCOUNT[engine] ?? ENGINE_NAME[engine]} account.`}
           </li>
-          <li>Enter this code:</li>
+          {login.code ? <li>Enter this code:</li> : login.instructions ? <li>{login.instructions}</li> : null}
         </ol>
-        <div className="login-code">
-          <code>{login.code}</code>
-          <button className="btn" onClick={() => copy(login.code ?? "")}>
-            {copied ? "Copied" : "Copy"}
-          </button>
-        </div>
-        <p className="muted small">This closes by itself once you've entered the code. It expires after 15 minutes.</p>
+        {login.code && (
+          <div className="login-code">
+            <code>{login.code}</code>
+            <button className="btn" onClick={() => copy(login.code ?? "")}>
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+        )}
+        <p className="muted small">
+          {engine === "codex" ? "This closes by itself once you've entered the code. It expires after 15 minutes." : "This closes by itself once you've signed in."}
+        </p>
       </>
     );
   } else if (login.state === "url" || login.state === "checking") {
@@ -3005,7 +3079,7 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
               Open the sign-in page
             </a>
           </li>
-          <li>Sign in with your Claude account and copy the code it shows.</li>
+          <li>{engine === "opencode" ? login.instructions || "Sign in and copy the code the page shows." : "Sign in with your Claude account and copy the code it shows."}</li>
           <li>Paste it here:</li>
         </ol>
         <form
@@ -3034,7 +3108,7 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
   } else if (login.state === "done") {
     body = (
       <p className="login-done">
-        <Icon d={CHECK} /> {which} is logged in on {machine}.
+        <Icon d={CHECK} /> {engine === "opencode" ? `OpenCode can use the provider on ${machine}.` : `${which} is logged in on ${machine}.`}
       </p>
     );
   } else {
@@ -3065,6 +3139,53 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
         {body}
       </div>
     </div>
+  );
+}
+
+/** OpenCode's providers, connected ones first, and the ways into each one
+ *  that work from the app. Picking a provider with one way in takes it. */
+function ProviderPicker({ providers, onPick }: { providers: LoginProvider[]; onPick(provider: string, method: number): void }) {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState<string | null>(null);
+  const words = filter.toLowerCase().split(/\s+/).filter(Boolean);
+  const rows = providers.filter((p) => words.every((w) => `${p.name} ${p.id}`.toLowerCase().includes(w))).slice(0, 80);
+  const pick = (p: LoginProvider) => (p.methods.length === 1 ? onPick(p.id, p.methods[0].index) : setOpen(open === p.id ? null : p.id));
+  return (
+    <>
+      <p className="muted small">Pick a provider for OpenCode to use. Its key or sign-in stays in OpenCode's own files.</p>
+      <input
+        className="import-filter provider-filter"
+        autoFocus
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="Filter providers"
+        aria-label="Filter providers"
+        spellCheck={false}
+      />
+      {rows.length === 0 ? (
+        <p className="muted">No provider matches.</p>
+      ) : (
+        <ul className="provider-list">
+          {rows.map((p) => (
+            <li key={p.id}>
+              <button className="picker-item provider-row" aria-expanded={p.methods.length > 1 ? open === p.id : undefined} onClick={() => pick(p)}>
+                <span>{p.name}</span>
+                <span className="muted small">{p.connected ? "added" : p.methods.length > 1 ? `${p.methods.length} ways in` : p.methods[0]?.label}</span>
+              </button>
+              {open === p.id && (
+                <div className="provider-methods">
+                  {p.methods.map((m) => (
+                    <button key={m.index} className="btn" onClick={() => onPick(p.id, m.index)}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
 
@@ -3338,9 +3459,9 @@ function Engines(props: {
               <span>{ENGINE_LABEL[engine]}</span>
               <span className="muted small">{engineStateText(st)}</span>
               {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
-              {st.installed && st.loggedIn !== true && onLogin && (
+              {st.installed && (st.loggedIn !== true || addsProviders(engine)) && onLogin && (
                 <button className="btn engine-login" onClick={() => onLogin(engine)}>
-                  Log in
+                  {addsProviders(engine) && st.loggedIn === true ? "Add provider" : "Log in"}
                 </button>
               )}
               {st.installed && accountActions && adding !== engine && (
@@ -3380,6 +3501,7 @@ function Engines(props: {
 
 function engineStateText(st: EngineState): string {
   if (!st.installed) return "not installed";
+  if (st.loggedIn === true && st.providers?.length) return `providers: ${st.providers.join(", ")}`;
   if (st.loggedIn === true) return st.account ? `logged in as ${st.account}` : "logged in";
   if (st.loggedIn === false) return "not logged in";
   return st.error || "status unknown";
@@ -3400,9 +3522,9 @@ function AccountRow({ account, state: st, onLogin, onRemove }: { account: Accoun
       <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
       <span className="account-name">{account.name}</span>
       <span className="muted small">{st ? engineStateText(st) : "checking…"}</span>
-      {st?.installed && st.loggedIn !== true && onLogin && (
+      {st?.installed && (st.loggedIn !== true || addsProviders(account.engine)) && onLogin && (
         <button className="btn engine-login" aria-label={`Log in ${account.name}`} onClick={onLogin}>
-          Log in
+          {addsProviders(account.engine) && st.loggedIn === true ? "Add provider" : "Log in"}
         </button>
       )}
       {onRemove && (
