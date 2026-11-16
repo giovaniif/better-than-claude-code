@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e60202aa6",
+  "build": {
+    "sha": "0270014fc2cfe1497bd1567af837d7ed2d96ab73",
+    "short": "0270014",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:17:33.508Z"
+  },
+  "dir": ".verify/evidence/pr-hover-cards-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2401,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/pr-hover-cards-base/base-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2364,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-hover-cards-base/base-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,306 @@
+{
+  "v": 1,
+  "claim": "GitHub PR links in an agent's answer show only their label (or the raw URL), so checking a PR's state means leaving the app. They should be real links with a hover card showing the PR's live status, like GitHub's.",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards",
+  "base": "82c7b7d9b1dc846ae72f534c08d86e2d59f8150c",
+  "head": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/pr_peek.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/PrHoverCard.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/prPeek.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/prPeek.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/fakes/gh"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T20:17:29.811Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "0270014fc2cfe1497bd1567af837d7ed2d96ab73",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "9825ef6eccf6f9d75e7a26f4bc01c132c977dc623fea446e7e2e419418a1f018"
+        },
+        {
+          "path": "p1-base-mobile.png",
+          "sha256": "6d8e108823631d66090c25ee1ef7c66240e1fd2772904e16443713ec4e462dd1"
+        },
+        {
+          "path": "p1-base-desktop.png",
+          "sha256": "e7373309d7ca0d343e9fd5a23e09c109e4f735a055a727766cf954ceee514e1d"
+        }
+      ],
+      "addedAt": "2026-11-16T20:17:46.242Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "0270014fc2cfe1497bd1567af837d7ed2d96ab73",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d7cdb350b96521d4b8365dc4d66e54f108f731e52871c2f5ef919477a143e73c"
+        }
+      ],
+      "addedAt": "2026-11-16T20:17:46.290Z",
+      "cmd": "verify/yv map run thread --recipe pr-link-hover-card",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "9d931f58f5b6f07f0808a08c09443c78888d99f42b514aa522772fe816a31832"
+        },
+        {
+          "path": "p3-open-mobile.png",
+          "sha256": "48e004679dbf14080e87c34c0afd371cb9fbe31a8a0c870a5a74e31e7f13e506"
+        },
+        {
+          "path": "p3-merged-mobile.png",
+          "sha256": "e3e97e6869346a1985b838c736740572dd18a96766caef7f47124ccbdadda2ba"
+        },
+        {
+          "path": "p3-draft-long-title-mobile.png",
+          "sha256": "0b256b8c300cb0876dece6159f18d4d9a1811857df9544ce8d17845268c50940"
+        },
+        {
+          "path": "p3-open-desktop.png",
+          "sha256": "08b7d33d36fd460a669739be76aee449ecf9484e693a00b67e5b35525041824f"
+        },
+        {
+          "path": "p3-merged-desktop.png",
+          "sha256": "e11ff75cd6e2c613c763f7ffd1edddc42bd1b821a568eac34d56ec709391e8d5"
+        },
+        {
+          "path": "p3-draft-long-title-desktop.png",
+          "sha256": "bc41bf6bf7eb987ddc2638780452194780559a8504a3004cb6ac4b5c0d94e1c6"
+        }
+      ],
+      "addedAt": "2026-11-16T20:18:40.461Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "9c3678ed5981c561832365816657126980b613635db52c6e5f224ed23b440555"
+        },
+        {
+          "path": "p4-error-mobile.png",
+          "sha256": "d56fa24a269063805ff3303cae67b531b38c190d2add7e6fc41ea7dfcd47b79f"
+        },
+        {
+          "path": "p4-error-desktop.png",
+          "sha256": "0e4119a941d13821578ac36be3563907927298b9beb9a82ce4112fb8cdd07d50"
+        }
+      ],
+      "addedAt": "2026-11-16T20:18:53.813Z",
+      "failedApi": [
+        "pr.peek: no such pull request, or no access to it",
+        "pr.peek: no such pull request, or no access to it"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T20:18:53.860Z",
+      "text": "expected-api: pr.peek: the #9999 link points at a PR the fake gh does not have; the card shows gh's answer (no such pull request) in place, which is the error state being proven"
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "92469b8a521f37bf7117b640430a864e1df0b548a3c64378ccef59c6bb74baf0"
+        }
+      ],
+      "addedAt": "2026-11-16T20:18:53.970Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "2b41638228db45b25ec6e820aa54650c88ca0cabba68905d173f57be9087b1a1"
+        }
+      ],
+      "addedAt": "2026-11-16T20:19:09.842Z",
+      "cmd": "verify/yv design-check --base 82c7b7d9b1dc",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-thread.json",
+          "sha256": "89b45c22f8d21d2febe08a5b6c8ea92a62c092c884b2e1b6c5299e8d39e7e7ab"
+        }
+      ],
+      "addedAt": "2026-11-16T20:19:13.930Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/subagent-nests-and-expands",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b41032cf1d689b16e0cabbc3f1448c49824ddfca",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-pr-pane.json",
+          "sha256": "8e325fa45b393694f422a52a5d86421cde872d86cf63544b0d85a7b0e1ce8fee"
+        }
+      ],
+      "addedAt": "2026-11-16T20:21:32.552Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "pr-pane/shows-pr",
+        "pr-pane/no-pr",
+        "pr-pane/send-thread-to-session",
+        "pr-pane/review-with-other-engine",
+        "pr-pane/double-click-send-to-session",
+        "pr-pane/double-click-review-with-other-engine"
+      ]
+    }
+  ]
+}

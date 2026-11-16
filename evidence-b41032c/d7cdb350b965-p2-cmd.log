@@ -1,0 +1,45 @@
+$ verify/yv map run thread --recipe pr-link-hover-card
+# exit 1 after 26708 ms at 0270014fc2cfe1497bd1567af837d7ed2d96ab73
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T20:18:12.994Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "pr-link-hover-card",
+          "status": "fail",
+          "ms": 25826,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":{\"css\":\".prose a.pr-link\",\"hasText\":\"test-owner/test-demo-app#4242\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards/.verify/drives/2026-11-16T20-17-47-505Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":{\"css\":\".prose a.pr-link\",\"hasText\":\"test-owner/test-demo-app#4242\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards/.verify/drives/2026-11-16T20-17-47-505Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": " - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 10% · 52%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-4cb5\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: \\\"TEST-pr links Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code.\\\"\\n  - paragraph: \\\"Echo: TEST-pr links\\\"\\n  - paragraph:\\n    - text: Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on\\n    - code: the greeting module\\n    - text: ; see also\\n    - code: \\\"#4243\\\"\\n    - text: and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local\\n    - code: src/greet.ts\\n    - text: stays code.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose a.pr-link\\\",\\\"hasText\\\":\\\"test-owner/test-demo-app#4242\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards/.verify/drives/2026-11-16T20-17-47-505Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose a.pr-link\\\",\\\"hasText\\\":\\\"test-owner/test-demo-app#4242\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards/.verify/drives/2026-11-16T20-17-47-505Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/pr-link-hover-card",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

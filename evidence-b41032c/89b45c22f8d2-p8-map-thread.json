@@ -1,0 +1,122 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T20:21:32.499Z",
+      "counts": {
+        "pass": 21
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 5738
+        },
+        {
+          "label": "markdown-table-renders",
+          "status": "pass",
+          "ms": 6093
+        },
+        {
+          "label": "markdown-blocks-without-blank-lines",
+          "status": "pass",
+          "ms": 6050
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 5361
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 5214
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5294
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4049
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 5740
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "pass",
+          "ms": 10099
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 3002
+        },
+        {
+          "label": "queue-a-message-while-working",
+          "status": "pass",
+          "ms": 12557
+        },
+        {
+          "label": "remove-a-queued-message",
+          "status": "pass",
+          "ms": 6007
+        },
+        {
+          "label": "steer-a-running-turn",
+          "status": "pass",
+          "ms": 6724
+        },
+        {
+          "label": "stop-returns-the-queue",
+          "status": "pass",
+          "ms": 4958
+        },
+        {
+          "label": "edit-a-queued-message",
+          "status": "pass",
+          "ms": 7382
+        },
+        {
+          "label": "edit-a-queued-reply-keeps-its-quotes",
+          "status": "pass",
+          "ms": 5993
+        },
+        {
+          "label": "subagent-nests-and-expands",
+          "status": "pass",
+          "ms": 7809
+        },
+        {
+          "label": "pr-link-hover-card",
+          "status": "pass",
+          "ms": 9028
+        },
+        {
+          "label": "pr-link-card-states",
+          "status": "pass",
+          "ms": 5060
+        },
+        {
+          "label": "pr-link-card-error",
+          "status": "pass",
+          "ms": 7821
+        },
+        {
+          "label": "pr-link-keyboard-and-touch",
+          "status": "pass",
+          "ms": 7738
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
