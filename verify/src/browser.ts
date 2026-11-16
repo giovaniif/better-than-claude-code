@@ -340,6 +340,16 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await locate(page, step.click).click({ timeout, button: step.button ?? "left" });
     return settle(page, w);
   }
+  // A real pointer resting on the target (hover cards), and a finger on it
+  // (mobile viewport only: its context has touch).
+  if (step.hover) {
+    await locate(page, step.hover).hover({ timeout });
+    return;
+  }
+  if (step.tap) {
+    await locate(page, step.tap).tap({ timeout });
+    return settle(page, w);
+  }
   if (step.fill) {
     await locate(page, step.fill).fill(String(step.value ?? ""), { timeout });
     return;
@@ -459,7 +469,7 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.locator(".sidebar").waitFor({ state: "attached", timeout });
     return settle(page, w);
   }
-  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press drag wait expect upload shot aria eval reload`);
+  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click hover tap fill type press drag wait expect upload shot aria eval reload`);
 }
 
 /** Scripted interaction. On failure: a screenshot, an accessibility snapshot and the reason. */

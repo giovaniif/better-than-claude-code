@@ -4,6 +4,9 @@
 // `$FAKE_CODEX_DIR/gh-pr.json` ({ view, threads }) answers `gh pr view --json`
 // on the branch named in `view.headRefName` and the review-threads query.
 // Any other branch has no PR; any other command fails.
+// `gh pr view <url> --json` (the hover card on a PR link) answers from the
+// fixture's `peeks` (canonical URL -> view) or `view` when its URL matches,
+// after `peekDelayMs` if set; any other URL is a PR that does not exist.
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 
 const dir = process.env.FAKE_CODEX_DIR;
@@ -13,6 +16,17 @@ const fixture = dir && existsSync(`${dir}/gh-pr.json`) ? JSON.parse(readFileSync
 const branch = Bun.spawnSync(["git", "branch", "--show-current"]).stdout.toString().trim();
 const mine = fixture && fixture.view?.headRefName === branch;
 
+if (args[0] === "pr" && args[1] === "view" && args[2]?.startsWith("https://")) {
+  const url = args[2];
+  const found = fixture?.peeks?.[url] ?? (fixture?.view?.url === url ? fixture.view : null);
+  if (fixture?.peekDelayMs) await Bun.sleep(fixture.peekDelayMs);
+  if (!found) {
+    console.error(`GraphQL: Could not resolve to a PullRequest with the number of ${url.split("/").pop()}. (repository.pullRequest)`);
+    process.exit(1);
+  }
+  console.log(JSON.stringify(found));
+  process.exit(0);
+}
 if (args[0] === "pr" && args[1] === "view") {
   if (!mine) {
     console.error(`no pull requests found for branch "${branch}"`);
