@@ -298,13 +298,15 @@ fn ways_in(providers: &Value, methods: &Value) -> Vec<Value> {
     list
 }
 
-fn secret() -> String {
+/// The login server's password. No randomness means no server: a guessable
+/// password would let any local process add providers.
+fn secret() -> Result<String> {
+    use std::io::Read;
     let mut bytes = [0u8; 24];
-    if let Ok(mut f) = std::fs::File::open("/dev/urandom") {
-        use std::io::Read;
-        let _ = f.read_exact(&mut bytes);
-    }
-    base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
+    std::fs::File::open("/dev/urandom")
+        .and_then(|mut f| f.read_exact(&mut bytes))
+        .context("could not read /dev/urandom for the login server's password")?;
+    Ok(base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes))
 }
 
 /// Start `opencode serve` for the account and offer its providers.
@@ -312,7 +314,7 @@ pub async fn start(app: &Arc<App>, account: &str) -> Result<()> {
     cancel(app, account);
     report(app, "opencode", account, "starting", json!({}));
     let port = std::net::TcpListener::bind("127.0.0.1:0")?.local_addr()?.port();
-    let password = secret();
+    let password = secret()?;
     // `opencode serve` never reads its stdin, so it would outlive a yardd that
     // was killed. A shell in front of it stops it once its stdin closes: when
     // the login is dropped, or yardd is gone.
