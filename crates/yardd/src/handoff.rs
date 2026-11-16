@@ -339,6 +339,7 @@ mod tests {
         let changes = json!({ "files": [
             { "path": "src/parse.rs", "added": 40, "removed": 2 },
             { "path": "tests/new.rs", "added": null, "removed": null, "untracked": true },
+            { "path": "assets/logo.png", "added": null, "removed": null },
         ]});
         let brief = build_brief("claude", &events, Some(&changes));
 
@@ -354,6 +355,8 @@ mod tests {
         assert!(!brief.contains("thinking out loud"), "only the final message of a turn is kept");
         assert!(brief.contains("- src/parse.rs (+40 -2)"));
         assert!(brief.contains("- tests/new.rs (new)"));
+        // git counts no lines for a binary file; "+0 -0" would read as unchanged.
+        assert!(brief.contains("- assets/logo.png (binary)"), "{brief}");
         // Agent text cannot close its own quote block.
         // The header names the open tag once; every quote block opens and closes.
         assert_eq!(brief.matches(CLOSE_TAG).count(), brief.matches(OPEN_TAG).count() - 1);

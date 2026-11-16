@@ -35,6 +35,22 @@ A session that changed nothing says so.
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"text:No changes in this folder."}]'
 ```
 
+### changed-binary-says-binary
+Viewports: desktop
+A tracked binary file that changed is listed as "binary", not `+0 −0`
+(git counts no lines for it, which read as nothing changed; finding #111).
+Its own session, so the other recipes keep their folders.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-binary edit"}' --wait '{"op":"created"}' --save bin_sid=sessionId
+yv state --save bin_cwd='sessions[id={{bin_sid}}].cwd'
+printf 'TEST\000one' > "$(v bin_cwd)/TEST-logo.bin"
+git -C "$(v bin_cwd)" add TEST-logo.bin
+git -C "$(v bin_cwd)" -c user.name=TEST -c user.email=test@example.invalid -c commit.gpgsign=false commit -qm "TEST-binary"
+printf 'TEST\000two, longer' > "$(v bin_cwd)/TEST-logo.bin"
+yv drive 'session:{{bin_sid}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".file-row","hasText":"TEST-logo.bin"},"text":"binary"},{"expect":{"css":".card","hasText":"TEST-logo.bin"},"text":"No text diff."},{"shot":"binary"}]'
+```
+
 ### refresh-picks-up-new-file
 Viewports: desktop
 A file written outside the agent shows after Refresh changes, as untracked.
