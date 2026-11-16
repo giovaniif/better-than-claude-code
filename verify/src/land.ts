@@ -76,8 +76,8 @@ const SECRET_TEXT = /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bghp_[A-Za-z0-9]{30,}|\
  * Added lines that are not test code: a test cleaning up its own temp dir is
  * not a data-loss risk. Skips files under tests/ and, in a Rust file, every
  * line after a `#[cfg(test)]` marker in the patch (test modules close a file),
- * and a hunk inside an existing `mod tests`, which git names in the hunk
- * header, up to that module's closing brace at column 0.
+ * and a hunk inside an existing `mod tests {`, which git names in the hunk
+ * header, up to the first non-blank line at column 0.
  */
 export function addedNonTest(filename: string, patch: string | undefined): string[] {
   if (/(^|\/)tests?\//.test(filename)) return [];
@@ -86,13 +86,14 @@ export function addedNonTest(filename: string, patch: string | undefined): strin
   let inTestHunk = false;
   for (const l of (patch ?? "").split("\n")) {
     if (l.startsWith("@@")) {
-      inTestHunk = /^@@ [^@]*@@ +mod tests\b/.test(l);
+      inTestHunk = /^@@ [^@]*@@ +mod tests\s*\{/.test(l);
       continue;
     }
-    if (inTestHunk && /^[ +]}\s*$/.test(l)) {
-      inTestHunk = false;
-      continue;
-    }
+    // git heads a hunk with the last column-0 line that starts with a
+    // letter, so a hunk after the module (past its `}` and some comments)
+    // can still say `mod tests {`. Inside a formatted module everything is
+    // indented: any non-blank column-0 line, even a comment, ends the region.
+    if (inTestHunk && /^.\S/.test(l)) inTestHunk = false;
     if (inTestHunk) continue;
     if (/#\[cfg\(test\)\]/.test(l) && !l.startsWith("-")) inTests = true;
     if (l.startsWith("+") && !l.startsWith("+++") && !inTests) out.push(l.slice(1));
