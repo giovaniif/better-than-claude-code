@@ -91,6 +91,17 @@ yv iso restart
 yv drive new --viewport desktop --steps '[{"expect":{"css":".host-row .host-name","hasText":"iso-host"}},{"expect":{"css":".main button","hasText":"iso-host"}},{"expect":{"css":".host-row .host-name","hasText":"This Mac"},"count":0}]'
 ```
 
+### no-memory-limit-says-load-only
+Viewports: both
+With `YARD_MIN_FREE_GB=0` (no memory limit) the Sessions card says new sessions queue on load alone, not "or less than 0 GB of memory is free".
+
+```sh
+yv iso down --name map-hosts-nomem >/dev/null
+yv iso up --name map-hosts-nomem --env YARD_MIN_FREE_GB=0 >/dev/null
+yv drive hosts --iso map-hosts-nomem --steps '[{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"expect":{"css":"section.usage","hasText":"GB of memory"},"visible":false},{"shot":"no-memory-limit"}]'
+yv iso down --name map-hosts-nomem
+```
+
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
