@@ -1,0 +1,14 @@
+$ verify/yv annotate --before /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-286f/.verify/evidence/automations-in-url-head/list-after-reload-desktop.png --after /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-286f/.verify/evidence/automations-in-url-head/list-after-reload-desktop.png --out /tmp/annot-ok.png
+# exit 0 after 1332 ms at 67f3b196f4d666184942cb2433867dfeb3f53a12
+
+{
+  "command": "annotate",
+  "ok": true,
+  "out": "/tmp/annot-ok.png",
+  "size": {
+    "width": 5864,
+    "height": 1920
+  },
+  "problems": []
+}
+

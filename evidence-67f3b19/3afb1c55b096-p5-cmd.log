@@ -1,0 +1,15 @@
+$ verify/yv selftest
+# exit 0 after 399 ms at 67f3b196f4d666184942cb2433867dfeb3f53a12
+
+{
+  "command": "selftest",
+  "ok": true,
+  "unit": {
+    "exit": 0,
+    "pass": 40,
+    "fail": 0
+  },
+  "smoke": null,
+  "problems": []
+}
+

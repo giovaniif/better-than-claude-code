@@ -1,0 +1,10 @@
+{
+  "command": "annotate --before",
+  "ok": false,
+  "problems": [
+    {
+      "code": "crash",
+      "msg": "screenshot: path: unsupported mime type \"null\"\n    at annotate (/home/giovani/.yard/wt/switchyard/patrol-annotate-286f/verify/src/annotate.ts:57:34)\n    at async main (/home/giovani/.yard/wt/switchyard/patrol-annotate-286f/verify/src/cli.ts:96:57)"
+    }
+  ]
+}

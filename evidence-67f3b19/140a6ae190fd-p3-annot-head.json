@@ -1,0 +1,11 @@
+{
+  "command": "annotate --before",
+  "ok": false,
+  "problems": [
+    {
+      "code": "usage",
+      "msg": "--out is the image file to write and must end in .png",
+      "hint": "verify/yv help"
+    }
+  ]
+}
