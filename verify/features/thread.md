@@ -27,6 +27,15 @@ Expect at both viewports: the prompt and the fake's reply "Echo: TEST-say hello"
 yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"TEST-say hello"},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"shot":"reply"}]'
 ```
 
+### markdown-table-renders
+Viewports: both
+An agent's Markdown table renders as a table (header cells, one row per line), not as raw `| a | b |` text, and a wide one scrolls inside the thread instead of widening the page at 390 px.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-table\n\n| File | Result | Note |\n|---|:---:|---|\n| src/a.ts | pass | |\n| src/b.ts | `fail` | expected 3 tokens, got 2 in the long-running integration suite for the parser |"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose table th","hasText":"Result"}},{"expect":{"css":".prose table td","hasText":"src/b.ts"}},{"expect":{"css":".prose table td code","hasText":"fail"}},{"expect":{"css":".prose table tr"},"count":3},{"expect":{"css":".prose","hasText":"|---"},"visible":false},{"eval":"document.documentElement.scrollWidth <= window.innerWidth","equals":true},{"shot":"table"}]'
+```
+
 ### thinking-folds
 A finished turn with thinking folds into "Worked for …"; opening it shows the
 thought's first line.
