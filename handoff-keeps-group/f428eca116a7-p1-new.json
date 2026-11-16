@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "a8be1470c5dac8e5d040b2557a177f51b78e9af8",
+    "short": "a8be147",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:07:29.055Z"
+  },
+  "dir": ".verify/evidence/handoff-keeps-group-base",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/evidence/handoff-keeps-group-base/new-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1839,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/evidence/handoff-keeps-group-base/new-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1471,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

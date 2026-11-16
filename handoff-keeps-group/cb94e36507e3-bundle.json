@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "claim": "Handing off a session that sits in a sidebar group starts the new session outside the group: the work moves to the ungrouped list while the source stays filed.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329",
+  "base": "2e2960e1f936818341b7a96191c5ef46dbb893f2",
+  "head": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T18:09:56.523Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "bb085a03e7140d3048f275d2ea8000c116f648ba",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "b6dc956d9f7fe594a5cf0a5d2aaf14ea73a0e01b2d208b446f4a126bb79144dd"
+        }
+      ],
+      "addedAt": "2026-11-16T18:09:56.621Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon handoff_keeps_the_sidebar_group",
+      "exit": 101
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "bb085a03e7140d3048f275d2ea8000c116f648ba",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "5cc69c158780561114e7e9a7a9a8dc1b7886034c413a4cb5488c3f1487c2331b"
+        }
+      ],
+      "addedAt": "2026-11-16T18:09:58.725Z",
+      "cmd": "verify/yv map run sidebar --recipe hand-off-keeps-the-group",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "8396daeb57d09da85fcf42fbd0153f8100d2d4b73aa69a5c3d4bfd5a386bc06b"
+        },
+        {
+          "path": "p3-after-desktop.png",
+          "sha256": "fd200aa3fbad0b21ee0a79f7b126bb55a68e3640f7b621c2491278de711abca9"
+        }
+      ],
+      "addedAt": "2026-11-16T18:10:08.786Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "256b95465092ddb140b11ecec047fb548a5c46478a607ebc96c2b2d70c1e3380"
+        },
+        {
+          "path": "p4-after-mobile.png",
+          "sha256": "69aa015900b93dfa84c4e58d601c0719f0fe72efa178f0d32ac885d4af0e13e4"
+        }
+      ],
+      "addedAt": "2026-11-16T18:10:08.828Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "e861fa2f7f237e053bc90dda2186c5b8a89c1a111f8711a6935fe9cda7f89f6c"
+        }
+      ],
+      "addedAt": "2026-11-16T18:10:08.870Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "65a8f5ea2854554e20804684399fc65f705b28cf50e79aa20155da39673e40ce"
+        }
+      ],
+      "addedAt": "2026-11-16T18:10:22.516Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "note",
+      "at": "39f20c45879f2eb6572e4696aa4cb4b433c3a660",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T18:11:12.299Z",
+      "text": "The base repro (p1) is a sidebar shot after handing off a grouped session at the test commit; the group sections sit below the fold, so the state check in the recipe (proof 3) is the clearer repro."
+    },
+    {
+      "id": 8,
+      "ref": "base",
+      "kind": "repro",
+      "at": "bb085a03e7140d3048f275d2ea8000c116f648ba",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-base-recipe-repro.log",
+          "sha256": "5cc69c158780561114e7e9a7a9a8dc1b7886034c413a4cb5488c3f1487c2331b"
+        }
+      ],
+      "addedAt": "2026-11-16T18:11:21.054Z"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon handoff_keeps_the_sidebar_group
+# exit 101 after 2053 ms at bb085a03e7140d3048f275d2ea8000c116f648ba
+
+
+running 1 test
+test handoff_keeps_the_sidebar_group ... FAILED
+
+failures:
+
+---- handoff_keeps_the_sidebar_group stdout ----
+
+thread 'handoff_keeps_the_sidebar_group' (1642477) panicked at crates/yardd/tests/daemon.rs:753:5:
+assertion `left == right` failed
+  left: Null
+ right: "TEST-grp"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-1642476-handoff-group-0 for inspection
+
+
+failures:
+    handoff_keeps_the_sidebar_group
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 69 filtered out; finished in 0.17s
+
+
+   Compiling yardd v0.4.3 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.82s
+     Running tests/daemon.rs (target/debug/build/yardd/93dbf49b6942a7b9/out/daemon-93dbf49b6942a7b9)
+error: test failed, to rerun pass `-p yardd --test daemon`

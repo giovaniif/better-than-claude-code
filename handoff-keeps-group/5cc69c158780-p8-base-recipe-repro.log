@@ -1,0 +1,39 @@
+$ verify/yv map run sidebar --recipe hand-off-keeps-the-group
+# exit 1 after 2415 ms at bb085a03e7140d3048f275d2ea8000c116f648ba
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-16T18:10:01.136Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hand-off-keeps-the-group",
+          "status": "fail",
+          "ms": 588,
+          "problems": [
+            {
+              "code": "expect-failed",
+              "msg": "the daemon state does not match {\"sessions\":[{\"engine\":\"codex\",\"title\":\"TEST-hello from Claude\",\"group\":\"TEST-handoff\"}]}"
+            }
+          ],
+          "tail": "d\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-a0cb\"\n    },\n    {\n      \"id\": \"s1a1e58d39d5a\",\n      \"title\": \"TEST-hello from Claude\",\n      \"status\": \"idle\",\n      \"engine\": \"claude\",\n      \"model\": \"claude-haiku-5-5\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/test-hello-from-claude-9c19\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": \"TEST-handoff\",\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-test-hello-from-claude-9c19\"\n    },\n    {\n      \"id\": \"s1a1e58d398a8\",\n      \"title\": \"[edit] TEST-fix the greeting\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/edit-test-fix-the-greeting-9767\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-edit-test-fix-the-greeting-9767\"\n    },\n    {\n      \"id\": \"s1a1e58d393d6\",\n      \"title\": \"TEST-say hello\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/test-say-hello-9295\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-test-say-hello-9295\"\n    },\n    {\n      \"id\": \"s1a1e58d38f34\",\n      \"title\": \"[think] TEST-plan the refactor\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/think-test-plan-the-refactor-8de3\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-think-test-plan-the-refactor-8de3\"\n    },\n    {\n      \"id\": \"s1a1e58d38aa2\",\n      \"title\": \"[fail] TEST-failing turn\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/fail-test-failing-turn-8931\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-sidebar-1642578-mwjkw9g0/data/wt/TEST-demo-app/yard-fail-test-failing-turn-8931\"\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"expect-failed\",\n      \"msg\": \"the daemon state does not match {\\\"sessions\\\":[{\\\"engine\\\":\\\"codex\\\",\\\"title\\\":\\\"TEST-hello from Claude\\\",\\\"group\\\":\\\"TEST-handoff\\\"}]}\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "sidebar/hand-off-keeps-the-group",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
