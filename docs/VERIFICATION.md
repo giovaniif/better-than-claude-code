@@ -7,7 +7,7 @@ Set up 2026-11-15.
 
 | Piece | Where | State |
 |---|---|---|
-| Verification CLI | `verify/yv` (`verify/src`) | built: doctor, build, iso, api, state, shot, drive, map, evidence, design-check, annotate, assets, pr, land, notify, loop, selftest |
+| Verification CLI | `verify/yv` (`verify/src`) | built: doctor, build, iso, api, state, shot, drive, map, evidence, design-check, annotate, assets, pr, land, notify, loop, preview, selftest |
 | Verification skill | `.claude/skills/verify/SKILL.md` | written |
 | Feature map | `verify/features/*.md` | 17 areas, 71 recipes: 61 pass, 6 manual, 4 fail on known product bugs (mobile layout, terminal replay after reload) |
 | Evidence bundle | `verify/yv evidence` | the proof bar from the playbook, enforced by `evidence verify` |
@@ -43,6 +43,21 @@ inherited `YARD_*` settings (it usually runs inside a Switchyard session) are
 scrubbed. `iso seed` adds a `TEST-demo-app` repository and one session per
 scripted behaviour. Nothing touches the live yardd on 47717, `~/.yard`, or a
 real model.
+
+## Trying a PR yourself
+
+`verify/yv preview <pr>` (or a branch name, such as `main`) checks the PR out
+in a worktree under `.verify/previews`, starts that checkout's own isolated
+app with demo sessions, and prints a URL such as
+`http://host.tail914724.ts.net:48075/`. A PR keeps its port (48000 plus its
+number), so a bookmark keeps working. Open it on the Mac or the iPhone. The
+daemon stays on loopback, and a small forwarder listens on this machine's
+Tailscale address only, never the LAN. The daemon accepts only the preview
+page's origin. Engines are scripted, so nothing spends a subscription.
+`--notify` also sends the link to your Switchyard windows. Running it again
+for the same PR replaces the preview with the new head. `verify/yv preview ls`
+lists what is up; `verify/yv preview down <pr>` (or `down --all`) stops it
+and removes the worktree.
 
 ## What a patrol PR looks like
 
