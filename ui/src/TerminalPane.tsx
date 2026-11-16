@@ -143,6 +143,19 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
           </button>
         )}
       </div>
+      {/* Closing the last tab leaves no terminal; a blank pane with only the
+          small `+` read as broken. Not while one is on its way (the first
+          list of a new session is empty too). */}
+      {tabs?.length === 0 && !awaiting.current && (
+        <div className="pane-body">
+          <div className="muted">No terminal is open.</div>
+          <div>
+            <button className="btn" disabled={!connected} onClick={newTerminal}>
+              Open a terminal
+            </button>
+          </div>
+        </div>
+      )}
       {(tabs ?? []).map((t) => (
         <TermView
           key={t.termId}
