@@ -1,0 +1,195 @@
+{
+  "v": 1,
+  "claim": "At 390 px, Delete on a session with its own worktree arms 'Delete session' and 'Delete and remove worktree' in the bar; the second wraps to three lines and spills out of the header over the thread.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-581d",
+  "base": "82c7b7d9b1dc846ae72f534c08d86e2d59f8150c",
+  "head": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T19:55:49.914Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "fd633bde3bc3c06f0e967743a6fe2fc5da7cb319",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0961ece1a62f0b97fbdbd060ca91c88f5186f0b7fcbf46d866f22b340b505479"
+        },
+        {
+          "path": "p1-armed-mobile.png",
+          "sha256": "b01fbfea93252e28e26876b10f7b3ddc1bae4799f2af8a0e3678bfffe997c706"
+        }
+      ],
+      "addedAt": "2026-11-16T19:55:58.790Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "fd633bde3bc3c06f0e967743a6fe2fc5da7cb319",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9f4acf3ccb9565841a27a838d3096b5bdc7d91a094db4773ef1a0bfa5933c387"
+        }
+      ],
+      "addedAt": "2026-11-16T19:55:58.833Z",
+      "cmd": "verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "013efdb7b782cb12497d39af69341e9785a89db24705354bd36fe361dd93eb5c"
+        },
+        {
+          "path": "p3-armed-mobile.png",
+          "sha256": "d2d189d9f3007b5a9c000f14c87369ed330a44741898c6edc97254c1678dc662"
+        }
+      ],
+      "addedAt": "2026-11-16T19:56:23.416Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "a8f6b46cf377b0bb62e1b7c31d106c792c5bc7d40db8681e5bf39225edf20326"
+        },
+        {
+          "path": "p4-armed-desktop.png",
+          "sha256": "6edd438abe3591b5a1d637316e0ea74a047d941ba53a0ebcf7abb8b5ba29f64e"
+        }
+      ],
+      "addedAt": "2026-11-16T19:56:23.457Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "52b3109edcd32072cf2af5920b6b1a0873c7a9db3aefdb7bf316e35262e4f812"
+        }
+      ],
+      "addedAt": "2026-11-16T19:56:23.495Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "c06460e00fdbaa84fb36287d9eaebd78fb868d747e841df9bd7cf1c668a2afc1"
+        }
+      ],
+      "addedAt": "2026-11-16T19:56:28.281Z",
+      "cmd": "verify/yv design-check --base 82c7b7d9b1dc",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-layout.json",
+          "sha256": "f42e5f39a6cf17877ff93aebc2772af7c515efebcb57fec9e4a365c404bc62db"
+        }
+      ],
+      "addedAt": "2026-11-16T19:56:28.359Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/desktop-sidebar-is-a-column"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0a14e498cc90033f8af9d1f79dfa4d09752c9c81",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-worktrees.json",
+          "sha256": "f18e0675f79ab6d65b947809768050fec3acfbe6f93087bf48266f52e386aedd"
+        }
+      ],
+      "addedAt": "2026-11-16T19:57:02.041Z",
+      "cmd": "verify/yv map run worktrees",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "worktrees/session-gets-worktree",
+        "worktrees/plain-folder-in-place",
+        "worktrees/one-writer-per-folder",
+        "worktrees/delete-removes-clean-worktree",
+        "worktrees/dirty-worktree-is-kept"
+      ]
+    }
+  ]
+}

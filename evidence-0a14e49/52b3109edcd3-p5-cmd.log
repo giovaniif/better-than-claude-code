@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar
+# exit 0 after 4747 ms at 0a14e498cc90033f8af9d1f79dfa4d09752c9c81
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-16T19:56:28.239Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-delete-confirm-fits-the-bar",
+          "status": "pass",
+          "ms": 3823
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 198 pass
+ 0 fail
+ 424 expect() calls
+Ran 198 tests across 13 files. [65.00ms]

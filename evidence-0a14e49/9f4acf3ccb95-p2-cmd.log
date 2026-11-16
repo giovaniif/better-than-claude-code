@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar
+# exit 1 after 4401 ms at fd633bde3bc3c06f0e967743a6fe2fc5da7cb319
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-16T19:56:03.230Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-delete-confirm-fits-the-bar",
+          "status": "fail",
+          "ms": 3532,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"eval\":\"(() => { const bar = document.querySelector(\\\".main header.bar\\\").getBoundingClientRect(); return [...document.querySelectorAll(\\\".main header.bar button\\\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-581d/.verify/drives/2026-11-16T19-55-59-914Z/fail-mobile-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()\",\n          \"equals\": true\n        },\n        \"reason\": \"eval returned false, expected true\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-581d/.verify/drives/2026-11-16T19-55-59-914Z/fail-mobile-step2.png\",\n        \"aria\": \"- main:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"[edit] TEST-fix the greeting\\\" [level=1]\\n  - code: yard/edit-test-fix-the-greeting-1e27\\n  - button \\\"Delete session\\\"\\n  - button \\\"Delete and remove worktree\\\"\\n  - text: \\\"[edit] TEST-fix the greeting\\\"\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\\n  - paragraph: Edited src/lib.rs.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(() => { const bar = document.querySelector(\\\".main header.bar\\\").getBoundingClientRect(); return [...document.querySelectorAll(\\\".main header.bar button\\\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"eval\\\":\\\"(() => { const bar = document.querySelector(\\\\\\\".main header.bar\\\\\\\").getBoundingClientRect(); return [...document.querySelectorAll(\\\\\\\".main header.bar button\\\\\\\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-581d/.verify/drives/2026-11-16T19-55-59-914Z/fail-mobile-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/mobile-delete-confirm-fits-the-bar",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
