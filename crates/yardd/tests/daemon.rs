@@ -53,6 +53,24 @@ async fn snapshot_has_its_shape_and_the_fake_models() {
 }
 
 #[tokio::test]
+async fn a_new_client_gets_its_snapshot_before_any_broadcast() {
+    let sb = Sandbox::new("snapshot-first");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+    // Keep broadcasts flowing while clients connect. The UI replaces its
+    // state with a snapshot, so a broadcast that overtook the snapshot it
+    // came after was lost.
+    for i in 0..3000 {
+        c.send(json!({ "op": "session.update", "sessionId": sid, "pinned": i % 2 == 0 })).await;
+    }
+    for n in 0..40 {
+        let other = d.client().await;
+        assert_eq!(other.log[0]["op"], "snapshot", "client {n} got {} first", other.log[0]["op"]);
+    }
+}
+
+#[tokio::test]
 async fn a_plain_turn_streams_then_completes() {
     let sb = Sandbox::new("plain");
     let d = sb.start();
