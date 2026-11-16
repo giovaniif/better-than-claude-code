@@ -398,7 +398,13 @@ function reduceServer(state: State, msg: any): State {
       if (msg.for === "session.import") return { ...state, importError: msg.message };
       // The refusal names no request, so every waiting card gets its buttons back.
       const threads = msg.for === "session.approve" ? releaseApprovals(state.threads) : state.threads;
-      return { ...state, threads, error: msg.message, errorCount: state.errorCount + 1 };
+      // A host's yardd predates a feature this window offers; the raw
+      // "unknown op" does not say what to do about it.
+      const error =
+        msg.hostId && msg.hostId !== "local" && msg.message.startsWith("unknown op")
+          ? `${hostName(state, msg.hostId)} runs an older Switchyard. Use Update Switchyard on its card in Hosts, then try again.`
+          : msg.message;
+      return { ...state, threads, error, errorCount: state.errorCount + 1 };
     }
     case "git.branches": {
       const reply = msg as BranchList;
