@@ -562,7 +562,13 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .row-menu .menu-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-menu .menu-item svg { flex-shrink: 0; }
 .row-menu-form { padding: 2px; }
-.group-head { margin-top: 4px; }
+.group-zone { margin-top: 4px; }
+/* Drag a row onto a section to move it there: the section under the pointer lights up, the row being dragged dims. */
+.drop-zone { display: flex; flex-direction: column; gap: 2px; border-radius: 8px; }
+.drop-zone.drop-over { background: var(--info-soft); box-shadow: inset 0 0 0 1px var(--info); }
+.drop-zone.drop-over .session-row, .drop-zone.drop-over .list-head { background: transparent; }
+.session-item.dragging { opacity: 0.4; }
+.drop-slot { padding: 8px 10px; border: 1px dashed var(--line-strong); border-radius: 8px; color: var(--muted); font-size: 12px; }
 .group-head .group-toggle { width: 100%; padding-top: 6px; padding-bottom: 6px; }
 .group-head .group-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .group-head .group-rename { height: 28px; font-family: inherit; font-size: 13px; }

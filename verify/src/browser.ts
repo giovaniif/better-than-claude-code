@@ -350,17 +350,31 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
   }
   if (step.drag) {
     // HTML5 drag and drop: press on one target, move onto another, release.
-    // `hold` waits over the target before releasing (spring-loaded folders).
+    // `hold` waits over the target before releasing (spring-loaded folders);
+    // `during` screenshots the drag while it is held there.
     if (!step.to) throw new Usage(`drag needs "to", the target to drop on: ${JSON.stringify(step)}`);
     const src = locate(page, step.drag);
     const dst = locate(page, step.to);
-    if (!step.hold) await src.dragTo(dst, { timeout });
+    if (!step.hold && !step.during) await src.dragTo(dst, { timeout });
     else {
+      // The first move after the press only starts the drag; the target sees
+      // dragover from the next one on, so arrive in steps and nudge.
+      const onto = async (dx: number) => {
+        await dst.waitFor({ state: "visible", timeout });
+        const b = await dst.boundingBox();
+        if (!b) throw new Error(`drag target ${JSON.stringify(step.to)} has no box`);
+        await page.mouse.move(b.x + b.width / 2 + dx, b.y + b.height / 2, { steps: 4 });
+      };
       await src.hover({ timeout });
       await page.mouse.down();
-      await dst.hover({ timeout });
-      await page.waitForTimeout(Number(step.hold));
-      await dst.hover({ timeout });
+      // Start the drag where it was picked up: some targets only appear once a drag is on.
+      const from = await src.boundingBox();
+      if (from) await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 + 6, { steps: 3 });
+      await onto(0);
+      await onto(1);
+      await page.waitForTimeout(Number(step.hold ?? 100));
+      await onto(0);
+      if (step.during) ctx.captures.push(await snap(page, ctx.dir, String(step.during), ctx.vp, ctx.problems));
       await page.mouse.up();
     }
     return settle(page, w);

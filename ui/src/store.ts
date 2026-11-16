@@ -536,6 +536,8 @@ export interface Actions {
   setArchived(sessionId: string, archived: boolean): void;
   /** Put a session in a named group, or take it out with null. */
   setGroup(sessionId: string, group: string | null): void;
+  /** A drop in the sidebar: the pin and the group in one update (`dropUpdate`). */
+  place(sessionId: string, update: { pinned?: boolean; group?: string | null }): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
   login(host: string, engine: Engine, account?: string): void;
   /** The code Claude's sign-in page gives back. */
@@ -767,6 +769,7 @@ export function useYard(): { state: State; actions: Actions } {
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       setGroup: (sessionId, group) => post({ op: "session.update", sessionId, group }),
+      place: (sessionId, update) => post({ op: "session.update", sessionId, ...update }),
       login: (host, engine, account) => post(onHost(host, { op: "login.start", engine, account })),
       loginCode: (host, engine, code, account) => post(onHost(host, { op: "login.code", engine, code, account })),
       listClaudeSessions: (host) => post(onHost(host, { op: "claude.sessions" })),

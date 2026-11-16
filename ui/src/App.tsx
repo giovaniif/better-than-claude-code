@@ -1,4 +1,4 @@
-import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
@@ -15,6 +15,7 @@ import { onAppend, quoteInComposer, quoteSegments, splitQuotes, withQuotes } fro
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
+import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
 import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
 export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
@@ -306,7 +307,14 @@ function RowMark({ state }: { state: RowState }) {
   );
 }
 
-function SessionRow({ state, actions, session: s, active, groups, seenAt }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number }) {
+/** Dragging a row onto a sidebar section moves it there; the Sidebar owns the drop side. */
+interface RowDrag {
+  dragging: boolean;
+  start(id: string): void;
+  end(): void;
+}
+
+function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number; drag?: RowDrag }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
   const mark = rowState(s, seenAt, online);
@@ -375,7 +383,17 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt }: { st
   return (
     <div
       ref={box}
-      className={`session-item ${menu ? "menu-open" : ""}`}
+      className={`session-item ${menu ? "menu-open" : ""} ${drag?.dragging ? "dragging" : ""}`}
+      // Like the menu's Move to group, only for a live row on a reachable host.
+      draggable={!!drag && online && !s.archived}
+      onDragStart={(e) => {
+        if (!drag) return;
+        e.dataTransfer.setData(SESSION_DRAG_TYPE, s.id);
+        e.dataTransfer.effectAllowed = "move";
+        close();
+        drag.start(s.id);
+      }}
+      onDragEnd={() => drag?.end()}
       onContextMenu={(e) => {
         e.preventDefault();
         setMenu(true);
@@ -490,6 +508,22 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt }: { st
         )}
     </div>
   );
+}
+
+/** How long a drag rests on a collapsed group before it opens. */
+const SPRING_OPEN_MS = 600;
+
+/** Whether a media query matches, following changes. */
+function useMedia(query: string): boolean {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = () => setMatches(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [query]);
+  return matches;
 }
 
 /** Which groups the user folded in this browser. */
@@ -641,6 +675,59 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const { route } = state;
   // The hosts picked in Settings: their rows, and their plan usage in the strip.
   const shown = shownHosts(["local", ...state.hosts.map((h) => h.id)], useHiddenHosts());
+  const narrow = useMedia(NARROW);
+  // The row being dragged. The ref answers dragover at once; the state (the
+  // dimmed row, the empty Sessions slot) renders a tick later, because
+  // changing the page inside dragstart can cancel the drag or tint its image.
+  const dragRef = useRef<string | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [over, setOver] = useState<string | null>(null);
+  const endDrag = () => {
+    dragRef.current = null;
+    setDragId(null);
+    setOver(null);
+  };
+  const rowDrag = (id: string): RowDrag => ({
+    dragging: dragId === id,
+    start: (sid) => {
+      dragRef.current = sid;
+      setTimeout(() => dragRef.current === sid && setDragId(sid), 0);
+    },
+    end: endDrag,
+  });
+  // A section takes a drop only when it would change something; elsewhere the
+  // cursor says no and nothing lights up.
+  const dropZone = (key: string, target: DropTarget) => ({
+    className: `drop-zone ${over === key ? "drop-over" : ""}`,
+    onDragOver: (e: ReactDragEvent<HTMLDivElement>) => {
+      if (!dragHasSession(e.dataTransfer)) return;
+      const s = dragRef.current ? state.sessions[dragRef.current] : undefined;
+      if (!s || !dropUpdate(s, target)) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      if (over !== key) setOver(key);
+    },
+    onDragLeave: (e: ReactDragEvent<HTMLDivElement>) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOver((o) => (o === key ? null : o));
+    },
+    onDrop: (e: ReactDragEvent<HTMLDivElement>) => {
+      const id = e.dataTransfer.getData(SESSION_DRAG_TYPE);
+      const s = state.sessions[id];
+      const update = s && dropUpdate(s, target);
+      endDrag();
+      if (!update) return;
+      e.preventDefault();
+      actions.place(id, update);
+    },
+  });
+  // A collapsed group opens after the drag rests on it for a moment.
+  const overGroup = over?.startsWith("group:") ? over.slice(6) : null;
+  useEffect(() => {
+    if (overGroup === null || !collapsed.has(overGroup)) return;
+    const t = setTimeout(() => toggleGroup(overGroup), SPRING_OPEN_MS);
+    return () => clearTimeout(t);
+  }, [overGroup, collapsed]);
+  const dragged = dragId ? state.sessions[dragId] : undefined;
   // Runs of automations live on the Automations page, not in this list.
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
@@ -658,8 +745,20 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
     if (open) nav.current?.querySelector<HTMLElement>(".nav-row")?.focus();
   }, [open]);
   const row = (s: SessionMeta) => (
-    <SessionRow key={s.id} state={state} actions={actions} session={s} groups={groupNames} active={route.page === "session" && route.id === s.id} seenAt={seenAt(s.id)} />
+    <SessionRow
+      key={s.id}
+      state={state}
+      actions={actions}
+      session={s}
+      groups={groupNames}
+      active={route.page === "session" && route.id === s.id}
+      seenAt={seenAt(s.id)}
+      // Touch has no HTML5 drag; in the phone drawer the row menu moves sessions.
+      drag={narrow ? undefined : rowDrag(s.id)}
+    />
   );
+  // With no ungrouped rows there is nothing to drop on to leave a group, so a slot stands in.
+  const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
     <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">
       <div className="brand">Switchyard</div>
@@ -684,24 +783,36 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
         </button>
       </div>
       <div className="session-list">
-        {pinned.length > 0 && <div className="list-head">Pinned</div>}
-        {pinned.map(row)}
-        {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
-        {active.map(row)}
+        {pinned.length > 0 && (
+          <div {...dropZone("pinned", { kind: "pinned" })}>
+            <div className="list-head">Pinned</div>
+            {pinned.map(row)}
+          </div>
+        )}
+        {(active.length > 0 || ungroupSlot) && (
+          <div {...dropZone("ungrouped", { kind: "ungrouped" })}>
+            {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
+            {active.map(row)}
+            {ungroupSlot && <div className="drop-slot">{dragged?.group ? "Drop here to remove from group" : "Drop here to unpin"}</div>}
+          </div>
+        )}
         {all.length === 0 && <div className="empty">No sessions yet.</div>}
-        {groups.map((g) => (
-          <Fragment key={g.name}>
-            <GroupHead
-              name={g.name}
-              count={g.sessions.length}
-              open={!collapsed.has(g.name)}
-              onToggle={() => toggleGroup(g.name)}
-              members={all.filter((s) => s.group === g.name)}
-              actions={actions}
-            />
-            {!collapsed.has(g.name) && g.sessions.map(row)}
-          </Fragment>
-        ))}
+        {groups.map((g) => {
+          const zone = dropZone(`group:${g.name}`, { kind: "group", name: g.name });
+          return (
+            <div key={g.name} {...zone} className={`${zone.className} group-zone`}>
+              <GroupHead
+                name={g.name}
+                count={g.sessions.length}
+                open={!collapsed.has(g.name)}
+                onToggle={() => toggleGroup(g.name)}
+                members={all.filter((s) => s.group === g.name)}
+                actions={actions}
+              />
+              {!collapsed.has(g.name) && g.sessions.map(row)}
+            </div>
+          );
+        })}
       </div>
       {archived.length > 0 && (
         <div className="archived-dock">
