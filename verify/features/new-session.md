@@ -76,10 +76,20 @@ WT="$(yv state | jq -er '.sessions[] | select(.title=="TEST-from the base branch
 test -f "$WT/TEST-base-only.txt"
 ```
 
+### typed-path-with-no-match-says-so
+Viewports: both
+A typed path whose last part matches no folder (a typo, or a folder that does
+not exist yet) says so under the field instead of leaving the list blank, and
+Enter does not take it: the chip keeps the folder it had.
+
+```sh
+yv drive new --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{work}}/TEST-no-such-folder"},{"expect":"css:.picker-empty","text":"No folder in"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"shot":"no-match"},{"press":"Enter"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"press":"Escape"},{"expect":{"role":"button","name":"work","exact":true}}]'
+```
+
 ### folder-picker-lists-folders (manual: the Finder dialog only exists in the desktop app)
 "Choose in Finder…" opens the macOS dialog through Tauri. The typed-path
 browsing is covered by worktree-note.
 
 ## Gotchas
 - The default model is Claude Opus 5.5 even when only Codex is logged in; the fakes log both in.
-- The folder field browses as you type (`fs.dirs`); press Enter to pick the typed path.
+- The folder field browses as you type (`fs.dirs`); press Enter to pick the typed path. A path that names no folder is not taken; the list says so.
