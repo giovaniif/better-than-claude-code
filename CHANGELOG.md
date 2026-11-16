@@ -2,6 +2,10 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.4.2 (2026-11-16)
+
+- **Fixed: an update could leave the app showing the previous version's screens.** The app's window kept an old copy of the page in its cache and didn't check for a new one. It now checks on every load, so an update shows right away.
+
 ## 0.4.1 (2026-11-16)
 
 - **Works on a phone.** Below 700 px the sessions sidebar is a drawer: a menu button at the top of each page opens it, and picking something, tapping beside it or Escape closes it. The session, Hosts and Automations pages get the full width instead of a 140 px column. Desktop is unchanged.
