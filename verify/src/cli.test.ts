@@ -144,6 +144,11 @@ describe("land gate scan", () => {
     expect(codes([file("crates/yardd/src/claude.rs", "@@\n+fn run() {}\n+#[cfg(test)]\n+mod tests {\n+    fn t() { let _ = std::fs::remove_dir_all(dir); }\n+}")])).toEqual([]);
     expect(codes([file("crates/yardd/tests/daemon.rs", "@@\n+    std::fs::remove_dir_all(&root).ok();")])).toEqual([]);
     expect(codes([file("crates/yardd/src/git.rs", "@@\n+    std::fs::remove_dir_all(&p)?;\n+#[cfg(test)]\n+mod tests {}")])).toContain("data-loss");
+    // A test added to an existing module: git names the module in the hunk header.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     }\n+    #[tokio::test]\n+    async fn t() { let _ = std::fs::remove_dir_all(&dir); }\n }")])).toEqual([]);
+    // The module ends at its closing brace: code after it in the same hunk is real code.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     fn t() {}\n }\n \n+pub fn wipe(p: &Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -1,3 +1,4 @@ pub async fn changes(cwd: &str) -> Result<Value> {\n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
   });
   test("security boundary, data loss and secrets", () => {
     expect(codes([file("crates/yardd/src/ws.rs", '@@\n-    if origin_ok(&o) {\n+    if true || origin_ok(&o) { // Origin')])).toContain("security-boundary");
