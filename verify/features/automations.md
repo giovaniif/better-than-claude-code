@@ -119,6 +119,17 @@ yv api '{"op":"automation.save","automation":{"name":"TEST-Claude capped","promp
 yv api '{"op":"automation.run","id":"{{claude_capped}}","force":false}' --wait '{"op":"automation.ran"}' --expect '{"op":"automation.ran","outcome":"skipped","reason":"~Claude 5-hour usage 47% is above 10%"}'
 ```
 
+### run-now-failure-says-why-once
+Run now on an automation whose folder has gone: the card says "Last run failed" and gives the reason once, not a second time as "Failed: …" under it. Both viewports, one Run now each.
+
+```sh
+mkdir -p "$(v work)/TEST-moved"
+yv api '{"op":"automation.save","automation":{"name":"TEST-Moved","prompt":"TEST-moved","cwd":"{{work}}/TEST-moved","engine":"codex","model":"fake-fast","effort":"low","permission":"ask","enabled":false,"schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}'
+rmdir "$(v work)/TEST-moved"
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"expect":{"css":".automation","hasText":"Last run failed"}},{"wait":1000},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"wait":1000},{"expect":{"css":".automation","hasText":"Last run failed"}},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
