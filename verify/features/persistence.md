@@ -53,7 +53,8 @@ A reload keeps the open session (phone browsers reload discarded tabs), and
 Back returns to the session opened before.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"goto":"session:{{sid_edit}}"},{"expect":"css:.session-row.active","text":"TEST-fix the greeting"},{"eval":"(history.back(), true)","equals":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"goto":"session:{{sid_edit}}"},{"expect":"css:.session-row.active","text":"TEST-fix the greeting"},{"eval":"(history.back(), true)","equals":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Open sessions"},{"expect":"css:.session-row.active","text":"TEST-fix the greeting"},{"press":"Escape"},{"eval":"(history.back(), true)","equals":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
 ```
 
 ### claude-resume-after-restart (manual: needs a real Claude turn)

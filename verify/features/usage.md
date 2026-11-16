@@ -28,14 +28,16 @@ yv iso down
 The sidebar's usage strip shows the Codex meters at both viewports.
 
 ```sh
-yv drive new --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"12%"}},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","inViewport":true}},{"shot":"strip"}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"12%"}},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","inViewport":true}},{"shot":"strip"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"wait":400},{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"12%"}},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","inViewport":true}},{"shot":"strip"}]'
 ```
 
 ### usage-strip-claude
 After a Claude session has started, the strip also shows the Claude meters.
 
 ```sh
-yv drive new --steps '[{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"expect":{"css":".usage-strip","hasText":"17%"}}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"expect":{"css":".usage-strip","hasText":"17%"}}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"expect":{"css":".usage-strip","hasText":"17%"}}]'
 ```
 
 ### picker-meters-with-reset-times
@@ -64,7 +66,8 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:butt
 Once a window's reset time has passed, its meter reads 0% and no longer says when it resets: nothing has been used since, or the engine would have sent a newer reset time. The page clock is moved 3 hours on (past both 5-hour resets, before the weeks) and the meters' 30-second tick redraws them.
 
 ```sh
-yv drive new --steps '[{"expect":{"css":".usage-line","hasText":"Codex"},"text":"12%"},{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"expect":{"css":".usage-line","hasText":"Codex"},"text":"0%"},{"expect":{"css":".usage-line","hasText":"Claude"},"text":"0%"},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","hasText":"17%"}},{"shot":"strip-after-reset"}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".usage-line","hasText":"Codex"},"text":"12%"},{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"expect":{"css":".usage-line","hasText":"Codex"},"text":"0%"},{"expect":{"css":".usage-line","hasText":"Claude"},"text":"0%"},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","hasText":"17%"}},{"shot":"strip-after-reset"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".usage-line","hasText":"Codex"},"text":"12%"},{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"expect":{"css":".usage-line","hasText":"Codex"},"text":"0%"},{"expect":{"css":".usage-line","hasText":"Claude"},"text":"0%"},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","hasText":"17%"}},{"shot":"strip-after-reset"}]'
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"click":"role:button:Fake Fast Low"},{"expect":{"css":".popover .usage-meter","hasText":"5-hour"},"text":"0%"},{"expect":{"css":".popover"},"text":"resets in 3 d"},{"expect":{"css":".popover","hasText":"resets now"},"visible":false},{"shot":"picker-after-reset"}]'
 ```
 
@@ -76,7 +79,8 @@ sidebar strip still shows the Claude meters from before (saved in
 
 ```sh
 yv iso restart
-yv drive new --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"shot":"strip-after-restart"}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"shot":"strip-after-restart"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".usage-strip","hasText":"Codex"}},{"expect":{"css":".usage-strip","hasText":"Claude"}},{"expect":{"css":".usage-strip","hasText":"47%"}},{"shot":"strip-after-restart"}]'
 ```
 
 ## Gotchas

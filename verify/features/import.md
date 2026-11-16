@@ -26,10 +26,12 @@ yv iso down
 
 ### dialog-lists-sessions
 Expect at both viewports: the Import dialog with the three TEST- sessions,
-newest first, each with its folder, and the dialog inside the viewport.
+newest first, each with its folder, and the dialog inside the viewport. At
+390 px Import is in the sidebar drawer.
 
 ```sh
-yv drive new --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog:Import from Claude Code","inViewport":true},{"expect":"role:dialog","text":"TEST-fix the login redirect"},{"expect":"role:dialog","text":"TEST-write the release notes"},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"shot":"import-dialog"}]'
+yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog:Import from Claude Code","inViewport":true},{"expect":"role:dialog","text":"TEST-fix the login redirect"},{"expect":"role:dialog","text":"TEST-write the release notes"},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"shot":"import-dialog"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog:Import from Claude Code","inViewport":true},{"expect":"role:dialog","text":"TEST-fix the login redirect"},{"expect":"role:dialog","text":"TEST-write the release notes"},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"shot":"import-dialog"}]'
 ```
 
 ### filter-narrows-the-list
@@ -60,10 +62,11 @@ yv state --expect '{"sessions":[{"title":"TEST-fix the login redirect","engine":
 
 ### import-on-mobile
 Viewports: mobile
-At 390 px the dialog's Import button is on screen and importing opens the session.
+At 390 px the dialog's Import button is on screen and importing opens the
+session and closes the sidebar drawer.
 
 ```sh
-yv drive new --viewport mobile --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:button:Import TEST-old refactor of the parser","inViewport":true},{"click":"role:button:Import TEST-old refactor of the parser"},{"expect":"css:.thread","text":"TEST-answer to: TEST-old refactor of the parser"},{"shot":"imported-mobile"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:button:Import TEST-old refactor of the parser","inViewport":true},{"click":"role:button:Import TEST-old refactor of the parser"},{"expect":"css:.thread","text":"TEST-answer to: TEST-old refactor of the parser"},{"expect":"role:navigation:Sessions","visible":false},{"shot":"imported-mobile"}]'
 ```
 
 ### next-message-resumes

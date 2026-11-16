@@ -31,14 +31,16 @@ yv iso down
 The switch turns on and off again, and the choice is kept in the browser.
 
 ```sh
-yv drive new --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"on"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"}]'
+yv drive new --viewport desktop --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"on"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"}]'
+yv drive new --viewport mobile --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()"},{"click":"role:button:Open sessions"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"on"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"}]'
 ```
 
 ### notifications-permission-denied
 When the browser refuses permission the switch stays off and says why.
 
 ```sh
-yv drive new --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"default\";window.Notification.requestPermission=()=>Promise.resolve(\"denied\");return 1})()"},{"click":"role:switch:Notifications"},{"wait":300},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"},{"expect":"css:.notify-hint","text":"blocked"}]'
+yv drive new --viewport desktop --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"default\";window.Notification.requestPermission=()=>Promise.resolve(\"denied\");return 1})()"},{"click":"role:switch:Notifications"},{"wait":300},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"},{"expect":"css:.notify-hint","text":"blocked"}]'
+yv drive new --viewport mobile --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"default\";window.Notification.requestPermission=()=>Promise.resolve(\"denied\");return 1})()"},{"click":"role:button:Open sessions"},{"click":"role:switch:Notifications"},{"wait":300},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"off"},{"expect":"css:.notify-hint","text":"blocked"}]'
 ```
 
 ### notifications-permission-revoked
@@ -47,7 +49,8 @@ after a reload the switch is off and says why, instead of showing On while no
 notification can appear. Headless Chromium reports `denied` on its own.
 
 ```sh
-yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.notifications\",\"on\");return 1})()"},{"reload":true},{"eval":"Notification.permission","equals":"denied"},{"expect":"role:switch:Notifications"},{"eval":"document.querySelector(\"[role=switch]\").getAttribute(\"aria-checked\")","equals":"false"},{"expect":"css:.notify-hint","text":"blocked"},{"shot":"revoked"}]'
+yv drive new --viewport desktop --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.notifications\",\"on\");return 1})()"},{"reload":true},{"eval":"Notification.permission","equals":"denied"},{"expect":"role:switch:Notifications"},{"eval":"document.querySelector(\"[role=switch]\").getAttribute(\"aria-checked\")","equals":"false"},{"expect":"css:.notify-hint","text":"blocked"},{"shot":"revoked"}]'
+yv drive new --viewport mobile --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.notifications\",\"on\");return 1})()"},{"reload":true},{"click":"role:button:Open sessions"},{"eval":"Notification.permission","equals":"denied"},{"expect":"role:switch:Notifications"},{"eval":"document.querySelector(\"[role=switch]\").getAttribute(\"aria-checked\")","equals":"false"},{"expect":"css:.notify-hint","text":"blocked"},{"shot":"revoked"}]'
 ```
 
 ### notifications-from-sessions
@@ -63,11 +66,11 @@ yv drive 'session:{{note_d}}' --viewport desktop --steps '[{"eval":"(()=>{window
 
 ### notifications-from-sessions-mobile
 Viewports: mobile
-The same at 390 px.
+The same at 390 px, where the switch and New session are in the sidebar drawer.
 
 ```sh
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-start"}' --wait '{"op":"created"}' --save note_m=sessionId
-yv drive 'session:{{note_m}}' --viewport mobile --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()"},{"click":"role:switch:Notifications"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"on"},{"eval":"document.hasFocus=()=>true"},{"fill":"label:Message","value":"[cmd] TEST-focused"},{"click":"role:button:Send"},{"expect":"role:button:Allow once"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it."},{"wait":800},{"eval":"window.__n.length","equals":0},{"eval":"document.hasFocus=()=>false"},{"fill":"label:Message","value":"[cmd] TEST-away"},{"click":"role:button:Send"},{"expect":"role:button:Allow once"},{"wait":800},{"eval":"window.__n.length","equals":1},{"click":"role:button:Allow once"},{"wait":1500},{"fill":"label:Message","value":"[fail] TEST-away"},{"click":"role:button:Send"},{"wait":1500},{"eval":"window.__n.map((n)=>n.title+\": \"+n.o.body)","equals":["TEST-start: Waiting for your approval","TEST-start: Finished its turn","TEST-start: Failed"]},{"click":"role:button:New session"},{"eval":"window.__n[0].onclick()"},{"expect":"css:.thread","text":"TEST-focused"}]'
+yv drive 'session:{{note_m}}' --viewport mobile --steps '[{"eval":"(()=>{window.__n=[];window.Notification=class{constructor(t,o){this.title=t;this.o=o||{};window.__n.push(this)}close(){}};window.Notification.permission=\"granted\";window.Notification.requestPermission=()=>Promise.resolve(\"granted\");return 1})()"},{"click":"role:button:Open sessions"},{"click":"role:switch:Notifications"},{"press":"Escape"},{"eval":"localStorage.getItem(\"yard.notifications\")||\"off\"","equals":"on"},{"eval":"document.hasFocus=()=>true"},{"fill":"label:Message","value":"[cmd] TEST-focused"},{"click":"role:button:Send"},{"expect":"role:button:Allow once"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it."},{"wait":800},{"eval":"window.__n.length","equals":0},{"eval":"document.hasFocus=()=>false"},{"fill":"label:Message","value":"[cmd] TEST-away"},{"click":"role:button:Send"},{"expect":"role:button:Allow once"},{"wait":800},{"eval":"window.__n.length","equals":1},{"click":"role:button:Allow once"},{"wait":1500},{"fill":"label:Message","value":"[fail] TEST-away"},{"click":"role:button:Send"},{"wait":1500},{"eval":"window.__n.map((n)=>n.title+\": \"+n.o.body)","equals":["TEST-start: Waiting for your approval","TEST-start: Finished its turn","TEST-start: Failed"]},{"click":"role:button:Open sessions"},{"click":"role:button:New session"},{"eval":"window.__n[0].onclick()"},{"expect":"css:.thread","text":"TEST-focused"}]'
 ```
 
 ### notifications-notify-op

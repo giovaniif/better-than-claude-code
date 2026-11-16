@@ -172,13 +172,24 @@ function locateAll(page: Page, t: Target): Locator {
   return loc.filter({ visible: true });
 }
 
+/** On a narrow viewport the sidebar is a drawer: open it, as a user would, before using it. */
+async function openDrawer(page: Page): Promise<boolean> {
+  const menu = page.getByRole("button", { name: "Open sessions", exact: true }).filter({ visible: true });
+  if ((await menu.count()) === 0) return false;
+  await menu.first().click();
+  await page.locator(".sidebar").waitFor({ state: "visible", timeout: 5000 });
+  return true;
+}
+
 /** Opens a route: new, hosts, or session:<id | title text>. */
 async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   if (!page.url().startsWith(iso.url)) {
     await page.goto(iso.url, { waitUntil: "domcontentloaded" });
-    await page.locator(".sidebar").waitFor({ timeout: 10000 });
+    // Attached, not visible: on a phone the sidebar is a closed drawer.
+    await page.locator(".sidebar").waitFor({ state: "attached", timeout: 10000 });
     await settle(page, w);
   }
+  const drawer = route !== "" && (await openDrawer(page));
   if (route === "new") {
     await page.getByRole("button", { name: "New session" }).first().click();
   } else if (route === "hosts") {
@@ -203,6 +214,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   } else if (route !== "") {
     throw new Usage(`unknown route ${route}: new | hosts | session:<id or title>`);
   }
+  // Picking a row closes the drawer; a shot taken mid-slide would show it half open.
+  if (drawer) await page.locator(".sidebar").waitFor({ state: "hidden", timeout: 5000 });
   await settle(page, w);
 }
 
@@ -403,7 +416,7 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
   }
   if (step.reload) {
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.locator(".sidebar").waitFor({ timeout });
+    await page.locator(".sidebar").waitFor({ state: "attached", timeout });
     return settle(page, w);
   }
   throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press wait expect upload shot aria eval reload`);

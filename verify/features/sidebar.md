@@ -26,10 +26,11 @@ yv iso down
 
 ### rows-show-status
 Expect at both viewports: every seeded session has a row; the approval one
-says "Needs approval".
+says "Needs approval". At 390 px the sidebar is a drawer, opened first.
 
 ```sh
-yv drive new --steps '[{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"role":"navigation","name":"Sessions"},"text":"TEST-hello from Claude"},{"shot":"sidebar"}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"role":"navigation","name":"Sessions"},"text":"TEST-hello from Claude"},{"shot":"sidebar"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"role":"navigation","name":"Sessions"},"text":"TEST-hello from Claude"},{"shot":"sidebar"}]'
 ```
 
 ### pin-and-unpin
