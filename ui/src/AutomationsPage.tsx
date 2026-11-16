@@ -252,13 +252,8 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
         <h1>{editing ? "Edit automation" : "New automation"}</h1>
       </header>
       <div className="scroll">
-        <form
-          className="hosts-inner automation-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!problem && !saving) void save();
-          }}
-        >
+        {/* Not a <form>: the pickers' buttons would submit it. */}
+        <div className="hosts-inner automation-form">
           <div className="automation-field">
             <label htmlFor="automation-name">Name</label>
             <input id="automation-name" className="field" aria-label="Automation name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Patrol" />
@@ -352,7 +347,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
             </div>
           )}
           <div className="row">
-            <button type="submit" className="btn-primary" disabled={!!problem || saving || !state.connected}>
+            <button type="button" className="btn-primary" disabled={!!problem || saving || !state.connected} onClick={() => void save()}>
               {saving ? "Saving" : "Save automation"}
             </button>
             <button type="button" className="btn-text" onClick={() => actions.go({ page: "automations" })}>
@@ -383,7 +378,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
               </>
             )}
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
