@@ -1,0 +1,48 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-16T06:44:36.008Z",
+      "counts": {
+        "pass": 5,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page",
+          "status": "pass",
+          "ms": 3436
+        },
+        {
+          "label": "add-direct-host",
+          "status": "pass",
+          "ms": 1976
+        },
+        {
+          "label": "remote-session",
+          "status": "pass",
+          "ms": 5592
+        },
+        {
+          "label": "ssh-host-unreachable",
+          "status": "pass",
+          "ms": 2236
+        },
+        {
+          "label": "remove-host",
+          "status": "pass",
+          "ms": 6071
+        },
+        {
+          "label": "install-on-host",
+          "status": "manual",
+          "why": "needs a real SSH server"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

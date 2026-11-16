@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-16T06:43:52.150Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "close-terminal",
+          "status": "pass",
+          "ms": 5200
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

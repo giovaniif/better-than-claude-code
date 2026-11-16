@@ -1,0 +1,11 @@
+$ verify/yv assets check --base origin/main
+# exit 0 after 34 ms at 43ed87bcc3ff066eb486c89c9dd6f93f06e5d46b
+
+{
+  "command": "assets check",
+  "ok": true,
+  "base": "origin/main",
+  "media": [],
+  "problems": []
+}
+
