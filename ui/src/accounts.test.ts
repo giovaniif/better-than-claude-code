@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { accountChoices, accountLabel, accountName, accountOf, usageForAccount } from "./accounts";
+import { accountChoices, accountLabel, accountName, accountOf, usageForAccount, usageForPicks } from "./accounts";
 import type { AccountEntry } from "./protocol";
 import { initial, loginKey, reduce, accountsOn, type State } from "./store";
 
@@ -45,6 +45,11 @@ describe("account helpers", () => {
     expect(usageForAccount(usage, "claude", "default").claude?.fiveHour).toBe(0.47);
     expect(usageForAccount(usage, "claude", "a1").claude?.fiveHour).toBe(0.91);
     expect(usageForAccount(usage, "claude", "a9").claude).toBeUndefined();
+    // Per engine, for the picker: the picked account's limits, Default's elsewhere.
+    const both = { ...usage, codex: { primary: { usedPercent: 12, windowDurationMins: 300 } } } as any;
+    expect(usageForPicks(both, { claude: "a1" }).claude?.fiveHour).toBe(0.91);
+    expect(usageForPicks(both, { claude: "a1" }).codex?.primary?.usedPercent).toBe(12);
+    expect(usageForPicks(both, {}).claude?.fiveHour).toBe(0.47);
   });
 });
 

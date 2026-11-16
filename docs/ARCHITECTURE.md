@@ -65,12 +65,12 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 
 ## Engines
 
-**Codex.** One shared `codex app-server` over stdio, JSON-RPC, driven from Rust.
+**Codex.** One `codex app-server` per account (started on first use) over stdio, JSON-RPC, driven from Rust. See Accounts.
 
 - `thread/start` per session, `turn/start` per message. `turn/start` takes `model` and `effort`, so switching is per turn.
 - Approvals arrive as server requests (`item/commandExecution/requestApproval`, `item/fileChange/requestApproval`) and are answered with `accept`, `acceptForSession` or `decline`.
 - `model/list` returns the models and each one's efforts. Today: `gpt-6.1-sol` (default), `gpt-6-astra`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; efforts `low` to `ultra`.
-- `account/rateLimits/updated` and `account/rateLimits/read` give `primary` (the 5-hour window) and `secondary` (the week), each with `usedPercent`, `windowDurationMins` and `resetsAt` (epoch seconds). yardd relays them untouched as `usage.codex`.
+- `account/rateLimits/updated` and `account/rateLimits/read` give `primary` (the 5-hour window) and `secondary` (the week), each with `usedPercent`, `windowDurationMins` and `resetsAt` (epoch seconds). yardd relays them untouched as `usage.codex` (Default) or `usage.accounts[<id>]` (an added account: see Accounts).
 - The protocol is marked experimental. Pin the CLI version.
 
 **Claude.** Agent SDK `query()` in streaming-input mode inside yard-claude.
@@ -104,7 +104,7 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 ## Resources
 
 - yardd samples CPU, load, memory and disk every 3 s with `sysinfo` and keeps an hour of CPU history in memory.
-- **Per session:** the same sample sums CPU and memory over each session's processes: the Claude sidecar tree, the terminal shell tree, and for Codex the app-server's children matched by command folder and start time. Codex runs as one shared app-server, so two Codex sessions running commands in the same folder at the same moment can be mixed up.
+- **Per session:** the same sample sums CPU and memory over each session's processes: the Claude sidecar tree, the terminal shell tree, and for Codex the app-server's children matched by command folder and start time. Codex runs one app-server per account, so two Codex sessions of one account running commands in the same folder at the same moment can be mixed up.
 - **No memory cap.** yardd never stops a running session for its size. A per-session cap (`YARD_SESSION_MEM_CAP_GB`) existed until 0.2.1 and was removed on 2026-11-15: a polling soft cap killed real work, and the queue below already keeps new sessions off a busy host.
 - Threads are not processes: on Linux `sysinfo` lists each thread with its process as parent and the process's memory as its own. They are skipped; counting them made a Claude CLI look 8.7 GB (2026-11-14).
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
@@ -116,7 +116,7 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 
 - Each UI client gets its own connection from the hub to every remote yardd, piped both ways, so replies go back to the client that asked.
 - Session and terminal ids that cross the hub are written `<hostId>~<remoteId>`. An op with such an id, or a `session.create` with `host`, goes to that host with the prefix removed.
-- A remote `snapshot` arrives as `host.snapshot`; its `host`, `models` and `usage` messages carry a `hostId`. Models, usage and the home folder are kept per host.
+- A remote `snapshot` arrives as `host.snapshot`; its `host`, `models` and `usage` messages carry a `hostId`. Models, usage, accounts and the home folder are kept per host. `account.add` and `account.remove` carry `host` like `engines.status`, and the remote's `accounts` list comes back with its `hostId`.
 - Hosts are saved in `hosts.json` in the data dir and changed with `host.add` and `host.remove`. Status (`connecting`, `connected`, `error` with a message) is broadcast as `hosts`.
 - An `ssh` host gets one `ssh -N -L` tunnel shared by all clients, on a free loopback port, restarted with backoff up to 30 s and killed when the host is removed or yardd stops. The destination is passed after `--` and may not start with `-`.
 - A `direct` host is a plain `ws://` URL, for local testing.
@@ -159,6 +159,20 @@ A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, 
 - Codex: `account/login/start` with `chatgptDeviceCode` on the shared app-server returns a link and a code; `account/login/completed` ends it, then models and limits reload. No terminal involved.
 - Claude Code: `claude auth login` runs in a PTY (wide, so the link never wraps). yardd strips the escapes, sends the sign-in link to the UI, and types the code the user pastes back. Exit 0 is success; "Invalid code" ends it as failed. Idle Claude sessions then get a fresh sidecar with their next message, since one started logged out keeps failing.
 - Both go through the CLIs' own flows and files; yardd never sees a token. See Policy and cost for the Claude side.
+- Every login op takes an optional `account` (Default when left out), and `login` progress messages name it. A Claude login runs `claude auth login` with that account's `CLAUDE_CONFIG_DIR`; a Codex login runs on that account's app-server. Logins of different accounts can run at once. After a Claude login, only idle sessions of that account get a fresh sidecar.
+
+## Accounts
+
+More than one login per engine on a host, for example a personal and a company Claude Code subscription.
+
+- Each engine has a **Default** account: the login the CLI already has, run with yardd's own environment, unchanged. Added accounts (`account.add { engine, name, host? }`) each get a folder `<data dir>/accounts/<id>/`, used as `CLAUDE_CONFIG_DIR` for Claude Code (the sidecar, `claude auth status` and `claude auth login`) and as `CODEX_HOME` for Codex (that account's app-server). Both variables are documented by their CLIs; Switchyard never reads what is in the folders. Names are unique per engine (case-insensitive) and at most 40 plain characters.
+- They are saved in `accounts.json` next to `hosts.json`, per host, and listed in the `snapshot` and the `accounts` broadcast. `account.remove { id, host? }` deletes the folder, and with it the login. It is refused while any session (archived ones too) uses the account.
+- `engines.status` answers `{ engines: { claude, codex }, accounts: { <id>: state } }`: Default under `engines`, the added ones by id. Adding or removing an account triggers a fresh answer.
+- `session.create` takes `account` (an id of that engine; Default when left out) and checks it. It is saved in the session's metadata (`account`, `default` for older rows), so resume after a restart and every later turn use the same account: the Claude sidecar is started with the account's `CLAUDE_CONFIG_DIR`, and the session's Codex thread lives on that account's app-server (a thread is only known to the `CODEX_HOME` that made it). **The account cannot be changed mid-session**; start a new session instead.
+- A hand-off starts a session on the other engine, so the source's account does not carry over: it runs on the target engine's Default unless `session.handoff` names an `account` of that engine (the UI does not offer one yet).
+- **Usage is per account**: Default's limits stay at `usage.claude` and `usage.codex`; an added account's are at `usage.accounts[<id>]` in the same shape as its engine's. The model picker shows the limits of the account picked for each engine (a session's own account inside a session); the sidebar strip shows Default's. Codex model lists are loaded from Default's app-server and shared.
+- **UI.** The Hosts page lists each engine's added accounts under it with their login state, Log in and Remove (a second click confirms), and **Add account**. The model picker shows an account row under an engine only when it has more than one account, and the trigger names the account then. The session header and the sidebar row name the account, again only where the engine has a choice (or the session is not on Default).
+- Not built: moving a session to another account, per-account models, logging out without removing.
 
 ## Worktrees
 

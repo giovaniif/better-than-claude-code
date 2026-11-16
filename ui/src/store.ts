@@ -22,6 +22,7 @@ import {
   type Usage,
   type Attachment,
   type QueueReturned,
+  type AccountEntry,
 } from "./protocol";
 import { createNotifier } from "./notify";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
@@ -83,7 +84,9 @@ export interface State {
   workspace: Record<string, string>;
   /** Engine install and login state per host; missing until asked. */
   engines: Record<string, EngineStates>;
-  /** Logins in progress, by `loginKey(host, engine)`. */
+  /** Added accounts per host (Default is implicit). */
+  accounts: Record<string, AccountEntry[]>;
+  /** Logins in progress, by `loginKey(host, engine, account)`. */
   logins: Record<string, LoginState>;
   /** Hosts whose connection on this socket dropped, until their next snapshot. */
   linkDown: Record<string, boolean>;
@@ -129,6 +132,7 @@ export const initial: State = {
   home: {},
   workspace: {},
   engines: {},
+  accounts: {},
   logins: {},
   linkDown: {},
   hostEpoch: 0,
@@ -170,9 +174,13 @@ function restored(state: State): State {
 
 const EMPTY_MODELS: Models = { claude: [], codex: [] };
 const NO_USAGE: Usage = {};
+const NO_ACCOUNTS: AccountEntry[] = [];
 
 export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
-export const loginKey = (host: string, engine: Engine) => `${host}\n${engine}`;
+/** Default's key is the same as before accounts existed. */
+export const loginKey = (host: string, engine: Engine, account = "default") =>
+  account === "default" ? `${host}\n${engine}` : `${host}\n${engine}\n${account}`;
+export const accountsOn = (state: State, host: string): AccountEntry[] => state.accounts[host] ?? NO_ACCOUNTS;
 
 /** Longest group name yardd keeps. */
 export const GROUP_NAME_MAX = 60;
@@ -260,6 +268,7 @@ function reduceServer(state: State, msg: any): State {
         linkDown: {},
         models: { ...state.models, local: msg.models ?? EMPTY_MODELS },
         usage: { ...state.usage, local: msg.usage ?? {} },
+        accounts: { ...state.accounts, local: msg.accounts ?? [] },
         host: msg.host ? { ...state.host, local: msg.host } : state.host,
         home: { ...state.home, local: msg.home ?? "" },
         workspace: { ...state.workspace, local: msg.workspace || msg.home || "" },
@@ -274,12 +283,15 @@ function reduceServer(state: State, msg: any): State {
         linkDown: { ...state.linkDown, [id]: false },
         models: { ...state.models, [id]: msg.models ?? EMPTY_MODELS },
         usage: { ...state.usage, [id]: msg.usage ?? {} },
+        accounts: { ...state.accounts, [id]: msg.accounts ?? [] },
         host: msg.host ? { ...state.host, [id]: msg.host } : state.host,
         home: { ...state.home, [id]: msg.home ?? "" },
         workspace: { ...state.workspace, [id]: msg.workspace || msg.home || "" },
         engines: without(state.engines, (h) => h === id),
       };
     }
+    case "accounts":
+      return { ...state, accounts: { ...state.accounts, [msg.hostId ?? "local"]: msg.accounts ?? [] } };
     case "host.down":
       return { ...state, linkDown: { ...state.linkDown, [msg.hostId]: true } };
     case "hosts": {
@@ -297,6 +309,7 @@ function reduceServer(state: State, msg: any): State {
         threads: without(state.threads, gone),
         host: without(state.host, (h) => !known.has(h)),
         models: without(state.models, (h) => !known.has(h)),
+        accounts: without(state.accounts, (h) => !known.has(h)),
       };
     }
     case "session":
@@ -342,10 +355,13 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, installs: { ...state.installs, [m.hostId]: next } };
     }
     case "engines":
-      return { ...state, engines: { ...state.engines, [msg.hostId ?? "local"]: msg.engines as EngineStates } };
+      return {
+        ...state,
+        engines: { ...state.engines, [msg.hostId ?? "local"]: { ...msg.engines, accounts: msg.accounts ?? {} } as EngineStates },
+      };
     case "login": {
-      const key = loginKey(msg.hostId ?? "local", msg.engine);
-      const { op: _op, hostId: _h, engine: _e, ...login } = msg;
+      const key = loginKey(msg.hostId ?? "local", msg.engine, msg.account);
+      const { op: _op, hostId: _h, engine: _e, account: _a, ...login } = msg;
       return { ...state, logins: { ...state.logins, [key]: login as LoginState } };
     }
     // Local: a new import (or a closed dialog) forgets the last refusal.
@@ -403,6 +419,8 @@ export interface Actions {
     cwd: string;
     text: string;
     permission?: Permission;
+    /** An added account of the engine; its Default when left out. */
+    account?: string;
     /** A worktree when the folder is in a repository; otherwise it runs in place. */
     worktree: boolean;
     branch?: string;
@@ -447,15 +465,19 @@ export interface Actions {
   /** Put a session in a named group, or take it out with null. */
   setGroup(sessionId: string, group: string | null): void;
   /** Log an engine in on a host; progress arrives as `login` messages. */
-  login(host: string, engine: Engine): void;
+  login(host: string, engine: Engine, account?: string): void;
   /** The code Claude's sign-in page gives back. */
-  loginCode(host: string, engine: Engine, code: string): void;
+  loginCode(host: string, engine: Engine, code: string, account?: string): void;
   /** Ask a host for its Claude Code sessions (`claude.sessions`). */
   listClaudeSessions(host: string): void;
   /** Import one as a session there; `created` opens it. */
   importClaudeSession(host: string, claudeSessionId: string): void;
   clearImportError(): void;
-  loginCancel(host: string, engine: Engine): void;
+  loginCancel(host: string, engine: Engine, account?: string): void;
+  /** An extra login for an engine on a host, with its own config folder there. */
+  addAccount(host: string, engine: Engine, name: string): void;
+  /** Deletes the account's folder and login; refused while a session uses it. */
+  removeAccount(host: string, id: string): void;
   loadPr(sessionId: string): void;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
@@ -648,15 +670,17 @@ export function useYard(): { state: State; actions: Actions } {
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       setGroup: (sessionId, group) => post({ op: "session.update", sessionId, group }),
-      login: (host, engine) => post(onHost(host, { op: "login.start", engine })),
-      loginCode: (host, engine, code) => post(onHost(host, { op: "login.code", engine, code })),
+      login: (host, engine, account) => post(onHost(host, { op: "login.start", engine, account })),
+      loginCode: (host, engine, code, account) => post(onHost(host, { op: "login.code", engine, code, account })),
       listClaudeSessions: (host) => post(onHost(host, { op: "claude.sessions" })),
       importClaudeSession: (host, claudeSessionId) => {
         dispatch({ t: "server", msg: { op: "import.started" } });
         post(onHost(host, { op: "session.import", claudeSessionId }));
       },
       clearImportError: () => dispatch({ t: "server", msg: { op: "import.started" } }),
-      loginCancel: (host, engine) => post(onHost(host, { op: "login.cancel", engine })),
+      loginCancel: (host, engine, account) => post(onHost(host, { op: "login.cancel", engine, account })),
+      addAccount: (host, engine, name) => post(onHost(host, { op: "account.add", engine, name })),
+      removeAccount: (host, id) => post(onHost(host, { op: "account.remove", id })),
     }),
     [],
   );

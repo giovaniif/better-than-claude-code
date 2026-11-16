@@ -1,6 +1,7 @@
 //! yardd: owns agent processes, the per-session event log and host stats.
 //! Serves the UI and a WebSocket on 127.0.0.1 by default.
 
+mod accounts;
 mod attachments;
 mod claude;
 mod codex;
@@ -95,7 +96,7 @@ async fn main() -> anyhow::Result<()> {
     // Start Codex in the background so the model list is ready early.
     let boot = app.clone();
     tokio::spawn(async move {
-        if let Err(e) = codex::load_models(&boot).await {
+        if let Err(e) = codex::load_models(&boot, accounts::DEFAULT).await {
             eprintln!("yardd: codex unavailable: {e:#}");
         }
     });

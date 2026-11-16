@@ -42,6 +42,11 @@ pub struct Meta {
     /// `full`. Rows saved before modes existed ran as `ask`.
     #[serde(default = "default_permission")]
     pub permission: String,
+    /// The account the session runs under (see `accounts`): `default`, or the
+    /// id of an added one. Fixed for the session's life. Rows saved before
+    /// accounts existed ran on Default.
+    #[serde(default = "default_account")]
+    pub account: String,
     /// Kept at the top of the sidebar.
     #[serde(default)]
     pub pinned: bool,
@@ -63,6 +68,10 @@ pub struct Meta {
 
 fn default_permission() -> String {
     "ask".to_string()
+}
+
+fn default_account() -> String {
+    crate::accounts::DEFAULT.to_string()
 }
 
 pub const PERMISSIONS: [&str; 4] = ["ask", "acceptEdits", "plan", "full"];
@@ -111,7 +120,9 @@ pub struct App {
     pub port: u16,
     pub tx: broadcast::Sender<String>,
     pub sessions: Mutex<HashMap<String, Session>>,
-    pub codex: OnceCell<Arc<crate::codex::Client>>,
+    /// One `codex app-server` per account, started on first use.
+    pub codex: Mutex<HashMap<String, Arc<OnceCell<Arc<crate::codex::Client>>>>>,
+    pub accounts: crate::accounts::Accounts,
     pub models: Mutex<Value>,
     pub usage: Mutex<Value>,
     pub host: Mutex<Value>,
@@ -137,7 +148,8 @@ impl App {
             port,
             tx,
             sessions: Mutex::new(HashMap::new()),
-            codex: OnceCell::new(),
+            codex: Mutex::new(HashMap::new()),
+            accounts: crate::accounts::Accounts::load(crate::store::data_dir()),
             models: Mutex::new(json!({ "claude": claude_models(), "codex": [] })),
             usage: Mutex::new(json!({})),
             host: Mutex::new(Value::Null),
@@ -203,6 +215,20 @@ impl App {
         });
     }
 
+    /// The Codex client's slot for an account.
+    pub fn codex_cell(&self, account: &str) -> Arc<OnceCell<Arc<crate::codex::Client>>> {
+        self.codex.lock().unwrap().entry(account.to_string()).or_default().clone()
+    }
+
+    /// The account's app-server, if one is running.
+    pub fn codex_running(&self, account: &str) -> Option<Arc<crate::codex::Client>> {
+        self.codex.lock().unwrap().get(account).and_then(|c| c.get().cloned())
+    }
+
+    pub fn broadcast_accounts(&self) {
+        self.broadcast(json!({ "op": "accounts", "accounts": self.accounts.list() }));
+    }
+
     /// A short id that is unique within this yardd run.
     pub fn id(&self, prefix: &str) -> String {
         let n = self.next.fetch_add(1, Ordering::Relaxed);
@@ -221,8 +247,9 @@ impl App {
         cwd: &str,
         title: &str,
         worktree: Option<Worktree>,
+        account: &str,
     ) -> String {
-        self.insert_session(engine, model, effort, cwd, title, worktree, false)
+        self.insert_session(engine, model, effort, cwd, title, worktree, false, account)
             .expect("a non-exclusive insert cannot be refused")
     }
 
@@ -236,8 +263,9 @@ impl App {
         effort: &str,
         cwd: &str,
         title: &str,
+        account: &str,
     ) -> anyhow::Result<String> {
-        self.insert_session(engine, model, effort, cwd, title, None, true)
+        self.insert_session(engine, model, effort, cwd, title, None, true, account)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -250,6 +278,7 @@ impl App {
         title: &str,
         worktree: Option<Worktree>,
         exclusive: bool,
+        account: &str,
     ) -> anyhow::Result<String> {
         let id = self.id("s");
         let now = now_ms();
@@ -270,6 +299,7 @@ impl App {
             repo,
             parent: None,
             permission: default_permission(),
+            account: account.to_string(),
             pinned: false,
             archived: false,
             group: None,
@@ -455,10 +485,16 @@ impl App {
         json!({ "op": "history", "sessionId": sid, "events": events })
     }
 
-    pub fn set_usage(&self, engine: &str, value: Value) {
+    /// Plan usage is per account: Default's is `usage[engine]`, an added
+    /// account's is `usage.accounts[id]`.
+    pub fn set_usage(&self, engine: &str, account: &str, value: Value) {
         let all = {
             let mut usage = self.usage.lock().unwrap();
-            usage[engine] = value;
+            if account == crate::accounts::DEFAULT {
+                usage[engine] = value;
+            } else {
+                usage["accounts"][account] = value;
+            }
             usage.clone()
         };
         self.broadcast(json!({ "op": "usage", "usage": all }));
@@ -482,6 +518,7 @@ impl App {
             "home": std::env::var("HOME").unwrap_or_default(),
             "workspace": workspace(),
             "hosts": self.remotes.list(),
+            "accounts": self.accounts.list(),
         })
     }
 }

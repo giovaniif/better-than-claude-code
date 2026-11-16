@@ -24,6 +24,8 @@ Switchyard drives the `claude` and `codex` CLIs you already have, with the login
 
 **Your servers too.** Add any machine you can `ssh` into and Switchyard installs itself there in one click. Its sessions sit in the same sidebar, with a cloud icon, and keep running when your laptop sleeps.
 
+**More than one account per engine.** Add a second Claude Code or Codex login on any host (say, your company subscription next to your own) from the Hosts page, log it in there, and pick it for a new session. Each account keeps its own login and usage limits, and a session stays on the account it started with.
+
 **Permission modes like Claude Code's.** Ask first, accept edits, plan only or full access, per session, switchable at any time.
 
 **Files and images.** Paste, drop or attach them to any prompt. They are stored on the machine the session runs on, so screenshots reach a remote agent too.
@@ -88,7 +90,7 @@ Switchyard also ships as one Docker image you can deploy with Coolify or Docker 
 ```
 
 - **yardd** owns every agent process and keeps each session's events in SQLite, so the UI can close, reload or reconnect without losing anything. It listens only on loopback and refuses browser origins other than its own page.
-- **Codex** runs as one shared `codex app-server`; **Claude Code** runs through the Agent SDK in a small Bun sidecar per session. Both are normalized to the same events.
+- **Codex** runs one `codex app-server` per account; **Claude Code** runs through the Agent SDK in a small Bun sidecar per session. Both are normalized to the same events.
 - **Remote hosts** are other yardds reached through an SSH tunnel the local one manages. Nothing new is exposed on the network.
 
 The full design and its trade-offs are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

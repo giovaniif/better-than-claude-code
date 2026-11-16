@@ -5,6 +5,7 @@
 //! and the code the page gives back is typed into it.
 
 use std::{
+    collections::HashMap,
     io::{Read, Write},
     sync::{Arc, Mutex},
     time::Duration,
@@ -15,7 +16,10 @@ use portable_pty::{native_pty_system, ChildKiller, CommandBuilder, PtySize};
 use serde_json::{json, Value};
 use tokio::process::Command;
 
-use crate::state::{App, Backend};
+use crate::{
+    accounts::DEFAULT,
+    state::{App, Backend},
+};
 
 struct ClaudeLogin {
     id: u64,
@@ -23,15 +27,17 @@ struct ClaudeLogin {
     killer: Box<dyn ChildKiller + Send + Sync>,
 }
 
+/// Logins in progress are per account: Default and an added one can run at once.
 #[derive(Default)]
 pub struct Logins {
-    claude: Mutex<Option<ClaudeLogin>>,
-    codex: Mutex<Option<String>>,
+    claude: Mutex<HashMap<String, ClaudeLogin>>,
+    /// account -> Codex login id
+    codex: Mutex<HashMap<String, String>>,
     next: std::sync::atomic::AtomicU64,
 }
 
-fn report(app: &App, engine: &str, state: &str, extra: Value) {
-    let mut msg = json!({ "op": "login", "engine": engine, "state": state });
+fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
+    let mut msg = json!({ "op": "login", "engine": engine, "account": account, "state": state });
     if let (Some(m), Some(e)) = (msg.as_object_mut(), extra.as_object()) {
         m.extend(e.clone());
     }
@@ -39,15 +45,33 @@ fn report(app: &App, engine: &str, state: &str, extra: Value) {
 }
 
 /// Whether each engine is installed and logged in, for the app to offer a login.
+/// `engines` is each engine's Default login; `accounts` has the added ones by id.
 pub async fn status(app: &Arc<App>) -> Value {
-    let (claude, codex) = tokio::join!(claude_status(), codex_status(app));
-    json!({ "op": "engines", "engines": { "claude": claude, "codex": codex } })
+    let added = app.accounts.all();
+    let one = |engine: String, account: String| async move {
+        let state = if engine == "codex" { codex_status(app, &account).await } else { claude_status(app, &account).await };
+        (account, state)
+    };
+    let (claude, codex, rest) = tokio::join!(
+        one("claude".into(), DEFAULT.into()),
+        one("codex".into(), DEFAULT.into()),
+        futures_util::future::join_all(added.iter().map(|a| one(a.engine.clone(), a.id.clone()))),
+    );
+    let accounts: serde_json::Map<String, Value> = rest.into_iter().collect();
+    json!({ "op": "engines", "engines": { "claude": claude.1, "codex": codex.1 }, "accounts": accounts })
 }
 
-async fn claude_status() -> Value {
+async fn claude_status(app: &Arc<App>, account: &str) -> Value {
     let mut cmd = Command::new("claude");
     cmd.args(["auth", "status"]).kill_on_drop(true);
     strip_claude_env_tokio(&mut cmd);
+    match app.accounts.config_dir("claude", account) {
+        Ok(Some(dir)) => {
+            cmd.env(crate::accounts::env_var("claude"), dir);
+        }
+        Ok(None) => {}
+        Err(e) => return json!({ "installed": true, "loggedIn": null, "error": e.to_string() }),
+    }
     match tokio::time::timeout(Duration::from_secs(20), cmd.output()).await {
         Err(_) => json!({ "installed": true, "loggedIn": null, "error": "`claude auth status` did not answer" }),
         Ok(Err(e)) if e.kind() == std::io::ErrorKind::NotFound => json!({ "installed": false, "loggedIn": false }),
@@ -67,8 +91,8 @@ async fn claude_status() -> Value {
     }
 }
 
-async fn codex_status(app: &Arc<App>) -> Value {
-    let client = match crate::codex::client(app).await {
+async fn codex_status(app: &Arc<App>, account: &str) -> Value {
+    let client = match crate::codex::client(app, account).await {
         Ok(c) => c,
         Err(_) => return json!({ "installed": false, "loggedIn": false }),
     };
@@ -85,17 +109,18 @@ async fn codex_status(app: &Arc<App>) -> Value {
     }
 }
 
-pub async fn start(app: &Arc<App>, engine: &str) -> Result<()> {
+pub async fn start(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
+    app.accounts.check(engine, account)?;
     match engine {
-        "codex" => start_codex(app).await,
-        "claude" => start_claude(app),
+        "codex" => start_codex(app, account).await,
+        "claude" => start_claude(app, account),
         _ => bail!("unknown engine {engine}"),
     }
 }
 
-async fn start_codex(app: &Arc<App>) -> Result<()> {
-    let client = crate::codex::client(app).await.context("Codex is not installed here")?;
-    let old = app.logins.codex.lock().unwrap().take();
+async fn start_codex(app: &Arc<App>, account: &str) -> Result<()> {
+    let client = crate::codex::client(app, account).await.context("Codex is not installed here")?;
+    let old = app.logins.codex.lock().unwrap().remove(account);
     if let Some(old) = old {
         let _ = client.request("account/login/cancel", json!({ "loginId": old })).await;
     }
@@ -103,18 +128,18 @@ async fn start_codex(app: &Arc<App>) -> Result<()> {
         .request("account/login/start", json!({ "type": "chatgptDeviceCode" }))
         .await?;
     let login_id = res["loginId"].as_str().context("Codex sent no login id")?.to_string();
-    *app.logins.codex.lock().unwrap() = Some(login_id);
-    report(app, "codex", "code", json!({ "url": res["verificationUrl"], "code": res["userCode"] }));
+    app.logins.codex.lock().unwrap().insert(account.to_string(), login_id);
+    report(app, "codex", account, "code", json!({ "url": res["verificationUrl"], "code": res["userCode"] }));
     Ok(())
 }
 
 /// `account/login/completed` from the Codex app-server.
-pub fn codex_completed(app: &Arc<App>, p: &Value) {
+pub fn codex_completed(app: &Arc<App>, account: &str, p: &Value) {
     let ours = {
         let mut current = app.logins.codex.lock().unwrap();
-        let ours = current.as_deref().is_some_and(|id| p["loginId"].as_str().map_or(true, |got| got == id));
+        let ours = current.get(account).is_some_and(|id| p["loginId"].as_str().map_or(true, |got| got == id));
         if ours {
-            *current = None;
+            current.remove(account);
         }
         ours
     };
@@ -122,21 +147,22 @@ pub fn codex_completed(app: &Arc<App>, p: &Value) {
         return;
     }
     if p["success"].as_bool() == Some(true) {
-        report(app, "codex", "done", json!({}));
+        report(app, "codex", account, "done", json!({}));
         let app = app.clone();
+        let account = account.to_string();
         tokio::spawn(async move {
             // Models and limits depend on the account.
-            let _ = crate::codex::load_models(&app).await;
+            let _ = crate::codex::load_models(&app, &account).await;
             app.broadcast(status(&app).await);
         });
     } else {
         let error = p["error"].as_str().unwrap_or("The login did not finish.");
-        report(app, "codex", "failed", json!({ "error": error }));
+        report(app, "codex", account, "failed", json!({ "error": error }));
     }
 }
 
-fn start_claude(app: &Arc<App>) -> Result<()> {
-    cancel_claude(app);
+fn start_claude(app: &Arc<App>, account: &str) -> Result<()> {
+    cancel_claude(app, account);
     // Wide, so the link is never wrapped.
     let pair = native_pty_system().openpty(PtySize { cols: 2000, rows: 40, pixel_width: 0, pixel_height: 0 })?;
     let mut cmd = CommandBuilder::new("claude");
@@ -145,6 +171,9 @@ fn start_claude(app: &Arc<App>) -> Result<()> {
         cmd.cwd(home);
     }
     cmd.env("TERM", "xterm-256color");
+    if let Some(dir) = app.accounts.config_dir("claude", account)? {
+        cmd.env(crate::accounts::env_var("claude"), dir);
+    }
     for (key, _) in std::env::vars() {
         if key == "CLAUDECODE" || key.starts_with("CLAUDE_CODE_") || key.starts_with("CLAUDE_AGENT_SDK") {
             cmd.env_remove(&key);
@@ -158,10 +187,11 @@ fn start_claude(app: &Arc<App>) -> Result<()> {
     let mut reader = pair.master.try_clone_reader()?;
     let writer = pair.master.take_writer()?;
     let id = app.logins.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-    *app.logins.claude.lock().unwrap() = Some(ClaudeLogin { id, writer, killer: child.clone_killer() });
-    report(app, "claude", "starting", json!({}));
+    app.logins.claude.lock().unwrap().insert(account.to_string(), ClaudeLogin { id, writer, killer: child.clone_killer() });
+    report(app, "claude", account, "starting", json!({}));
 
     let app = app.clone();
+    let account = account.to_string();
     let runtime = tokio::runtime::Handle::current();
     std::thread::spawn(move || {
         let _master = pair.master; // the PTY stays open while the login runs
@@ -177,20 +207,20 @@ fn start_claude(app: &Arc<App>) -> Result<()> {
             if !url_sent {
                 if let Some(url) = sign_in_url(&text) {
                     url_sent = true;
-                    report(&app, "claude", "url", json!({ "url": url }));
+                    report(&app, "claude", &account, "url", json!({ "url": url }));
                 }
             }
             // A wrong code leaves it prompting again; say so and stop.
             if text.contains("Invalid code") {
-                let _ = app.logins.claude.lock().unwrap().as_mut().map(|l| l.killer.kill());
+                let _ = app.logins.claude.lock().unwrap().get_mut(&account).map(|l| l.killer.kill());
                 break;
             }
         }
         let ok = child.wait().map(|s| s.success()).unwrap_or(false);
         let current = {
             let mut slot = app.logins.claude.lock().unwrap();
-            if slot.as_ref().map(|l| l.id) == Some(id) {
-                slot.take();
+            if slot.get(&account).map(|l| l.id) == Some(id) {
+                slot.remove(&account);
                 true
             } else {
                 false
@@ -200,15 +230,15 @@ fn start_claude(app: &Arc<App>) -> Result<()> {
             return; // replaced or cancelled
         }
         if ok && !text.contains("Invalid code") {
-            report(&app, "claude", "done", json!({}));
-            restart_idle_claude(&app);
+            report(&app, "claude", &account, "done", json!({}));
+            restart_idle_claude(&app, &account);
         } else {
             let error = if text.contains("Invalid code") {
                 "That code was not accepted. Start again and paste the whole code.".to_string()
             } else {
                 last_line(&text).unwrap_or_else(|| "The login did not finish.".into())
             };
-            report(&app, "claude", "failed", json!({ "error": error }));
+            report(&app, "claude", &account, "failed", json!({ "error": error }));
         }
         runtime.spawn(async move { app.broadcast(status(&app).await) });
     });
@@ -216,7 +246,7 @@ fn start_claude(app: &Arc<App>) -> Result<()> {
 }
 
 /// The code from the sign-in page, typed into `claude auth login`.
-pub fn code(app: &Arc<App>, engine: &str, code: &str) -> Result<()> {
+pub fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<()> {
     if engine != "claude" {
         bail!("only Claude Code takes a code");
     }
@@ -225,42 +255,42 @@ pub fn code(app: &Arc<App>, engine: &str, code: &str) -> Result<()> {
         bail!("paste the code from the sign-in page");
     }
     let mut slot = app.logins.claude.lock().unwrap();
-    let login = slot.as_mut().context("no Claude login is running; start again")?;
+    let login = slot.get_mut(account).context("no Claude login is running; start again")?;
     login.writer.write_all(code.as_bytes())?;
     login.writer.write_all(b"\r")?;
     login.writer.flush()?;
     drop(slot);
-    report(app, "claude", "checking", json!({}));
+    report(app, "claude", account, "checking", json!({}));
     Ok(())
 }
 
-pub async fn cancel(app: &Arc<App>, engine: &str) -> Result<()> {
+pub async fn cancel(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
     match engine {
-        "claude" => cancel_claude(app),
+        "claude" => cancel_claude(app, account),
         "codex" => {
-            let old = app.logins.codex.lock().unwrap().take();
-            if let (Some(id), Some(client)) = (old, app.codex.get()) {
+            let old = app.logins.codex.lock().unwrap().remove(account);
+            if let (Some(id), Some(client)) = (old, app.codex_running(account)) {
                 let _ = client.request("account/login/cancel", json!({ "loginId": id })).await;
             }
         }
         _ => bail!("unknown engine {engine}"),
     }
-    report(app, engine, "cancelled", json!({}));
+    report(app, engine, account, "cancelled", json!({}));
     Ok(())
 }
 
-fn cancel_claude(app: &Arc<App>) {
-    if let Some(mut old) = app.logins.claude.lock().unwrap().take() {
+fn cancel_claude(app: &Arc<App>, account: &str) {
+    if let Some(mut old) = app.logins.claude.lock().unwrap().remove(account) {
         let _ = old.killer.kill();
     }
 }
 
 /// A sidecar started while logged out keeps failing, so idle Claude sessions
 /// get a fresh one with their next message.
-fn restart_idle_claude(app: &Arc<App>) {
+fn restart_idle_claude(app: &Arc<App>, account: &str) {
     let mut map = app.sessions.lock().unwrap();
     for s in map.values_mut() {
-        if matches!(s.backend, Backend::Claude { .. }) && s.meta.status == "idle" {
+        if matches!(s.backend, Backend::Claude { .. }) && s.meta.status == "idle" && s.meta.account == account {
             s.backend = Backend::Pending;
         }
     }
