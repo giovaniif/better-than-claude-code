@@ -1,8 +1,8 @@
 # Switchyard
 
-**One window for Claude Code and Codex.** Run several agents side by side, on your Mac or on your own servers, switch models mid-conversation, and review every change before it lands.
+**One window for Claude Code, Codex, OpenCode and Grok.** Run several agents side by side, on your Mac or on your own servers, switch models mid-conversation, and review every change before it lands.
 
-Switchyard drives the `claude` and `codex` CLIs you already have, with the logins you already have. It never asks for an API key or a password, and nothing leaves your machines except what the CLIs themselves send.
+Switchyard drives the `claude`, `codex`, `opencode` and `grok` CLIs you already have, with the logins you already have. It never stores an API key or a password (an OpenCode provider key you paste goes straight to OpenCode), and nothing leaves your machines except what the CLIs themselves send.
 
 ![A Codex session fixing a flaky test, with the diff in the Changes pane](docs/screenshots/session.png)
 
@@ -18,7 +18,7 @@ Switchyard drives the `claude` and `codex` CLIs you already have, with the login
 
 ## What it does
 
-**Both engines, one thread style.** Claude Code and Codex sessions look and work the same way: streamed answers, the commands each agent ran, its edits as diffs, and approvals inline. Switch models mid-session; picking the other engine's model hands the conversation off with a summary of the work so far.
+**Every engine, one thread style.** Claude Code, Codex, OpenCode and Grok sessions look and work the same way: streamed answers, the commands each agent ran, its edits as diffs, and approvals inline. Switch models mid-session; picking another engine's model hands the conversation off with a summary of the work so far.
 
 **A worktree per session.** Every session in a git repository gets its own branch and worktree, so agents never trip over each other or your checkout. A Changes pane shows the diff, a Terminal pane gives you a shell in the same folder, and a Pull request pane shows the branch's PR, checks and review threads.
 
@@ -65,7 +65,7 @@ Switchyard drives the `claude` and `codex` CLIs you already have, with the login
 
 ### Mac app
 
-1. Install and log in to the engines you want: [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`claude`) and/or [Codex](https://github.com/openai/codex) (`codex`).
+1. Install the engines you want: [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`claude`), [Codex](https://github.com/openai/codex) (`codex`), [OpenCode](https://opencode.ai) (`npm i -g opencode-ai`) and/or xAI's Grok CLI (`npm i -g @xai-official/grok`). Log in from a terminal or later from the Hosts page.
 2. [Download Switchyard.dmg](https://github.com/giovaniif/better-than-claude-code/releases/latest/download/Switchyard.dmg), open it and drag Switchyard to Applications. It is signed and notarized, for Apple Silicon Macs.
 3. Open it, describe a task, pick a folder and send.
 
@@ -92,7 +92,7 @@ Switchyard also ships as one Docker image you can deploy with Coolify or Docker 
 ```
 
 - **yardd** owns every agent process and keeps each session's events in SQLite, so the UI can close, reload or reconnect without losing anything. It listens only on loopback and refuses browser origins other than its own page.
-- **Codex** runs one `codex app-server` per account; **Claude Code** runs through the Agent SDK in a small Bun sidecar per session. Both are normalized to the same events.
+- **Codex** runs one `codex app-server` per account; **Claude Code** runs through the Agent SDK in a small Bun sidecar per session. **OpenCode** and **Grok** run as one ACP agent (`opencode acp`, `grok agent stdio`) per account. All are normalized to the same events.
 - **Remote hosts** are other yardds reached through an SSH tunnel the local one manages. Nothing new is exposed on the network.
 
 The full design and its trade-offs are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

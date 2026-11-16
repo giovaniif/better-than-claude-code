@@ -1,6 +1,6 @@
 # Switchyard agent guide
 
-One UI for Claude Code and Codex sessions. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything: it holds the decisions and what is already built.
+One UI for Claude Code, Codex, OpenCode and Grok sessions. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything: it holds the decisions and what is already built.
 
 - `crates/yardd`: Rust daemon. Owns agent processes, the event log, terminals, host stats. Serves the UI and a WebSocket.
 - `sidecar/yard-claude`: Bun/TypeScript bridge to the Claude Agent SDK, one process per Claude session.
