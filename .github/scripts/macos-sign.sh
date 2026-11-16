@@ -25,7 +25,15 @@ make_dmg() {
   mkdir -p "$stage"
   cp -R "$app" "$stage/"
   ln -s /Applications "$stage/Applications"
-  hdiutil create -volname Switchyard -srcfolder "$stage" -ov -format UDZO "$1"
+  # On hosted runners hdiutil sometimes fails with "Resource busy" while
+  # something (Spotlight, XProtect) still holds the staged app; it clears in
+  # seconds, and failing here throws away a build that is already notarized.
+  for attempt in 1 2 3 4 5; do
+    hdiutil create -volname Switchyard -srcfolder "$stage" -ov -format UDZO "$1" && return 0
+    echo "hdiutil create failed (attempt $attempt), retrying"
+    sleep $((attempt * 5))
+  done
+  return 1
 }
 
 if [ -z "${MACOS_CERTIFICATE:-}" ]; then
