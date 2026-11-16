@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
-import { accountChoices, accountLabel, accountName, accountOf, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
+import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -1250,6 +1250,9 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const pickAccount = (engine: Engine, id: string) => {
     localStorage.setItem(pickKey(engine), id);
     setPicked({ ...picked, [pickKey(engine)]: id });
+    // Picking an account under the other engine means running on it.
+    const next = engine === choice.engine ? null : choiceOnEngine(models, engine, choice.effort);
+    if (next) setChoice(next);
   };
   const [permission, setPermission] = useState<Permission>(() => {
     const saved = localStorage.getItem("yard.permission");
