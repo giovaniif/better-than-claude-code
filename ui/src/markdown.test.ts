@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { splitRow, tableSegments } from "./markdown";
+import { splitRow, blockSegments } from "./markdown";
 
 describe("splitRow", () => {
   test("drops the outer pipes and trims cells", () => {
@@ -14,9 +14,9 @@ describe("splitRow", () => {
   });
 });
 
-describe("tableSegments", () => {
+describe("blockSegments", () => {
   test("a table with alignments, short and long rows", () => {
-    const segs = tableSegments(["| File | Result | Note |", "|---|:---:|--:|", "| a.ts | pass |", "| b.ts | fail | x | extra |"]);
+    const segs = blockSegments(["| File | Result | Note |", "|---|:---:|--:|", "| a.ts | pass |", "| b.ts | fail | x | extra |"]);
     expect(segs).toEqual([
       {
         kind: "table",
@@ -32,19 +32,55 @@ describe("tableSegments", () => {
     ]);
   });
   test("text right before and after a table stays text", () => {
-    const segs = tableSegments(["Results:", "| a | b |", "| - | - |", "| 1 | 2 |", "That is all."]);
+    const segs = blockSegments(["Results:", "| a | b |", "| - | - |", "| 1 | 2 |", "That is all."]);
     expect(segs.map((s) => s.kind)).toEqual(["text", "table", "text"]);
     expect(segs[0]).toEqual({ kind: "text", lines: ["Results:"] });
     expect(segs[2]).toEqual({ kind: "text", lines: ["That is all."] });
   });
   test("a pipe in prose is not a table", () => {
-    expect(tableSegments(["use a | b to pipe", "then run it"])).toEqual([{ kind: "text", lines: ["use a | b to pipe", "then run it"] }]);
-    expect(tableSegments(["a | b", "---"])).toEqual([{ kind: "text", lines: ["a | b", "---"] }]);
+    expect(blockSegments(["use a | b to pipe", "then run it"])).toEqual([{ kind: "text", lines: ["use a | b to pipe", "then run it"] }]);
+    expect(blockSegments(["a | b", "---"])).toEqual([{ kind: "text", lines: ["a | b", "---"] }]);
   });
   test("a delimiter row with another number of cells is not a table", () => {
-    expect(tableSegments(["| a | b |", "|---|"]).every((s) => s.kind === "text")).toBe(true);
+    expect(blockSegments(["| a | b |", "|---|"]).every((s) => s.kind === "text")).toBe(true);
   });
   test("a header without body rows is still a table", () => {
-    expect(tableSegments(["| a | b |", "|---|---|"])).toEqual([{ kind: "table", table: { header: ["a", "b"], align: [null, null], rows: [] } }]);
+    expect(blockSegments(["| a | b |", "|---|---|"])).toEqual([{ kind: "table", table: { header: ["a", "b"], align: [null, null], rows: [] } }]);
+  });
+});
+
+describe("blockSegments: headings and lists without a blank line", () => {
+  test("a heading over its text, a list under its lead-in", () => {
+    expect(blockSegments(["## Summary", "Fixed the parser."])).toEqual([
+      { kind: "heading", text: "Summary" },
+      { kind: "text", lines: ["Fixed the parser."] },
+    ]);
+    expect(blockSegments(["Changes:", "- src/a.ts", "* src/b.ts"])).toEqual([
+      { kind: "text", lines: ["Changes:"] },
+      { kind: "ul", items: ["src/a.ts", "src/b.ts"] },
+    ]);
+  });
+  test("a whole-paragraph list stays one list", () => {
+    expect(blockSegments(["1. one", "2. two"])).toEqual([{ kind: "ol", items: ["one", "two"] }]);
+  });
+  test("a numbered list interrupting text must start at 1", () => {
+    expect(blockSegments(["Steps:", "1. build", "2. test"])).toEqual([
+      { kind: "text", lines: ["Steps:"] },
+      { kind: "ol", items: ["build", "test"] },
+    ]);
+    expect(blockSegments(["It shipped in", "2024. Then it grew."])).toEqual([{ kind: "text", lines: ["It shipped in", "2024. Then it grew."] }]);
+  });
+  test("an indented line continues its item; a bullet switch starts a new list", () => {
+    expect(blockSegments(["- first item", "  wraps here", "1. then numbered"])).toEqual([
+      { kind: "ul", items: ["first item wraps here"] },
+      { kind: "ol", items: ["then numbered"] },
+    ]);
+  });
+  test("not headings or lists", () => {
+    expect(blockSegments(["#hashtag", "**bold** start", "-1 degrees"])).toEqual([{ kind: "text", lines: ["#hashtag", "**bold** start", "-1 degrees"] }]);
+  });
+  test("closing hashes are dropped from a heading", () => {
+    expect(blockSegments(["### Notes ###"])).toEqual([{ kind: "heading", text: "Notes" }]);
+    expect(blockSegments(["## Use C#"])).toEqual([{ kind: "heading", text: "Use C#" }]);
   });
 });

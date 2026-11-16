@@ -1,6 +1,7 @@
-// Block parsing for the thread's Markdown that needs more than a regex:
-// GFM tables. Agents summarise changes and test results as tables, and as
-// source they read as pipe soup. The cells stay text; App.tsx renders them.
+// Block parsing for the thread's Markdown. A blank line is not the only
+// block boundary: agents put a list right under "Changes:", a heading right
+// over its text, and summarise test runs as GFM tables. As source those read
+// as "- " lines and pipe soup. Everything stays text; App.tsx renders it.
 
 export type Align = "left" | "center" | "right" | null;
 
@@ -11,7 +12,11 @@ export interface MdTable {
   rows: string[][];
 }
 
-export type MdSegment = { kind: "text"; lines: string[] } | { kind: "table"; table: MdTable };
+export type MdSegment =
+  | { kind: "text"; lines: string[] }
+  | { kind: "heading"; text: string }
+  | { kind: "ul" | "ol"; items: string[] }
+  | { kind: "table"; table: MdTable };
 
 /** A row's cells: outer pipes dropped, split on pipes that are neither
  *  escaped (`\|`) nor inside inline code. */
@@ -48,33 +53,63 @@ function alignments(line: string): Align[] | null {
   return cells.map((c) => (c.startsWith(":") && c.endsWith(":") ? "center" : c.endsWith(":") ? "right" : c.startsWith(":") ? "left" : null));
 }
 
-/** A paragraph's lines, with any table in them pulled out. A table is a
- *  header row with a pipe, a delimiter row with as many cells, then every
- *  following line that has a pipe. */
-export function tableSegments(lines: string[]): MdSegment[] {
+// Closing hashes need a space before them, as in GFM: "## Use C#" keeps its "#".
+const HEADING = /^#{1,6} +(.+?)(?:\s+#+)?\s*$/;
+const BULLET = /^\s*[-*+] +(.*)$/;
+const NUMBERED = /^\s*(\d{1,9})[.)] +(.*)$/;
+
+/** A paragraph's lines split into blocks. Headings, lists and tables start
+ *  on any line, as in GFM; a numbered list that interrupts text must start
+ *  at 1, so a sentence that begins "2024. " stays text. An indented line
+ *  continues the list item above it. A table is a header row with a pipe,
+ *  a delimiter row with as many cells, then every following line that has
+ *  a pipe. */
+export function blockSegments(lines: string[]): MdSegment[] {
   const out: MdSegment[] = [];
-  const text = (l: string) => {
-    const last = out[out.length - 1];
-    if (last?.kind === "text") last.lines.push(l);
-    else out.push({ kind: "text", lines: [l] });
-  };
+  const last = () => out[out.length - 1];
   let i = 0;
   while (i < lines.length) {
-    const header = lines[i].includes("|") ? splitRow(lines[i]) : null;
-    const align = header && i + 1 < lines.length ? alignments(lines[i + 1]) : null;
-    if (!header || !align || align.length !== header.length) {
-      text(lines[i]);
+    const line = lines[i];
+    const heading = line.match(HEADING);
+    if (heading) {
+      out.push({ kind: "heading", text: heading[1] });
       i++;
       continue;
     }
-    const rows: string[][] = [];
-    i += 2;
-    while (i < lines.length && lines[i].includes("|")) {
-      const cells = splitRow(lines[i]);
-      rows.push(header.map((_, k) => cells[k] ?? ""));
+    const bullet = line.match(BULLET);
+    const numbered = line.match(NUMBERED);
+    const prev = last();
+    const inList = prev && (prev.kind === "ul" || prev.kind === "ol");
+    if (bullet || (numbered && (out.length === 0 || inList || numbered[1] === "1"))) {
+      const kind = bullet ? "ul" : "ol";
+      const text = bullet ? bullet[1] : numbered![2];
+      if (prev && prev.kind === kind) prev.items.push(text);
+      else out.push({ kind, items: [text] });
       i++;
+      continue;
     }
-    out.push({ kind: "table", table: { header, align, rows } });
+    if (inList && /^\s{2,}\S/.test(line)) {
+      const items = (prev as { items: string[] }).items;
+      items[items.length - 1] += ` ${line.trim()}`;
+      i++;
+      continue;
+    }
+    const header = line.includes("|") ? splitRow(line) : null;
+    const align = header && i + 1 < lines.length ? alignments(lines[i + 1]) : null;
+    if (header && align && align.length === header.length) {
+      const rows: string[][] = [];
+      i += 2;
+      while (i < lines.length && lines[i].includes("|")) {
+        const cells = splitRow(lines[i]);
+        rows.push(header.map((_, k) => cells[k] ?? ""));
+        i++;
+      }
+      out.push({ kind: "table", table: { header, align, rows } });
+      continue;
+    }
+    if (prev?.kind === "text") prev.lines.push(line);
+    else out.push({ kind: "text", lines: [line] });
+    i++;
   }
   return out;
 }

@@ -36,6 +36,15 @@ yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-table\n\n| 
 yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose table th","hasText":"Result"}},{"expect":{"css":".prose table td","hasText":"src/b.ts"}},{"expect":{"css":".prose table td code","hasText":"fail"}},{"expect":{"css":".prose table tr"},"count":3},{"expect":{"css":".prose","hasText":"|---"},"visible":false},{"eval":"document.documentElement.scrollWidth <= window.innerWidth","equals":true},{"shot":"table"}]'
 ```
 
+### markdown-blocks-without-blank-lines
+Viewports: both
+A heading or a list right under a line of text, with no blank line between them, still renders as a heading and a list, not as raw `## ` and `- ` text.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-blocks\n\n## Summary\nFixed the parser.\n\nChanges:\n- src/a.ts\n- src/b.ts"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose h3","hasText":"Summary"}},{"expect":{"css":".prose li","hasText":"src/b.ts"}},{"expect":{"css":".prose p","hasText":"Changes:"}},{"expect":{"css":".prose","hasText":"## Summary"},"visible":false},{"expect":{"css":".prose","hasText":"- src/a.ts"},"visible":false},{"shot":"blocks"}]'
+```
+
 ### thinking-folds
 A finished turn with thinking folds into "Worked for …"; opening it shows the
 thought's first line.
@@ -79,7 +88,7 @@ pressing it puts the selection in the reply box as a quote, ready for a reply
 under it. Selecting your own message shows no button.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"Echo: TEST-say hello"},{"expect":{"role":"button","name":"Reply","exact":true},"inViewport":true},{"shot":"reply-button"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":"label:Message","value":"> Echo: TEST-say hello\n\n"},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false},{"shot":"quoted"}]'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"Echo: TEST-say hello"},{"expect":{"role":"button","name":"Reply","exact":true},"inViewport":true},{"shot":"reply-button"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":"label:Message","value":"> Echo: TEST-say hello\n\n"},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false},{"shot":"quoted"}]'
 ```
 
 ### no-reply-on-own-message
@@ -162,4 +171,5 @@ yv drive 'session:{{sub_sid}}' --steps '[{"expect":"css:.thread","text":"Echo: [
 ```
 
 ## Gotchas
+- Recipes share one isolated yardd and run in order, and several send to `sid_echo`: by `reply-to-part-of-answer` its first answer is scrolled out of view at 390 px, so that recipe scrolls the paragraph into view before selecting it (a user only selects what they see).
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.
