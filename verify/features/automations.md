@@ -86,6 +86,17 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Edit: TEST-Patrol"},{"shot":"edit"}]'
 ```
 
+### edit-keeps-an-unlisted-model
+Edit an automation whose saved model is not in the host's list (retired or renamed): the form keeps its engine and model, named by id, and saving a new name does not switch it to another engine. Both viewports, one save each.
+
+```sh
+yv api '{"op":"automation.save","automation":{"name":"TEST-Retired model","prompt":"TEST-retired","cwd":"{{repo}}","engine":"codex","model":"gpt-retired","effort":"low","permission":"ask","schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}' --save retired_id=automation.id
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Edit: TEST-Retired model"},{"wait":1000},{"expect":{"css":".automation-pickers","hasText":"gpt-retired"}},{"fill":"label:Automation name","value":"TEST-Retired desktop"},{"shot":"edit"},{"click":"role:button:Save automation"},{"expect":{"css":".automation","hasText":"TEST-Retired desktop"}}]'
+yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"id":"{{retired_id}}","name":"TEST-Retired desktop","engine":"codex","model":"gpt-retired","effort":"low"}]}'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Edit: TEST-Retired desktop"},{"wait":1000},{"expect":{"css":".automation-pickers","hasText":"gpt-retired"}},{"fill":"label:Automation name","value":"TEST-Retired mobile"},{"shot":"edit"},{"click":"role:button:Save automation"},{"expect":{"css":".automation","hasText":"TEST-Retired mobile"}}]'
+yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"id":"{{retired_id}}","name":"TEST-Retired mobile","engine":"codex","model":"gpt-retired"}]}'
+```
+
 ### disable-stops-the-schedule
 Turning the switch off shows "off" as the next run and stores `enabled: false`; turning it back on schedules again.
 
@@ -133,3 +144,4 @@ yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
+- `disable-stops-the-schedule` expects no card to read "Next run off" once TEST-Patrol is back on, so a recipe before it must leave its own automations enabled (a daily slot will not fire during a run); recipes after it may add disabled ones.
