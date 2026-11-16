@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "833719cc589d2730f4fb1ed2a4930d1990039e0c",
+    "short": "833719c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T06:51:14.702Z"
+  },
+  "dir": ".verify/evidence/add-host-keeps-form-r3-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4251,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/add-host-keeps-form-r3-base-desktop/after-refused-add-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "host.add",
+          "message": "the remote port must be a number from 1 to 65535"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

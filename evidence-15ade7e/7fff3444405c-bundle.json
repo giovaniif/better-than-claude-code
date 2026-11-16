@@ -1,0 +1,202 @@
+{
+  "v": 1,
+  "claim": "Hosts: Add host with a value yardd refuses (remote port 99999) showed the error banner and closed the form at once, losing everything typed; the form now stays open with its fields and closes once the host appears",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-827f",
+  "base": "14f9bb45e2ac18f9b15e4e769f01ea8245494b06",
+  "head": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T06:51:10.032Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "833719cc589d2730f4fb1ed2a4930d1990039e0c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6e41ab58f3587a8932b7ba624a6446294b466a1a7f6fb0bfd5c348c579479173"
+        },
+        {
+          "path": "p1-after-refused-add-desktop.png",
+          "sha256": "f9b859fb58613d766e30fb4943c7c96a64ec0e9fea41569fadc3866b68064580"
+        }
+      ],
+      "addedAt": "2026-11-16T06:51:19.662Z",
+      "failedApi": [
+        "host.add: the remote port must be a number from 1 to 65535"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "833719cc589d2730f4fb1ed2a4930d1990039e0c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "64914841e651abeb55c2720ca582ee435467f5eefa06c906ba7e1391469f6b88"
+        },
+        {
+          "path": "p2-after-refused-add-mobile.png",
+          "sha256": "b62e32a279509fe884c89dd96bb02b9d70e92c21f000a29360515d781ad0aca8"
+        }
+      ],
+      "addedAt": "2026-11-16T06:51:25.003Z",
+      "failedApi": [
+        "host.add: the remote port must be a number from 1 to 65535"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "833719cc589d2730f4fb1ed2a4930d1990039e0c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "5c844a1b81b8d0c4f006d85c727ab737a1d1e6e459c72b3b5d7f303c87eb41d7"
+        }
+      ],
+      "addedAt": "2026-11-16T06:51:25.050Z",
+      "cmd": "verify/yv map run hosts --recipe refused-add-keeps-the-form",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "fd820e446905a8c6cfa4bce9d7c6a1cb7e5e4b0d37df4c2383b46a45792400bb"
+        },
+        {
+          "path": "p4-after-refused-add-desktop.png",
+          "sha256": "54d41b73dd728de8f91c7b0bfb6b619dba7aa482cd04f439ba0fc7e408bd4950"
+        },
+        {
+          "path": "p4-after-fixed-add-desktop.png",
+          "sha256": "f67b163297cb1d973b16fb625d65a0ff5b37243d8d353713a2c48150eb1530a8"
+        }
+      ],
+      "addedAt": "2026-11-16T07:03:21.197Z",
+      "failedApi": [
+        "host.add: the remote port must be a number from 1 to 65535"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "5a40554fa15c50d7eb287eaab39ab6eabb14e7aeec03b22709b82318b939688a"
+        },
+        {
+          "path": "p5-after-refused-add-mobile.png",
+          "sha256": "e9eb0b12cdd70de92aec7756b6d04fec69701ebecdb1205a83b2a1a8243ec4c9"
+        },
+        {
+          "path": "p5-after-fixed-add-mobile.png",
+          "sha256": "bc675e4e9c449b1a6c0dfba6fe73207bce68b4269095e27b71509f8c4fdd7b28"
+        }
+      ],
+      "addedAt": "2026-11-16T07:03:26.406Z",
+      "failedApi": [
+        "host.add: the remote port must be a number from 1 to 65535"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "95f4b7e34b73240ff306e1eb20d3992a33a1e2d34c57190c60f4bbc9b381bd95"
+        }
+      ],
+      "addedAt": "2026-11-16T07:03:26.464Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run hosts --recipe refused-add-keeps-the-form",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "3c04420e500e3c23fe5d5510268a5bab61e37a96d8b708b75da85fcc649c8a91"
+        }
+      ],
+      "addedAt": "2026-11-16T07:03:32.509Z",
+      "cmd": "verify/yv design-check --base 14f9bb45e2ac",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "15ade7e25ab80ca2332fcb83acbb89422dd1b406",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-hosts.json",
+          "sha256": "1346d7bd3058d069a2ea46d4b650f30cfa67a204e0d380abdbc5b5adaaf70ccd"
+        }
+      ],
+      "addedAt": "2026-11-16T07:03:32.583Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form"
+      ]
+    }
+  ]
+}

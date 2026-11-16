@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run hosts --recipe refused-add-keeps-the-form
+# exit 0 after 5995 ms at 15ade7e25ab80ca2332fcb83acbb89422dd1b406
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-16T07:03:32.454Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "refused-add-keeps-the-form",
+          "status": "pass",
+          "ms": 4634
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 122 pass
+ 0 fail
+ 305 expect() calls
+Ran 122 tests across 10 files. [57.00ms]
