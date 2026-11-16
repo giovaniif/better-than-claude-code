@@ -151,6 +151,15 @@ describe("sessions", () => {
     s = reduce(s, { t: "dismiss" });
     expect(s.error).toBeNull();
   });
+
+  test("an op a host's older yardd does not know says to update that host", () => {
+    let s = server(initial, { op: "snapshot", sessions: [], hosts: [{ id: "h1", name: "server", kind: "ssh", status: "connected" }] });
+    s = server(s, { op: "error", for: "account.add", hostId: "h1", message: "unknown op `account.add`" });
+    expect(s.error).toBe("server runs an older Switchyard. Use Update Switchyard on its card in Hosts, then try again.");
+    // This machine's own yardd is the app's, so its message stays as it is.
+    s = server(s, { op: "error", for: "account.add", message: "unknown op `account.add`" });
+    expect(s.error).toBe("unknown op `account.add`");
+  });
 });
 
 describe("route in the URL", () => {

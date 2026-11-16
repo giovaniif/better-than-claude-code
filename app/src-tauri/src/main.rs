@@ -16,12 +16,17 @@ use std::{
     net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
     process::{Command, Stdio},
+    sync::atomic::{AtomicBool, Ordering},
     thread,
     time::{Duration, Instant},
 };
 
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+use tauri::{
+    menu::{Menu, MenuItem},
+    webview::NewWindowResponse,
+    AppHandle, Manager, Url, WebviewUrl, WebviewWindowBuilder,
+};
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 use tauri_plugin_updater::UpdaterExt;
 
 /// Keep in step with `DEFAULT_PORT` in crates/yardd/src/main.rs.
@@ -35,6 +40,12 @@ const OLDER_DAEMON: &str = "an older daemon is running, quit it to update";
 
 /// How often a running app looks for a new release, after the check at launch.
 const UPDATE_EVERY: Duration = Duration::from_secs(6 * 60 * 60);
+
+const CHECK_UPDATES: &str = "check-updates";
+
+/// One update check at a time: the timer's and the menu's would otherwise
+/// download the same release twice.
+static CHECKING: AtomicBool = AtomicBool::new(false);
 
 /// `SWITCHYARD_PORT` lets a second copy run next to the real one.
 fn port() -> u16 {
@@ -200,14 +211,46 @@ fn ask_restart(app: &AppHandle, port: u16, message: String) {
         });
 }
 
+fn tell(app: &AppHandle, kind: MessageDialogKind, message: String) {
+    app.dialog().message(message).title("Switchyard").kind(kind).show(|_| {});
+}
+
 /// Installs a newer release in place, then offers to restart into it. Only
 /// for the packaged app: a build run from the repo has nothing to replace.
-async fn check_for_update(app: &AppHandle, port: u16) -> Result<(), String> {
+/// `asked`: from the menu, so every outcome gets an answer; the timer's
+/// checks stay silent unless there is something to install.
+async fn check_for_update(app: &AppHandle, port: u16, asked: bool) -> Result<(), String> {
+    if CHECKING.swap(true, Ordering::SeqCst) {
+        if asked {
+            tell(app, MessageDialogKind::Info, "Already checking for updates.".into());
+        }
+        return Ok(());
+    }
+    let result = download_update(app, port, asked).await;
+    CHECKING.store(false, Ordering::SeqCst);
+    if let (Err(e), true) = (&result, asked) {
+        tell(app, MessageDialogKind::Error, format!("Could not check for updates.\n\n{e}"));
+    }
+    result
+}
+
+async fn download_update(app: &AppHandle, port: u16, asked: bool) -> Result<(), String> {
     let Some(update) = app.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())? else {
+        if asked {
+            let current = app.package_info().version.to_string();
+            tell(app, MessageDialogKind::Info, format!("Switchyard {current} is the latest version."));
+        }
         return Ok(());
     };
     let version = update.version.clone();
     eprintln!("switchyard: installing {version}");
+    if asked {
+        tell(
+            app,
+            MessageDialogKind::Info,
+            format!("Downloading Switchyard {version}. You will be asked to restart once it is installed."),
+        );
+    }
     update.download_and_install(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
     ask_restart(
         app,
@@ -242,11 +285,51 @@ fn ensure_yardd(resources: Option<PathBuf>, port: u16) -> Option<String> {
     }
 }
 
+/// Links the page opens in a new tab (sign-in pages, pull requests,
+/// notifications) go to the default browser. WebKit drops them otherwise:
+/// the window has no tabs to put them in.
+fn open_outside(url: &Url) {
+    if !matches!(url.scheme(), "http" | "https") {
+        eprintln!("switchyard: not opening {}: only web links leave the app", url.scheme());
+        return;
+    }
+    if let Err(e) = Command::new("/usr/bin/open").arg(url.as_str()).spawn() {
+        eprintln!("switchyard: could not open {url}: {e}");
+    }
+}
+
+/// The standard menu, with Check for Updates… under About in the app menu.
+fn app_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
+    let menu = Menu::default(app)?;
+    let check = MenuItem::with_id(app, CHECK_UPDATES, "Check for Updates…", true, None::<&str>)?;
+    if let Some(first) = menu.items()?.first().and_then(|item| item.as_submenu()) {
+        first.insert(&check, 1)?;
+    }
+    Ok(menu)
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .menu(app_menu)
+        .on_menu_event(|app, event| {
+            if event.id() != CHECK_UPDATES {
+                return;
+            }
+            let packaged = app.path().resource_dir().ok().as_deref().and_then(bundled).is_some();
+            if !packaged {
+                tell(app, MessageDialogKind::Info, "This build runs from the repository. Updates come with the packaged app.".into());
+                return;
+            }
+            let handle = app.clone();
+            tauri::async_runtime::spawn(async move {
+                if let Err(e) = check_for_update(&handle, port(), true).await {
+                    eprintln!("switchyard: update check failed: {e}");
+                }
+            });
+        })
         .setup(|app| {
             let port = port();
             let resources = app.path().resource_dir().ok();
@@ -267,6 +350,10 @@ fn main() {
                 // Tauri's own file-drop handler would swallow drops, and the
                 // composer attaches files through the page's HTML5 drop events.
                 .disable_drag_drop_handler()
+                .on_new_window(|url, _| {
+                    open_outside(&url);
+                    NewWindowResponse::Deny
+                })
                 .build()?;
 
             if packaged {
@@ -284,7 +371,7 @@ fn main() {
                 let handle = app.handle().clone();
                 tauri::async_runtime::spawn(async move {
                     loop {
-                        if let Err(e) = check_for_update(&handle, port).await {
+                        if let Err(e) = check_for_update(&handle, port, false).await {
                             eprintln!("switchyard: update check failed: {e}");
                         }
                         tokio::time::sleep(UPDATE_EVERY).await;
