@@ -46,7 +46,11 @@ export function formatReset(resetsAt: number | null, now: number): string {
   return `resets in ${mins} min`;
 }
 
-const meter = (key: string, label: string, percent: number, resetsAt: number | null): Meter => {
+/** The engines report usage only while they run, so a figure can outlive its
+ *  window. Once the reset time has passed nothing has been used since (that
+ *  would have come with a newer reset time), so the window is empty again. */
+const meter = (key: string, label: string, percent: number, resetsAt: number | null, now?: number): Meter => {
+  if (resetsAt != null && now != null && resetsAt <= now) return { key, label, percent: 0, resetsAt: null, level: "ok" };
   const p = clamp(percent);
   return { key, label, percent: p, resetsAt, level: levelOf(p) };
 };
@@ -63,13 +67,14 @@ const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 /** The SDK's window names that are not a plan limit of their own. */
 const NOT_A_LIMIT = new Set(["seven_day_oauth_apps", "seven_day_overage_included"]);
 
-/** An engine's meters, the 5-hour window first, then the week, then per-model weeks. */
-export function metersFor(engine: Engine, usage: Usage): Meter[] {
+/** An engine's meters, the 5-hour window first, then the week, then per-model
+ *  weeks. With `now`, windows whose reset time has passed read as empty. */
+export function metersFor(engine: Engine, usage: Usage, now?: number): Meter[] {
   if (engine === "codex") {
     const c = usage.codex;
     const out: Meter[] = [];
-    if (c?.primary) out.push(meter("primary", windowLabel(c.primary.windowDurationMins, "5-hour"), c.primary.usedPercent, toMs(c.primary.resetsAt)));
-    if (c?.secondary) out.push(meter("secondary", windowLabel(c.secondary.windowDurationMins, "Week"), c.secondary.usedPercent, toMs(c.secondary.resetsAt)));
+    if (c?.primary) out.push(meter("primary", windowLabel(c.primary.windowDurationMins, "5-hour"), c.primary.usedPercent, toMs(c.primary.resetsAt), now));
+    if (c?.secondary) out.push(meter("secondary", windowLabel(c.secondary.windowDurationMins, "Week"), c.secondary.usedPercent, toMs(c.secondary.resetsAt), now));
     return out;
   }
   const c = usage.claude;
@@ -83,7 +88,7 @@ export function metersFor(engine: Engine, usage: Usage): Meter[] {
   const out: Meter[] = [];
   const add = (key: string, label: string) => {
     const w = windows[key];
-    if (w && w.utilization != null) out.push(meter(key, label, w.utilization * 100, toMs(w.resetsAt)));
+    if (w && w.utilization != null) out.push(meter(key, label, w.utilization * 100, toMs(w.resetsAt), now));
   };
   add("five_hour", "5-hour");
   add("seven_day", "Week");
