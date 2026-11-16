@@ -1710,8 +1710,8 @@ async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
     let second = run_automation(&mut c, &id, false).await;
     assert_eq!(second["outcome"], "skipped", "{second}");
     assert!(second["reason"].as_str().unwrap().contains("still going"), "{second}");
-    let n = automations_of(&c)[0]["lastRun"].clone();
-    assert_eq!(n["outcome"], "skipped");
+    // The broadcast and the reply travel separately: wait for the list to say so too.
+    c.wait_for("lastRun skipped", |m| m["op"] == "automations" && m["automations"][0]["lastRun"]["outcome"] == "skipped").await;
     let sessions = c.log.iter().filter(|m| m["op"] == "session").map(|m| m["session"]["id"].clone()).collect::<std::collections::HashSet<_>>();
     assert_eq!(sessions.len(), 1, "no second session");
 
