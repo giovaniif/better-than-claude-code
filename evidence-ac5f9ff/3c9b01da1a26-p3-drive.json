@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "route": "session:s1a1e38b16e5c",
+  "build": {
+    "sha": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+    "short": "ac5f9ff",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T08:48:25.211Z"
+  },
+  "dir": ".verify/evidence/folder-gone-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4644,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-gone-head/changes-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-gone-head/terminal-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "changes",
+          "message": "this session's folder no longer exists: /tmp/yv-default-666143-mwj0u2kc/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-6cdb"
+        },
+        {
+          "op": "error",
+          "for": "term.open",
+          "message": "this session's folder no longer exists: /tmp/yv-default-666143-mwj0u2kc/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-6cdb"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

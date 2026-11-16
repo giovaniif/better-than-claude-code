@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_session_whose_folder_is_gone_says_so
+# exit 101 after 3882 ms at 03609442bb6c87e8626fa16acf1c0e8ed1fd7e77
+
+
+running 1 test
+test a_session_whose_folder_is_gone_says_so ... FAILED
+
+failures:
+
+---- a_session_whose_folder_is_gone_says_so stdout ----
+
+thread 'a_session_whose_folder_is_gone_says_so' (665968) panicked at crates/yardd/tests/daemon.rs:2223:5:
+{"changes":{"error":"not a git repository"},"op":"changes","sessionId":"s1a1e38b05171"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-665967-gone-0 for inspection
+
+
+failures:
+    a_session_whose_folder_is_gone_says_so
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.15s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/patrol-3d97-gone/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 3.68s
+     Running tests/daemon.rs (target/debug/build/yardd/7bf3bc1ebbbe5c02/out/daemon-7bf3bc1ebbbe5c02)
+error: test failed, to rerun pass `-p yardd --test daemon`

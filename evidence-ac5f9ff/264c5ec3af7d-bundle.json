@@ -1,0 +1,199 @@
+{
+  "v": 1,
+  "claim": "When a session's folder was removed outside Switchyard, the Changes pane said 'Not a git repository.' and the terminal silently opened a shell in the home folder",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-3d97-gone",
+  "base": "0c1f1c2384bc7532b1cee03dfa5a5523aea95975",
+  "head": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pty.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T08:48:06.402Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "03609442bb6c87e8626fa16acf1c0e8ed1fd7e77",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "a5da0728b9e0831cb50dbbd44fd7c2f65bbe7a26b87d2436828742d79805c0f5"
+        },
+        {
+          "path": "p1-changes-desktop.png",
+          "sha256": "92bd0e3d0f0d1605367edcb10f72b93e4b4171a045ddd70b05e18131a81c5001"
+        },
+        {
+          "path": "p1-terminal-desktop.png",
+          "sha256": "ee0be37f066e00a32641b6a307bee1cf3c128fa6b49b254b5bdfa6afadff050c"
+        }
+      ],
+      "addedAt": "2026-11-16T08:48:17.485Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "03609442bb6c87e8626fa16acf1c0e8ed1fd7e77",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "4cac51ce126e21dbe219f0372e3259d642b69e5a072f77e78ac10290600114d9"
+        }
+      ],
+      "addedAt": "2026-11-16T08:48:17.527Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_session_whose_folder_is_gone_says_so",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3c9b01da1a26171851bc2aeae0cf0676912f8ee1ed02b9c9e98f5e40f70d25a8"
+        },
+        {
+          "path": "p3-changes-desktop.png",
+          "sha256": "399ffb25dc9d37b6bdc5de6b58cfe3427c82612e45d484d66ab0efc305197061"
+        },
+        {
+          "path": "p3-terminal-desktop.png",
+          "sha256": "de9cb95aa4b41fa0a2828353af8d97c8fba64e88d4ca9521da346c760d913cd3"
+        }
+      ],
+      "addedAt": "2026-11-16T08:48:31.521Z",
+      "failedApi": [
+        "changes: this session's folder no longer exists: /tmp/yv-default-666143-mwj0u2kc/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-6cdb",
+        "term.open: this session's folder no longer exists: /tmp/yv-default-666143-mwj0u2kc/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-6cdb"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "143777dee0c79957d403df1c59b0df16f89d5c15d223415565a5fbcb348c2a20"
+        }
+      ],
+      "addedAt": "2026-11-16T08:48:41.520Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && verify/yv map run terminal --recipe folder-gone",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-terminal.json",
+          "sha256": "ccaea480b1efacb7197ad591297345a06c627df67a650a7341971098a0f84052"
+        }
+      ],
+      "addedAt": "2026-11-16T08:49:05.077Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads",
+        "terminal/close-terminal",
+        "terminal/folder-gone"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-changes-pane.json",
+          "sha256": "550945b98267332a94a884c1f11a84f8743b2837cd6ece0244cfbd4b051c8b6d"
+        }
+      ],
+      "addedAt": "2026-11-16T08:50:03.286Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "changes-pane/shows-diff",
+        "changes-pane/empty-folder",
+        "changes-pane/refresh-picks-up-new-file"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ac5f9ff60577bdf59b2ba83500f984bb0dce6f40",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-pr-pane.json",
+          "sha256": "1ef77056c5a7015e56eceb373c669d9d25d60ca42e9b75fab7172a58dde42604"
+        }
+      ],
+      "addedAt": "2026-11-16T08:50:13.635Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "pr-pane/shows-pr",
+        "pr-pane/no-pr",
+        "pr-pane/send-thread-to-session",
+        "pr-pane/review-with-other-engine",
+        "pr-pane/double-click-send-to-session",
+        "pr-pane/double-click-review-with-other-engine"
+      ]
+    }
+  ]
+}
