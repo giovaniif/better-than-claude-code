@@ -23,6 +23,7 @@ import {
   type Attachment,
   type QueueReturned,
   type AccountEntry,
+  type Automation,
 } from "./protocol";
 import { createNotifier } from "./notify";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
@@ -35,7 +36,13 @@ export type UploadTarget = { host?: string; sessionId?: string };
  *  Kept for the page's life: the bytes never change. */
 const thumbs = new Map<string, Promise<string>>();
 
-export type Route = { page: "new" } | { page: "hosts" } | { page: "session"; id: string };
+export type Route =
+  | { page: "new" }
+  | { page: "hosts" }
+  | { page: "session"; id: string }
+  | { page: "automations" }
+  /** The create/edit form; `id` is `new` for a new automation. */
+  | { page: "automation"; host: string; id: string };
 
 /** The URL hash for a route, so a reload or Back lands on the same screen. */
 export function routeHash(route: Route): string {
@@ -100,6 +107,8 @@ export interface State {
   claudeSessions: Record<string, ClaudeSessionList>;
   /** Why the last import was refused, shown in the import dialog. */
   importError: string | null;
+  /** Each host's own automations, by host id (`local` is this machine). */
+  automations: Record<string, Automation[]>;
   /** `host.install` progress by host id. */
   installs: Record<string, { lines: string[]; running: boolean; ok?: boolean }>;
   error: string | null;
@@ -142,6 +151,7 @@ export const initial: State = {
   dirs: {},
   claudeSessions: {},
   importError: null,
+  automations: {},
   installs: {},
   error: null,
   errorCount: 0,
@@ -294,6 +304,7 @@ function reduceServer(state: State, msg: any): State {
         home: { ...state.home, local: msg.home ?? "" },
         workspace: { ...state.workspace, local: msg.workspace || msg.home || "" },
         engines: without(state.engines, (h) => h === "local"),
+        automations: { ...state.automations, local: (msg.automations as Automation[] | undefined) ?? [] },
       };
     }
     case "host.snapshot": {
@@ -309,6 +320,7 @@ function reduceServer(state: State, msg: any): State {
         home: { ...state.home, [id]: msg.home ?? "" },
         workspace: { ...state.workspace, [id]: msg.workspace || msg.home || "" },
         engines: without(state.engines, (h) => h === id),
+        automations: { ...state.automations, [id]: (msg.automations as Automation[] | undefined) ?? [] },
       };
     }
     case "accounts":
@@ -331,6 +343,7 @@ function reduceServer(state: State, msg: any): State {
         host: without(state.host, (h) => !known.has(h)),
         models: without(state.models, (h) => !known.has(h)),
         accounts: without(state.accounts, (h) => !known.has(h)),
+        automations: without(state.automations, (h) => !known.has(h)),
       };
     }
     case "session":
@@ -378,6 +391,8 @@ function reduceServer(state: State, msg: any): State {
         : { ...base, running: true, ok: undefined, lines: [...base.lines, m.line ?? ""].slice(-200) };
       return { ...state, installs: { ...state.installs, [m.hostId]: next } };
     }
+    case "automations":
+      return { ...state, automations: { ...state.automations, [msg.hostId ?? "local"]: msg.automations as Automation[] } };
     case "engines":
       return {
         ...state,
@@ -507,6 +522,12 @@ export interface Actions {
   removeHost(hostId: string): void;
   /** Install or update yardd on an SSH host from the release, over SSH. */
   installHost(hostId: string): void;
+  /** Create (no `id`) or change an automation on a host; only the fields given change.
+   *  Resolves with the saved automation, or an error fit to show. */
+  saveAutomation(host: string, automation: Partial<Automation>): Promise<{ automation?: Automation; error?: string }>;
+  deleteAutomation(host: string, id: string): void;
+  /** Run now: starts a run whatever the skip rules say. Resolves with what happened. */
+  runAutomation(host: string, id: string): Promise<{ outcome?: string; sessionId?: string; reason?: string; error?: string }>;
 }
 
 function socketUrl(): string {
@@ -660,6 +681,16 @@ export function useYard(): { state: State; actions: Actions } {
     for (const h of unknownEngines.split(" ").filter(Boolean)) post(onHost(h, { op: "engines.status" }));
   }, [unknownEngines]);
 
+  const saveAutomation = async (host: string, automation: Partial<Automation>) => {
+    const reply = await ask(onHost(host, { op: "automation.save", automation }), 30_000);
+    return reply.error || !reply.automation ? { error: reply.error ?? "The automation was not saved." } : { automation: reply.automation as Automation };
+  };
+  const runAutomation = async (host: string, id: string) => {
+    // A run cuts a worktree and may run its setup first.
+    const reply = await ask(onHost(host, { op: "automation.run", id, force: true }), 5 * 60_000);
+    return reply.error ? { error: reply.error as string } : { outcome: reply.outcome, sessionId: reply.sessionId, reason: reply.reason };
+  };
+
   const actions = useMemo<Actions>(
     () => ({
       go: (route) => dispatch({ t: "route", route }),
@@ -694,6 +725,9 @@ export function useYard(): { state: State; actions: Actions } {
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),
+      saveAutomation,
+      runAutomation,
+      deleteAutomation: (host, id) => post(onHost(host, { op: "automation.delete", id })),
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
