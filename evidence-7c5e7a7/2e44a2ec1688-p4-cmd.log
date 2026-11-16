@@ -1,0 +1,68 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon session_procs
+# exit 101 after 30786 ms at 5a0087b5b26befd3ace49349bc8a3053967ad7cc
+
+
+running 3 tests
+test session_procs_for_an_unknown_session_is_an_error ... FAILED
+test session_procs_lists_what_a_session_is_running ... FAILED
+test session_procs_goes_through_the_hub ... FAILED
+
+failures:
+
+---- session_procs_for_an_unknown_session_is_an_error stdout ----
+
+thread 'session_procs_for_an_unknown_session_is_an_error' (2365601) panicked at crates/yardd/tests/daemon.rs:1608:5:
+{"for":"session.procs","message":"unknown op `session.procs`","op":"error"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2365600-procs-unknown-0 for inspection
+
+---- session_procs_lists_what_a_session_is_running stdout ----
+
+thread 'session_procs_lists_what_a_session_is_running' (2365603) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for a session.procs reply; last messages:
+{"event":{"agent":"general-purpose","detail":"TEST-survey the repo","itemId":"tool-2365772-1","kind":"other","title":"Agent","type":"tool_started"},"op":"event","seq":2,"sessionId":"s1a1e20632ea1"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"claude":{"status":"allowed","windows":{"five_hour":{"resetsAt":1794799149,"utilization":0.47},"seven_day":{"resetsAt":1795146249,"utilization":0.17},"seven_day_sonnet":{"resetsAt":1795146249,"utilization":0.08}}},"codex":{"limitId":"codex","primary":{"resetsAt":1794801249,"us
+{"event":{"detail":"README.md","itemId":"tool-2365772-2","kind":"read","parent":"tool-2365772-1","title":"Read","type":"tool_started"},"op":"event","seq":3,"sessionId":"s1a1e20632ea1"}
+{"event":{"itemId":"tool-2365772-2","ok":true,"output":"Read done","type":"tool_completed"},"op":"event","seq":4,"sessionId":"s1a1e20632ea1"}
+{"event":{"detail":"ls src","itemId":"tool-2365772-3","kind":"command","parent":"tool-2365772-1","title":"Bash","type":"tool_started"},"op":"event","seq":5,"sessionId":"s1a1e20632ea1"}
+{"event":{"itemId":"tool-2365772-3","ok":true,"output":"Bash done","type":"tool_completed"},"op":"event","seq":6,"sessionId":"s1a1e20632ea1"}
+{"event":{"itemId":"tool-2365772-1","ms":1700,"ok":true,"output":"TEST-subagent report: two files read","type":"tool_completed"},"op":"event","seq":7,"sessionId":"s1a1e20632ea1"}
+{"event":{"itemId":"text-2365772-4","text":"Echo: [subagent] look around","type":"assistant_message"},"op":"event","seq":8,"sessionId":"s1a1e20632ea1"}
+{"event":{"at":1794793421131,"status":"completed","type":"turn_completed"},"op":"event","seq":9,"sessionId":"s1a1e20632ea1"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794793419498,"cwd":"/tmp/yardd-test-2365600-procs-1/work/proj","effort":"low","engine":"claude","host":"local","id":"s1a1e20632ea1","model":"claude-haiku-5-5","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":nu
+{"for":"session.procs","message":"unknown op `session.procs`","op":"error"}
+kept /tmp/yardd-test-2365600-procs-1 for inspection
+
+---- session_procs_goes_through_the_hub stdout ----
+
+thread 'session_procs_goes_through_the_hub' (2365602) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for a session.procs reply; last messages:
+{"event":{"at":1794793419569,"type":"turn_started"},"op":"event","seq":1,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"hostId":"h1a1e20633061","op":"usage","usage":{"claude":{"status":"allowed","windows":{"five_hour":{"resetsAt":1794799149,"utilization":0.47},"seven_day":{"resetsAt":1795146249,"utilization":0.17},"seven_day_sonnet":{"resetsAt":1795146249,"utilization":0.08}}},"codex":{"limitId":"codex","primary":{
+{"event":{"agent":"general-purpose","detail":"TEST-survey the repo","itemId":"tool-2365859-1","kind":"other","title":"Agent","type":"tool_started"},"op":"event","seq":2,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"detail":"README.md","itemId":"tool-2365859-2","kind":"read","parent":"tool-2365859-1","title":"Read","type":"tool_started"},"op":"event","seq":3,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"itemId":"tool-2365859-2","ok":true,"output":"Read done","type":"tool_completed"},"op":"event","seq":4,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"detail":"ls src","itemId":"tool-2365859-3","kind":"command","parent":"tool-2365859-1","title":"Bash","type":"tool_started"},"op":"event","seq":5,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"itemId":"tool-2365859-3","ok":true,"output":"Bash done","type":"tool_completed"},"op":"event","seq":6,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"itemId":"tool-2365859-1","ms":1700,"ok":true,"output":"TEST-subagent report: two files read","type":"tool_completed"},"op":"event","seq":7,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"itemId":"text-2365859-4","text":"Echo: [subagent] look around","type":"assistant_message"},"op":"event","seq":8,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"event":{"at":1794793421201,"status":"completed","type":"turn_completed"},"op":"event","seq":9,"sessionId":"h1a1e20633061~s1a1e20633301"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794793419568,"cwd":"/tmp/yardd-test-2365600-procs-remote-2/work/proj","effort":"low","engine":"claude","host":"h1a1e20633061","id":"h1a1e20633061~s1a1e20633301","model":"claude-haiku-5-5","parent":null,"pending":[],"permission":"
+{"for":"session.procs","hostId":"h1a1e20633061","message":"unknown op `session.procs`","op":"error"}
+kept /tmp/yardd-test-2365600-procs-hub-3 for inspection
+kept /tmp/yardd-test-2365600-procs-remote-2 for inspection
+
+
+failures:
+    session_procs_for_an_unknown_session_is_an_error
+    session_procs_goes_through_the_hub
+    session_procs_lists_what_a_session_is_running
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 48 filtered out; finished in 26.89s
+
+
+   Compiling yardd v0.3.0 (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 3.85s
+     Running tests/daemon.rs (target/debug/build/yardd/1a13ebffc0c5028a/out/daemon-1a13ebffc0c5028a)
+error: test failed, to rerun pass `-p yardd --test daemon`
