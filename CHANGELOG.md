@@ -2,6 +2,23 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.4.1 (2026-11-16)
+
+- **Works on a phone.** Below 700 px the sessions sidebar is a drawer: a menu button at the top of each page opens it, and picking something, tapping beside it or Escape closes it. The session, Hosts and Automations pages get the full width instead of a 140 px column. Desktop is unchanged.
+- **The Changes pane shows new files.** A file the agent created shows its lines like any other change, a binary one says "No text diff", and with many files the pane scrolls instead of squashing the cards. File names with accents or other non-ASCII letters show as written, not as `\303\247` escapes.
+- **A session whose folder was removed says so.** The Changes and Pull request panes and the terminal say the folder no longer exists, instead of "Not a git repository", and no terminal quietly opens in your home folder.
+- **Terminal.** Reloading with a shell that already exited no longer shows a "terminal is closed" error. Closing the last terminal leaves an "Open a terminal" button instead of a blank pane.
+- **Automations.** A run shows how long it ran, not how long since it last changed (pinning or replying no longer inflates it). Claude automations skip a run when usage is above their limit.
+- **Fixed:**
+  - Claude usage meters survive a restart.
+  - The Notifications switch shows Off, and why, when the browser's permission was revoked.
+  - Picking a Codex account in a new session switches it to Codex.
+  - A refused "Add host" or "Add account" keeps what you typed.
+  - Double clicks on Start anyway, Send to session or Review no longer act twice.
+  - A reload or Back keeps you on the Automations page.
+  - A window that connects while something changes no longer loses that change.
+  - The folder picker says when a typed path matches no folder.
+
 ## 0.4.0 (2026-11-16)
 
 - **Automations.** Schedule a prompt on a repository: every N minutes or hours, daily or weekly at a time, with its engine, model and permission mode. Each run gets its own worktree, is archived when it ends, and is listed under its automation on the new Automations page, so runs don't fill the sidebar. Run now, pause, edit; optionally skip a run while the last one is going or when usage is high.
