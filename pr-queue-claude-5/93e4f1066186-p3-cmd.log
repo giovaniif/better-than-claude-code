@@ -1,0 +1,118 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon -- stop_hands a_queued_message a_message_sent messages_after messages_queued
+# exit 101 after 21390 ms at 854707dd4551a29161a5337c2f5950e1f769b6e6
+
+
+running 6 tests
+test a_message_sent_mid_turn_is_steered_into_the_codex_turn ... FAILED
+test a_message_sent_mid_turn_is_folded_into_the_claude_turn ... FAILED
+test messages_queued_during_an_approval_reach_the_agent_after_it ... FAILED
+test messages_after_the_last_step_go_together_as_the_next_turn ... FAILED
+test a_queued_message_can_be_taken_back_to_edit ... FAILED
+test stop_hands_queued_messages_back ... FAILED
+
+failures:
+
+---- a_message_sent_mid_turn_is_steered_into_the_codex_turn stdout ----
+
+thread 'a_message_sent_mid_turn_is_steered_into_the_codex_turn' (222537) panicked at crates/yardd/tests/daemon.rs:268:5:
+assertion `left == right` failed
+  left: String("Echo: [steps] TEST-go")
+ right: "Echo: [steps] TEST-go | steered: TEST-also this"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-222535-steer-0 for inspection
+
+---- a_message_sent_mid_turn_is_folded_into_the_claude_turn stdout ----
+
+thread 'a_message_sent_mid_turn_is_folded_into_the_claude_turn' (222536) panicked at crates/yardd/tests/daemon.rs:292:5:
+assertion `left == right` failed
+  left: String("Echo: [steps] TEST-go")
+ right: "Echo: [steps] TEST-go | also: TEST-and this"
+kept /tmp/yardd-test-222535-fold-3 for inspection
+
+---- messages_queued_during_an_approval_reach_the_agent_after_it stdout ----
+
+thread 'messages_queued_during_an_approval_reach_the_agent_after_it' (222540) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the combined message; last messages:
+{"event":{"at":1794772154591,"status":"completed","type":"turn_completed"},"op":"event","seq":16,"sessionId":"s1a1e0c1b8b21"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154546,"cwd":"/tmp/yardd-test-222535-queue-4/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8b21","model":"fake-fast","parent":null,"pending":[{"at":1794772154588,"attachments":[],"id":"q1a1e0c1b8d
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154546,"cwd":"/tmp/yardd-test-222535-queue-4/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8b21","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+{"event":{"text":"second queued","type":"user_message"},"op":"event","seq":17,"sessionId":"s1a1e0c1b8b21"}
+{"event":{"at":1794772154591,"type":"turn_started"},"op":"event","seq":18,"sessionId":"s1a1e0c1b8b21"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154546,"cwd":"/tmp/yardd-test-222535-queue-4/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8b21","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+{"event":{"itemId":"msg-222717-8","text":"Echo: s","type":"assistant_delta"},"op":"event","seq":19,"sessionId":"s1a1e0c1b8b21"}
+{"event":{"itemId":"msg-222717-8","text":"econd q","type":"assistant_delta"},"op":"event","seq":20,"sessionId":"s1a1e0c1b8b21"}
+{"event":{"itemId":"msg-222717-8","text":"ueued","type":"assistant_delta"},"op":"event","seq":21,"sessionId":"s1a1e0c1b8b21"}
+{"event":{"itemId":"msg-222717-8","text":"Echo: second queued","type":"assistant_message"},"op":"event","seq":22,"sessionId":"s1a1e0c1b8b21"}
+{"event":{"at":1794772154593,"status":"completed","type":"turn_completed"},"op":"event","seq":23,"sessionId":"s1a1e0c1b8b21"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154546,"cwd":"/tmp/yardd-test-222535-queue-4/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8b21","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"statu
+kept /tmp/yardd-test-222535-queue-4 for inspection
+
+---- messages_after_the_last_step_go_together_as_the_next_turn stdout ----
+
+thread 'messages_after_the_last_step_go_together_as_the_next_turn' (222539) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the combined reply; last messages:
+{"event":{"at":1794772155582,"status":"completed","type":"turn_completed"},"op":"event","seq":13,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-tail-2/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[{"at":1794772154608,"attachments":[],"id":"q1a1e0c1b8f0
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-tail-2/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"status
+{"event":{"text":"TEST-two","type":"user_message"},"op":"event","seq":14,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"at":1794772155582,"type":"turn_started"},"op":"event","seq":15,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-tail-2/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"status
+{"event":{"itemId":"msg-222723-8","text":"Echo:","type":"assistant_delta"},"op":"event","seq":16,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"itemId":"msg-222723-8","text":" TEST","type":"assistant_delta"},"op":"event","seq":17,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"itemId":"msg-222723-8","text":"-two","type":"assistant_delta"},"op":"event","seq":18,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"itemId":"msg-222723-8","text":"Echo: TEST-two","type":"assistant_message"},"op":"event","seq":19,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"at":1794772155584,"status":"completed","type":"turn_completed"},"op":"event","seq":20,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-tail-2/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"status
+kept /tmp/yardd-test-222535-tail-2 for inspection
+
+---- a_queued_message_can_be_taken_back_to_edit stdout ----
+
+thread 'a_queued_message_can_be_taken_back_to_edit' (222538) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the taken message; last messages:
+{"home":"/tmp/yardd-test-222535-unqueue-1/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-unqueue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"sta
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-unqueue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"sta
+{"op":"created","sessionId":"s1a1e0c1b8c61"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":null,"usedPercent":12,"windowDurationMins":300},"secondary":null}}}
+{"event":{"text":"[slow] think hard","type":"user_message"},"op":"event","seq":0,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"at":1794772154575,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"itemId":"msg-222727-3","text":"Working","type":"assistant_delta"},"op":"event","seq":2,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-unqueue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[{"at":1794772154607,"attachments":[],"id":"q1a1e0c1b
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-unqueue-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"sta
+kept /tmp/yardd-test-222535-unqueue-1 for inspection
+
+---- stop_hands_queued_messages_back stdout ----
+
+thread 'stop_hands_queued_messages_back' (222541) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the returned queue; last messages:
+{"home":"/tmp/yardd-test-222535-interrupt-5/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-interrupt-5/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"s
+{"op":"created","sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-interrupt-5/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":null,"s
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":null,"usedPercent":12,"windowDurationMins":300},"secondary":null}}}
+{"event":{"text":"[slow] think hard","type":"user_message"},"op":"event","seq":0,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"at":1794772154576,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e0c1b8c61"}
+{"event":{"itemId":"msg-222728-3","text":"Working","type":"assistant_delta"},"op":"event","seq":2,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-interrupt-5/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[{"at":1794772154607,"attachments":[],"id":"q1a1e0c
+{"event":{"at":1794772154608,"status":"interrupted","type":"turn_completed"},"op":"event","seq":3,"sessionId":"s1a1e0c1b8c61"}
+{"op":"session","session":{"archived":false,"branch":null,"createdAt":1794772154566,"cwd":"/tmp/yardd-test-222535-interrupt-5/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e0c1b8c61","model":"fake-fast","parent":null,"pending":[{"at":1794772154607,"attachments":[],"id":"q1a1e0c
+kept /tmp/yardd-test-222535-interrupt-5 for inspection
+
+
+failures:
+    a_message_sent_mid_turn_is_folded_into_the_claude_turn
+    a_message_sent_mid_turn_is_steered_into_the_codex_turn
+    a_queued_message_can_be_taken_back_to_edit
+    messages_after_the_last_step_go_together_as_the_next_turn
+    messages_queued_during_an_approval_reach_the_agent_after_it
+    stop_hands_queued_messages_back
+
+test result: FAILED. 0 passed; 6 failed; 0 ignored; 0 measured; 36 filtered out; finished in 20.16s
+
+
+   Compiling yardd v0.2.3 (/home/giovani/.yard/wt/better-than-claude-code/feat-queue-like-claude/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.17s
+     Running tests/daemon.rs (target/debug/build/yardd/896f585c81d80578/out/daemon-896f585c81d80578)
+error: test failed, to rerun pass `-p yardd --test daemon`

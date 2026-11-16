@@ -1,0 +1,6 @@
+$ (cd ui && bun test src/protocol.test.ts) with ui/src/protocol.ts from 0224ec2
+# exit 2 after 2 ms at 46957439e0535f299a94bc18be7eac0751a386f6
+
+
+bash: -c: line 1: syntax error near unexpected token `with'
+bash: -c: line 1: `(cd ui && bun test src/protocol.test.ts) with ui/src/protocol.ts from 0224ec2'
