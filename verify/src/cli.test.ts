@@ -21,6 +21,10 @@ describe("args and json helpers", () => {
     expect(a.pos).toEqual(["run", "x", "--raw"]);
     expect(a.flags).toEqual({ iso: "n", all: true, k: "v" });
   });
+  test("a repeated --file keeps every file, as `[--file f]...` promises", () => {
+    const a = parseArgs(["add", "d", "--file", "a.json", "--file", "b.png", "--file=c.png"]);
+    expect(a.flags.file).toBe("a.json,b.png,c.png");
+  });
   test("pick walks paths and filters arrays", () => {
     const v = { sessions: [{ id: "a", title: "one" }, { id: "b", title: "TEST-two" }] };
     expect(pick(v, "sessions.1.id")).toBe("b");
