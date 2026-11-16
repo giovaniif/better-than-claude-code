@@ -198,7 +198,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   } else if (route.startsWith("session:")) {
     const key = route.slice("session:".length);
     let title = key;
-    if (/^s[0-9a-f]{8,}$/.test(key) || key.includes("~")) {
+    const byId = /^s[0-9a-f]{8,}$/.test(key) || key.includes("~");
+    if (byId) {
       const res = await fetchTitle(iso, key);
       if (!res) fail("no-session", `no session ${key} in the isolated yardd`, "verify/yv state");
       title = res!;
@@ -211,6 +212,23 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
     }
     if ((await row.count()) === 0) fail("no-session", `no sidebar row for ${title}`, "verify/yv state");
     await row.first().click();
+    // Titles repeat (a hand-off keeps its title), so an id is checked against
+    // the URL the row opened, and the next row with that title is tried.
+    if (byId) {
+      const want = `#/s/${encodeURIComponent(key)}`;
+      const opened = () =>
+        page.waitForFunction((h) => location.hash === h, want, { timeout: 2000 }).then(
+          () => true,
+          () => false,
+        );
+      let found = await opened();
+      for (let i = 1; !found && i < (await row.count()); i++) {
+        if (drawer) await openDrawer(page);
+        await row.nth(i).click();
+        found = await opened();
+      }
+      if (!found) fail("no-session", `no sidebar row opens ${key} (title ${title})`, "verify/yv state");
+    }
   } else if (route !== "") {
     throw new Usage(`unknown route ${route}: new | hosts | session:<id or title>`);
   }
