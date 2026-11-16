@@ -1,0 +1,188 @@
+{
+  "v": 1,
+  "claim": "Terminal output could only reach a reply as a pasted fenced selection; rows on screen or the last lines could not be attached, and nothing showed it as context",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-unable-to-add-second-account-0a30",
+  "base": "82c7b7d9b1dc846ae72f534c08d86e2d59f8150c",
+  "head": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/termRows.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/termRows.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T19:52:12.816Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T19:52:12.856Z",
+      "text": "no-repro: new capability; on base the Terminal strip has only 'Add to message', shown when text is selected with the mouse"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T19:52:12.895Z",
+      "text": "no-failing-test: termRows.ts, snippetBlock and fenceSegments are new; their tests cannot exist on base"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "fe26b223b77bb5595287fe57d4ccbcd3d5ba2d432b99745c66eee9afca917afd"
+        },
+        {
+          "path": "p3-attached-desktop.png",
+          "sha256": "f5fb613841da8db38f71aabe99eb43b19dcddb2928030ad0a6105fb3f0adb651"
+        },
+        {
+          "path": "p3-sent-desktop.png",
+          "sha256": "fef8fec7da3ef518d2592de828b61931ce2d5649251df88cd500124d2bf0eb77"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:24.395Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4ac4bd0021bd1583bd79b3897daf7eb94fb61feefa6714a645ba2ee86a576831"
+        },
+        {
+          "path": "p4-sent-mobile.png",
+          "sha256": "f2217b61b888456c7802ed9b03effeb0d8ff5a9f509a2ba4fac2dd23d49fa29e"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:24.437Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "0cbeedd4ff9b5e5b3298743b9607f8a1d3afda1f9ed1d9f2a9e51a55e48d38bd"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:24.478Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "5e30fe62fe26b49b5522e0779537263354febef6e137d88a3bab83b7b703d145"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:24.588Z",
+      "cmd": "verify/yv design-check --base 82c7b7d9b1dc",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-terminal.json",
+          "sha256": "42e161bfc45901f335cdc9f6fc88f7bfd5109d89f7170f845ea429995c922b74"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:24.670Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads",
+        "terminal/last-terminal-closed-offers-a-new-one",
+        "terminal/exited-shell-survives-reload",
+        "terminal/close-terminal",
+        "terminal/folder-gone",
+        "terminal/attach-terminal-rows"
+      ]
+    }
+  ]
+}

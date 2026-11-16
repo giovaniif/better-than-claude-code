@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5df1958a",
+  "build": {
+    "sha": "421263d9c6d4cb63319ae93df1e5f8c1f4a07557",
+    "short": "421263d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:52:12.629Z"
+  },
+  "dir": ".verify/evidence/terminal-context-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8018,
+      "steps": 22,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/terminal-context-head/attached-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/terminal-context-head/sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 12,
+          "eval": "document.querySelectorAll('.quote-card.snippet').length",
+          "value": 2
+        },
+        {
+          "step": 15,
+          "eval": "document.querySelectorAll('.quote-card.snippet').length",
+          "value": 1
+        },
+        {
+          "step": 19,
+          "eval": "document.querySelectorAll('.quote-card.snippet').length",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
