@@ -67,6 +67,12 @@ pub struct Meta {
     /// change (a pin, a rename, a reply in the reopened run).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub finished_at: Option<u64>,
+    /// When the session's latest turn ended, and how (`completed`, `failed`,
+    /// `interrupted`): a window marks an answer its user has not opened yet.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub turn_ended_at: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_turn: Option<String>,
     /// Messages sent while a turn ran and not yet given to the agent, oldest
     /// first: `{ id, text, attachments, at }`. Like Claude Code's queue, they
     /// go to the agent at its next step (see `Delivery`); Stop hands them back.
@@ -323,6 +329,8 @@ impl App {
             group: None,
             automation: automation.map(str::to_string),
             finished_at: None,
+            turn_ended_at: None,
+            last_turn: None,
             pending: Vec::new(),
             created_at: now,
             updated_at: now,
@@ -391,6 +399,7 @@ impl App {
         let step = matches!(event["type"].as_str(), Some("tool_started") | Some("tool_completed"));
         let turn_completed = event["type"] == "turn_completed";
         let completed = turn_completed && event["status"] == "completed";
+        let turn_end = turn_completed.then(|| event["status"].as_str().map(str::to_string)).flatten();
         let next = {
             let mut map = self.sessions.lock().unwrap();
             let Some(s) = map.get_mut(sid) else { return };
@@ -403,12 +412,17 @@ impl App {
             self.broadcast(json!({ "op": "event", "sessionId": sid, "seq": seq, "event": event }));
             s.events.push(event);
             s.meta.updated_at = now_ms();
+            if turn_completed {
+                s.meta.turn_ended_at = Some(s.meta.updated_at);
+                s.meta.last_turn = turn_end.clone();
+            }
+            let moved = status.is_some_and(|st| s.meta.status != st);
             if let Some(st) = status {
-                if s.meta.status != st {
-                    s.meta.status = st.to_string();
-                    self.store.meta(&s.meta);
-                    self.broadcast(json!({ "op": "session", "session": s.meta }));
-                }
+                s.meta.status = st.to_string();
+            }
+            if moved || turn_completed {
+                self.store.meta(&s.meta);
+                self.broadcast(json!({ "op": "session", "session": s.meta }));
             }
             // A run of an automation is archived when its first turn ends, so
             // runs do not pile up in the sidebar. Later turns (someone

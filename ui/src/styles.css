@@ -12,6 +12,11 @@
   --warn: #d99a00;
   --warn-ink: #8a5a00;
   --bad-ink: #b42318;
+  --info: #2f6fed;
+  --info-soft: rgba(47, 111, 237, 0.16);
+  --ok-soft: rgba(31, 157, 85, 0.22);
+  --warn-glow: rgba(217, 154, 0, 0.45);
+  --warn-clear: rgba(217, 154, 0, 0);
   --add: #e8f5ec;
   --del: #fcebea;
   --scrim: rgba(0, 0, 0, 0.28);
@@ -89,6 +94,27 @@ h1, h2, h3, p { margin: 0; }
 .dot-running { background: var(--ok); }
 .dot-needs_approval { background: var(--warn); }
 .dot-error { background: var(--bad-ink); }
+
+/* Session row marks: a ring that turns while working, an amber badge that
+   breathes while it waits on the user, a solid blue dot for an answer not
+   opened yet, red for a failure, a hollow ring when quiet. */
+.mark { flex: none; position: relative; display: inline-grid; place-items: center; width: 14px; height: 14px; }
+.mark::before { content: ""; box-sizing: border-box; width: 8px; height: 8px; border-radius: 50%; }
+.mark-idle::before { border: 1.5px solid var(--muted); opacity: 0.6; }
+.mark-offline::before { border: 1.5px solid var(--line-strong); }
+.mark-queued::before { border: 1.5px dashed var(--warn); width: 9px; height: 9px; }
+.mark-working::before { width: 11px; height: 11px; border: 2px solid var(--ok-soft); border-top-color: var(--ok); animation: spin 0.9s linear infinite; }
+.mark-approval::before { width: 14px; height: 14px; background: var(--warn); animation: breathe 1.6s ease-in-out infinite; }
+.mark-bang { position: absolute; inset: 0; display: grid; place-items: center; color: var(--bg); font-size: 10px; font-weight: 700; line-height: 1; }
+.mark-answered::before { width: 9px; height: 9px; background: var(--info); box-shadow: 0 0 0 3px var(--info-soft); }
+.mark-failed::before { width: 9px; height: 9px; background: var(--bad-ink); }
+@keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 var(--warn-glow); } 50% { box-shadow: 0 0 0 4px var(--warn-clear); } }
+@media (prefers-reduced-motion: reduce) { .mark-working::before, .mark-approval::before { animation: none; } }
+.row-status-approval { color: var(--warn-ink); font-weight: 500; }
+.row-status-answered { color: var(--info); font-weight: 500; }
+.row-status-failed { color: var(--bad-ink); }
+.row-status-working { color: var(--ok-ink); }
+.session-row.unread .session-title { font-weight: 600; }
 
 .banner { display: flex; align-items: center; gap: 12px; padding: 8px 24px; background: var(--fill); font-size: 12px; color: var(--muted); }
 .banner-error { color: var(--bad-ink); justify-content: space-between; }

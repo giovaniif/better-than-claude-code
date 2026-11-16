@@ -2,6 +2,7 @@ import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMem
 import { createPortal } from "react-dom";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
+import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
@@ -292,9 +293,20 @@ function Resizer(props: {
 
 /** A session in the sidebar, with Pin, Archive and Delete in a menu on the
  *  row (the … button, or right-click). */
-function SessionRow({ state, actions, session: s, active, groups }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[] }) {
+/** The row's status mark. Shapes differ as well as colors, so the states
+ *  read without color too; the label next to the model says it in words. */
+function RowMark({ state }: { state: RowState }) {
+  return (
+    <span className={`mark mark-${state}`} aria-hidden="true">
+      {state === "approval" && <span className="mark-bang">!</span>}
+    </span>
+  );
+}
+
+function SessionRow({ state, actions, session: s, active, groups, seenAt }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
+  const mark = rowState(s, seenAt, online);
   const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState(false);
   // The menu's group pages: the list of groups, then the name field for a new one.
@@ -367,14 +379,14 @@ function SessionRow({ state, actions, session: s, active, groups }: { state: Sta
       }}
     >
       <button
-        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"}`}
+        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"} ${mark === "answered" ? "unread" : ""}`}
         onClick={() => actions.go({ page: "session", id: s.id })}
       >
-        <span className={`dot ${online ? `dot-${s.status}` : "dot-offline"}`} aria-hidden="true" />
+        <RowMark state={mark} />
         <span className="session-text">
           <span className="session-title">{s.title}</span>
           <span className="session-sub">
-            {modelName(modelsOn(state, host), s.engine, s.model)} · {online ? STATUS_LABEL[s.status] : "Offline"}
+            {modelName(modelsOn(state, host), s.engine, s.model)} · <span className={`row-status row-status-${mark}`}>{ROW_LABEL[mark]}</span>
             {rowAccount && <span className="row-account"> · {rowAccount}</span>}
           </span>
         </span>
@@ -627,6 +639,7 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   // Runs of automations live on the Automations page, not in this list.
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
+  const seenAt = useSeen(state.sessions, route.page === "session" ? route.id : null);
   // Opening an archived session shows the section, so its row stays in view.
   const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
@@ -640,7 +653,7 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
     if (open) nav.current?.querySelector<HTMLElement>(".nav-row")?.focus();
   }, [open]);
   const row = (s: SessionMeta) => (
-    <SessionRow key={s.id} state={state} actions={actions} session={s} groups={groupNames} active={route.page === "session" && route.id === s.id} />
+    <SessionRow key={s.id} state={state} actions={actions} session={s} groups={groupNames} active={route.page === "session" && route.id === s.id} seenAt={seenAt(s.id)} />
   );
   return (
     <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">

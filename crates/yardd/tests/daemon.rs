@@ -416,6 +416,25 @@ async fn messages_queued_during_an_approval_reach_the_agent_after_it() {
 }
 
 #[tokio::test]
+async fn a_session_says_when_and_how_its_last_turn_ended() {
+    let sb = Sandbox::new("turn-end");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "say hello", json!({})).await;
+    assert!(meta_of(&c, &sid)["turnEndedAt"].is_null(), "no turn has ended yet");
+    let done = c.wait_turn_done(&sid, 0).await;
+    c.wait_status(&sid, "idle").await;
+    let meta = meta_of(&c, &sid);
+    assert_eq!(meta["lastTurn"], "completed");
+    let first = meta["turnEndedAt"].as_u64().expect("turnEndedAt is set");
+
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[fail] again" })).await;
+    c.wait_turn_done(&sid, done["seq"].as_u64().unwrap() + 1).await;
+    c.wait_for("the failed turn's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["lastTurn"] == "failed").await;
+    assert!(meta_of(&c, &sid)["turnEndedAt"].as_u64().unwrap() >= first);
+}
+
+#[tokio::test]
 async fn an_error_turn_reports_and_fails() {
     let sb = Sandbox::new("error");
     let d = sb.start();

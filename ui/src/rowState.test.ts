@@ -1,0 +1,45 @@
+import { describe, expect, test } from "bun:test";
+import type { SessionMeta } from "./protocol";
+import { ROW_LABEL, markSeen, rowState } from "./rowState";
+
+const meta = (patch: Partial<SessionMeta>): SessionMeta =>
+  ({ id: "s", title: "t", engine: "codex", model: "m", effort: "low", cwd: "/x", status: "idle", host: "local", createdAt: 0, updatedAt: 0, ...patch }) as SessionMeta;
+
+describe("rowState", () => {
+  test("live states come from the status", () => {
+    expect(rowState(meta({ status: "running" }), 0, true)).toBe("working");
+    expect(rowState(meta({ status: "needs_approval" }), 0, true)).toBe("approval");
+    expect(rowState(meta({ status: "queued" }), 0, true)).toBe("queued");
+    expect(rowState(meta({ status: "error" }), 0, true)).toBe("failed");
+  });
+  test("a turn that ended after the user last looked is answered until opened", () => {
+    const s = meta({ turnEndedAt: 200, lastTurn: "completed" });
+    expect(rowState(s, 100, true)).toBe("answered");
+    expect(rowState(s, 200, true)).toBe("idle");
+  });
+  test("an unseen failed turn shows as failed; a stopped one does not stand out", () => {
+    expect(rowState(meta({ turnEndedAt: 200, lastTurn: "failed" }), 100, true)).toBe("failed");
+    expect(rowState(meta({ turnEndedAt: 200, lastTurn: "interrupted" }), 100, true)).toBe("idle");
+  });
+  test("a session from an older yardd has no turn end: idle", () => {
+    expect(rowState(meta({}), 0, true)).toBe("idle");
+  });
+  test("offline wins over everything", () => {
+    expect(rowState(meta({ status: "running" }), 0, false)).toBe("offline");
+  });
+  test("every state has a label", () => {
+    for (const k of ["working", "approval", "answered", "failed", "queued", "idle", "offline"] as const) expect(ROW_LABEL[k]).toBeTruthy();
+  });
+});
+
+describe("markSeen", () => {
+  test("records the turn end the user has seen, dropping sessions that are gone", () => {
+    const seen = markSeen({ old: 5, s: 1 }, meta({ turnEndedAt: 200 }), new Set(["s"]));
+    expect(seen).toEqual({ s: 200 });
+  });
+  test("nothing to record leaves the map as it is", () => {
+    const before = { s: 200 };
+    expect(markSeen(before, meta({ turnEndedAt: 200 }), new Set(["s"]))).toBe(before);
+    expect(markSeen(before, meta({}), new Set(["s"]))).toBe(before);
+  });
+});
