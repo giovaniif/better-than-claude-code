@@ -1,0 +1,31 @@
+$ cd verify && bun test src/cli.test.ts
+# exit 1 after 464 ms at 1ff769602cb6ebd31a0d61325ac2985e72bc7fe6
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/cli.test.ts:
+143 |   test("test code cleaning up after itself is not data loss", () => {
+144 |     expect(codes([file("crates/yardd/src/claude.rs", "@@\n+fn run() {}\n+#[cfg(test)]\n+mod tests {\n+    fn t() { let _ = std::fs::remove_dir_all(dir); }\n+}")])).toEqual([]);
+145 |     expect(codes([file("crates/yardd/tests/daemon.rs", "@@\n+    std::fs::remove_dir_all(&root).ok();")])).toEqual([]);
+146 |     expect(codes([file("crates/yardd/src/git.rs", "@@\n+    std::fs::remove_dir_all(&p)?;\n+#[cfg(test)]\n+mod tests {}")])).toContain("data-loss");
+147 |     // A test added to an existing module: git names the module in the hunk header.
+148 |     expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     }\n+    #[tokio::test]\n+    async fn t() { let _ = std::fs::remove_dir_all(&dir); }\n }")])).toEqual([]);
+                                                                                                                                                                                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "data-loss",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/verify/src/cli.test.ts:148:184)
+(fail) land gate scan > test code cleaning up after itself is not data loss [0.84ms]
+
+ 35 pass
+ 1 fail
+ 79 expect() calls
+Ran 36 tests across 1 file. [457.00ms]
