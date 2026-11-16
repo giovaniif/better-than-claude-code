@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "8f35a50c428cc339a6e8eb6cc293125d9e8285d1",
+    "short": "8f35a50",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T06:56:13.725Z"
+  },
+  "dir": ".verify/evidence/add-account-keeps-form-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5099,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/add-account-keeps-form-head-mobile/after-refused-add-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/add-account-keeps-form-head-mobile/after-fixed-add-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "account.add",
+          "message": "a claude account named default already exists"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

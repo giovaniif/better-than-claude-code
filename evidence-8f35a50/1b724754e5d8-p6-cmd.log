@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run accounts --recipe refused-add-account-keeps-the-form
+# exit 0 after 7619 ms at 8f35a50c428cc339a6e8eb6cc293125d9e8285d1
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-16T06:56:35.625Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "refused-add-account-keeps-the-form",
+          "status": "pass",
+          "ms": 6625
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 122 pass
+ 0 fail
+ 305 expect() calls
+Ran 122 tests across 10 files. [88.00ms]
