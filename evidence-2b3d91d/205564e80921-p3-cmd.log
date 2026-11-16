@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon removing_a_codex_account
+# exit 101 after 25343 ms at 16b6a30cafa19f9b41fca2556ca61ac2ee49f2d8
+
+
+running 1 test
+test removing_a_codex_account_stops_its_app_server ... FAILED
+
+failures:
+
+---- removing_a_codex_account_stops_its_app_server stdout ----
+
+thread 'removing_a_codex_account_stops_its_app_server' (2223029) panicked at crates/yardd/tests/daemon.rs:1791:9:
+the removed account's app-server (pid 2223090) is still running
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2223028-accounts-rm-codex-0 for inspection
+
+
+failures:
+    removing_a_codex_account_stops_its_app_server
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 51 filtered out; finished in 20.16s
+
+
+   Compiling yardd v0.3.0 (/home/giovani/.yard/wt/better-than-claude-code/feat-accounts/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 5.14s
+     Running tests/daemon.rs (target/debug/build/yardd/1a13ebffc0c5028a/out/daemon-1a13ebffc0c5028a)
+error: test failed, to rerun pass `-p yardd --test daemon`
