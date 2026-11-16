@@ -11,7 +11,7 @@ import { matches, parseArgs, pick, sha256File } from "./common";
 import { addedLines, lint } from "./design";
 import { _test as evidenceTest, type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
-import { recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
+import { lastMerge, recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
 import { _test as loopTest } from "./loop";
 
@@ -353,5 +353,19 @@ describe("evidence artifacts", () => {
     expect(readFileSync(join(dir, one.path), "utf8")).toBe("first");
     expect(readFileSync(join(dir, two.path), "utf8")).toBe("second");
     expect(sha256File(join(dir, one.path))).toBe(one.sha256);
+  });
+});
+
+describe("land guards", () => {
+  test("the spacing guard counts from the latest merge, not the newest PR", () => {
+    // `gh pr list --state merged` sorts by creation: #90 was opened before
+    // #94 but merged after it, and the next PR must wait 20 minutes from #90.
+    const merged = [
+      { number: 94, mergedAt: "2026-11-16T16:28:40Z" },
+      { number: 92, mergedAt: "2026-11-16T16:11:31Z" },
+      { number: 90, mergedAt: "2026-11-16T16:49:06Z" },
+    ];
+    expect(lastMerge(merged)?.number).toBe(90);
+    expect(lastMerge([])).toBeUndefined();
   });
 });

@@ -199,6 +199,11 @@ function requiredChecks(base: string): { names: string[] | null; source: string 
   return { names: null, source: "none: every check is required" };
 }
 
+/** The merge the spacing guard counts from. */
+export function lastMerge(merged: { number: number; mergedAt: string }[]): { number: number; mergedAt: string } | undefined {
+  return merged[0];
+}
+
 function guards(): Blocker[] {
   const cfg = landConfig().guards ?? {};
   const out: Blocker[] = [];
@@ -211,9 +216,10 @@ function guards(): Blocker[] {
   }
   if (cfg.minMinutesSinceLastMerge) {
     const merged = ghJson(["pr", "list", "--repo", REPO, "--state", "merged", "--limit", "1", "--json", "mergedAt,number"]) as any[];
-    if (merged[0]) {
-      const mins = (Date.now() - Date.parse(merged[0].mergedAt)) / 60000;
-      if (mins < cfg.minMinutesSinceLastMerge) out.push({ code: "too-soon", msg: `#${merged[0].number} merged ${mins.toFixed(0)} min ago (min ${cfg.minMinutesSinceLastMerge})` });
+    const latest = lastMerge(merged);
+    if (latest) {
+      const mins = (Date.now() - Date.parse(latest.mergedAt)) / 60000;
+      if (mins < cfg.minMinutesSinceLastMerge) out.push({ code: "too-soon", msg: `#${latest.number} merged ${mins.toFixed(0)} min ago (min ${cfg.minMinutesSinceLastMerge})` });
     }
   }
   if (cfg.landingHours) {
