@@ -1,0 +1,169 @@
+{
+  "v": 1,
+  "claim": "In a session started in a repository subfolder, the Changes pane lists new files relative to the subfolder (TEST-inside.txt, not src/TEST-inside.txt) while edits use repo-root paths, and new files outside the subfolder are missing",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-60c7",
+  "base": "93031bcdf75901b08423ef9b5dc98b5128cf18b2",
+  "head": "144a37455bcb3dfc508d332a664fb2017c5321c7",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T18:41:30.028Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ab2f93e975ca196cff7e3e3df1cf5672bf9f329c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "cb7c346eb38f479c21797175fb9385b19edf7254b7774bd49be7623cceac23dc"
+        },
+        {
+          "path": "p1-pane-desktop.png",
+          "sha256": "adf3ff2e6e6098a55fed3f6a16710c25b3da6405bc53c144346423e2f470942e"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "a09e39c00f662461d9418cdaa16064d7beae39ffc319544bb98209b14a3d8134"
+        },
+        {
+          "path": "p1-2-pane-desktop.png",
+          "sha256": "adf3ff2e6e6098a55fed3f6a16710c25b3da6405bc53c144346423e2f470942e"
+        }
+      ],
+      "addedAt": "2026-11-16T18:41:53.491Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "ab2f93e975ca196cff7e3e3df1cf5672bf9f329c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "6063b43ab0b8398594338f2c0e1e01bfba621ed768b0b7ebfa5c1371b579f61a"
+        }
+      ],
+      "addedAt": "2026-11-16T18:41:53.536Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd a_subfolder_session",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ab2f93e975ca196cff7e3e3df1cf5672bf9f329c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "a5acea70476d84d55ccc40cec3974e27d984214cdf844b9755a5a30515da5456"
+        }
+      ],
+      "addedAt": "2026-11-16T18:41:55.463Z",
+      "cmd": "verify/yv map run changes-pane --recipe subfolder-session-names-files-from-the-root",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "144a37455bcb3dfc508d332a664fb2017c5321c7",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "fc7283315901ccd39a296389e96b8827d4d0a35b6f6465f28a560a32e3e3bede"
+        },
+        {
+          "path": "p4-pane-desktop.png",
+          "sha256": "9e66b96a55497b5c6b072a5e82ed5669be22a1ba76c89ab4595c07fe84605df3"
+        },
+        {
+          "path": "p4-subfolder-desktop.png",
+          "sha256": "9e66b96a55497b5c6b072a5e82ed5669be22a1ba76c89ab4595c07fe84605df3"
+        },
+        {
+          "path": "p4-2-subfolder-desktop.png",
+          "sha256": "9e66b96a55497b5c6b072a5e82ed5669be22a1ba76c89ab4595c07fe84605df3"
+        }
+      ],
+      "addedAt": "2026-11-16T18:42:43.519Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "144a37455bcb3dfc508d332a664fb2017c5321c7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T18:42:43.563Z",
+      "text": "Desktop only: the workspace pane (Changes) is hidden below 1100 px (changes-pane Gotcha), and this change is daemon-only (crates/yardd), no ui/ change."
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "144a37455bcb3dfc508d332a664fb2017c5321c7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "bc786cf416db762183c7aad7eeb6f797ff6054494994f1cb65c5706650475206"
+        }
+      ],
+      "addedAt": "2026-11-16T18:42:43.600Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "144a37455bcb3dfc508d332a664fb2017c5321c7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-changes-pane.json",
+          "sha256": "64b3fde47207292f5612d9a8f0fc2dda9dcd5496e2630065d9160df744d76e96"
+        }
+      ],
+      "addedAt": "2026-11-16T18:43:02.149Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "changes-pane/shows-diff",
+        "changes-pane/empty-folder",
+        "changes-pane/refresh-picks-up-new-file",
+        "changes-pane/new-file-shows-its-content",
+        "changes-pane/non-ascii-file-names",
+        "changes-pane/subfolder-session-names-files-from-the-root"
+      ]
+    }
+  ]
+}

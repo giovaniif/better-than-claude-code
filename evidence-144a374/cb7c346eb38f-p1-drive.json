@@ -1,0 +1,55 @@
+{
+  "ok": false,
+  "route": "session:s1a1e5aa19232",
+  "build": {
+    "sha": "ab2f93e975ca196cff7e3e3df1cf5672bf9f329c",
+    "short": "ab2f93e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:41:32.211Z"
+  },
+  "dir": ".verify/evidence/changes-subfolder-root-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 14234,
+      "steps": 8,
+      "failed": {
+        "step": 4,
+        "action": {
+          "expect": {
+            "css": ".file-row",
+            "hasText": "src/TEST-inside.txt"
+          },
+          "text": "new"
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/changes-subfolder-root-base/fail-desktop-step4.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Import\"\n  - button \"TEST-subfolder base Fake Fast · Idle\"\n  - button \"Actions for TEST-subfolder base\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 3% · 44%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-subfolder base\" [level=1]\n  - code: yard/test-subfolder-base-90c1\n  - button \"Delete\"\n  - text: TEST-subfolder base\n  - paragraph: \"Echo: TEST-subfolder base\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - code: src/lib.rs\n  - code: +1 −0\n  - code: TEST-inside.txt\n  - code: new\n  - code: src/lib.rs\n  - text: \"@@ -1 +1,2 @@ fn kept() {} +// TEST-edit\"\n  - code: TEST-inside.txt\n  - text: \"@@ -0,0 +1,1 @@ +TEST-inside\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/changes-subfolder-root-base/pane-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 4 {\"expect\":{\"css\":\".file-row\",\"hasText\":\"src/TEST-inside.txt\"},\"text\":\"new\"}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/changes-subfolder-root-base/fail-desktop-step4.png and the aria snapshot"
+    }
+  ]
+}

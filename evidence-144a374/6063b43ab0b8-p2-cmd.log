@@ -1,0 +1,28 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd a_subfolder_session
+# exit 101 after 1884 ms at ab2f93e975ca196cff7e3e3df1cf5672bf9f329c
+
+
+running 1 test
+test git::tests::a_subfolder_session_lists_every_file_from_the_repository_root ... FAILED
+
+failures:
+
+---- git::tests::a_subfolder_session_lists_every_file_from_the_repository_root stdout ----
+
+thread 'git::tests::a_subfolder_session_lists_every_file_from_the_repository_root' (1782392) panicked at crates/yardd/src/git.rs:554:9:
+assertion `left == right` failed
+  left: ["apps/web/a.txt", "new.txt"]
+ right: ["apps/web/a.txt", "apps/web/new.txt", "docs/other.txt"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    git::tests::a_subfolder_session_lists_every_file_from_the_repository_root
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 28 filtered out; finished in 0.03s
+
+
+   Compiling yardd v0.4.3 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-60c7/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.80s
+     Running unittests src/main.rs (target/debug/build/yardd/f4e59119246ff247/out/yardd-f4e59119246ff247)
+error: test failed, to rerun pass `-p yardd --bin yardd`

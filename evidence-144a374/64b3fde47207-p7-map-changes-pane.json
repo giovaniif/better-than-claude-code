@@ -1,0 +1,47 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-16T18:43:26.575Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-diff",
+          "status": "pass",
+          "ms": 2845
+        },
+        {
+          "label": "empty-folder",
+          "status": "pass",
+          "ms": 2566
+        },
+        {
+          "label": "refresh-picks-up-new-file",
+          "status": "pass",
+          "ms": 3982
+        },
+        {
+          "label": "new-file-shows-its-content",
+          "status": "pass",
+          "ms": 5109
+        },
+        {
+          "label": "non-ascii-file-names",
+          "status": "pass",
+          "ms": 4252
+        },
+        {
+          "label": "subfolder-session-names-files-from-the-root",
+          "status": "pass",
+          "ms": 4824
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
