@@ -1,0 +1,42 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd",
+    "short": "2d1c395",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:39:45.884Z"
+  },
+  "dir": ".verify/evidence/automations2-base-drive",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11775,
+      "steps": 1,
+      "failed": {
+        "step": 0,
+        "action": {
+          "click": "role:button:Automations"
+        },
+        "reason": "click: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/automations2-base-drive/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Import\"\n  - text: No sessions yet.\n  - group \"Plan usage\": Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 30% · 88%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"click\":\"role:button:Automations\"}: click: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/automations2-base-drive/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}

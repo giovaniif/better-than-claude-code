@@ -1,0 +1,18 @@
+$ cd ui && bun test src/automations.test.ts
+# exit 1 after 9 ms at 2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/automations.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './automations' from '/home/giovani/.yard/wt/better-than-claude-code/feat-automations/ui/src/automations.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

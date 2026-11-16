@@ -1,0 +1,15 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon automation
+# exit 101 after 278 ms at 2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd
+
+
+   Compiling yardd v0.3.0 (/home/giovani/.yard/wt/better-than-claude-code/feat-automations/crates/yardd)
+error: this file contains an unclosed delimiter
+    --> crates/yardd/tests/daemon.rs:1783:3
+     |
+1479 | async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
+     |                                                                            - unclosed delimiter
+...
+1783 | }
+     |  ^
+
+error: could not compile `yardd` (test "daemon") due to 1 previous error

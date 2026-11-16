@@ -1,0 +1,299 @@
+{
+  "v": 1,
+  "claim": "There is no way to schedule work in Switchyard: the repo's agent loops are systemd timers that start ordinary sessions from outside, and their runs pile up in the sidebar. Automations (a page, a scheduler in yardd, runs kept out of the sidebar and archived when they end) add it.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-automations",
+  "base": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+  "head": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+  "changed": [
+    {
+      "status": "M",
+      "path": "Cargo.lock"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/Cargo.toml"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/automations.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/automations.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T01:39:39.659Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "7789f61d1becc0b944f3d821191779e755d4a9717f6cdf760acb005e1a1a5e9b"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "2a4d96ba6d23e835dcc16dafb79d3c419f23ffe25ff36638b95cd27584135c19"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:00.266Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-new-desktop.png",
+          "sha256": "03c2628b62b0c9f2ac8accbd9d0da552ee0e95570022e87a19eb145f4778eca5"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:00.307Z"
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "bd591b06a02a0d75abe7f59917d435b90efee2dd39d8ed7732a92a46aa690440"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:00.358Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon automation",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "2d1c3954dd2d7d4d40f6a4f98b879557d4c3efcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "faa292a80f162447b2c98ed5098f0a97ef2e4554380a5cced6045a44d21f07a1"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:00.682Z",
+      "cmd": "cd ui && bun test src/automations.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "dfe32f096428e9e49fb67d7328f8d835bc3d5f71cfd5f3dbc58192eafd1e7cfb"
+        },
+        {
+          "path": "p5-runs-mobile.png",
+          "sha256": "694f2b213a981e6a1dbe5ce404dfe33d647e5e3c6cbd453ebc727512d225e389"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:11.764Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "eda3769978cabdca6db09c03a618e1635b4826f812df2c0356b34d68fd1dd8c4"
+        },
+        {
+          "path": "p6-runs-desktop.png",
+          "sha256": "772bd78cc3e02dde30287747cc163c9fa9c9547c6c389e129bab5ae1c72ba63e"
+        },
+        {
+          "path": "p6-form-desktop.png",
+          "sha256": "ba7094567f8cddb0eab3185709953783d5fbd0895255b4254ae2beda2d8cc7e4"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:11.801Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "3fe5f6f76caa7c7bcc5664a61f622911dba5051f6663418a70110ee568da46ba"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:11.840Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "995717c7c4307b82c23f3c4831ab9cd817f9f256f16dae0d7c00b54ed47579e0"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:22.207Z",
+      "cmd": "verify/yv design-check --base db032d55310f",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-automations.json",
+          "sha256": "882878b8cb84a5f9a4637970e8b7691930f755c8a6e10fb18d0b1d516c3713d4"
+        }
+      ],
+      "addedAt": "2026-11-16T01:40:22.296Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/delete-removes-the-automation-and-frees-its-runs"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a969e8132d741b649f2e53addf0e8a4c9b674007",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-sidebar.json",
+          "sha256": "5658c589b01ba457920b34fe66d8c1941a832194ce7081ec0473ead1fcd41baf"
+        }
+      ],
+      "addedAt": "2026-11-16T01:41:07.935Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree"
+      ]
+    }
+  ]
+}
