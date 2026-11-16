@@ -136,6 +136,18 @@ pub struct Daemon {
 
 impl Daemon {
     fn start(sandbox: &Sandbox, env: &[(&str, &str)]) -> Daemon {
+        // free_port() lets the port go before yardd binds it, so a test running
+        // in parallel can take it first. This yardd then exits, and /health is
+        // answered by the other test's daemon: try a fresh port instead.
+        for _ in 0..5 {
+            if let Some(daemon) = Daemon::try_start(sandbox, env) {
+                return daemon;
+            }
+        }
+        panic!("yardd lost its port to another process five times");
+    }
+
+    fn try_start(sandbox: &Sandbox, env: &[(&str, &str)]) -> Option<Daemon> {
         let port = free_port();
         let log = sandbox.data().join("yardd.log");
         let stderr = fs::OpenOptions::new().create(true).append(true).open(&log).unwrap();
@@ -165,10 +177,10 @@ impl Daemon {
         for (k, v) in env {
             cmd.env(k, v);
         }
+        let from = fs::metadata(&log).map(|m| m.len() as usize).unwrap_or(0);
         let child = cmd.spawn().expect("could not start yardd");
         let mut daemon = Daemon { child: Some(child), port, log };
-        daemon.wait_ready();
-        daemon
+        daemon.wait_ready(from).then_some(daemon)
     }
 
     pub fn pid(&self) -> u32 {
@@ -183,15 +195,28 @@ impl Daemon {
         fs::read_to_string(&self.log).unwrap_or_default()
     }
 
-    fn wait_ready(&mut self) {
+    /// True once this yardd answers; false when it lost its port. `from` is
+    /// where this start's lines begin in the log (a restart appends to it).
+    fn wait_ready(&mut self, from: usize) -> bool {
         let deadline = Instant::now() + WAIT;
+        let port = format!(":{}", self.port);
+        let listening = |text: &str| text.lines().any(|l| l.starts_with("yardd: http://") && l.ends_with(&port));
+        let ours = |d: &Daemon| d.log_text().get(from..).unwrap_or_default().to_string();
         loop {
             if let Some(status) = self.child.as_mut().unwrap().try_wait().unwrap() {
-                panic!("yardd exited during startup ({status}):\n{}", self.log_text());
+                let text = ours(self);
+                if text.contains("Address already in use") {
+                    self.child = None;
+                    return false;
+                }
+                panic!("yardd exited during startup ({status}):\n{text}");
             }
-            if let Ok(body) = http_get(self.port, "/health") {
-                if body.contains("yardd ") {
-                    return;
+            // Only our own yardd's log says it is listening on this port.
+            if listening(&ours(self)) {
+                if let Ok(body) = http_get(self.port, "/health") {
+                    if body.contains("yardd ") {
+                        return true;
+                    }
                 }
             }
             if Instant::now() > deadline {
