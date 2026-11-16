@@ -79,5 +79,5 @@ yv state --expect '{"sessions":[{"id":"{{dbl_sid}}","status":"idle"}]}'
 ```
 
 ## Gotchas
-- A decided approval folds into the turn's "Worked for … · Ran 1 command" row; open it to read "Allowed", "Always allowed" or "Denied".
+- A decided approval folds into the turn's "Worked for … · Ran 1 command" row; open it to read "Allowed", "Always allowed" or "Denied". One the turn ended on (Stop, a failure, a yardd restart) reads "Not answered before the turn ended".
 - `role:button:Allow` matches "Allow once" and "Always allow"; name buttons in full or use `exact`.

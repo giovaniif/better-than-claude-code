@@ -410,6 +410,8 @@ export type Item =
       title: string;
       detail: string;
       decision: Decision | null;
+      /** The turn ended (Stop, a failure, a yardd restart) before anyone answered. */
+      unanswered?: boolean;
       /** A decision was sent and yardd has not resolved it yet. */
       sending?: boolean;
     }
@@ -529,7 +531,8 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
         if (it.kind === "tool" && it.state === "running" && !goesOn.has(it.itemId) && !(it.parent && goesOn.has(it.parent))) {
           return { ...it, state: "failed" as const };
         }
-        if (it.kind === "approval" && it.decision === null) return { ...it, decision: "deny" as const };
+        // Nobody chose, so it is not shown as "Denied".
+        if (it.kind === "approval" && it.decision === null) return { ...it, unanswered: true };
         return it;
       });
     }

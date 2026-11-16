@@ -58,6 +58,18 @@ yv drive 'session:{{ask_stop_sid}}' --viewport desktop --steps '[{"expect":"role
 yv state --expect '{"sessions":[{"id":"{{ask_stop_sid}}","status":"idle"}]}'
 ```
 
+### stop-while-asking-says-not-answered
+Viewports: both
+The card of an approval nobody answered says so once its turn ends; it does
+not say "Denied", a choice the user never made. (A yardd restart mid-question
+closes the turn the same way.)
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-stop unanswered"}' --wait '{"op":"created"}' --save unans_sid=sessionId
+yv drive 'session:{{unans_sid}}' --viewport desktop --steps '[{"expect":"role:button:Allow once"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false,"timeout":15000}]'
+yv drive 'session:{{unans_sid}}' --steps '[{"click":"role:button:Ran 1 command"},{"expect":"css:.approval","text":"Not answered before the turn ended"},{"expect":{"css":".approval","hasText":"Denied"},"count":0},{"shot":"not-answered"}]'
+```
+
 ## Gotchas
 - The Stop button only shows while the session is running or waiting for approval.
 - `role:button:Stop` matches by substring, so it also hits a sidebar row whose title contains "stop" (such as "TEST-stop while asking") and opens that session instead. Use `{"role":"button","name":"Stop","exact":true}`.

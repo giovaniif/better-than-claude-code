@@ -133,7 +133,8 @@ describe("applyEvent", () => {
     const ended = applyEvent(live, { type: "turn_completed", status: "interrupted" }, 5);
     expect(ended[0]).toMatchObject({ kind: "assistant", text: "part", streaming: false });
     expect(ended[1]).toMatchObject({ kind: "tool", state: "failed" });
-    expect(ended[2]).toMatchObject({ kind: "approval", decision: "deny" });
+    // Nobody answered it: closed, but not recorded as a denial.
+    expect(ended[2]).toMatchObject({ kind: "approval", decision: null, unanswered: true });
     // A tool that already finished stays ok.
     expect(ended[3]).toMatchObject({ kind: "tool", state: "ok" });
     expect(ended).toHaveLength(4);
