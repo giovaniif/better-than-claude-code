@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run accounts --recipe pick-other-engine-account-switches-engine
+# exit 0 after 8970 ms at c5d711075cb221f062236c092df6d0afa61df1d8
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-16T08:43:15.231Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "pick-other-engine-account-switches-engine",
+          "status": "pass",
+          "ms": 8006
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 126 pass
+ 0 fail
+ 309 expect() calls
+Ran 126 tests across 10 files. [96.00ms]

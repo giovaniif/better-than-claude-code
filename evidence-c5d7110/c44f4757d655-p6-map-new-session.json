@@ -1,0 +1,48 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-16T08:43:38.491Z",
+      "counts": {
+        "pass": 5,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 4926
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 4856
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 2971
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 3483
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 6047
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

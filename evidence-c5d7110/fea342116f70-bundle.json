@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "claim": "New session: with Claude picked, choosing a Codex account in the model picker left the model on Claude, so the session started on Claude Default instead of the chosen Codex account",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3d97",
+  "base": "0c1f1c2384bc7532b1cee03dfa5a5523aea95975",
+  "head": "c5d711075cb221f062236c092df6d0afa61df1d8",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/accounts.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/accounts.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T08:41:39.621Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "5797f3931a0da6132a543e5d549c1ed068ec522c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d6533bcc12032417edaa2801ae64943ad4c003e0b7f3f7fdf48808b5707670e9"
+        },
+        {
+          "path": "p1-codex-account-picked-mobile.png",
+          "sha256": "a346156f81761afc3a08f1162dae04782575a2b0aad9143da5046975cf0f3bba"
+        },
+        {
+          "path": "p1-trigger-mobile.png",
+          "sha256": "905513333cdbf9b0721289135b5285b72574231b92e99acf27fdc8f86301f67e"
+        },
+        {
+          "path": "p1-codex-account-picked-desktop.png",
+          "sha256": "39c3e2271e60ed77a6f90d8c55a27c0e9afafe3b9704ee6dc56244d1218f50c8"
+        },
+        {
+          "path": "p1-trigger-desktop.png",
+          "sha256": "a3bce777fa8afdb5e5670c463ec18ba69b2c000909fc4a2f677639281849e96d"
+        }
+      ],
+      "addedAt": "2026-11-16T08:41:47.542Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "5797f3931a0da6132a543e5d549c1ed068ec522c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "dfda2e93ae15414f0757cf69890412ad3fa2a4967c0b27d57c856fd21c936613"
+        }
+      ],
+      "addedAt": "2026-11-16T08:41:47.588Z",
+      "cmd": "verify/yv map run accounts --recipe pick-other-engine-account-switches-engine",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c5d711075cb221f062236c092df6d0afa61df1d8",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "268d8b7bed9c55cf41af114a5476ff919308f353ff731d45def95a6fc6ea3f33"
+        },
+        {
+          "path": "p3-codex-account-picked-mobile.png",
+          "sha256": "0217b3e2d2c91c23b510ad8dc6d9c3ce824baa42db381d6c05e46759d239af03"
+        },
+        {
+          "path": "p3-trigger-mobile.png",
+          "sha256": "9c453dd063741f9a405bf9ac4a09e9b41b1e93802e4bc578b05bfb00a9d15dba"
+        },
+        {
+          "path": "p3-codex-account-picked-desktop.png",
+          "sha256": "831b9c61faad1d514316b0b496df9ca0de8ae74a8d9358f91b8313642b95604d"
+        },
+        {
+          "path": "p3-trigger-desktop.png",
+          "sha256": "52739e8c5ae579e591d15b2e190dc2279b0d06ddacc86c515e75b3524c6d2a82"
+        }
+      ],
+      "addedAt": "2026-11-16T08:42:14.103Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "c5d711075cb221f062236c092df6d0afa61df1d8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "b3ae199106bb9e91d13c27c8d7aefa8c7be5a9b4bf1b831c0a550f24fea181c5"
+        }
+      ],
+      "addedAt": "2026-11-16T08:43:06.264Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run accounts --recipe pick-other-engine-account-switches-engine",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "c5d711075cb221f062236c092df6d0afa61df1d8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "70dc52cdbf1fdd4fdcd9dc056a2cc059898cbfe124b40db411a7f9819a8f362a"
+        }
+      ],
+      "addedAt": "2026-11-16T08:43:15.273Z",
+      "cmd": "verify/yv design-check --base 0c1f1c2384bc",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c5d711075cb221f062236c092df6d0afa61df1d8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-new-session.json",
+          "sha256": "c44f4757d6555a95e2dafc3656d51e00b4c006411ceeed7a385cda68cc75356a"
+        }
+      ],
+      "addedAt": "2026-11-16T08:43:15.353Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker"
+      ]
+    }
+  ]
+}
