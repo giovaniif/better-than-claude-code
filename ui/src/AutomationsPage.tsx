@@ -12,6 +12,7 @@ import {
   FolderPicker,
   HostPicker,
   Icon,
+  MenuButton,
   ModelPicker,
   PERMISSIONS,
   PermissionPicker,
@@ -137,6 +138,7 @@ export function AutomationsPage({ state, actions }: { state: State; actions: Act
   return (
     <div className="hosts automations">
       <header className="bar">
+        <MenuButton />
         <h1>Automations</h1>
         <span className="spacer" />
         <button className="btn" onClick={() => actions.go({ page: "automation", host: "local", id: "new" })}>
@@ -250,6 +252,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   return (
     <div className="hosts automations">
       <header className="bar">
+        <MenuButton />
         <h1>{editing ? "Edit automation" : "New automation"}</h1>
       </header>
       <div className="scroll">

@@ -20,10 +20,12 @@ yv iso down
 ## Recipes
 
 ### pending-shows-card
-Expect at both viewports: the card with its three buttons, and the row status.
+Expect at both viewports: the card with its three buttons, and the row status
+(in the sidebar drawer at 390 px).
 
 ```sh
-yv drive 'session:{{sid_cmd}}' --steps '[{"expect":"text:Allow this command?"},{"expect":"role:button:Allow once"},{"expect":"role:button:Always allow"},{"expect":{"role":"button","name":"Deny","exact":true}},{"expect":"css:.session-row","text":"Needs approval"},{"shot":"approval"}]'
+yv drive 'session:{{sid_cmd}}' --viewport desktop --steps '[{"expect":"text:Allow this command?"},{"expect":"role:button:Allow once"},{"expect":"role:button:Always allow"},{"expect":{"role":"button","name":"Deny","exact":true}},{"expect":"css:.session-row","text":"Needs approval"},{"shot":"approval"}]'
+yv drive 'session:{{sid_cmd}}' --viewport mobile --steps '[{"expect":"text:Allow this command?"},{"expect":"role:button:Allow once"},{"expect":"role:button:Always allow"},{"expect":{"role":"button","name":"Deny","exact":true}},{"shot":"approval"},{"click":"role:button:Open sessions"},{"expect":"css:.session-row","text":"Needs approval"}]'
 yv state --expect '{"sessions":[{"id":"{{sid_cmd}}","status":"needs_approval"}]}'
 ```
 

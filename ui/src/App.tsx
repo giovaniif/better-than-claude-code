@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
-import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
+import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
@@ -63,6 +63,7 @@ const BELL = "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 
 const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM12 11v6M9 14h6";
 const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
+const MENU = "M4 6h16M4 12h16M4 18h16";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
 export const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
@@ -80,11 +81,41 @@ export const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =
 
 const SIDEBAR_W = 248;
 const PANE_W = 420;
+/** Where the sidebar stops being a column and becomes a drawer (the same width as in styles.css). */
+const NARROW = "(max-width: 700px)";
+
+/** Whether the sessions drawer is open, and how to open it, for each page's menu button. */
+const DrawerContext = createContext<{ open: boolean; show(): void }>({ open: false, show: () => {} });
 
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
   const [sidebarW, setSidebarW] = useWidth("yard.sidebarWidth", SIDEBAR_W);
+  // Below NARROW the sidebar is a drawer over the page. Picking anything in
+  // it, the backdrop or Escape closes it; so does crossing the breakpoint, so
+  // it never comes back open by surprise.
+  const [drawer, setDrawer] = useState(false);
+  useEscape(drawer, () => setDrawer(false));
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW);
+    const onChange = () => setDrawer(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  // Routes that change without a pick (an import's or a notification's session opening) close it too.
+  const where = routeHash(route);
+  useEffect(() => setDrawer(false), [where]);
+  const drawerCtx = useMemo(() => ({ open: drawer, show: () => setDrawer(true) }), [drawer]);
+  const sidebarActions = useMemo<Actions>(
+    () => ({
+      ...actions,
+      go: (r: Route) => {
+        setDrawer(false);
+        actions.go(r);
+      },
+    }),
+    [actions],
+  );
   // A file dropped beside the composer would otherwise make the page (or
   // the app's webview) navigate to it.
   useEffect(() => {
@@ -99,52 +130,75 @@ export function App() {
     };
   }, []);
   return (
-    <div className="app" style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-      <Sidebar state={state} actions={actions} />
-      <Resizer
-        width={sidebarW}
-        min={180}
-        max={480}
-        initial={SIDEBAR_W}
-        dir={1}
-        cssVar="--sidebar-w"
-        label="Resize the sessions sidebar"
-        onWidth={setSidebarW}
-      />
-      <div className="main">
-        {!state.connected && <div className="banner">yardd is not reachable. Reconnecting.</div>}
-        {state.error && (
-          <div className="banner banner-error">
-            <span>{state.error}</span>
-            <button className="btn-text" onClick={actions.dismissError}>
-              Dismiss
-            </button>
-          </div>
-        )}
-        {state.notice && !state.error && (
-          <div className="banner banner-notice">
-            <span>{state.notice}</span>
-            <button className="btn-text" onClick={actions.dismissError}>
-              Dismiss
-            </button>
-          </div>
-        )}
-        {route.page === "new" && <NewSession state={state} actions={actions} />}
-        {route.page === "hosts" && <Hosts state={state} actions={actions} />}
-        {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
-        {route.page === "automation" &&
-          // The form reads its automation once, on mount: after a reload it waits on the list
-          // until the host's snapshot has it, instead of opening blank and saving a copy.
-          (route.id === "new" || state.automations[route.host]?.some((a) => a.id === route.id) ? (
-            <AutomationForm key={`${route.host}/${route.id}`} state={state} actions={actions} host={route.host} id={route.id} />
-          ) : (
-            <AutomationsPage state={state} actions={actions} />
-          ))}
-        {route.page === "session" && state.sessions[route.id] && (
-          <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
-        )}
+    <DrawerContext.Provider value={drawerCtx}>
+      <div className={`app ${drawer ? "drawer-open" : ""}`} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
+        <Sidebar state={state} actions={sidebarActions} open={drawer} />
+        {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
+        <Resizer
+          width={sidebarW}
+          min={180}
+          max={480}
+          initial={SIDEBAR_W}
+          dir={1}
+          cssVar="--sidebar-w"
+          label="Resize the sessions sidebar"
+          onWidth={setSidebarW}
+        />
+        <div className="main" inert={drawer || undefined}>
+          {!state.connected && <div className="banner">yardd is not reachable. Reconnecting.</div>}
+          {state.error && (
+            <div className="banner banner-error">
+              <span>{state.error}</span>
+              <button className="btn-text" onClick={actions.dismissError}>
+                Dismiss
+              </button>
+            </div>
+          )}
+          {state.notice && !state.error && (
+            <div className="banner banner-notice">
+              <span>{state.notice}</span>
+              <button className="btn-text" onClick={actions.dismissError}>
+                Dismiss
+              </button>
+            </div>
+          )}
+          {route.page === "new" && (
+            <>
+              {/* The page has no bar of its own; narrow windows need one for the menu button. */}
+              <header className="bar bar-narrow">
+                <MenuButton />
+                <h2>New session</h2>
+              </header>
+              <NewSession state={state} actions={actions} />
+            </>
+          )}
+          {route.page === "hosts" && <Hosts state={state} actions={actions} />}
+          {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
+          {route.page === "automation" &&
+            // The form reads its automation once, on mount: after a reload it waits on the list
+            // until the host's snapshot has it, instead of opening blank and saving a copy.
+            (route.id === "new" || state.automations[route.host]?.some((a) => a.id === route.id) ? (
+              <AutomationForm key={`${route.host}/${route.id}`} state={state} actions={actions} host={route.host} id={route.id} />
+            ) : (
+              <AutomationsPage state={state} actions={actions} />
+            ))}
+          {route.page === "session" && state.sessions[route.id] && (
+            <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
+          )}
+        </div>
       </div>
-    </div>
+    </DrawerContext.Provider>
+  );
+}
+
+/** First in each page's bar on narrow windows: opens the sessions drawer.
+ *  Hidden where the sidebar is a column. */
+export function MenuButton() {
+  const { open, show } = useContext(DrawerContext);
+  return (
+    <button className="btn-icon menu-button" aria-label="Open sessions" aria-controls="sidebar" aria-expanded={open} onClick={show}>
+      <Icon d={MENU} size={18} />
+    </button>
   );
 }
 
@@ -559,7 +613,7 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions }: { state: State; actions: Actions }) {
+function Sidebar({ state, actions, open }: { state: State; actions: Actions; open: boolean }) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -579,11 +633,16 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
   useEffect(() => {
     if (openArchived) setShowArchived(true);
   }, [openArchived]);
+  // Opened as a drawer, focus moves into it, so the keyboard is where the eyes are.
+  const nav = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (open) nav.current?.querySelector<HTMLElement>(".nav-row")?.focus();
+  }, [open]);
   const row = (s: SessionMeta) => (
     <SessionRow key={s.id} state={state} actions={actions} session={s} groups={groupNames} active={route.page === "session" && route.id === s.id} />
   );
   return (
-    <nav className="sidebar" aria-label="Sessions">
+    <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">
       <div className="brand">Switchyard</div>
       <div className="sidebar-top">
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
@@ -1768,6 +1827,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     <div className="session">
       <main className="thread">
         <header className="bar">
+          <MenuButton />
           <h1>{meta.title}</h1>
           <code className="muted">{meta.branch || changes?.branch || tilde(meta.cwd, homeOn(state, host))}</code>
           {sessionAccount && (
@@ -3242,6 +3302,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
   return (
     <div className="hosts">
       <header className="bar">
+        <MenuButton />
         <h1>Hosts</h1>
         <span className="spacer" />
         {!adding && (

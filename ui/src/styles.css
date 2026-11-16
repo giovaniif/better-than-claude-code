@@ -14,6 +14,7 @@
   --bad-ink: #b42318;
   --add: #e8f5ec;
   --del: #fcebea;
+  --scrim: rgba(0, 0, 0, 0.28);
   --mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -571,3 +572,35 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .automation-limits label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
 .automation-limits .field { width: 120px; }
 .danger { color: var(--bad-ink); }
+
+/* Narrow windows (phones): the sidebar is a drawer over the page, opened by
+   the menu button first in each page's bar, so the page keeps the full width.
+   Last in the file so it wins over the wide rules above. */
+.menu-button, .bar-narrow, .drawer-backdrop { display: none; }
+@media (max-width: 700px) {
+  .menu-button { display: flex; flex: none; margin-left: -4px; color: var(--ink); }
+  .bar-narrow { display: flex; }
+  .bar { gap: 8px; padding: 8px 16px 8px 12px; }
+  /* The title keeps more of the bar than the branch beside it. */
+  .bar code { flex-shrink: 4; }
+  .app > .resizer { display: none; }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    width: min(300px, calc(100vw - 56px));
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+  .app.drawer-open .sidebar { transform: none; visibility: visible; transition: transform 0.2s ease; }
+  .drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 29; background: var(--scrim); }
+  .banner { padding: 8px 16px; }
+  .thread .scroll { padding: 20px 16px; }
+  .dock { padding: 0 12px 12px; }
+  .new { padding: 32px 16px; }
+  .hosts-inner { padding: 20px 16px; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) { .sidebar, .app.drawer-open .sidebar { transition: none; } }

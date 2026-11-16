@@ -161,6 +161,7 @@ Scheduled work, built into yardd (`crates/yardd/src/automations.rs`, UI in `ui/s
 - Groups have no record of their own: a group exists while a session names it. The sidebar lists Pinned, then ungrouped sessions (creation order), then one collapsible section per group (sorted by name, newest activity first inside; `sidebarLayout` in `store.ts`). Pinned and archived sessions are not shown inside groups. A group header shows name, count and chevron; its menu renames or ungroups every session that carries the name, archived ones included. Which groups are collapsed is per browser (`yard.groups.collapsed` in localStorage).
 - Archived is a dock under the scrolling list, just above the host rows, so it never scrolls away. It is shown whenever something is archived, collapsed by default; opened, its rows expand upward in a list with its own scroll (max 40% of the window height, at most 320 px). Archived sessions still open and run.
 - The sessions sidebar and the workspace pane are resizable; widths are per browser.
+- Below 700 px (phones on the web version) the sidebar is a drawer over the page, so the page keeps the full width: a menu button first in each page's bar opens it; picking anything in it, any route change, the backdrop or Escape closes it. The workspace pane is already hidden below 1100 px.
 
 ## Notifications
 

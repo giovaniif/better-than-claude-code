@@ -60,6 +60,10 @@ verify/yv state --expect '{"sessions":[{"id":"{{sid_echo}}","status":"idle"}]}'
 ```
 
 - Routes: `new`, `hosts`, `session:<id or title text>`.
+- At mobile (below 700 px) the sidebar is a closed drawer. Routes open it
+  themselves; steps that click or read something in it open it first with
+  `{"click":"role:button:Open sessions"}` (hidden on desktop, so a recipe
+  that needs it runs one drive per viewport).
 - Steps: `goto`, `click`, `fill`+`value`, `type` (xterm), `press`, `wait`
   (ms or target), `expect` (+`text`, `value`, `enabled`, `count`, `visible:false`,
   `inViewport`), `upload`+`files`, `shot`, `aria` (accessibility snapshot),

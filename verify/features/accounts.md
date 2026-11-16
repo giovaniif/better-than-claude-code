@@ -72,10 +72,10 @@ grep -q "start .*config=.*/accounts/" "$(v fake)/sidecar.log"
 
 ### pick-account-mobile
 Viewports: mobile
-The same at 390 px: the account row is in the picker and the session's sidebar row names it. (The session header is pushed off screen there: see the Gotchas.)
+The same at 390 px: the account row is in the picker, the session header names the account, and so does the session's row in the sidebar drawer.
 
 ```sh
-yv drive new --viewport mobile --steps '[{"click":"role:button:Opus 5.5 High"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick mobile"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick mobile"},{"expect":{"css":".session-row","hasText":"TEST-account pick mobile"},"text":"TEST-Work"},{"shot":"session-on-account"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Opus 5.5 High"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick mobile"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick mobile"},{"expect":"role:heading:TEST-account pick mobile","inViewport":true},{"expect":"css:.session-account","text":"TEST-Work"},{"shot":"session-on-account"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-account pick mobile"},"text":"TEST-Work"}]'
 ```
 
 ### default-has-no-account-row-without-a-choice
@@ -122,6 +122,5 @@ yv drive hosts --viewport desktop --steps '[{"click":"role:button:Remove TEST-Wo
 ```
 
 ## Gotchas
-- At 390 px the session header, and with it the account name beside the branch, is off screen (the known mobile layout gap); the sidebar row still names the account.
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
