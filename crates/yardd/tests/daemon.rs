@@ -2326,3 +2326,12 @@ async fn claude_usage_survives_a_restart() {
     let snapshot = d.client().await.log[0].clone();
     assert_eq!(snapshot["usage"]["claude"]["windows"]["five_hour"]["utilization"], 0.47, "{}", snapshot["usage"]);
 }
+
+#[tokio::test]
+async fn the_page_is_sent_so_a_web_view_rechecks_it() {
+    // Without it, the Mac app kept showing an old cached page after an update.
+    let sb = Sandbox::new("cache");
+    let d = sb.start();
+    let page = http_get(d.port, "/").unwrap().to_lowercase();
+    assert!(page.contains("cache-control: no-cache\r\n"), "{}", page.lines().take(12).collect::<Vec<_>>().join("\n"));
+}
