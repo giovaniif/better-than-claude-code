@@ -2,6 +2,24 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.5.0 (2026-11-16)
+
+- **Fixed: "Open the sign-in page" did nothing in the Mac app**, and neither did pull request or notification links. The window dropped links that open a new tab; they now open in your browser.
+- **Check for Updates…** in the Switchyard menu, under About. It always answers: you're on the latest version, a download has started, or the check failed.
+- **A host on an older Switchyard says so.** Adding an account there said `unknown op 'account.add'`; it now names the host and says to use Update Switchyard on its card in Hosts.
+- **Notifications say what happened, and only the important ones show.** "Needs your approval · Run a command: npm test", "Done in 2m 4s · " followed by the start of the answer, "Failed after 12s · " followed by the error. A turn under a minute, or an automation run's finish, no longer notifies; approvals and failures always do.
+- **Session rows show what needs you.** A turning ring while working, an amber "!" while waiting for approval, a blue dot and bold title for an answer you haven't opened yet ("Answered"), red for a failure.
+- **Reply to part of an answer with quote cards.** Reply puts the quote in a card above the box instead of `>` lines; several stack and × removes one. Quotes in your sent messages show as quotes.
+- **Attach terminal output to a reply.** The Terminal tab's Attach menu adds the selection, the rows on screen, or the last 100 or 500 lines as a card above the reply box. It is sent as a code block, and shows as one in your message.
+- **Drag sessions between groups.** Drop a row on a group, on Sessions to take it out, or on Pinned. On a phone the row's … menu still does it.
+- **Settings page.** Notifications moved there from the sidebar. Choose which hosts show in the sidebar, so you can hide This Mac.
+- **Claude limits from your other hosts.** The sidebar's limits strip reads every host shown there, so Claude limits from a server show on the Mac too. Added accounts like "Work" get their own line.
+- **Fixed:**
+  - A hand-off keeps the session in its sidebar group, and hand-off notes open the other session.
+  - Editing an automation keeps its engine and model; Run now shows a failure reason once.
+  - Agent headings and lists render even with no blank line before them.
+  - "Show more (1 line)", not "(1 lines)".
+
 ## 0.4.3 (2026-11-16)
 
 - **Fixed: Install or Update Switchyard on a server failed at once** with "Cannot execute command-line and remote command" when your ssh config sets a `RemoteCommand` for that host (a tmux attach, say). Switchyard's own ssh connections now leave it and any forced terminal out; your own logins keep them.
