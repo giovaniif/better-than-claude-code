@@ -3131,29 +3131,33 @@ function RemoveHost({ onConfirm, onUpdate }: { onConfirm(): void; onUpdate?(): v
 /** `user@box.tailnet.ts.net` → `box`. */
 const nameFromDestination = (dest: string) => dest.trim().replace(/^.*@/, "").split(".")[0] ?? "";
 
-function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount: number; onDone(): void }) {
+function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: number; connected: boolean; onDone(): void }) {
+  const { actions, hosts, errorCount, connected, onDone } = props;
   const [destination, setDestination] = useState("");
   const [name, setName] = useState("");
   const [port, setPort] = useState("47717");
   const [more, setMore] = useState(false);
   const [direct, setDirect] = useState(false);
   const [url, setUrl] = useState("");
-  const [sent, setSent] = useState(false);
-  // An error from yardd keeps the form open with what was typed.
-  useEffect(() => setSent(false), [errorCount]);
+  // The host ids known when Add was clicked, until yardd answers. A new host
+  // appearing closes the form; an error keeps it open with what was typed, and
+  // a dropped connection gives Add back. Closing on the click itself lost the
+  // input whenever yardd refused.
+  const [sent, setSent] = useState<string[] | null>(null);
+  useEffect(() => setSent(null), [errorCount, connected]);
   useEffect(() => {
-    if (sent) onDone();
-  }, [sent]);
+    if (sent && hosts.some((h) => !sent.includes(h.id))) onDone();
+  }, [sent, hosts]);
   const finalName = (name.trim() || (direct ? "" : nameFromDestination(destination))).trim();
   const ready = finalName && (direct ? url.trim() : destination.trim());
   const submit = () => {
-    if (!ready) return;
+    if (!ready || sent) return;
     actions.addHost(
       direct
         ? { name: finalName, kind: "direct", url: url.trim() }
         : { name: finalName, kind: "ssh", destination: destination.trim(), remotePort: Number(port) || 47717 },
     );
-    setSent(true);
+    setSent(hosts.map((h) => h.id));
   };
   return (
     <section className="host-card add-host" aria-label="Add host">
@@ -3198,7 +3202,7 @@ function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount
         </div>
       )}
       <div className="row">
-        <button className="btn-primary" disabled={!ready} onClick={submit}>
+        <button className="btn-primary" disabled={!ready || !!sent} onClick={submit}>
           Add {finalName || "host"}
         </button>
         <button className="btn-text" onClick={onDone}>
@@ -3237,7 +3241,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
       </header>
       <div className="scroll">
         <div className="hosts-inner">
-          {adding && <AddHost actions={actions} errorCount={state.errorCount} onDone={() => setAdding(false)} />}
+          {adding && <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />}
           <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
           {state.hosts.map((h) => (
             <HostCard
