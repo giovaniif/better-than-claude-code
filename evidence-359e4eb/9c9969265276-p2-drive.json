@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "1c259a5e97c53ebc27af6faddb085f383c2b7790",
+    "short": "1c259a5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T06:43:13.677Z"
+  },
+  "dir": ".verify/evidence/add-host-keeps-form-base-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4847,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/add-host-keeps-form-base-mobile/after-refused-add-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "host.add",
+          "message": "the remote port must be a number from 1 to 65535"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
