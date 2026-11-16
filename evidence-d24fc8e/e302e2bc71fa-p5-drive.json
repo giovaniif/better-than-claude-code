@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1e20a36594",
+  "build": {
+    "sha": "d24fc8e53e5b3e3d26e5d0e12d8365ab5214921d",
+    "short": "d24fc8e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:47:58.120Z"
+  },
+  "dir": ".verify/evidence/approval-double-click-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3517,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/approval-double-click-head-mobile/after-double-click-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(async () => { const b = [...document.querySelectorAll('.approval button')].find((x) => x.textContent.trim() === 'Allow once'); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return 'clicked twice'; })()",
+          "value": "clicked twice"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

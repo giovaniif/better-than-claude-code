@@ -1,0 +1,35 @@
+$ cd ui && bun test src/store.test.ts
+# exit 1 after 19 ms at b97e650851fb58cf8a9e4cfeaeb302a686778e60
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/store.test.ts:
+245 |     return server(
+246 |       server(s, history("s1", [{ type: "user_message", text: "[cmd] go" }, { type: "turn_started" }])),
+247 |       event("s1", 2, { type: "approval_request", requestId: "r1", kind: "command", title: "ls", detail: "" }),
+248 |     );
+249 |   };
+250 |   const card = (state: State) => state.threads.s1.items.find((i) => i.kind === "approval") as any;
+                                       ^
+TypeError: undefined is not an object (evaluating 'state.threads')
+      at card (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/ui/src/store.test.ts:250:34)
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/ui/src/store.test.ts:256:12)
+(fail) approval decisions > a sent decision holds the card until yardd resolves it [0.76ms]
+324 |     case "error":
+325 |       // A host on an older Switchyard has no engine status; its card offers Update.
+326 |       if (msg.for === "engines.status") return state;
+327 |       // The import dialog says why; no banner behind it.
+328 |       if (msg.for === "session.import") return { ...state, importError: msg.message };
+329 |       return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
+                                                               ^
+TypeError: undefined is not an object (evaluating 'state.errorCount')
+      at reduceServer (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/ui/src/store.ts:329:58)
+      at reduce (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/ui/src/store.ts:155:23)
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/ui/src/store.test.ts:263:21)
+(fail) approval decisions > a refused decision gives the buttons back [0.29ms]
+
+ 19 pass
+ 2 fail
+ 60 expect() calls
+Ran 21 tests across 1 file. [15.00ms]
