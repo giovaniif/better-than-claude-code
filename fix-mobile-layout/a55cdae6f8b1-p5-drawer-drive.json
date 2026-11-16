@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e46e294c6",
+  "build": {
+    "sha": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+    "short": "8c6b60a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T13:27:42.857Z"
+  },
+  "dir": ".verify/evidence/mobile-layout-8-drawer",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4376,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-layout-8-drawer/drawer-open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-layout-8-drawer/after-pick-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

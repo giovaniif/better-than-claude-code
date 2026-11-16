@@ -1,0 +1,62 @@
+$ (cd ui && bun test) && verify/yv map run layout
+# exit 0 after 23431 ms at 8c6b60a3043cf067638bb6e6636e93c834d49fcd
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-16T13:28:24.377Z",
+      "counts": {
+        "pass": 7
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-three-columns",
+          "status": "pass",
+          "ms": 2637
+        },
+        {
+          "label": "narrow-hides-pane",
+          "status": "pass",
+          "ms": 2853
+        },
+        {
+          "label": "mobile-main-column-usable",
+          "status": "pass",
+          "ms": 2840
+        },
+        {
+          "label": "mobile-hosts-page",
+          "status": "pass",
+          "ms": 2217
+        },
+        {
+          "label": "mobile-drawer-opens-and-closes",
+          "status": "pass",
+          "ms": 5827
+        },
+        {
+          "label": "mobile-menu-on-every-page",
+          "status": "pass",
+          "ms": 3622
+        },
+        {
+          "label": "desktop-sidebar-is-a-column",
+          "status": "pass",
+          "ms": 2533
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 132 pass
+ 0 fail
+ 315 expect() calls
+Ran 132 tests across 10 files. [51.00ms]

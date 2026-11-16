@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe mobile-hosts-page
+# exit 1 after 12643 ms at 6eaf794fdf74218b7ace85948d19b98809a8cf1d
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-16T13:27:32.111Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-hosts-page",
+          "status": "fail",
+          "ms": 11790,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":\"role:heading:Hosts\",\"inViewport\":true}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a7423a71a2a977e08/.verify/drives/2026-11-16T13-27-20-496Z/fail-mobile-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": " from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 3% · 47%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Hosts\\\" [level=1]\\n  - button \\\"Add host\\\"\\n- region \\\"iso-host\\\":\\n  - heading \\\"iso-host\\\" [level=2]\\n  - text: Healthy CPU 3% load 2.9 of 28 Memory 11.0 GB of 23.4 GB Disk 63.6 GB of 97.9 GB\\n  - img \\\"CPU over the last hour\\\"\\n  - region \\\"Sessions\\\":\\n    - heading \\\"Sessions\\\" [level=2]\\n    - table:\\n      - rowgroup:\\n        - row \\\"Session CPU Memory\\\":\\n          - cell \\\"Session\\\"\\n          - cell \\\"CPU\\\"\\n          - cell \\\"Memory\\\"\\n      - rowgroup:\\n        - row \\\"TEST-hello from Claude 0.0 cores 24 MB\\\":\\n          - cell \\\"TEST-hello from Claude\\\"\\n          - cell \\\"0.0 cores\\\"\\n          - cell \\\"24 MB\\\"\\n    - text: New sessions are queued while load is above 28 or less than 0 GB of memory is free.\\n  - text: Claude Code logged in as me@example.com\\n  - button \\\"Add Claude Code account\\\": Add account\\n  - text: Codex logged in as me@example.com\\n  - button \\\"Add Codex account\\\": Add account\\n- button \\\"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\\\":\\n  - strong: Run sessions on another machine\\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":\\\"role:heading:Hosts\\\",\\\"inViewport\\\":true}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a7423a71a2a977e08/.verify/drives/2026-11-16T13-27-20-496Z/fail-mobile-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/mobile-hosts-page",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "route": "session:s1a1e46e294c6",
+  "build": {
+    "sha": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+    "short": "8c6b60a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T13:27:42.857Z"
+  },
+  "dir": ".verify/evidence/mobile-layout-8-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4465,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-layout-8-head/session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-layout-8-head/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-layout-8-head/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Math.round(document.querySelector(\".main\").getBoundingClientRect().width)",
+          "value": 390
+        },
+        {
+          "step": 8,
+          "eval": "Math.round(document.querySelector(\".host-card\").getBoundingClientRect().width)",
+          "value": 358
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3435,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/mobile-layout-8-head/session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/mobile-layout-8-head/new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/mobile-layout-8-head/hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Math.round(document.querySelector(\".main\").getBoundingClientRect().width)",
+          "value": 1192
+        },
+        {
+          "step": 8,
+          "eval": "Math.round(document.querySelector(\".host-card\").getBoundingClientRect().width)",
+          "value": 576
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

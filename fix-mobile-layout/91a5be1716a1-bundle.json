@@ -1,0 +1,352 @@
+{
+  "v": 1,
+  "claim": "At 390 px the 248 px sessions sidebar stays put, so the session column is about 140 px wide (words wrap one per line, the reply box stacks) and the Hosts page's stats overlap",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a7423a71a2a977e08",
+  "base": "80ccbec8fff15b8cf2b973e4b3078156d71bd74d",
+  "head": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approvals.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/import.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/notifications.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/persistence.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T13:27:10.572Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6eaf794fdf74218b7ace85948d19b98809a8cf1d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "88ca67ed29ef44ec727476acba648dcba3f94275167c3aa5984b34dd487380c1"
+        },
+        {
+          "path": "p1-session-base-mobile.png",
+          "sha256": "ea6fe98d75cb3204c72f31c7fd6087110e815970504a1c5a6e3f0b1a1aa727ba"
+        },
+        {
+          "path": "p1-hosts-base-mobile.png",
+          "sha256": "13232c55818cc81034292b7bb1b23d7124e3c189a35b6aa7a35e23635fabf765"
+        }
+      ],
+      "addedAt": "2026-11-16T13:27:15.951Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "6eaf794fdf74218b7ace85948d19b98809a8cf1d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d9d45ad911daec41d66e0758059d46dc2583fcbbe58c16f46e9685d709f503ff"
+        }
+      ],
+      "addedAt": "2026-11-16T13:27:15.993Z",
+      "cmd": "verify/yv map run layout --recipe mobile-main-column-usable",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "6eaf794fdf74218b7ace85948d19b98809a8cf1d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2b2f9533ff7de72ecf59d1cb64f089188b4b4a6a1820976f2b86213d39be887c"
+        }
+      ],
+      "addedAt": "2026-11-16T13:27:19.471Z",
+      "cmd": "verify/yv map run layout --recipe mobile-hosts-page",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "a6b2b9008dd097cbae3c787c00e33323f59f0e7392e33c4b44701d2b0fa0efed"
+        },
+        {
+          "path": "p4-session-mobile.png",
+          "sha256": "1b6b9c46b53f711daac5e449f0c8578f148246017111aef149a1df58ef1e88d9"
+        },
+        {
+          "path": "p4-new-session-mobile.png",
+          "sha256": "9fbbb85462857dde8d771376e2c11c137f22a6ec1716620ff78f610f32c87413"
+        },
+        {
+          "path": "p4-hosts-mobile.png",
+          "sha256": "6abc0769c8e86b15281b0f2a6f2fa6e0ebf94a16bd3f37005c5e5788e117d4ff"
+        },
+        {
+          "path": "p4-session-desktop.png",
+          "sha256": "28365aaf8d61b38052a84d201d2a54335b02a76cea4936406e3ac394e0700038"
+        },
+        {
+          "path": "p4-new-session-desktop.png",
+          "sha256": "10197999592836adcf106c36f62c78f8d8b0453df646d4d3278785f9d2ad329d"
+        },
+        {
+          "path": "p4-hosts-desktop.png",
+          "sha256": "84a1af7cac7fafdba741d71b543fd42018188167e479667b419a879a6d8f1a7b"
+        }
+      ],
+      "addedAt": "2026-11-16T13:27:51.449Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drawer-drive.json",
+          "sha256": "a55cdae6f8b1f7ccfd4910434b68f7ff6b03ca829c37f0a974b4a8d3af4eea65"
+        },
+        {
+          "path": "p5-drawer-open-mobile.png",
+          "sha256": "edd5d7d4ee615d01ff97abf89736f4827ff747b42dd2bfc80240c2956f42d08a"
+        },
+        {
+          "path": "p5-after-pick-mobile.png",
+          "sha256": "70245501fe12bcd5d21aadceb583c7a0660be96e01b4994e58fb8623b47cff6c"
+        }
+      ],
+      "addedAt": "2026-11-16T13:27:56.367Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "c730f251c7dc5702464a89d3ea1f690799401e89abb519d207aab08203fb56a1"
+        }
+      ],
+      "addedAt": "2026-11-16T13:28:00.948Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run layout",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "d62bbe73b70c25f275e0bf2ed023528addb3f4df0c7e20915baa7117b54aa06c"
+        }
+      ],
+      "addedAt": "2026-11-16T13:28:24.419Z",
+      "cmd": "verify/yv design-check --base 80ccbec8fff1",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-sidebar.json",
+          "sha256": "e85525e882a89f59999773d1cd0709b52a320b1e00721f67c6f3b014726f921f"
+        }
+      ],
+      "addedAt": "2026-11-16T13:28:24.495Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-thread.json",
+          "sha256": "2a1dcec55efc0966fb1147d909a3a2d831904d6702d12044d8096d7ed47b13f3"
+        }
+      ],
+      "addedAt": "2026-11-16T13:29:11.991Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/subagent-nests-and-expands"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-new-session.json",
+          "sha256": "be775707cb0bc2155e694fbf63fef867d10bf5889ed0d915a8bf03182217ab1c"
+        }
+      ],
+      "addedAt": "2026-11-16T13:30:38.762Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8c6b60a3043cf067638bb6e6636e93c834d49fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-hosts.json",
+          "sha256": "15debe091b141979d19065ec0f89384543030489e57aeda29d516f138274396c"
+        }
+      ],
+      "addedAt": "2026-11-16T13:31:01.947Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form"
+      ]
+    }
+  ]
+}
