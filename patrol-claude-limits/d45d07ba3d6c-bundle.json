@@ -1,0 +1,145 @@
+{
+  "v": 1,
+  "claim": "A Claude automation with a 5-hour or weekly usage limit never skips, however high Claude's usage is; a Codex one with the same limit skips",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5",
+  "base": "3889164455f27f8b9f1e00216997af1bdeaa12b0",
+  "head": "bf8e706776bb7d195257f996d6959c3483d9c3cd",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T09:50:11.093Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "9d97ba4ac3fb520885e09968da608dd5a6e68c62",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-claude-limits-base-repro.json",
+          "sha256": "d1aeba721e7a3340d3db5cee01c84be6c6e8f221771119c9799729e81f0b71e4"
+        }
+      ],
+      "addedAt": "2026-11-16T09:50:11.133Z",
+      "text": "base 9d97ba4 (test only): Claude automation maxFiveHour 10 at Claude 5-hour 47% -> automation.ran outcome started (should skip); Codex automation maxFiveHour 10 at 12% -> skipped",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "9d97ba4ac3fb520885e09968da608dd5a6e68c62",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9b5f4cbb03e4f1e80b330e78ace0fad3253c4dfb307003faab4546c6090eea88"
+        }
+      ],
+      "addedAt": "2026-11-16T09:50:11.176Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd claude_limits_read_the_sidecars_windows",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bf8e706776bb7d195257f996d6959c3483d9c3cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-claude-limits-head-fix.json",
+          "sha256": "d1f467841fdf70ff2b5c1d201f9895a0bc219976a6ce7f9c067c822e47fb8932"
+        }
+      ],
+      "addedAt": "2026-11-16T09:50:47.260Z",
+      "text": "head bf8e706: same automations, forced off -> Claude skipped 'Claude 5-hour usage 47% is above 10%', Codex skipped as before",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bf8e706776bb7d195257f996d6959c3483d9c3cd",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "2585da2f8ee51dc40f3f7b5ed966f1b4edd40498d7661cbae48c19e02a723a25"
+        },
+        {
+          "path": "p4-automations-mobile.png",
+          "sha256": "ebe6b3a97b389af76941af2e462784b25cada5a717aa8282495c2a52b9983219"
+        },
+        {
+          "path": "p4-automations-desktop.png",
+          "sha256": "41ffbf91d26284e3ffc62d639ab69e2f571e63f81955846218c62867ac393aae"
+        }
+      ],
+      "addedAt": "2026-11-16T09:50:47.299Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "bf8e706776bb7d195257f996d6959c3483d9c3cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "6f9cb7ac1973e3c3a9e84c14c6d147af34db973e45658a77db165242dd119518"
+        }
+      ],
+      "addedAt": "2026-11-16T09:50:47.341Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && verify/yv map run automations --recipe claude-usage-limit-skips",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bf8e706776bb7d195257f996d6959c3483d9c3cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-automations.json",
+          "sha256": "18786a616f523afb81891ef1f76ca989341c49ad0b3e5124d054bb5014131c98"
+        }
+      ],
+      "addedAt": "2026-11-16T09:51:08.212Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips"
+      ]
+    }
+  ]
+}

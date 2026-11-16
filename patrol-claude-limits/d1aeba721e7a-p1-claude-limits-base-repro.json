@@ -1,0 +1,40 @@
+{
+  "claude": {
+    "command": "api",
+    "ok": true,
+    "sent": {
+      "op": "automation.run",
+      "id": "a1a1e3c31e7d1",
+      "force": false
+    },
+    "reply": {
+      "id": "a1a1e3c31e7d1",
+      "op": "automation.ran",
+      "outcome": "started",
+      "reason": null,
+      "sessionId": "s1a1e3c31f303"
+    },
+    "saved": {},
+    "received": 11,
+    "problems": []
+  },
+  "codex": {
+    "command": "api",
+    "ok": true,
+    "sent": {
+      "op": "automation.run",
+      "id": "a1a1e3c3340d4",
+      "force": false
+    },
+    "reply": {
+      "id": "a1a1e3c3340d4",
+      "op": "automation.ran",
+      "outcome": "skipped",
+      "reason": "Codex 5-hour usage 12% is above 10%",
+      "sessionId": null
+    },
+    "saved": {},
+    "received": 2,
+    "problems": []
+  }
+}

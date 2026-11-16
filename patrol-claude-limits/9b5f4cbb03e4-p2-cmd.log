@@ -1,0 +1,26 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd claude_limits_read_the_sidecars_windows
+# exit 101 after 6817 ms at 9d97ba4ac3fb520885e09968da608dd5a6e68c62
+
+
+running 1 test
+test automations::tests::claude_limits_read_the_sidecars_windows ... FAILED
+
+failures:
+
+---- automations::tests::claude_limits_read_the_sidecars_windows stdout ----
+
+thread 'automations::tests::claude_limits_read_the_sidecars_windows' (1116734) panicked at crates/yardd/src/automations.rs:601:72:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    automations::tests::claude_limits_read_the_sidecars_windows
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.00s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 6.75s
+     Running unittests src/main.rs (target/debug/build/yardd/faa385782cd2ce48/out/yardd-faa385782cd2ce48)
+error: test failed, to rerun pass `-p yardd --bin yardd`
