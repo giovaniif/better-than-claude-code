@@ -1,0 +1,40 @@
+$ verify/yv map run automations --recipe edit-keeps-an-unlisted-model
+# exit 1 after 15494 ms at 540a73ef854395ece8d2bef75764a633c385e33e
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T16:55:23.155Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "edit-keeps-an-unlisted-model",
+          "status": "fail",
+          "ms": 14498,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"expect\":{\"css\":\".automation-pickers\",\"hasText\":\"gpt-retired\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023/.verify/drives/2026-11-16T16-55-08-971Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": ".5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 4% · 59%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Edit automation\\\" [level=1]\\n- text: Name\\n- textbox \\\"Automation name\\\":\\n  - /placeholder: Patrol\\n  - text: TEST-Retired model\\n- text: Prompt\\n- textbox \\\"Prompt\\\":\\n  - /placeholder: What each run should do\\n  - text: TEST-retired\\n- text: Where and how Runs on iso-host\\n- button \\\"TEST-demo-app\\\"\\n- button \\\"main\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- text: Each run gets a new worktree cut from the default branch, fetched first. Schedule\\n- combobox \\\"Schedule type\\\":\\n  - option \\\"Every few minutes or hours\\\"\\n  - option \\\"Daily\\\" [selected]\\n  - option \\\"Weekly\\\"\\n- textbox \\\"Time\\\": 09:30\\n- text: Daily at 09:30, in iso-host's local time zone. A run missed while Switchyard was off starts once when it is back. Skip a run\\n- checkbox \\\"While the previous run is still going\\\" [checked]\\n- text: While the previous run is still going When 5-hour usage is above\\n- spinbutton \\\"5-hour usage limit percent\\\"\\n- text: \\\"% When weekly usage is above\\\"\\n- spinbutton \\\"Weekly usage limit percent\\\"\\n- text: \\\"% Applies to scheduled runs; Run now always starts one. The limits read the Claude plan usage.\\\"\\n- button \\\"Save automation\\\"\\n- button \\\"Cancel\\\"\\n- button \\\"Delete automation\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"expect\\\":{\\\"css\\\":\\\".automation-pickers\\\",\\\"hasText\\\":\\\"gpt-retired\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023/.verify/drives/2026-11-16T16-55-08-971Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "automations/edit-keeps-an-unlisted-model",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

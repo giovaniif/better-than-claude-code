@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "ce84bcda0b3ea3d2f13f7ad80cd2bab3e23e1b2c",
+    "short": "ce84bcd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T16:55:25.340Z"
+  },
+  "dir": ".verify/evidence/edit-keeps-model-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4340,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/edit-keeps-model-head/edit-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
