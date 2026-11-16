@@ -1,21 +1,32 @@
 #!/usr/bin/env bash
-# Starts one agent loop run. Installed as ~/.local/share/switchyard-loops/run
-# by verify/loops/install.sh and called by the switchyard-loop@<kind> units.
-# The loops' checkout is their own: it is reset to origin/main on every run,
-# so never edit it by hand. Each run becomes a Switchyard session (in its own
-# worktree) on the live yardd; this script only launches it and returns.
+# Installed as ~/.local/share/switchyard-loops/run by verify/loops/install.sh.
+#   run tidy           every 5 minutes (switchyard-loop-tidy.timer): refresh the
+#                      loops' checkout, then archive finished loop sessions
+#   run <kind> [args]  one loop run by hand (switchyard-loop@<kind>.service)
+# The loops' checkout is their own: it is reset to origin/main on every call,
+# so never edit it by hand. The scheduled loops (patrol, maintain, review) are
+# yardd automations that cut their worktrees from this checkout; the tidy
+# refresh keeps its working tree (the `yv` that tidy and the land gate's hint
+# use) at origin/main now that no hourly launch resets it.
 set -euo pipefail
-kind="${1:?usage: run <patrol|maintain|review|verify|babysit> [args]}"
+kind="${1:?usage: run tidy | run <patrol|maintain|review|verify|babysit> [args]}"
 shift
 dir="${YV_LOOPS_CHECKOUT:-$HOME/.local/share/switchyard-loops/switchyard}"
 if [ ! -d "$dir/.git" ]; then
   mkdir -p "$(dirname "$dir")"
   git clone -q git@github.com:giovaniif/switchyard.git "$dir"
 fi
-git -C "$dir" fetch -q --prune origin
+if ! git -C "$dir" fetch -q --prune origin; then
+  # yardd fetches in this checkout before each automation run; a clash or a
+  # network blip must not stop the tidy pass.
+  [ "$kind" = "tidy" ] || exit 1
+fi
 git -C "$dir" checkout -q --detach origin/main
 git -C "$dir" reset -q --hard origin/main
 (cd "$dir/verify" && bun install --silent --frozen-lockfile >/dev/null)
+if [ "$kind" = "tidy" ]; then
+  exec "$dir/verify/yv" loop tidy
+fi
 out="$("$dir/verify/yv" loop run "$kind" --checkout "$dir" "$@")" || true
 echo "$out"
 # A launch that failed (yardd down, bad config) should reach the owner, once per hour at most.

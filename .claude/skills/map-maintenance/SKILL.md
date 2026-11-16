@@ -1,6 +1,6 @@
 ---
 name: map-maintenance
-description: Daily upkeep of the Switchyard feature map (verify/features) - add recipes for user-facing flows that have none, re-run areas and fix drift, record product gaps as Gotchas and findings, and open one PR with the map changes. Started by the daily loop timer.
+description: Daily upkeep of the Switchyard feature map (verify/features) - add recipes for user-facing flows that have none, re-run areas and fix drift, record product gaps as Gotchas and findings, and open one PR with the map changes. Started daily by the Loop maintain automation.
 ---
 
 # Map maintenance run
