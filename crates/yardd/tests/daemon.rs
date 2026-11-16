@@ -979,9 +979,15 @@ async fn install_sets_up_yardd_on_an_ssh_host() {
         .unwrap();
     assert!(tar.success());
 
-    // ssh that runs the remote command here, as the "remote" machine.
+    // ssh that runs the remote command here, as the "remote" machine. Its
+    // config sets a RemoteCommand (a tmux attach, say), so like real ssh it
+    // refuses a command line unless that is turned off.
     let fake_ssh = sb.root.join("fake-ssh");
-    fs::write(&fake_ssh, "#!/bin/bash\nwhile [ \"$1\" != -- ]; do shift; done\nshift 2\n[ $# -gt 0 ] || { echo 'fake ssh: no tunnels' >&2; exit 255; }\nexec bash -c \"$*\"\n").unwrap();
+    fs::write(
+        &fake_ssh,
+        "#!/bin/bash\n[[ \" $* \" == *' RemoteCommand=none '* ]] || { echo 'Cannot execute command-line and remote command.' >&2; exit 255; }\nwhile [ \"$1\" != -- ]; do shift; done\nshift 2\n[ $# -gt 0 ] || { echo 'fake ssh: no tunnels' >&2; exit 255; }\nexec bash -c \"$*\"\n",
+    )
+    .unwrap();
     std::process::Command::new("chmod").args(["+x", fake_ssh.to_str().unwrap()]).status().unwrap();
 
     let remote_port = free_port();
