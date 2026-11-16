@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5df6d636",
+  "build": {
+    "sha": "2769a9a8f2cbacd752b6ffa887476ab49e71eb1f",
+    "short": "2769a9a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:59:43.761Z"
+  },
+  "dir": ".verify/evidence/keep-reply-draft-2-base-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6637,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/keep-reply-draft-2-base-d/before-switch-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/keep-reply-draft-2-base-d/after-return-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
