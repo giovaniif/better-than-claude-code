@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { accountChoices, accountLabel, accountName, accountOf, usageForAccount, usageForPicks } from "./accounts";
-import type { AccountEntry } from "./protocol";
+import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForAccount, usageForPicks } from "./accounts";
+import type { AccountEntry, Models } from "./protocol";
 import { initial, loginKey, reduce, accountsOn, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
@@ -86,5 +86,31 @@ describe("accounts in the store", () => {
     expect(s.logins[loginKey("local", "claude")].url).toBe("https://x/default");
     expect(s.logins[loginKey("local", "claude", "a1")].url).toBe("https://x/work");
     expect(loginKey("local", "claude", "default")).toBe(loginKey("local", "claude"));
+  });
+});
+
+describe("choiceOnEngine", () => {
+  const models: Models = {
+    claude: [{ id: "opus", name: "Opus", efforts: ["low", "high", "max"], defaultEffort: "high" }],
+    codex: [
+      { id: "fast", name: "Fast", efforts: ["low", "medium"], defaultEffort: "medium" },
+      { id: "deep", name: "Deep", efforts: ["low", "medium", "xhigh"], defaultEffort: "medium", isDefault: true },
+    ],
+  };
+
+  test("moves to the engine's default model and keeps an effort it has", () => {
+    expect(choiceOnEngine(models, "codex", "low")).toEqual({ engine: "codex", model: "deep", effort: "low" });
+  });
+
+  test("falls back to the model's default effort", () => {
+    expect(choiceOnEngine(models, "codex", "max")).toEqual({ engine: "codex", model: "deep", effort: "medium" });
+  });
+
+  test("takes the first model when none is marked default", () => {
+    expect(choiceOnEngine({ ...models, codex: models.codex.slice(0, 1) }, "codex", "high")?.model).toBe("fast");
+  });
+
+  test("stays put when the engine has no models", () => {
+    expect(choiceOnEngine({ ...models, codex: [] }, "codex", "high")).toBeNull();
   });
 });
