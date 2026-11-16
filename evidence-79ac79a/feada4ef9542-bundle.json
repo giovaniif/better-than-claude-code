@@ -1,0 +1,172 @@
+{
+  "v": 1,
+  "claim": "After yardd restarts, the sidebar's plan usage strip loses the Claude meters (Codex only) until the next Claude turn, and a Claude automation's usage limits cannot skip meanwhile",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-3d97-usage",
+  "base": "3889164455f27f8b9f1e00216997af1bdeaa12b0",
+  "head": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T09:01:32.079Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "256febf2a602c11dda9116cb65f35ccb64856b2f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "dc196fe2f1d63ab446ab3adebcbb283c893b965a31a9b6e6c485fa007e248bcb"
+        },
+        {
+          "path": "p1-strip-after-restart-mobile.png",
+          "sha256": "7a11aeed479bda9a310f078635227c5f3cf82857492abf7c93872455749789de"
+        },
+        {
+          "path": "p1-strip-after-restart-desktop.png",
+          "sha256": "6921d0110f48f80df18aba24d11c0e3867b43711011c8080164847a4939faaef"
+        }
+      ],
+      "addedAt": "2026-11-16T09:02:11.422Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "256febf2a602c11dda9116cb65f35ccb64856b2f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "35723d0b2d7eb05ec6c7414a1f2f9e0c234c85e6bcc7381eb71a6524a82078cb"
+        }
+      ],
+      "addedAt": "2026-11-16T09:02:11.465Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon claude_usage_survives_a_restart",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "7d91f8e3c0f3a39d5d85d038c75c698ce5d7d63bde6cdaf985a9168fc3e96c3a"
+        },
+        {
+          "path": "p3-strip-after-restart-mobile.png",
+          "sha256": "19e8809e95ac6112dd6ceaaf46ad2e078ac6163ff1799ded7ba5ad2c1034a9a5"
+        },
+        {
+          "path": "p3-strip-after-restart-desktop.png",
+          "sha256": "b6c6ce266010a1478e660a53de4d7f8c21828cdea0ad89f22111ce40fcbb7651"
+        }
+      ],
+      "addedAt": "2026-11-16T09:02:31.562Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "990a39c4265088144cfe2e86b97627f94273c772f1cb8cecebab2c767cec4d05"
+        }
+      ],
+      "addedAt": "2026-11-16T09:02:31.603Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && verify/yv map run usage --recipe claude-usage-after-restart",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-usage.json",
+          "sha256": "2ee5ed69200672ff86ae5c6b1fbee3fe8ff2b1b74c727dfbc3f40057e0a7cb79"
+        }
+      ],
+      "addedAt": "2026-11-16T09:02:55.804Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-meters-with-reset-times",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-automations.json",
+          "sha256": "51bf371309fa79e0332f6b05fc6f26f2f3776ecca11fdf301300fdd4fc186450"
+        }
+      ],
+      "addedAt": "2026-11-16T09:04:59.546Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs"
+      ]
+    }
+  ]
+}

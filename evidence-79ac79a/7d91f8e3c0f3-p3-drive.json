@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "79ac79aa8e7987993fd1434975a79740d4fa557c",
+    "short": "79ac79a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T09:02:23.313Z"
+  },
+  "dir": ".verify/evidence/usage-restart-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2947,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-restart-head/strip-after-restart-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2810,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-restart-head/strip-after-restart-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
