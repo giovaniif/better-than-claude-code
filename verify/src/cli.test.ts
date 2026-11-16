@@ -13,6 +13,7 @@ import { _test as evidenceTest, type Bundle, type Proof, verifyBundle } from "./
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
 import { recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
+import { parseTarget as previewTarget, preferredPort } from "./preview";
 import { _test as loopTest } from "./loop";
 
 describe("args and json helpers", () => {
@@ -353,5 +354,26 @@ describe("evidence artifacts", () => {
     expect(readFileSync(join(dir, one.path), "utf8")).toBe("first");
     expect(readFileSync(join(dir, two.path), "utf8")).toBe("second");
     expect(sha256File(join(dir, one.path))).toBe(one.sha256);
+  });
+});
+
+describe("preview", () => {
+  test("a PR number, #N or a PR URL is a PR; anything else is a branch", () => {
+    expect(previewTarget("75")).toEqual({ pr: 75, ref: null, slug: "pr-75" });
+    expect(previewTarget("#75").slug).toBe("pr-75");
+    expect(previewTarget("https://github.com/giovaniif/switchyard/pull/75").pr).toBe(75);
+    expect(previewTarget("feat/x.y")).toEqual({ pr: null, ref: "feat/x.y", slug: "ref-feat-x-y" });
+    expect(() => previewTarget("main; rm -rf /")).toThrow();
+    expect(() => previewTarget("../etc")).toThrow();
+  });
+  test("a PR keeps its port; none lands on LocalStack or the live yardd", () => {
+    expect(preferredPort("pr-75")).toBe(48075);
+    // PRs 1000 apart share a preferred port; the second one falls back to a free one.
+    expect(preferredPort("pr-1075")).toBe(48075);
+    for (const s of ["ref-main", "ref-feat-x", "pr-0", "pr-999"]) {
+      const p = preferredPort(s);
+      expect(p >= 48000 && p < 50000).toBe(true);
+      expect(p).not.toBe(47717);
+    }
   });
 });
