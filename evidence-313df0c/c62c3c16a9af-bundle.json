@@ -1,0 +1,81 @@
+{
+  "v": 1,
+  "claim": "Map-only: new-session Gotcha that label:Folder also matches a session row titled with 'folder', so fill fails; use the field's placeholder there.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d",
+  "base": "f44e1c2b8f914b3b1867da48bd788b4fe8461953",
+  "head": "313df0c5dc062d2968ca9091ea9b5d1c85eca0a0",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T13:58:15.526Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "313df0c5dc062d2968ca9091ea9b5d1c85eca0a0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T13:58:15.563Z",
+      "text": "no-repro: map-only change (one Gotcha line in verify/features/new-session.md); no product behaviour changes."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "313df0c5dc062d2968ca9091ea9b5d1c85eca0a0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T13:58:15.601Z",
+      "text": "no-failing-test: the recipe is the test; a Gotcha line has no failing state."
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "313df0c5dc062d2968ca9091ea9b5d1c85eca0a0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-p525-map-ns.json",
+          "sha256": "4a39668d80a48b989bb3131c24987b88f7b64a15fbb9b88b9e21959a4f158d63"
+        }
+      ],
+      "addedAt": "2026-11-16T13:58:49.108Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "313df0c5dc062d2968ca9091ea9b5d1c85eca0a0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "c9f4ed943a03b03dd10c5e8f91b3b184042ea757ff04c765014deed45cbe1d4e"
+        }
+      ],
+      "addedAt": "2026-11-16T13:58:49.148Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0
+    }
+  ]
+}
