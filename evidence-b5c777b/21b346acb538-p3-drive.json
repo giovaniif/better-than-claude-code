@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b83cc5ae565ba533c34ef02a569b1aa23a1ba8a7",
+    "short": "b83cc5a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T13:43:50.544Z"
+  },
+  "dir": ".verify/evidence/folder-no-match-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3827,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-no-match-base/typed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-no-match-base/after-enter-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4239,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-no-match-base/typed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-no-match-base/after-enter-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

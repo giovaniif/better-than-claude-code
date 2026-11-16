@@ -1,0 +1,214 @@
+{
+  "v": 1,
+  "claim": "Folder picker on New session: typing a path whose last part matches no folder (a typo or a missing folder) leaves the list blank with no message, and Enter silently does nothing, so the session starts in the previous folder. It now says 'No folder in <dir> starts with \"<name>\".'",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d",
+  "base": "eeab456a95f8b2cba0b5cc21485def3f6fdecde5",
+  "head": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T13:43:48.369Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b83cc5ae565ba533c34ef02a569b1aa23a1ba8a7",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "1a4924f774825a46de3efab7ccec92c5dfb2948d3df087c655658b4caac8b85d"
+        },
+        {
+          "path": "p1-fail-mobile-step1.png",
+          "sha256": "160736f00fb14d79a04466b8ee57c28a8a23673f062e797e32813b5d37d0a362"
+        },
+        {
+          "path": "p1-fail-desktop-step1.png",
+          "sha256": "967fdca20a5cb360101c59a972656d181cc1214bcfe3a97f627b17be9389dab2"
+        }
+      ],
+      "addedAt": "2026-11-16T13:43:55.696Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b83cc5ae565ba533c34ef02a569b1aa23a1ba8a7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e4db5da632397ae29cd81eb21bab12d93bb74056e81c2cdfe881f082dc7e57f0"
+        }
+      ],
+      "addedAt": "2026-11-16T13:43:55.739Z",
+      "cmd": "verify/yv map run new-session --recipe typed-path-with-no-match-says-so",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b83cc5ae565ba533c34ef02a569b1aa23a1ba8a7",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "21b346acb5382bf5d494143f6c841a49b4cc2729c36093f1f57cd6e0910e62ba"
+        },
+        {
+          "path": "p3-typed-mobile.png",
+          "sha256": "546adbb29c1074deed66dd72088326012f5a5939220c75a9c5f81b636781bd04"
+        },
+        {
+          "path": "p3-after-enter-mobile.png",
+          "sha256": "546adbb29c1074deed66dd72088326012f5a5939220c75a9c5f81b636781bd04"
+        },
+        {
+          "path": "p3-typed-desktop.png",
+          "sha256": "1f942f66e6071c6c8edc06234fcce4d6da83d87f7dc4d43f6282379b76c764e8"
+        },
+        {
+          "path": "p3-after-enter-desktop.png",
+          "sha256": "ce6393abdec4f4beacbc5e2a30f16ce882cb3df5001ba225afaedd8e043f7689"
+        }
+      ],
+      "addedAt": "2026-11-16T13:44:46.572Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4265c9fea93e271302d65f3f9127609abb35bb6f7f3de88636ef8dee8d5ab1f0"
+        },
+        {
+          "path": "p4-typed-mobile.png",
+          "sha256": "91ce34dd08d7383f1c7679ba1ca900d41393d06588ff8a4b21fad56645c874e4"
+        },
+        {
+          "path": "p4-after-enter-mobile.png",
+          "sha256": "dfed79c6b60a30ff8f7456c888ba92c1c075f0c834401d3d9b21f97f86e0f0f6"
+        },
+        {
+          "path": "p4-match-has-no-message-mobile.png",
+          "sha256": "46091406df774b8e2f27b0a78ab9f4454121e835760025dccdec2f2c76d480a8"
+        },
+        {
+          "path": "p4-typed-desktop.png",
+          "sha256": "d9cd3000d060db4aff532c56671dce2bdad333c40a0db6b863c878995e37daa5"
+        },
+        {
+          "path": "p4-after-enter-desktop.png",
+          "sha256": "ca4ac11348704726db98339eca39210a8884450681509295efced5117160e67b"
+        },
+        {
+          "path": "p4-match-has-no-message-desktop.png",
+          "sha256": "e4cf23c84e6e5e4b0f26f1bed48d7936d1c9ab667a27c861e8d9950f8b5f2fc5"
+        }
+      ],
+      "addedAt": "2026-11-16T13:45:05.345Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "ddb0afe3399c91350b9dbba06a8654757b83907a86262fcab93c772da8146f12"
+        }
+      ],
+      "addedAt": "2026-11-16T13:45:14.551Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "58bf1783454448bb39e669ad5d2ec0d9483084e8eacee82e633341a29775a9d0"
+        }
+      ],
+      "addedAt": "2026-11-16T13:45:14.645Z",
+      "cmd": "verify/yv design-check --base eeab456a95f8",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-new-session.json",
+          "sha256": "9c5f94b74ab630f426f79da09d7d471d82a776fc6404c2cc81578eb877aea0f2"
+        }
+      ],
+      "addedAt": "2026-11-16T13:45:14.721Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "note",
+      "at": "b5c777bdf2a1cf3264b4e36519842e81fc9873b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T13:45:44.938Z",
+      "text": "mobile: the picker popover is clipped at 390 px by the known mobile layout gap (finding #8, PR #75); the head drive's DOM checks pass at mobile, the screenshot shows only the clipped edge."
+    }
+  ]
+}
