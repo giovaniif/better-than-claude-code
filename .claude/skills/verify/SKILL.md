@@ -64,7 +64,8 @@ verify/yv state --expect '{"sessions":[{"id":"{{sid_echo}}","status":"idle"}]}'
   themselves; steps that click or read something in it open it first with
   `{"click":"role:button:Open sessions"}` (hidden on desktop, so a recipe
   that needs it runs one drive per viewport).
-- Steps: `goto`, `click`, `fill`+`value`, `type` (xterm), `press`, `wait`
+- Steps: `goto`, `click`, `fill`+`value`, `type` (xterm), `press`, `drag`+`to`
+  (HTML5 drag and drop; `hold` ms waits over the target before releasing), `wait`
   (ms or target), `expect` (+`text`, `value`, `enabled`, `count`, `visible:false`,
   `inViewport`), `upload`+`files`, `shot`, `aria` (accessibility snapshot),
   `eval`(+`equals`), `reload`. Targets: `role:button:Name`, `label:Message`,

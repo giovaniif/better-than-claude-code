@@ -348,6 +348,23 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.keyboard.type(String(step.type), { delay: 10 });
     return;
   }
+  if (step.drag) {
+    // HTML5 drag and drop: press on one target, move onto another, release.
+    // `hold` waits over the target before releasing (spring-loaded folders).
+    if (!step.to) throw new Usage(`drag needs "to", the target to drop on: ${JSON.stringify(step)}`);
+    const src = locate(page, step.drag);
+    const dst = locate(page, step.to);
+    if (!step.hold) await src.dragTo(dst, { timeout });
+    else {
+      await src.hover({ timeout });
+      await page.mouse.down();
+      await dst.hover({ timeout });
+      await page.waitForTimeout(Number(step.hold));
+      await dst.hover({ timeout });
+      await page.mouse.up();
+    }
+    return settle(page, w);
+  }
   if (step.upload) {
     const files = (Array.isArray(step.files) ? step.files : [step.files]).map(String);
     await page.locator(typeof step.upload === "string" && step.upload.startsWith("css:") ? step.upload.slice(4) : 'input[type="file"]').first().setInputFiles(files, { timeout });
@@ -426,7 +443,7 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.locator(".sidebar").waitFor({ state: "attached", timeout });
     return settle(page, w);
   }
-  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press wait expect upload shot aria eval reload`);
+  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press drag wait expect upload shot aria eval reload`);
 }
 
 /** Scripted interaction. On failure: a screenshot, an accessibility snapshot and the reason. */
