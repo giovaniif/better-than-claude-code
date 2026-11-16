@@ -1,0 +1,384 @@
+{
+  "v": 1,
+  "claim": "The sidebar shows no Claude limits when the Claude sessions run on a remote host (the strip reads only This Mac's usage), This Mac's host row cannot be hidden, and the Notifications toggle sits in the sidebar instead of a settings page",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ade2b02f2400650df",
+  "base": "8f33e41d8b53338af8d1a949e4e3d22ed67597b9",
+  "head": "aea5571f02bc5b414ced7471f6d770d47126a505",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SettingsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sidebarHosts.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sidebarHosts.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/notifications.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/settings.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T19:37:21.326Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b736175f77488d217e65d00aabec41e4c99581d0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c64df08f9254f822c8d153da669aff34445ba0fcf90cd6e2f2808fd3b45e2a21"
+        },
+        {
+          "path": "p1-strip-local-only-desktop.png",
+          "sha256": "3f1baa13b91dd07af8c1e72cd56e69568ba2d68f647fdb0a2cd938fa0171130c"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "7dfaa1e5123571313a2e233069436e0ebb691c6133c66221c75dce42e5697be9"
+        }
+      ],
+      "addedAt": "2026-11-16T19:37:40.836Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b736175f77488d217e65d00aabec41e4c99581d0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ffc7387ff534768ce3b2a429132b1c502daae6c03757f707b2c5650efd7ab9fe"
+        }
+      ],
+      "addedAt": "2026-11-16T19:37:40.890Z",
+      "cmd": "cd ui && bun test src/usage.test.ts src/sidebarHosts.test.ts src/store.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "5133ca38b14a4f630f6f59293764f1ef29df84b620718c2d30884e3ceb70d87f"
+        },
+        {
+          "path": "p3-both-hosts-mobile.png",
+          "sha256": "7b3f620ae7b8a90807cfe11632e47efa13bddb92ec6de07d467acaacfed4cf9c"
+        },
+        {
+          "path": "p3-settings-this-mac-hidden-mobile.png",
+          "sha256": "4f59ccdc5ec83059376dba39035bbb3effd07449c169ef5c7e226b98f06f9688"
+        },
+        {
+          "path": "p3-remote-only-mobile.png",
+          "sha256": "5f4d74e5e6007f5c2a35b96151acdddb33723a66dfff63bfc1790130e891e4a0"
+        }
+      ],
+      "addedAt": "2026-11-16T19:38:34.160Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "a01fd468486aabff81840ff009a09951fa5b06da6a77107677fc601b36638dfa"
+        },
+        {
+          "path": "p4-both-hosts-desktop.png",
+          "sha256": "5190fc1c908bbaaac0163606720bb24612755936ef780910a0afdea11472cf51"
+        },
+        {
+          "path": "p4-remote-only-desktop.png",
+          "sha256": "e00beb06c7ff961ec4c156df4bb83de0c826840254a71a087d681b8e3a0b9f78"
+        }
+      ],
+      "addedAt": "2026-11-16T19:38:34.201Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "1ce5d35f96b5531dbd70294b3af8621867d1e87b37bc9a2e3d6f26e9192ed2fc"
+        }
+      ],
+      "addedAt": "2026-11-16T19:38:34.243Z",
+      "cmd": "(cd ui && bun test) && (cd verify && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "2958a74ab10eccf8dffa92830dfd1a0cbc49f1e79416acb026bdbe6c4000ad00"
+        }
+      ],
+      "addedAt": "2026-11-16T19:38:35.109Z",
+      "cmd": "verify/yv design-check --base 8f33e41d8b53",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-settings.json",
+          "sha256": "310e732e4855dcbfd6fd7e091ff54887d79732a322c1b78f60077af611886246"
+        }
+      ],
+      "addedAt": "2026-11-16T19:38:39.618Z",
+      "cmd": "verify/yv map run settings",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "settings/settings-page",
+        "settings/hide-this-mac",
+        "settings/strip-from-shown-hosts"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-notifications.json",
+          "sha256": "c01d9a46c9e60870041ab51c999d480f231df4e756cc7c0cc1d54dde41edac8f"
+        }
+      ],
+      "addedAt": "2026-11-16T19:39:01.171Z",
+      "cmd": "verify/yv map run notifications",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "notifications/notifications-switch",
+        "notifications/notifications-permission-denied",
+        "notifications/notifications-permission-revoked",
+        "notifications/notifications-from-sessions",
+        "notifications/notifications-from-sessions-mobile",
+        "notifications/notifications-notify-op"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-usage.json",
+          "sha256": "06650b03025f37a295b5c6096e4e0b221606e1010d518ffffab0ed50e1ea5cf8"
+        }
+      ],
+      "addedAt": "2026-11-16T19:40:01.657Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-meters-with-reset-times",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-hosts.json",
+          "sha256": "a312a158503ba19be042ebad05fb0c4d62edf6c6678559ab3cf5d9f9f79991b5"
+        }
+      ],
+      "addedAt": "2026-11-16T19:42:11.107Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-sidebar.json",
+          "sha256": "bf15cda4b00d7cb5845240ad06d211fe019e102b68337e589614651cfa009174"
+        }
+      ],
+      "addedAt": "2026-11-16T19:42:46.188Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aea5571f02bc5b414ced7471f6d770d47126a505",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-accounts.json",
+          "sha256": "115d216eee80cb3a6222aea0c200c6b88a73cf3646610e70488dd54b7fe161ae"
+        }
+      ],
+      "addedAt": "2026-11-16T19:43:48.370Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account"
+      ]
+    }
+  ]
+}

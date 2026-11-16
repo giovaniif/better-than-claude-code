@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "aea5571f02bc5b414ced7471f6d770d47126a505",
+    "short": "aea5571",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:37:45.826Z"
+  },
+  "dir": ".verify/evidence/sidebar-settings-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3390,
+      "steps": 18,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-settings-head-desktop/both-hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-settings-head-desktop/remote-only-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

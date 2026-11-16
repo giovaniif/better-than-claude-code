@@ -1,0 +1,80 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "8f33e41d8b53338af8d1a949e4e3d22ed67597b9",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/SettingsPage.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/UsageMeters.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/sidebarHosts.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/sidebarHosts.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/store.test.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/store.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/usage.test.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/usage.ts"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule": "raw-button",
+      "severity": "warn",
+      "file": "ui/src/SettingsPage.tsx",
+      "line": 10,
+      "text": "<button className=\"switch\" role=\"switch\" aria-checked={on} aria-label={label} onClick={onChange}>",
+      "hint": "give it a design-system button class: btn, btn-text, btn-icon, btn-primary, btn-quiet"
+    }
+  ],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

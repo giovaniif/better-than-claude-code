@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "aea5571f02bc5b414ced7471f6d770d47126a505",
+    "short": "aea5571",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:37:45.826Z"
+  },
+  "dir": ".verify/evidence/sidebar-settings-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5465,
+      "steps": 24,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-settings-head-mobile/both-hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-settings-head-mobile/settings-this-mac-hidden-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-settings-head-mobile/remote-only-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

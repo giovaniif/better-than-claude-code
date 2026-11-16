@@ -1,0 +1,47 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "notifications",
+      "at": "2026-11-16T19:40:01.615Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "notifications-switch",
+          "status": "pass",
+          "ms": 4107
+        },
+        {
+          "label": "notifications-permission-denied",
+          "status": "pass",
+          "ms": 5603
+        },
+        {
+          "label": "notifications-permission-revoked",
+          "status": "pass",
+          "ms": 6668
+        },
+        {
+          "label": "notifications-from-sessions",
+          "status": "pass",
+          "ms": 15741
+        },
+        {
+          "label": "notifications-from-sessions-mobile",
+          "status": "pass",
+          "ms": 16711
+        },
+        {
+          "label": "notifications-notify-op",
+          "status": "pass",
+          "ms": 10765
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

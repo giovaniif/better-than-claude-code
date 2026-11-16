@@ -1,0 +1,52 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-16T19:42:11.050Z",
+      "counts": {
+        "pass": 7
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-strip-in-sidebar",
+          "status": "pass",
+          "ms": 4956
+        },
+        {
+          "label": "usage-strip-claude",
+          "status": "pass",
+          "ms": 4452
+        },
+        {
+          "label": "picker-meters-with-reset-times",
+          "status": "pass",
+          "ms": 6382
+        },
+        {
+          "label": "picker-other-engine-collapsed",
+          "status": "pass",
+          "ms": 2796
+        },
+        {
+          "label": "picker-current-model-marked",
+          "status": "pass",
+          "ms": 2930
+        },
+        {
+          "label": "meters-zero-after-reset",
+          "status": "pass",
+          "ms": 102144
+        },
+        {
+          "label": "claude-usage-after-restart",
+          "status": "pass",
+          "ms": 4886
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

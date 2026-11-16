@@ -1,0 +1,48 @@
+$ cd ui && bun test src/usage.test.ts src/sidebarHosts.test.ts src/store.test.ts
+# exit 1 after 24 ms at b736175f77488d217e65d00aabec41e4c99581d0
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/usage.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'stripGroups' not found in module '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ade2b02f2400650df/ui/src/usage.ts'.
+-------------------------------
+
+
+src/sidebarHosts.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './sidebarHosts' from '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ade2b02f2400650df/ui/src/sidebarHosts.test.ts'
+-------------------------------
+
+
+src/store.test.ts:
+173 |       { page: "session", id: "s1a1e19674866" },
+174 |       { page: "automations" },
+175 |       { page: "automation", host: "local", id: "new" },
+176 |       { page: "automation", host: "h1", id: "a/7 b" },
+177 |     ] as const)
+178 |       expect(parseHash(routeHash(route))).toEqual(route);
+                                                ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "page": "settings",
++   "page": "new",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ade2b02f2400650df/ui/src/store.test.ts:178:43)
+(fail) route in the URL > hash round trip [0.57ms]
+
+ 25 pass
+ 3 fail
+ 2 errors
+ 70 expect() calls
+Ran 28 tests across 3 files. [20.00ms]
