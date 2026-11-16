@@ -2,6 +2,16 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.6.0 (2026-11-16)
+
+- **OpenCode and Grok as engines.** Start sessions on OpenCode (`opencode-ai`) or xAI's Grok CLI (`@xai-official/grok`) next to Claude Code and Codex: streaming, thinking, tool calls, diffs, approvals, permission modes, Stop, resume and added accounts. Install them on a host with `npm i -g opencode-ai @xai-official/grok`; Switchyard lists an engine only where it is installed. Neither reports plan usage, so they have no limit meters. A message sent mid-turn waits for the next turn.
+- **Log in to them from Hosts.** Grok: **Log in** shows a link and a code. OpenCode works with its free models as it is; **Add provider** lets you paste a provider's API key or use its sign-in. Keys stay in OpenCode's own files, not in Switchyard.
+- **Voice in the chat.**
+  - **Dictation:** the mic next to the paperclip writes what you say into the box.
+  - **Voice mode:** the waveform button next to it is hands-free. It sends after a short pause, reads the answer aloud (code and tables are skipped), then listens again. Approvals are announced, never answered by voice. Talking over an answer stops it.
+  - **Where it works:** the Mac app asks for Microphone and Speech Recognition the first time. Also Chrome, Edge and Safari; in Firefox the mic is greyed out with the reason.
+- **Fixed:** a changed binary file in the Changes pane says binary, not +0 −0.
+
 ## 0.5.0 (2026-11-16)
 
 - **Fixed: "Open the sign-in page" did nothing in the Mac app**, and neither did pull request or notification links. The window dropped links that open a new tab; they now open in your browser.
