@@ -53,6 +53,18 @@ async fn snapshot_has_its_shape_and_the_fake_models() {
 }
 
 #[tokio::test]
+async fn the_snapshot_names_this_machine_before_its_first_stats_sample() {
+    // Stats come every few seconds; until then the snapshot's `host` is null,
+    // and the UI fell back to "This Mac" even on a Linux box.
+    let sb = Sandbox::new("snapshot-host-name");
+    let d = sb.start_with(&[("YARD_HOST_NAME", "TEST-box")]);
+    let c = d.client().await;
+    let snap = &c.log[0];
+    assert_eq!(snap["op"], "snapshot");
+    assert_eq!(snap["hostName"], "TEST-box", "{snap}");
+}
+
+#[tokio::test]
 async fn a_new_client_gets_its_snapshot_before_any_broadcast() {
     let sb = Sandbox::new("snapshot-first");
     let d = sb.start();

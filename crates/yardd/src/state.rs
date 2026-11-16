@@ -551,6 +551,9 @@ impl App {
             "models": self.models.lock().unwrap().clone(),
             "usage": self.usage.lock().unwrap().clone(),
             "host": self.host.lock().unwrap().clone(),
+            // `host` stays null until the first stats sample, a few seconds
+            // after start; the name is known now.
+            "hostName": crate::hosts::local_name(),
             "home": std::env::var("HOME").unwrap_or_default(),
             "workspace": workspace(),
             "hosts": self.remotes.list(),

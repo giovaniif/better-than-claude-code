@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { AgentEvent, SessionMeta } from "./protocol";
-import { cleanGroupName, go, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
+import { cleanGroupName, go, hostName, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
 const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
@@ -289,5 +289,20 @@ describe("session.procs", () => {
     let s = server(initial, { op: "session.procs", sessionId: "s1", procs: [] });
     s = server(s, { op: "session.deleted", sessionId: "s1" });
     expect(s.procs.s1).toBeUndefined();
+  });
+});
+
+describe("the local host's name", () => {
+  test("comes from the snapshot before the first stats sample", () => {
+    // A Linux box or container must not read "This Mac" for its first seconds.
+    const s = server(initial, { op: "snapshot", sessions: [], hosts: [], host: null, hostName: "TEST-box" });
+    expect(hostName(s, "local")).toBe("TEST-box");
+  });
+  test("the stats sample's name still wins once it arrives", () => {
+    const s = server(server(initial, { op: "snapshot", sessions: [], hosts: [], host: null, hostName: "TEST-box" }), {
+      op: "host",
+      host: { id: "local", name: "TEST-renamed", cpu: 1, cores: 2, load: 0, memUsed: 1, memTotal: 2, diskUsed: 1, diskTotal: 2, cpuHistory: [] },
+    });
+    expect(hostName(s, "local")).toBe("TEST-renamed");
   });
 });

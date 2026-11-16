@@ -78,6 +78,19 @@ appears.
 yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Add host"},{"fill":"label:SSH destination","value":"test@TEST-devbox"},{"click":"role:button:Options"},{"fill":"label:Remote port","value":"99999"},{"click":"role:button:Add TEST-devbox"},{"expect":"css:.banner-error","text":"remote port must be a number"},{"expect":"label:SSH destination","value":"test@TEST-devbox"},{"expect":"label:Remote port","value":"99999"},{"shot":"refused"},{"fill":"label:Remote port","value":"2222"},{"click":"role:button:Add TEST-devbox"},{"expect":"role:region:TEST-devbox"},{"expect":"role:region:Add host","visible":false},{"shot":"added"}]'
 ```
 
+### local-name-right-after-start
+Viewports: desktop
+Right after yardd starts, before its first stats sample (about 3 s), the
+local host already shows its own name (`iso-host`, from YARD_HOST_NAME), not
+"This Mac", in the sidebar's host row and the new-session host picker. The
+daemon test `the_snapshot_names_this_machine_before_its_first_stats_sample`
+pins the snapshot field without the timing.
+
+```sh
+yv iso restart
+yv drive new --viewport desktop --steps '[{"expect":{"css":".host-row .host-name","hasText":"iso-host"}},{"expect":{"css":".main button","hasText":"iso-host"}},{"expect":{"css":".host-row .host-name","hasText":"This Mac"},"count":0}]'
+```
+
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.

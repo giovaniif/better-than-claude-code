@@ -100,6 +100,8 @@ export interface State {
   models: Record<string, Models>;
   usage: Record<string, Usage>;
   host: Record<string, Host>;
+  /** This machine's name from the snapshot, before its first `host` stats sample. */
+  localName: string;
   home: Record<string, string>;
   /** Where new sessions start and the folder picker opens, per host. */
   workspace: Record<string, string>;
@@ -155,6 +157,7 @@ export const initial: State = {
   models: {},
   usage: {},
   host: {},
+  localName: "",
   home: {},
   workspace: {},
   engines: {},
@@ -267,9 +270,10 @@ export const hostOf = (s: SessionMeta | undefined) => s?.host || "local";
 export const modelsOn = (state: State, host: string): Models => state.models[host] ?? EMPTY_MODELS;
 export const usageOn = (state: State, host: string): Usage => state.usage[host] ?? NO_USAGE;
 export const homeOn = (state: State, host: string): string => state.home[host] ?? "";
-/** The local name comes from yardd's `host` message: "This Mac" on a Mac, the hostname or YARD_HOST_NAME elsewhere. */
+/** The local name comes from yardd: "This Mac" on a Mac, the hostname or YARD_HOST_NAME elsewhere.
+ *  The snapshot's `hostName` covers the seconds before the first `host` stats sample. */
 export const hostName = (state: State, host: string): string =>
-  host === "local" ? state.host.local?.name || "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
+  host === "local" ? state.host.local?.name || state.localName || "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
 /** A remote host's sessions are offline while the hub cannot reach it. */
 export const hostOnline = (state: State, host: string): boolean =>
   host === "local"
@@ -316,6 +320,7 @@ function reduceServer(state: State, msg: any): State {
         usage: { ...state.usage, local: msg.usage ?? {} },
         accounts: { ...state.accounts, local: msg.accounts ?? [] },
         host: msg.host ? { ...state.host, local: msg.host } : state.host,
+        localName: msg.hostName ?? "",
         home: { ...state.home, local: msg.home ?? "" },
         workspace: { ...state.workspace, local: msg.workspace || msg.home || "" },
         engines: without(state.engines, (h) => h === "local"),
