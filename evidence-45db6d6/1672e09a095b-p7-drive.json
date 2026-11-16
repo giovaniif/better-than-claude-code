@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "45db6d69025b8798a0f71445ff49ff100564ca90",
+    "short": "45db6d6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:31:27.500Z"
+  },
+  "dir": ".verify/evidence/cw4-add-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3566,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/cw4-add-mobile/catalog-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/cw4-add-mobile/linear-sign-in-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
