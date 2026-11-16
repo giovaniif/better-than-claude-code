@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon claude_usage_survives_a_restart
+# exit 101 after 4512 ms at 256febf2a602c11dda9116cb65f35ccb64856b2f
+
+
+running 1 test
+test claude_usage_survives_a_restart ... FAILED
+
+failures:
+
+---- claude_usage_survives_a_restart stdout ----
+
+thread 'claude_usage_survives_a_restart' (832606) panicked at crates/yardd/tests/daemon.rs:2224:5:
+assertion `left == right` failed: {}
+  left: Null
+ right: 0.47
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-832605-usage-restart-0 for inspection
+
+
+failures:
+    claude_usage_survives_a_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.27s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/patrol-3d97-usage/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 4.17s
+     Running tests/daemon.rs (target/debug/build/yardd/7bf3bc1ebbbe5c02/out/daemon-7bf3bc1ebbbe5c02)
+error: test failed, to rerun pass `-p yardd --test daemon`
