@@ -62,6 +62,11 @@ pub struct Meta {
     /// first turn ends.
     #[serde(default)]
     pub automation: Option<String>,
+    /// When an automation run's first turn ended: the run took this minus
+    /// `created_at`. `updated_at` is no good for that, it moves on any later
+    /// change (a pin, a rename, a reply in the reopened run).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub finished_at: Option<u64>,
     /// Messages sent while a turn ran and not yet given to the agent, oldest
     /// first: `{ id, text, attachments, at }`. Like Claude Code's queue, they
     /// go to the agent at its next step (see `Delivery`); Stop hands them back.
@@ -317,6 +322,7 @@ impl App {
             archived: false,
             group: None,
             automation: automation.map(str::to_string),
+            finished_at: None,
             pending: Vec::new(),
             created_at: now,
             updated_at: now,
@@ -409,11 +415,12 @@ impl App {
             // reopened it) and pinned runs are left alone.
             if turn_completed
                 && s.meta.automation.is_some()
-                && !s.meta.pinned
-                && !s.meta.archived
                 && s.events.iter().filter(|e| e["type"] == "turn_completed").count() == 1
             {
-                s.meta.archived = true;
+                s.meta.finished_at = Some(s.meta.updated_at);
+                if !s.meta.pinned {
+                    s.meta.archived = true;
+                }
                 self.store.meta(&s.meta);
                 self.broadcast(json!({ "op": "session", "session": s.meta }));
             }

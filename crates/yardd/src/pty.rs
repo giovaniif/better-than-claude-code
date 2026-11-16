@@ -102,6 +102,7 @@ pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Va
 /// Start another terminal in the session.
 pub fn new(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Value> {
     let meta = app.meta(session_id).context("no such session")?;
+    crate::git::ensure_folder(&meta.cwd)?;
     let pair = native_pty_system().openpty(size(cols, rows))?;
 
     let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string());
@@ -226,8 +227,12 @@ pub fn input(app: &Arc<App>, term_id: &str, data: &str) -> Result<()> {
 
 pub fn resize(app: &Arc<App>, term_id: &str, cols: u16, rows: u16) -> Result<()> {
     let inner = app.terms.inner.lock().unwrap();
-    let term = inner.map.get(term_id).filter(|t| !t.exited).context("terminal is closed")?;
-    term.master.resize(size(cols, rows))?;
+    let term = inner.map.get(term_id).context("terminal is closed")?;
+    // A client fits its view before the attach reply says the shell exited;
+    // with no shell there is nothing to resize, and nothing went wrong.
+    if !term.exited {
+        term.master.resize(size(cols, rows))?;
+    }
     Ok(())
 }
 

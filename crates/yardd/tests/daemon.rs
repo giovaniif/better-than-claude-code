@@ -800,6 +800,38 @@ async fn terminal_keystrokes_reach_the_shell_in_order() {
     }
 }
 
+#[tokio::test]
+async fn resizing_an_exited_terminal_is_not_an_error() {
+    let sb = Sandbox::new("term-exited");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    let opened = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    let term = opened["termId"].as_str().unwrap().to_string();
+    c.send(json!({ "op": "term.input", "termId": term, "data": "exit\n" })).await;
+    c.wait_after(from, "the shell to exit", |m| m["op"] == "term.exit" && m["termId"] == term).await;
+
+    // The UI fits a terminal, and so resizes it, before the attach reply
+    // tells it the shell exited; after a reload that refusal showed as an
+    // error banner. A tab that is really gone is still refused.
+    let from = c.mark();
+    c.send(json!({ "op": "term.resize", "termId": term, "cols": 100, "rows": 30, "ref": "exited" })).await;
+    c.send(json!({ "op": "term.resize", "termId": "no-such-term", "cols": 100, "rows": 30, "ref": "gone" })).await;
+    // Resizes run in order, so once the second is refused the first was handled.
+    c.wait_after(from, "the gone terminal's resize refused", |m| m["op"] == "error" && m["ref"] == "gone").await;
+    let refused: Vec<&Value> = c.log[from..].iter().filter(|m| m["op"] == "error" && m["ref"] == "exited").collect();
+    assert!(refused.is_empty(), "resizing an exited terminal was refused: {refused:?}");
+
+    // Its tab and scrollback stay until it is closed.
+    let from = c.mark();
+    c.send(json!({ "op": "term.attach", "termId": term, "cols": 100, "rows": 30 })).await;
+    let again = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    assert_eq!(again["exited"], true);
+}
+
 fn b64(s: &str) -> Vec<u8> {
     base64::engine::general_purpose::STANDARD.decode(s).unwrap()
 }
@@ -1694,6 +1726,35 @@ async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
 }
 
 #[tokio::test]
+async fn a_runs_finish_time_stays_put_when_it_is_pinned_later() {
+    // The Automations page shows how long a run took. `updatedAt` moves on any
+    // later change (a pin, a rename, a reply), so the run's end is kept apart.
+    let sb = Sandbox::new("auto-finished");
+    let repo = make_repo(&sb, "repo");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&repo, json!({}))).await.unwrap();
+    let ran = run_automation(&mut c, a["id"].as_str().unwrap(), true).await;
+    let sid = ran["sessionId"].as_str().unwrap().to_string();
+
+    let done = c
+        .wait_for("the run archived", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["archived"] == true)
+        .await["session"]
+        .clone();
+    let finished = done["finishedAt"].as_u64().unwrap_or_else(|| panic!("a finished run says when it ended: {done}"));
+    assert!(finished >= done["createdAt"].as_u64().unwrap(), "{done}");
+
+    tokio::time::sleep(Duration::from_millis(1100)).await;
+    c.send(json!({ "op": "session.update", "sessionId": sid, "pinned": true })).await;
+    let pinned = c
+        .wait_for("the run pinned", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pinned"] == true)
+        .await["session"]
+        .clone();
+    assert!(pinned["updatedAt"].as_u64().unwrap() >= finished + 1000, "the pin moved updatedAt: {pinned}");
+    assert_eq!(pinned["finishedAt"].as_u64(), Some(finished), "a pin does not move the run's end: {pinned}");
+}
+
+#[tokio::test]
 async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
     let sb = Sandbox::new("auto-skip");
     let cwd = make_repo(&sb, "repo");
@@ -2204,6 +2265,30 @@ async fn session_procs_goes_through_the_hub() {
     assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
     // The reply carries the hub's id for the session, like every session op.
     procs_with(&mut c, &sid, "sleep 30").await;
+}
+
+#[tokio::test]
+async fn a_session_whose_folder_is_gone_says_so() {
+    let sb = Sandbox::new("gone");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let folder = sb.folder("proj");
+    let sid = c.create(&folder, "hi", json!({})).await;
+    c.wait_event(&sid, "turn_completed", 0).await;
+    fs::remove_dir_all(&folder).unwrap();
+
+    // Not "not a git repository": that sends the user looking for a git problem.
+    c.send(json!({ "op": "changes.get", "sessionId": sid })).await;
+    let changes = c.wait_for("changes", |m| m["op"] == "changes").await;
+    let error = changes["changes"]["error"].as_str().unwrap_or_default();
+    assert!(error.contains("no longer exists") && error.contains(&folder), "{changes}");
+
+    // A shell there would silently start in the home folder instead.
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    let refused = c.wait_after(from, "term.open refused", |m| m["op"] == "error" || m["op"] == "term.opened").await;
+    assert_eq!(refused["op"], "error", "{refused}");
+    assert!(refused["message"].as_str().unwrap_or_default().contains("no longer exists"), "{refused}");
 }
 
 #[tokio::test]

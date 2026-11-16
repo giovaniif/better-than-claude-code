@@ -38,7 +38,8 @@ function useNow(): number {
 
 function RunRow({ run, state, actions }: { run: SessionMeta; state: State; actions: Actions }) {
   const live = run.status === "running" || run.status === "needs_approval" || run.status === "queued";
-  const took = Math.max(0, run.updatedAt - run.createdAt);
+  // Runs saved before yardd kept `finishedAt` fall back to their last change.
+  const took = Math.max(0, (run.finishedAt ?? run.updatedAt) - run.createdAt);
   return (
     <div className="automation-run-item">
       <button className="automation-run" onClick={() => actions.go({ page: "session", id: run.id })}>

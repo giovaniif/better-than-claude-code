@@ -85,6 +85,17 @@ small `+` in its strip.
 yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"click":"role:button:Close terminal"},{"expect":{"role":"tab"},"count":0},{"expect":"text:No terminal is open."},{"shot":"no-terminal"},{"click":"role:button:Open a terminal"},{"expect":{"role":"tab"},"count":1},{"expect":"css:.xterm","text":"$"},{"expect":"text:No terminal is open.","count":0}]'
 ```
 
+### exited-shell-survives-reload
+Viewports: desktop
+A tab whose shell exited keeps its scrollback and the exited line after a
+reload, with no error. Found 2026-11-16: the fit before the attach resized
+the exited terminal and yardd's refusal showed as a "terminal is closed"
+banner.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-gone-$((6*7)); exit\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"shell exited"},{"reload":true},{"goto":"session:{{sid_echo}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm-rows","text":"TEST-gone-42"},{"expect":"css:.xterm-rows","text":"shell exited"},{"wait":1500},{"expect":"text:terminal is closed","count":0},{"shot":"exited-after-reload"}]'
+```
+
 ### close-terminal
 Viewports: desktop
 The selected tab has a "Close terminal" cross. Closing tab 2 removes it and
@@ -93,6 +104,20 @@ selects tab 1 again. Read back: the daemon lists one terminal for the session.
 ```sh
 yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":{"role":"tab","name":"1"}},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"click":"role:button:Close terminal"},{"expect":{"role":"tab","name":"2"},"count":0},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"1"}]'
 yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 1'
+```
+
+### folder-gone
+Viewports: desktop
+When the session's folder was removed outside Switchyard, the Changes pane and
+the terminal say the folder no longer exists. Before, the pane said "Not a git
+repository." and the terminal quietly opened a shell in the home folder. The
+refused terminal is an API error, hence `--allow-errors`.
+
+```sh
+yv state --save cmd_cwd='sessions[id={{sid_cmd}}].cwd'
+rm -rf "$(v cmd_cwd)"
+yv drive 'session:{{sid_cmd}}' --viewport desktop --allow-errors --steps '[{"expect":{"role":"region","name":"Workspace"},"text":"no longer exists"},{"expect":"text:Not a git repository.","count":0},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.banner-error","text":"no longer exists"},{"expect":{"role":"tab","name":"1"},"count":0},{"shot":"folder-gone"}]'
+yv api '{"op":"term.list","sessionId":"{{sid_cmd}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 0'
 ```
 
 ### add-to-message (manual: needs a mouse selection inside xterm)
