@@ -53,7 +53,7 @@ function UsageMeter({ engineName, meter, now }: { engineName: string; meter: Met
 export function UsageMeters({ usage, first }: { usage: Usage; first?: Engine }) {
   const now = useNow();
   const engines = [...ENGINES].sort((a, b) => Number(b.id === first) - Number(a.id === first));
-  const shown = engines.map((e) => ({ ...e, meters: metersFor(e.id, usage) })).filter((e) => e.meters.length > 0);
+  const shown = engines.map((e) => ({ ...e, meters: metersFor(e.id, usage, now) })).filter((e) => e.meters.length > 0);
   if (shown.length === 0) return null;
   return (
     <div className="picker-usage" role="group" aria-label="Plan usage">
@@ -76,7 +76,7 @@ const forStrip = (meters: Meter[]) => meters.filter((m, i) => i < 2 || m.level !
 /** Always visible: one line per window, no reset times (they are in the tooltip). */
 export function UsageStrip({ usage }: { usage: Usage }) {
   const now = useNow();
-  const shown = ENGINES.map((e) => ({ ...e, meters: forStrip(metersFor(e.id, usage)) })).filter((e) => e.meters.length > 0);
+  const shown = ENGINES.map((e) => ({ ...e, meters: forStrip(metersFor(e.id, usage, now)) })).filter((e) => e.meters.length > 0);
   if (shown.length === 0) return null;
   return (
     <div className="usage-strip" role="group" aria-label="Plan usage">

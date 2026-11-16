@@ -60,5 +60,13 @@ The current model is marked, and Effort stays a segmented control.
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"expect":{"css":".picker-item.active","hasText":"Fake Fast"}},{"expect":{"css":".efforts .effort.active","hasText":"Low"}}]'
 ```
 
+### meters-zero-after-reset
+Once a window's reset time has passed, its meter reads 0% and no longer says when it resets: nothing has been used since, or the engine would have sent a newer reset time. The page clock is moved 3 hours on (past both 5-hour resets, before the weeks) and the meters' 30-second tick redraws them.
+
+```sh
+yv drive new --steps '[{"expect":{"css":".usage-line","hasText":"Codex"},"text":"12%"},{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"expect":{"css":".usage-line","hasText":"Codex"},"text":"0%"},{"expect":{"css":".usage-line","hasText":"Claude"},"text":"0%"},{"expect":{"css":".usage-strip","hasText":"34%"}},{"expect":{"css":".usage-strip","hasText":"17%"}},{"shot":"strip-after-reset"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"eval":"(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()"},{"wait":31000},{"click":"role:button:Fake Fast Low"},{"expect":{"css":".popover .usage-meter","hasText":"5-hour"},"text":"0%"},{"expect":{"css":".popover"},"text":"resets in 3 d"},{"expect":{"css":".popover","hasText":"resets now"},"visible":false},{"shot":"picker-after-reset"}]'
+```
+
 ## Gotchas
 - The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a fresh yardd shows no Claude meters until then.
