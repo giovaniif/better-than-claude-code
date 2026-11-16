@@ -93,3 +93,4 @@ browsing is covered by worktree-note.
 ## Gotchas
 - The default model is Claude Opus 5.5 even when only Codex is logged in; the fakes log both in.
 - The folder field browses as you type (`fs.dirs`); press Enter to pick the typed path. A path that names no folder is not taken; the list says so.
+- `label:Folder` is not exact: once a session whose title contains "folder" exists (as in an iso you have been exploring), the sidebar row's button matches first and `fill` fails with "Element is not an <input>". Target the field by `placeholder:Search folders, or type a path` there.
