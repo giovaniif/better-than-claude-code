@@ -3,7 +3,9 @@
 Pinned sessions, then ungrouped ones newest first, then one collapsible
 section per group, each row with title, model and status. A row's … menu (or
 right-click) pins, moves to a group, archives or restores, and deletes after one
-confirmation; a worktree session also offers to remove its worktree. A group
+confirmation; a worktree session also offers to remove its worktree. On a
+desktop-width window a row can also be dragged onto a group, the ungrouped
+Sessions rows or Pinned; on the phone drawer the menu is the only way. A group
 exists only while a session is in it; its header menu renames or ungroups all
 of them. Pinned, archived and group live in yardd, so every window agrees;
 which groups are collapsed is per browser. The Archived header is pinned to the
@@ -89,6 +91,38 @@ The menu lists the existing group; choosing it joins the section.
 ```sh
 yv drive new --viewport desktop --steps '[{"click":"role:button:Actions for [think] TEST-plan"},{"click":"role:menuitem:Move to group…"},{"click":"role:menuitem:Release"},{"expect":{"css":".group-head","hasText":"Release"},"text":"2"}]'
 yv state --expect '{"sessions":[{"id":"{{sid_think}}","group":"Release"}]}'
+```
+
+### group-drag-out-to-ungrouped
+Viewports: desktop. Dragging a grouped row onto the ungrouped rows takes it out
+of its group (`session.update { group: null }`); the dragged row dims and the
+Sessions area lights up while it is held there. Phones (the drawer below
+700 px) have no HTML5 drag on touch, so rows there are not draggable and the
+row menu is the way; the last step checks that.
+
+```sh
+yv drive new --viewport desktop --steps '[{"drag":{"css":".session-item","hasText":"TEST-say hello"},"to":{"css":".session-item","hasText":"[edit] TEST-fix the greeting"},"during":"held-over-sessions"},{"expect":{"css":".group-head","hasText":"Release"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"TEST-say hello"},"visible":false}]'
+yv state --expect '{"sessions":[{"id":"{{sid_echo}}","group":null},{"id":"{{sid_think}}","group":"Release"}]}'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"eval":"document.querySelectorAll(\".session-item[draggable=true]\").length","equals":0}]'
+```
+
+### group-drag-into-group
+Viewports: desktop. Dropping a row on a group's header moves it into the group;
+on a collapsed group, resting there for a moment opens it first.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":{"css":".group-toggle","hasText":"Release"}},{"expect":{"css":".session-row","hasText":"[think] TEST-plan"},"visible":false},{"drag":{"css":".session-item","hasText":"TEST-say hello"},"to":{"css":".group-head","hasText":"Release"},"hold":900,"during":"held-over-group"},{"expect":{"css":".group-head","hasText":"Release"},"text":"2"},{"expect":{"css":".group-zone .session-row","hasText":"TEST-say hello"}},{"expect":{"css":".group-zone .session-row","hasText":"[think] TEST-plan"}}]'
+yv state --expect '{"sessions":[{"id":"{{sid_echo}}","group":"Release"}]}'
+```
+
+### group-drag-noop
+Viewports: desktop. Dropping a row on the group it is already in sends nothing:
+the group refuses the drop, so the session's `updatedAt` does not move.
+
+```sh
+yv state --save think_at='sessions[id={{sid_think}}].updatedAt'
+yv drive new --viewport desktop --steps '[{"drag":{"css":".session-item","hasText":"[think] TEST-plan"},"to":{"css":".group-head","hasText":"Release"},"during":"held-over-own-group"},{"expect":{"css":".group-head","hasText":"Release"},"text":"2"},{"expect":"css:.drop-over","visible":false}]'
+yv state --expect '{"sessions":[{"id":"{{sid_think}}","group":"Release","updatedAt":{{think_at}}}]}'
 ```
 
 ### group-collapse-persists

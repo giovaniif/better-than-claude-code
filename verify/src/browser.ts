@@ -348,6 +348,37 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.keyboard.type(String(step.type), { delay: 10 });
     return;
   }
+  if (step.drag) {
+    // HTML5 drag and drop: press on one target, move onto another, release.
+    // `hold` waits over the target before releasing (spring-loaded folders);
+    // `during` screenshots the drag while it is held there.
+    if (!step.to) throw new Usage(`drag needs "to", the target to drop on: ${JSON.stringify(step)}`);
+    const src = locate(page, step.drag);
+    const dst = locate(page, step.to);
+    if (!step.hold && !step.during) await src.dragTo(dst, { timeout });
+    else {
+      // The first move after the press only starts the drag; the target sees
+      // dragover from the next one on, so arrive in steps and nudge.
+      const onto = async (dx: number) => {
+        await dst.waitFor({ state: "visible", timeout });
+        const b = await dst.boundingBox();
+        if (!b) throw new Error(`drag target ${JSON.stringify(step.to)} has no box`);
+        await page.mouse.move(b.x + b.width / 2 + dx, b.y + b.height / 2, { steps: 4 });
+      };
+      await src.hover({ timeout });
+      await page.mouse.down();
+      // Start the drag where it was picked up: some targets only appear once a drag is on.
+      const from = await src.boundingBox();
+      if (from) await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 + 6, { steps: 3 });
+      await onto(0);
+      await onto(1);
+      await page.waitForTimeout(Number(step.hold ?? 100));
+      await onto(0);
+      if (step.during) ctx.captures.push(await snap(page, ctx.dir, String(step.during), ctx.vp, ctx.problems));
+      await page.mouse.up();
+    }
+    return settle(page, w);
+  }
   if (step.upload) {
     const files = (Array.isArray(step.files) ? step.files : [step.files]).map(String);
     await page.locator(typeof step.upload === "string" && step.upload.startsWith("css:") ? step.upload.slice(4) : 'input[type="file"]').first().setInputFiles(files, { timeout });
@@ -426,7 +457,7 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.locator(".sidebar").waitFor({ state: "attached", timeout });
     return settle(page, w);
   }
-  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press wait expect upload shot aria eval reload`);
+  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click fill type press drag wait expect upload shot aria eval reload`);
 }
 
 /** Scripted interaction. On failure: a screenshot, an accessibility snapshot and the reason. */
