@@ -13,7 +13,7 @@ import { appendToComposer, onAppend, quoted } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
-import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
+import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
 export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** Permission modes, as Claude Code names them, and what each means per engine. */
@@ -1788,6 +1788,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
 
   const running = meta.status === "running" || meta.status === "needs_approval";
   const rows = useMemo(() => layout(items, running), [items, running]);
+  const handoffs = useMemo(() => handoffLinks(items, meta, state.sessions), [items, meta, state.sessions]);
   const lastItem = items[items.length - 1];
   const working = meta.status === "running" && !(lastItem?.kind === "assistant" && lastItem.streaming);
   // The open turn's start, from yardd's clock.
@@ -1818,6 +1819,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     <ItemView
       key={item.key}
       item={item}
+      link={handoffs[item.key]}
+      onOpen={(id) => actions.go({ page: "session", id })}
       queued={meta.status === "queued"}
       starting={starting}
       loadAttachment={loadAttachment}
@@ -2218,6 +2221,9 @@ function AgentEntry({ entry }: { entry: ToolItem }) {
 
 function ItemView(props: {
   item: Item;
+  /** For a hand-off note: the session on the other side. */
+  link?: string;
+  onOpen(sessionId: string): void;
   /** The session is still waiting in the queue. */
   queued: boolean;
   /** Start anyway was clicked and yardd has not answered yet. */
@@ -2241,7 +2247,16 @@ function ItemView(props: {
         </div>
       );
     case "note":
-      return <div className="note">{item.text}</div>;
+      return (
+        <div className="note">
+          {item.text}
+          {props.link && (
+            <button className="btn-text note-link" onClick={() => props.onOpen(props.link!)}>
+              Open session
+            </button>
+          )}
+        </div>
+      );
     case "assistant":
       return <Markdown text={item.text} quotable />;
     case "tool":
