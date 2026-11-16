@@ -104,7 +104,7 @@ async function snapshotSessions(port: number) {
   }
 }
 
-/** The daemon's view: sessions (id, title, status, engine, branch, pinned, archived, group), hosts, models. */
+/** The daemon's view: sessions (id, title, status, engine, branch, pinned, archived, group, updatedAt), hosts, models. */
 export async function state(a: Args): Promise<Result> {
   const name = str(a, "iso", DEFAULT_ISO)!;
   const iso = loadIso(name);
@@ -124,6 +124,8 @@ export async function state(a: Args): Promise<Result> {
       archived: !!s.archived,
       group: s.group ?? null,
       cwd: s.cwd,
+      // Every session.update bumps it, so a recipe can prove nothing was sent.
+      updatedAt: s.updatedAt,
     }));
     const out: Result = { ok: true, sessions, host: snap.host ? { name: snap.host.name, pressure: snap.host.pressure ?? null } : null, vars: loadVars(name) };
     for (const spec of saveSpecs(a)) {
