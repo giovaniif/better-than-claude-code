@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "route": "session:s1a1e34ccc216",
+  "build": {
+    "sha": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+    "short": "a9721ec",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T07:49:44.449Z"
+  },
+  "dir": ".verify/evidence/changes-new-files-head2",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3928,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/changes-new-files-head2/head-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/changes-new-files-head2/head-scrolled-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".pane-body .card\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length",
+          "value": 0
+        },
+        {
+          "step": 6,
+          "eval": "(()=>{const c=[...document.querySelectorAll(\".pane-body .card\")].find((c)=>c.textContent.includes(\"TEST-head-new.txt\"));c.scrollIntoView();return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

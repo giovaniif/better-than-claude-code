@@ -1,0 +1,33 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd new_files_show_their_lines_in_the_diff
+# exit 101 after 2557 ms at ffa1228974694a7e917463ee99a9e660000e09b5
+
+
+running 1 test
+test git::tests::new_files_show_their_lines_in_the_diff ... FAILED
+
+failures:
+
+---- git::tests::new_files_show_their_lines_in_the_diff stdout ----
+
+thread 'git::tests::new_files_show_their_lines_in_the_diff' (277570) panicked at crates/yardd/src/git.rs:443:9:
+diff --git a/tracked.txt b/tracked.txt
+index 7898192..422c2b7 100644
+--- a/tracked.txt
++++ b/tracked.txt
+@@ -1 +1,2 @@
+ a
++b
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    git::tests::new_files_show_their_lines_in_the_diff
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.04s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.46s
+     Running unittests src/main.rs (target/debug/build/yardd/faa385782cd2ce48/out/yardd-faa385782cd2ce48)
+error: test failed, to rerun pass `-p yardd --bin yardd`

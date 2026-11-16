@@ -1,0 +1,58 @@
+{
+  "ok": false,
+  "route": "session:s1a1e34ccc216",
+  "build": {
+    "sha": "3dba3371161a816f97e37f56079040e6e9f06778",
+    "short": "3dba337",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T07:49:30.436Z"
+  },
+  "dir": ".verify/evidence/changes-new-files-squash",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4453,
+      "steps": 5,
+      "failed": {
+        "step": 4,
+        "action": {
+          "eval": "[...document.querySelectorAll(\".pane-body .card\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length",
+          "equals": 0
+        },
+        "reason": "eval returned 10, expected 0",
+        "screenshot": ".verify/evidence/changes-new-files-squash/fail-desktop-step4.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Import\"\n  - button \"TEST-stopnote Fake Fast · Idle\"\n  - button \"Actions for TEST-stopnote\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 14% · 92%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-c0c5\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - code: README.md\n  - code: +0 −3\n  - code: package.json\n  - code: +2 −0\n  - code: src/greet.ts\n  - code: +0 −1\n  - code: TEST with space.txt\n  - code: new\n  - code: TEST-base-new.txt\n  - code: new\n  - code: TEST-blob.bin\n  - code: new\n  - code: TEST-dir/b.txt\n  - code: new\n  - code: TEST-dir/sub/a.txt\n  - code: new\n  - code: TEST-head-new.txt\n  - code: new\n  - code: src/TEST-hello.ts\n  - code: new\n  - code: README.md\n  - text: \"@@ -1,3 +0,0 @@ -# TEST-demo-app - -Synthetic repository for Switchyard verification.\"\n  - code: package.json\n  - text: \"@@ -1 +1,3 @@ { \\\"name\\\": \\\"test-demo-app\\\", \\\"private\\\": true } + +// TEST-edit\"\n  - code: src/greet.ts\n  - text: \"@@ -1 +0,0 @@ -export const greet = (name: string) => `Hello, ${name}`;\"\n  - code: TEST with space.txt\n  - text: \"@@ -0,0 +1,1 @@ +hi\"\n  - code: TEST-base-new.txt\n  - text: \"@@ -0,0 +1,2 @@ +TEST-first line +TEST-second line\"\n  - code: TEST-blob.bin\n  - text: No text diff.\n  - code: TEST-dir/b.txt\n  - text: \"@@ -0,0 +1,1 @@ +b\"\n  - code: TEST-dir/sub/a.txt\n  - text: \"@@ -0,0 +1,1 @@ +a\"\n  - code: TEST-head-new.txt\n  - text: \"@@ -0,0 +1,2 @@ +TEST-first line +TEST-second line\"\n  - code: src/TEST-hello.ts\n  - text: \"@@ -0,0 +1,1 @@ +export const greet = (name: string) => `Hello, ${name}`;\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/changes-new-files-squash/squashed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".pane-body .card\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length",
+          "value": 10
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 4 {\"eval\":\"[...document.querySelectorAll(\\\".pane-body .card\\\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length\",\"equals\":0}: eval returned 10, expected 0",
+      "hint": "see .verify/evidence/changes-new-files-squash/fail-desktop-step4.png and the aria snapshot"
+    }
+  ]
+}

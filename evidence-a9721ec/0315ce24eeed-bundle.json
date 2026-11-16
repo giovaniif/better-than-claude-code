@@ -1,0 +1,227 @@
+{
+  "v": 1,
+  "claim": "The Changes pane lists a new (untracked) file as 'new' but never shows its content: git diff HEAD leaves untracked files out, so an agent's new file can't be read in the pane.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b",
+  "base": "0c1f1c2384bc7532b1cee03dfa5a5523aea95975",
+  "head": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T07:46:56.891Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ffa1228974694a7e917463ee99a9e660000e09b5",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "408c9d60d8fa890a2cd2f56b1a4b0cccfc8d2ecf4075f91417c025cc29f7a414"
+        },
+        {
+          "path": "p1-base-desktop.png",
+          "sha256": "7a346c436bc56a4451c36955fc236dfac2d3948f4e4a8ab286ebd74d89f024b0"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "7a346c436bc56a4451c36955fc236dfac2d3948f4e4a8ab286ebd74d89f024b0"
+        }
+      ],
+      "addedAt": "2026-11-16T07:47:04.965Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "ffa1228974694a7e917463ee99a9e660000e09b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "805e34ce6b7f61fc38e4c3edfbcbf72d02e8e463d4d3b65475947344009b5700"
+        }
+      ],
+      "addedAt": "2026-11-16T07:47:05.012Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd new_files_show_their_lines_in_the_diff",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ffa1228974694a7e917463ee99a9e660000e09b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "8cccb2a87b1fcab0450c35669cb0dfe2888ec773467605dec61d95b8bee5e708"
+        }
+      ],
+      "addedAt": "2026-11-16T07:47:07.615Z",
+      "cmd": "verify/yv map run changes-pane --recipe new-file-shows-its-content",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "3dba3371161a816f97e37f56079040e6e9f06778",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "625c3aaf888c091b87f83b0ee5aa6026d13ced309469181abe688c269a2d6e64"
+        }
+      ],
+      "addedAt": "2026-11-16T07:49:30.603Z",
+      "cmd": "verify/yv map run changes-pane --recipe new-file-shows-its-content",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3dba3371161a816f97e37f56079040e6e9f06778",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "f1b4760b6872e9819a3e1c9fd9c02987cf4e18373fa5d6bb2d4928b80690d81d"
+        },
+        {
+          "path": "p5-squashed-desktop.png",
+          "sha256": "9ca41278f21244ea0da56d50c9b4bb9653338c643f04c4b7a1a9a8555cb41fd7"
+        },
+        {
+          "path": "p5-fail-desktop-step4.png",
+          "sha256": "9ca41278f21244ea0da56d50c9b4bb9653338c643f04c4b7a1a9a8555cb41fd7"
+        }
+      ],
+      "addedAt": "2026-11-16T07:49:41.751Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "d798d4bfe27f29b109b8d98fb0f68ad239131d965c1071cf9be2a5da8e43612c"
+        },
+        {
+          "path": "p6-head-desktop.png",
+          "sha256": "c3cf1add8f77cfd871e82d689b3e9405b4f3247e1ed6e1f5f9751f449724f543"
+        },
+        {
+          "path": "p6-head-scrolled-desktop.png",
+          "sha256": "caba6930c0ce299e03f20bbd4ead9028ad7e22c8e9f698b6509cf91a436e8816"
+        }
+      ],
+      "addedAt": "2026-11-16T07:49:49.137Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "6df9e602fec121bb97473dbbd6336684d01aafa3d2742f493eaf1b55acd0786d"
+        },
+        {
+          "path": "p7-mobile-mobile.png",
+          "sha256": "6850c9e0c071e00f02f42dcbfad27df9e2ae7e2dfd7044dbff8df9736391dc4c"
+        }
+      ],
+      "addedAt": "2026-11-16T07:49:52.633Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "4d56345165ab76da7e5851f9d969c5ca8340a75b0e410caeb24cf77efc0be1b5"
+        }
+      ],
+      "addedAt": "2026-11-16T07:49:52.676Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "4304061b937602a3bbe2e3fe40af721e52ce83996d3f72c5941af12afa5ac873"
+        }
+      ],
+      "addedAt": "2026-11-16T07:50:08.490Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "a9721ecf3975967194152e1167f91f3b80c8e06d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "47e1525584400da540412c41253e9bab3a62a68c1608c1f0d6d51358945164cc"
+        }
+      ],
+      "addedAt": "2026-11-16T07:50:22.499Z",
+      "cmd": "verify/yv design-check --base 0c1f1c2384bc",
+      "exit": 0
+    }
+  ]
+}

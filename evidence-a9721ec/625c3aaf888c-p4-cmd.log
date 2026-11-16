@@ -1,0 +1,40 @@
+$ verify/yv map run changes-pane --recipe new-file-shows-its-content
+# exit 1 after 5670 ms at 3dba3371161a816f97e37f56079040e6e9f06778
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-16T07:49:36.270Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "new-file-shows-its-content",
+          "status": "fail",
+          "ms": 4778,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"eval\":\"[...document.querySelectorAll(\\\".pane-body .card\\\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length\",\"equals\":0}: eval returned 14, expected 0",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/.verify/drives/2026-11-16T07-49-32-649Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: TEST-more-01.txt\\n  - code: new\\n  - code: TEST-more-02.txt\\n  - code: new\\n  - code: TEST-more-03.txt\\n  - code: new\\n  - code: TEST-more-04.txt\\n  - code: new\\n  - code: TEST-more-05.txt\\n  - code: new\\n  - code: TEST-more-06.txt\\n  - code: new\\n  - code: TEST-more-07.txt\\n  - code: new\\n  - code: TEST-more-08.txt\\n  - code: new\\n  - code: TEST-more-09.txt\\n  - code: new\\n  - code: TEST-more-10.txt\\n  - code: new\\n  - code: TEST-more-11.txt\\n  - code: new\\n  - code: TEST-more-12.txt\\n  - code: new\\n  - code: TEST-new-blob.bin\\n  - code: new\\n  - code: TEST-new-file.txt\\n  - code: new\\n  - code: TEST-more-01.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 01\\\"\\n  - code: TEST-more-02.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 02\\\"\\n  - code: TEST-more-03.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 03\\\"\\n  - code: TEST-more-04.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 04\\\"\\n  - code: TEST-more-05.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 05\\\"\\n  - code: TEST-more-06.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 06\\\"\\n  - code: TEST-more-07.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 07\\\"\\n  - code: TEST-more-08.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 08\\\"\\n  - code: TEST-more-09.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 09\\\"\\n  - code: TEST-more-10.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 10\\\"\\n  - code: TEST-more-11.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 11\\\"\\n  - code: TEST-more-12.txt\\n  - text: \\\"@@ -0,0 +1,1 @@ +TEST-more 12\\\"\\n  - code: TEST-new-blob.bin\\n  - text: No text diff.\\n  - code: TEST-new-file.txt\\n  - text: \\\"@@ -0,0 +1,2 @@ +TEST-first line +TEST-second line\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 3,\n          \"eval\": \"[...document.querySelectorAll(\\\".pane-body .card\\\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length\",\n          \"value\": 14\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"eval\\\":\\\"[...document.querySelectorAll(\\\\\\\".pane-body .card\\\\\\\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length\\\",\\\"equals\\\":0}: eval returned 14, expected 0\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/.verify/drives/2026-11-16T07-49-32-649Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "changes-pane/new-file-shows-its-content",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
