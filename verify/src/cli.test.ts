@@ -269,6 +269,16 @@ describe("evidence proof bar", () => {
     const b = bundle(full.map((p) => (p.kind === "fix" ? { ...p, failedApi: ["pr: boom", "changes: new"] } : p)));
     expect(failed(b)).toEqual(["api-failures"]);
   });
+  test("a head refusal named in an expected-api note passes; others still fail", () => {
+    const fix = full.map((p) => (p.kind === "fix" ? { ...p, failedApi: ["pr: boom", "term.open: folder gone: /tmp/x", "changes: new"] } : p));
+    const note = (text: string) => P({ kind: "note", text, artifacts: [] });
+    expect(failed(bundle([...fix, note("expected-api: term.open: the fix refuses instead of opening in ~")]))).toEqual(["api-failures"]);
+    expect(failed(bundle([...fix, note("expected-api: term.open: refuses"), note("expected-api: changes: clearer message")]))).toEqual([]);
+    // The op must match whole: a note for `term` does not excuse `term.open`.
+    expect(failed(bundle([...fix, note("expected-api: term: x"), note("expected-api: changes: y")]))).toEqual(["api-failures"]);
+    // A note without a reason excuses nothing.
+    expect(failed(bundle([...fix, note("expected-api: term.open"), note("expected-api: changes: y")]))).toEqual(["api-failures"]);
+  });
   test("a test that passed on base proves nothing", () => {
     const b = bundle(full.map((p) => (p.ref === "base" && p.kind === "test" ? { ...p, exit: 0 } : p)));
     expect(failed(b)).toEqual(["failing-test-first"]);
