@@ -53,7 +53,8 @@ function alignments(line: string): Align[] | null {
   return cells.map((c) => (c.startsWith(":") && c.endsWith(":") ? "center" : c.endsWith(":") ? "right" : c.startsWith(":") ? "left" : null));
 }
 
-const HEADING = /^#{1,6} +(.+?)\s*#*\s*$/;
+// Closing hashes need a space before them, as in GFM: "## Use C#" keeps its "#".
+const HEADING = /^#{1,6} +(.+?)(?:\s+#+)?\s*$/;
 const BULLET = /^\s*[-*+] +(.*)$/;
 const NUMBERED = /^\s*(\d{1,9})[.)] +(.*)$/;
 

@@ -81,5 +81,6 @@ describe("blockSegments: headings and lists without a blank line", () => {
   });
   test("closing hashes are dropped from a heading", () => {
     expect(blockSegments(["### Notes ###"])).toEqual([{ kind: "heading", text: "Notes" }]);
+    expect(blockSegments(["## Use C#"])).toEqual([{ kind: "heading", text: "Use C#" }]);
   });
 });
