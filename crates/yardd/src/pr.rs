@@ -51,6 +51,7 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
 }
 
 async fn get(cwd: &str) -> Result<Value> {
+    crate::git::ensure_folder(cwd)?;
     let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
     if !is_repo {
         bail!("not a git repository");

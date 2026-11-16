@@ -102,6 +102,7 @@ pub fn open(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Va
 /// Start another terminal in the session.
 pub fn new(app: &Arc<App>, session_id: &str, cols: u16, rows: u16) -> Result<Value> {
     let meta = app.meta(session_id).context("no such session")?;
+    crate::git::ensure_folder(&meta.cwd)?;
     let pair = native_pty_system().openpty(size(cols, rows))?;
 
     let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string());
