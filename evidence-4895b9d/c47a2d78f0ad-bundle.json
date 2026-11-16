@@ -1,0 +1,102 @@
+{
+  "v": 1,
+  "claim": "The land gate's 20-minute spacing guard measures from the newest-created merged PR, not the latest merge: #90 landed at 16:49 but #94 (merged 16:28) was opened after it, so the gate saw 25 minutes and merged #96 at 16:53, 4 minutes after #90.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023",
+  "base": "f40e021f203a18f38706e7dd17ec3fc4a24b478c",
+  "head": "4895b9d18a0712b1e9c2ed211791b4455e17d81f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/land.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T17:01:29.734Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c095665e516722ea4cef1e7356c9e7cf03e6f26b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-base-repro.txt",
+          "sha256": "cd9b2810d7358fcd10d1fce10da7367a35e6b43c7d5b17ece584bf2f6b8f8276"
+        }
+      ],
+      "addedAt": "2026-11-16T17:01:29.838Z"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "c095665e516722ea4cef1e7356c9e7cf03e6f26b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "bf62661c6e3ba11f70a8763bdd57180fc625b5d38ab79258348f243d83bb0f76"
+        }
+      ],
+      "addedAt": "2026-11-16T17:01:29.878Z",
+      "cmd": "cd verify && bun test",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "4895b9d18a0712b1e9c2ed211791b4455e17d81f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-head-fix.txt",
+          "sha256": "d8829e34f32566444036a56f8c99c17d9ff15a0f839aaeb0eed16470256660de"
+        }
+      ],
+      "addedAt": "2026-11-16T17:01:30.303Z"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "4895b9d18a0712b1e9c2ed211791b4455e17d81f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "00aff442e8cbe33770900f4c30c2ddb74daf6a4850232db3821e8734a4936005"
+        }
+      ],
+      "addedAt": "2026-11-16T17:01:30.340Z",
+      "cmd": "cd verify && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "4895b9d18a0712b1e9c2ed211791b4455e17d81f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "7e2561c8893c74db03d145b2d980aca76f12db52e6654b33c0dccfc36fa6d8bf"
+        }
+      ],
+      "addedAt": "2026-11-16T17:01:30.721Z",
+      "cmd": "verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}

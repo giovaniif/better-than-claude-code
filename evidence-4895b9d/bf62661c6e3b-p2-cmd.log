@@ -1,0 +1,26 @@
+$ cd verify && bun test
+# exit 1 after 351 ms at c095665e516722ea4cef1e7356c9e7cf03e6f26b
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/cli.test.ts:
+363 |     const merged = [
+364 |       { number: 94, mergedAt: "2026-11-16T16:28:40Z" },
+365 |       { number: 92, mergedAt: "2026-11-16T16:11:31Z" },
+366 |       { number: 90, mergedAt: "2026-11-16T16:49:06Z" },
+367 |     ];
+368 |     expect(lastMerge(merged)?.number).toBe(90);
+                                            ^
+error: expect(received).toBe(expected)
+
+Expected: 90
+Received: 94
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023/verify/src/cli.test.ts:368:39)
+(fail) land guards > the spacing guard counts from the latest merge, not the newest PR [0.25ms]
+
+ 44 pass
+ 1 fail
+ 105 expect() calls
+Ran 45 tests across 2 files. [343.00ms]

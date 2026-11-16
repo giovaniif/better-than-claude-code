@@ -1,0 +1,10 @@
+$ cd verify && bun test
+# exit 0 after 343 ms at 4895b9d18a0712b1e9c2ed211791b4455e17d81f
+
+bun test v1.4.4 (38afee6c8)
+
+
+ 45 pass
+ 0 fail
+ 106 expect() calls
+Ran 45 tests across 2 files. [337.00ms]

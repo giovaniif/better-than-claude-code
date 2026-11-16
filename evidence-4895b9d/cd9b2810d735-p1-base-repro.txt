@@ -1,0 +1,6 @@
+# base c095665: the merged list as of 16:53 (before #96), first entries
+[{"mergedAt":"2026-11-16T16:28:40Z","number":94},{"mergedAt":"2026-11-16T16:11:31Z","number":92},{"mergedAt":"2026-11-16T16:49:06Z","number":90},{"mergedAt":"2026-11-16T15:51:28Z","number":88}]
+# what the guard picks
+{"firstListed":{"mergedAt":"2026-11-16T16:28:40Z","number":94},"lastMerge":{"mergedAt":"2026-11-16T16:28:40Z","number":94}}
+# ledger decision for #96
+{"at":"2026-11-16T16:53:24.466Z","guards":[],"action":"merged"}
