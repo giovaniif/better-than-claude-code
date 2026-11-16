@@ -251,9 +251,9 @@ pub async fn create_session(
         let suffix = &unique[unique.len().saturating_sub(4)..];
         let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
         let worktree = Worktree { branch: wt.branch, repo: wt.repo };
-        (app.new_session(engine, model, effort, &wt.cwd, &title, Some(worktree)), wt.setup)
+        (app.insert_session(engine, model, effort, &wt.cwd, &title, Some(worktree), false, account, automation)?, wt.setup)
     } else {
-        (app.new_session_exclusive(engine, model, effort, cwd, &title)?, None)
+        (app.insert_session(engine, model, effort, cwd, &title, None, true, account, automation)?, None)
     };
     if let Some(script) = setup {
         app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
@@ -264,7 +264,6 @@ pub async fn create_session(
     }
     app.update_meta(&sid, |m| {
         m.permission = permission.to_string();
-        m.automation = automation.map(str::to_string);
     });
     if let Some(direct) = direct {
         let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());

@@ -256,27 +256,12 @@ impl App {
         worktree: Option<Worktree>,
         account: &str,
     ) -> String {
-        self.insert_session(engine, model, effort, cwd, title, worktree, false, account)
+        self.insert_session(engine, model, effort, cwd, title, worktree, false, account, None)
             .expect("a non-exclusive insert cannot be refused")
     }
 
-    /// Like `new_session`, but refused while another session in the same
-    /// folder is working. The check and the insert share one lock, so two
-    /// creates at once cannot both get in.
-    pub fn new_session_exclusive(
-        &self,
-        engine: &str,
-        model: &str,
-        effort: &str,
-        cwd: &str,
-        title: &str,
-        account: &str,
-    ) -> anyhow::Result<String> {
-        self.insert_session(engine, model, effort, cwd, title, None, true, account)
-    }
-
     #[allow(clippy::too_many_arguments)]
-    fn insert_session(
+    pub fn insert_session(
         &self,
         engine: &str,
         model: &str,
@@ -286,6 +271,7 @@ impl App {
         worktree: Option<Worktree>,
         exclusive: bool,
         account: &str,
+        automation: Option<&str>,
     ) -> anyhow::Result<String> {
         let id = self.id("s");
         let now = now_ms();
@@ -310,7 +296,7 @@ impl App {
             pinned: false,
             archived: false,
             group: None,
-            automation: None,
+            automation: automation.map(str::to_string),
             pending: Vec::new(),
             created_at: now,
             updated_at: now,

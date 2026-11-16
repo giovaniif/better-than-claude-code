@@ -1543,6 +1543,8 @@ async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
         .map(|m| m["session"]["id"].as_str().unwrap_or("").to_string())
         .collect::<std::collections::HashSet<_>>();
     assert!(claude_sessions.len() <= 1, "{claude_sessions:?}");
+}
+
 // ---- Automations ----
 
 fn automation_of(cwd: &str, extra: Value) -> Value {
@@ -1694,7 +1696,7 @@ async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
 #[tokio::test]
 async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
     let sb = Sandbox::new("auto-skip");
-    let cwd = sb.folder("proj");
+    let cwd = make_repo(&sb, "repo");
     let d = sb.start();
     let mut c = d.client().await;
     let a = save_automation(&mut c, automation_of(&cwd, json!({ "prompt": "[slow] think hard" }))).await.unwrap();
