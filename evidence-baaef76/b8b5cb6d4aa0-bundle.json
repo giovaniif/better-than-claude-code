@@ -1,0 +1,73 @@
+{
+  "v": 1,
+  "claim": "yardd daemon tests flaked: a test daemon that lost its port to a parallel test exited, and the test talked to the other test's yardd instead",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-3d97-port",
+  "base": "3889164455f27f8b9f1e00216997af1bdeaa12b0",
+  "head": "baaef76faef7b13478dfe65b1a0523e1689375cf",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/common/mod.rs"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T08:56:20.962Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "baaef76faef7b13478dfe65b1a0523e1689375cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T08:56:21.000Z",
+      "text": "no-repro: a race between parallel tests. Seen in this run: accounts_are_per_host_through_the_hub failed at 'the folder is on the remote'; the kept sandbox /tmp/yardd-test-643134-accounts-remote-20/data/yardd.log reads 'Error: cannot listen on 127.0.0.1:33995: Address already in use', so the hub had added another test's yardd as its remote"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "baaef76faef7b13478dfe65b1a0523e1689375cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T08:56:21.039Z",
+      "text": "no-failing-test: the race needs a port taken between free_port() and yardd's bind, which no test can schedule without a hook. Checked by hand at head: holding the first port picked made yardd exit with Address already in use, and the test still passed on the retry (temporary patch, not committed)"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "baaef76faef7b13478dfe65b1a0523e1689375cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "6ebdc5a8f5eab13227716e9688cc4f1631b962479350533118ec3401e47ab819"
+        }
+      ],
+      "addedAt": "2026-11-16T08:56:21.092Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon accounts_are_per_host_through_the_hub",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "baaef76faef7b13478dfe65b1a0523e1689375cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "8994d1ae877652c7d9502e83fd24f8fc04d633173c6c5edfc6456b1ba1bc1a38"
+        }
+      ],
+      "addedAt": "2026-11-16T08:56:50.962Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    }
+  ]
+}
