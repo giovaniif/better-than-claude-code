@@ -1,0 +1,306 @@
+{
+  "v": 1,
+  "claim": "There is no way to schedule work in Switchyard: the repo's agent loops are systemd timers that start ordinary sessions from outside, and their runs pile up in the sidebar. Automations (a page, a scheduler in yardd, runs kept out of the sidebar and archived when they end) add it.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/feat-automations",
+  "base": "eb99ddb5d25bd5623294a5e01b92a6c40c651734",
+  "head": "b0972c0d60ad7478a700793c327612aad332cf28",
+  "changed": [
+    {
+      "status": "M",
+      "path": "Cargo.lock"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/Cargo.toml"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/automations.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/automations.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T01:55:48.048Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "fe48ca328ceb442ddc9bc031bae385e1a4f31bd8",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d38ae13538b09b3c66c2bc4c0b1a4e108973825ce7aad99f8a1e0c1eeb43dffc"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "1bb8745351a20c22cec6afbeff988951df0b45393052c0dbc251a3fbc4624f54"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:10.367Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "fe48ca328ceb442ddc9bc031bae385e1a4f31bd8",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-new-desktop.png",
+          "sha256": "03c2628b62b0c9f2ac8accbd9d0da552ee0e95570022e87a19eb145f4778eca5"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:10.409Z"
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "fe48ca328ceb442ddc9bc031bae385e1a4f31bd8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "089c6766ac798afaa156b83b292ce9b2f20521f271b250697b2ca9cda4d98926"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:10.448Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon automation",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "fe48ca328ceb442ddc9bc031bae385e1a4f31bd8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "45c6db5c254f30e4f0bc715d26c35b7b27770a2a2010989e56947b4d6e47e374"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:10.754Z",
+      "cmd": "cd ui && bun test src/automations.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "a764af804962728bc8757f833a26a40bbf3bb58c70177f5e18a675cf5e29a27c"
+        },
+        {
+          "path": "p5-runs-mobile.png",
+          "sha256": "24e3af0de4678d9b7676dc8916b4bfa7d5ae89b3e043c3277ba3c5d9da9f26ef"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:22.145Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "8f79806fb5a10c3410a6ea7852d480ab69c2a2803df02240d7446242e2fade05"
+        },
+        {
+          "path": "p6-runs-desktop.png",
+          "sha256": "fd9c3b998cd4b2f6bbebbdd936f0364bc583652f79aba1f06b92f6cf708ccf49"
+        },
+        {
+          "path": "p6-form-desktop.png",
+          "sha256": "7ecedd0aa389afbe769b7a9e05598e14e99c0f2f4e2ddd7119d030f1d01b0a33"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:22.179Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "115b0b299c63313715b770043679756fb1ef777b82630aafe17d47ba0a6c3d83"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:22.214Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "857948dfceac434fbb72171bddaccdba36aca593468afa150f452a0b113dbc68"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:33.105Z",
+      "cmd": "verify/yv design-check --base eb99ddb5d25b",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-automations.json",
+          "sha256": "2b0654c1ce86418295e232dd5b9a727a5401d9bcff682ba2d0f54e2ddfd26c0b"
+        }
+      ],
+      "addedAt": "2026-11-16T01:56:33.191Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/delete-removes-the-automation-and-frees-its-runs"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b0972c0d60ad7478a700793c327612aad332cf28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-sidebar.json",
+          "sha256": "7cc92e3d3f1ece0d74067dcd850dffbf62543c039849bc614437473f3eaa2c19"
+        }
+      ],
+      "addedAt": "2026-11-16T01:57:18.769Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom"
+      ]
+    }
+  ]
+}
