@@ -345,7 +345,17 @@ export type Item =
   | { kind: "turn"; key: string; start?: number; end?: number; status: string }
   | { kind: "tool"; key: string; itemId: string; toolKind: string; title: string; detail: string; state: "running" | "ok" | "failed"; output?: string | null }
   | { kind: "diff"; key: string; files: ChangedFile[] }
-  | { kind: "approval"; key: string; requestId: string; approvalKind: string; title: string; detail: string; decision: Decision | null }
+  | {
+      kind: "approval";
+      key: string;
+      requestId: string;
+      approvalKind: string;
+      title: string;
+      detail: string;
+      decision: Decision | null;
+      /** A decision was sent and yardd has not resolved it yet. */
+      sending?: boolean;
+    }
   | { kind: "error"; key: string; message: string }
   | { kind: "note"; key: string; text: string }
   | { kind: "queued"; key: string; reason: string };

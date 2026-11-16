@@ -63,6 +63,19 @@ yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"lo
 yv drive 'session:{{always_sid}}' --viewport desktop --steps '[{"click":"role:button:Always allow"},{"expect":"css:.thread","text":"Ran it."},{"click":"role:button:Worked for"},{"expect":"css:.thread","text":"Always allowed"}]'
 ```
 
+### double-click-allow-once
+A double click on "Allow once" sends one decision: the buttons are disabled
+once it is sent, so the second click does nothing. (They used to stay live
+until yardd answered, and the second click got "approval is no longer
+pending".) The two clicks are a task apart, so React renders in between, as
+it does for a real double click.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-double click"}' --wait '{"op":"created"}' --save dbl_sid=sessionId
+yv drive 'session:{{dbl_sid}}' --viewport desktop --steps '[{"expect":"role:button:Allow once"},{"eval":"(async () => { const b = [...document.querySelectorAll(\".approval button\")].find((x) => x.textContent.trim() === \"Allow once\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \"clicked twice\"; })()","equals":"clicked twice"},{"expect":"css:.thread","text":"Ran it."},{"wait":500}]'
+yv state --expect '{"sessions":[{"id":"{{dbl_sid}}","status":"idle"}]}'
+```
+
 ## Gotchas
 - A decided approval folds into the turn's "Worked for … · Ran 1 command" row; open it to read "Allowed", "Always allowed" or "Denied".
 - `role:button:Allow` matches "Allow once" and "Always allow"; name buttons in full or use `exact`.

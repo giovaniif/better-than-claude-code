@@ -238,3 +238,30 @@ describe("sidebar layout", () => {
     expect(cleanGroupName("x".repeat(100))).toHaveLength(60);
   });
 });
+
+describe("approval decisions", () => {
+  const pending = (): State => {
+    const s = server(initial, { op: "snapshot", sessions: [meta("s1", "local", "needs_approval")] });
+    return server(
+      server(s, history("s1", [{ type: "user_message", text: "[cmd] go" }, { type: "turn_started" }])),
+      event("s1", 2, { type: "approval_request", requestId: "r1", kind: "command", title: "ls", detail: "" }),
+    );
+  };
+  const card = (state: State) => state.threads.s1.items.find((i) => i.kind === "approval") as any;
+
+  test("a sent decision holds the card until yardd resolves it", () => {
+    // A second click before `approval_resolved` came back used to send a
+    // second decision, which yardd refuses: "approval is no longer pending".
+    const s = reduce(pending(), { t: "deciding", sessionId: "s1", requestId: "r1" });
+    expect(card(s).sending).toBe(true);
+    const done = server(s, event("s1", 3, { type: "approval_resolved", requestId: "r1", decision: "allow" }));
+    expect(card(done).decision).toBe("allow");
+  });
+
+  test("a refused decision gives the buttons back", () => {
+    const s = reduce(pending(), { t: "deciding", sessionId: "s1", requestId: "r1" });
+    const refused = server(s, { op: "error", for: "session.approve", message: "the engine is gone" });
+    expect(card(refused).sending).toBeFalsy();
+    expect(refused.error).toBe("the engine is gone");
+  });
+});
