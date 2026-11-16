@@ -74,8 +74,9 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
     setMessage(null);
     const r = await actions.runAutomation(host, a.id);
     setStarting(false);
+    // A run that could not start is already the last run, reason included:
+    // only a request yardd refused needs its own line.
     if (r.error) setMessage(r.error);
-    else if (r.outcome !== "started") setMessage(`${r.outcome === "skipped" ? "Skipped" : "Failed"}: ${r.reason ?? ""}`);
   };
   const shown = all ? runs : runs.slice(0, SHOWN_RUNS);
   return (
@@ -100,7 +101,11 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
         <span>Next run {describeNext(a.nextRun, a.enabled, now)}</span>
         <span>Last run {describeLast(last, now)}</span>
       </div>
-      {last && last.outcome !== "started" && last.reason && <div className="muted small automation-reason">{last.reason}</div>}
+      {last && last.outcome !== "started" && last.reason && (
+        <div className="muted small automation-reason" role="status">
+          {last.reason}
+        </div>
+      )}
       {message && <div className="small automation-reason" role="status">{message}</div>}
       <div className="row">
         <button className="btn" aria-label={`Run now: ${a.name}`} disabled={!online || starting} onClick={run}>
