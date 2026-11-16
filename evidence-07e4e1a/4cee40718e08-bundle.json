@@ -1,0 +1,183 @@
+{
+  "v": 1,
+  "claim": "On a yardd that is not on a Mac, the host reads \"This Mac\" (sidebar host row, Hosts page, host picker) until the first stats sample about 3 s after start, because the snapshot has no host name",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-a715",
+  "base": "9b176171f2c009671322bd12fa707f929ea808ee",
+  "head": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T14:45:55.939Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4dfb74ccf234819f6e40e51021cbe535dd5f986d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0bb0452412a818169a8c6d8acc9dee5f0d857d21802df5973c0ba0c8406c0c72"
+        },
+        {
+          "path": "p1-base-this-mac-desktop.png",
+          "sha256": "aa14229dde893ff76afc41bf702bd8ceeb9b239fd8d28be893ee1f0bf355893b"
+        },
+        {
+          "path": "p1-2-base-this-mac-desktop.png",
+          "sha256": "aa14229dde893ff76afc41bf702bd8ceeb9b239fd8d28be893ee1f0bf355893b"
+        }
+      ],
+      "addedAt": "2026-11-16T14:46:03.242Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "4dfb74ccf234819f6e40e51021cbe535dd5f986d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "5f71e07f23d21074475912e83ef603b7271bc3bdd6ed15e1f1cd494d16e0add0"
+        }
+      ],
+      "addedAt": "2026-11-16T14:46:03.289Z",
+      "cmd": "(cd ui && bun test src/store.test.ts) && CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon the_snapshot_names_this_machine_before_its_first_stats_sample",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "4dfb74ccf234819f6e40e51021cbe535dd5f986d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "3eddf1a7070ce0481264296e5791c33176cdf158bb41e327ae8289bd2ae9376d"
+        }
+      ],
+      "addedAt": "2026-11-16T14:46:07.498Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon the_snapshot_names_this_machine_before_its_first_stats_sample",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "a0a85f81968f3c560f13fc2e3202f3d171901ec8820e7b1b3203625a38189745"
+        },
+        {
+          "path": "p4-head-before-first-sample-desktop.png",
+          "sha256": "193bbba4d937cc311095c5ae1d7acef8a06b71640c5f17a27076b24735a427b7"
+        },
+        {
+          "path": "p4-2-head-before-first-sample-desktop.png",
+          "sha256": "193bbba4d937cc311095c5ae1d7acef8a06b71640c5f17a27076b24735a427b7"
+        }
+      ],
+      "addedAt": "2026-11-16T14:47:15.890Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "bc7353f553b632e9a9fe75cd62b2251286a585a4c7004b0ab3fd8569a01d2459"
+        },
+        {
+          "path": "p5-head-before-first-sample-mobile.png",
+          "sha256": "2e66bad7fb716be38092ea85f66521d497ac930bd06d9610c1de1f660e3eef95"
+        },
+        {
+          "path": "p5-2-head-before-first-sample-mobile.png",
+          "sha256": "2e66bad7fb716be38092ea85f66521d497ac930bd06d9610c1de1f660e3eef95"
+        }
+      ],
+      "addedAt": "2026-11-16T14:47:15.929Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "a86e4fa02b0f514dbd14d693aa5ea21846d3e5fbcb768e5e8bbcc43690512ccb"
+        }
+      ],
+      "addedAt": "2026-11-16T14:47:15.969Z",
+      "cmd": "verify/yv design-check --base 9b176171f2c0",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "30d8d36e0fb560d3cc525a7a5b7be0e57ae8fae5a28d88f580590ac44bd61527"
+        }
+      ],
+      "addedAt": "2026-11-16T14:47:19.464Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    }
+  ]
+}

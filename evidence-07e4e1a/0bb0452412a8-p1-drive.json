@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "4dfb74ccf234819f6e40e51021cbe535dd5f986d",
+    "short": "4dfb74c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T14:45:51.432Z"
+  },
+  "dir": ".verify/evidence/local-host-name-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1451,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/local-host-name-base/base-this-mac-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

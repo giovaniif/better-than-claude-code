@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon the_snapshot_names_this_machine_before_its_first_stats_sample
+# exit 101 after 907 ms at 4dfb74ccf234819f6e40e51021cbe535dd5f986d
+
+
+running 1 test
+test the_snapshot_names_this_machine_before_its_first_stats_sample ... FAILED
+
+failures:
+
+---- the_snapshot_names_this_machine_before_its_first_stats_sample stdout ----
+
+thread 'the_snapshot_names_this_machine_before_its_first_stats_sample' (783416) panicked at crates/yardd/tests/daemon.rs:64:5:
+assertion `left == right` failed: {"accounts":[],"automations":[],"home":"/tmp/yardd-test-783415-snapshot-host-name-0/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-haiku-5-5","name":"Haiku 5.5"}],"codex":[]},"op":"snapshot","sessions":[],"usage":{},"workspace":"/home/giovani/www"}
+  left: Null
+ right: "TEST-box"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-783415-snapshot-host-name-0 for inspection
+
+
+failures:
+    the_snapshot_names_this_machine_before_its_first_stats_sample
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 67 filtered out; finished in 0.09s
+
+
+   Compiling yardd v0.4.1 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-a715/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.78s
+     Running tests/daemon.rs (target/debug/build/yardd/1507b05eedd0fe09/out/daemon-1507b05eedd0fe09)
+error: test failed, to rerun pass `-p yardd --test daemon`

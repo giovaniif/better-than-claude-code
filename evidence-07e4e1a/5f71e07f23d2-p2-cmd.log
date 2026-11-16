@@ -1,0 +1,26 @@
+$ (cd ui && bun test src/store.test.ts) && CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon the_snapshot_names_this_machine_before_its_first_stats_sample
+# exit 1 after 24 ms at 4dfb74ccf234819f6e40e51021cbe535dd5f986d
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/store.test.ts:
+294 | 
+295 | describe("the local host's name", () => {
+296 |   test("comes from the snapshot before the first stats sample", () => {
+297 |     // A Linux box or container must not read "This Mac" for its first seconds.
+298 |     const s = server(initial, { op: "snapshot", sessions: [], hosts: [], host: null, hostName: "TEST-box" });
+299 |     expect(hostName(s, "local")).toBe("TEST-box");
+                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "TEST-box"
+Received: "This Mac"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-a715/ui/src/store.test.ts:299:34)
+(fail) the local host's name > comes from the snapshot before the first stats sample [0.37ms]
+
+ 24 pass
+ 1 fail
+ 73 expect() calls
+Ran 25 tests across 1 file. [19.00ms]

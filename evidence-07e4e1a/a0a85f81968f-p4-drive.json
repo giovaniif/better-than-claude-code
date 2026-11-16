@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "07e4e1a4224092aa156c1dedbc42007f8903b086",
+    "short": "07e4e1a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T14:46:56.862Z"
+  },
+  "dir": ".verify/evidence/local-host-name-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1400,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/local-host-name-head-desktop/head-before-first-sample-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
