@@ -1997,11 +1997,14 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
   if (worktree && armed) {
     return (
       <>
-        <button className="btn-text" onClick={() => onConfirm(false)}>
-          Delete session
+        {/* A phone's bar has room for both choices only with short labels. */}
+        <button className="btn-text bar-choice" onClick={() => onConfirm(false)}>
+          <span className="label-wide">Delete session</span>
+          <span className="label-narrow">Delete</span>
         </button>
-        <button className="btn-text" onClick={() => onConfirm(true)}>
-          Delete and remove worktree
+        <button className="btn-text bar-choice" onClick={() => onConfirm(true)}>
+          <span className="label-wide">Delete and remove worktree</span>
+          <span className="label-narrow">Delete + worktree</span>
         </button>
       </>
     );

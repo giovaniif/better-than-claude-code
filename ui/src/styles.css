@@ -627,10 +627,13 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 /* Narrow windows (phones): the sidebar is a drawer over the page, opened by
    the menu button first in each page's bar, so the page keeps the full width.
    Last in the file so it wins over the wide rules above. */
-.menu-button, .bar-narrow, .drawer-backdrop { display: none; }
+.menu-button, .bar-narrow, .drawer-backdrop, .label-narrow { display: none; }
+.bar-choice { flex: none; white-space: nowrap; }
 @media (max-width: 700px) {
   .menu-button { display: flex; flex: none; margin-left: -4px; color: var(--ink); }
   .bar-narrow { display: flex; }
+  .label-narrow { display: inline; }
+  .label-wide { display: none; }
   .bar { gap: 8px; padding: 8px 16px 8px 12px; }
   /* The title keeps more of the bar than the branch beside it. */
   .bar code { flex-shrink: 4; }
