@@ -3,7 +3,10 @@
 Switchyard is laid out for a desktop window: sessions sidebar, the session in
 the middle, and the workspace pane (Changes, Terminal, Pull request) on the
 right, hidden below 1100 px. The web version is also opened from phones over
-the tailnet, so the main column must stay usable at 390 px.
+the tailnet, so the main column must stay usable at 390 px: below 700 px the
+sidebar is a drawer over the page, opened by the menu button ("Open sessions")
+first in each page's bar, and closed by picking anything in it, tapping the
+backdrop, or Escape.
 
 ## Setup
 
@@ -53,5 +56,33 @@ At 390 px the Hosts heading and the host card's stats must be readable.
 yv drive hosts --viewport mobile --steps '[{"expect":"role:heading:Hosts","inViewport":true},{"eval":"Math.round(document.querySelector(\".host-card\").getBoundingClientRect().width) >= 300","equals":true}]'
 ```
 
+### mobile-drawer-opens-and-closes
+Viewports: mobile
+At 390 px the sidebar starts closed. The menu button opens it on screen;
+Escape closes it, a tap on the backdrop beside it closes it, and picking a
+session opens that session and closes it, leaving the session the full width.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"expect":"role:navigation:Sessions","visible":false},{"click":"role:button:Open sessions"},{"wait":400},{"expect":"role:navigation:Sessions","inViewport":true},{"expect":"role:button:New session","inViewport":true},{"shot":"drawer-open"},{"press":"Escape"},{"expect":"role:navigation:Sessions","visible":false},{"click":"role:button:Open sessions"},{"wait":400},{"eval":"document.elementFromPoint(370, 400).className","equals":"drawer-backdrop"},{"eval":"document.elementFromPoint(370, 400).click() ?? 1","equals":1},{"expect":"role:navigation:Sessions","visible":false},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"}},{"expect":"role:heading:[edit] TEST-fix the greeting"},{"expect":"role:navigation:Sessions","visible":false},{"eval":"Math.round(document.querySelector(\".main\").getBoundingClientRect().width)","equals":390},{"shot":"session-after-pick"}]'
+```
+
+### mobile-menu-on-every-page
+Viewports: mobile
+The menu button is on screen on the new-session, Hosts and Automations pages too.
+
+```sh
+yv drive new --viewport mobile --steps '[{"expect":"role:button:Open sessions","inViewport":true},{"goto":"hosts"},{"expect":"role:button:Open sessions","inViewport":true},{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"expect":"role:button:Open sessions","inViewport":true}]'
+```
+
+### desktop-sidebar-is-a-column
+Viewports: desktop
+At 1440 px nothing changes: no menu button, and the sidebar is a 248 px column
+beside the session, not a drawer.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"role:button:Open sessions","visible":false},{"expect":"role:navigation:Sessions","inViewport":true},{"eval":"[Math.round(document.querySelector(\".sidebar\").getBoundingClientRect().width), getComputedStyle(document.querySelector(\".sidebar\")).position, Math.round(document.querySelector(\".main\").getBoundingClientRect().left)]","equals":[248,"static",248]}]'
+```
+
 ## Gotchas
-- Product gap (2026-11-15): there is no layout below ~700 px. The sidebar keeps its 248 px, so at 390 px the session column is about 140 px wide, words wrap one per line, and the Hosts heading is pushed out of view. mobile-main-column-usable and mobile-hosts-page fail until the app gets a narrow layout (e.g. the sidebar as a drawer). Queued as a finding.
+- Below 700 px the sidebar is a closed drawer, so a recipe that clicks or reads something in it at mobile opens it first (`{"click":"role:button:Open sessions"}`); `yv drive`'s routes do that themselves. At both viewports with one step list, split the recipe per viewport: the menu button is hidden on desktop.
+- Fixed 2026-11-16 (#8): there was no layout below ~700 px; the 248 px sidebar left the session column about 140 px wide at 390 px.
