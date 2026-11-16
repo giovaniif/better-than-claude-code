@@ -1,0 +1,331 @@
+//! The ACP engines (OpenCode, Grok) end to end: the built daemon with the
+//! scripted `opencode` and `grok` in `tests/fake-codex` first on PATH. No
+//! turn reaches a model and no real login is used.
+
+mod common;
+
+use std::{fs, time::Duration};
+
+use common::*;
+use serde_json::{json, Value};
+
+fn acp_log(sb: &Sandbox) -> String {
+    fs::read_to_string(sb.fake_state().join("acp.log")).unwrap_or_default()
+}
+
+/// Every prompt the fake agents received, with the session's model, effort and mode then.
+fn prompts(sb: &Sandbox) -> Vec<Value> {
+    fs::read_to_string(sb.fake_state().join("acp-prompts.jsonl"))
+        .unwrap_or_default()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect()
+}
+
+fn on(engine: &str, model: &str, effort: &str) -> Value {
+    json!({ "engine": engine, "model": model, "effort": effort })
+}
+
+fn opencode() -> Value {
+    on("opencode", "opencode/fake-free", "default")
+}
+
+async fn login_state(c: &mut Client, from: usize, engine: &str, state: &str) -> Value {
+    c.wait_after(from, &format!("{engine} login {state}"), |m| m["op"] == "login" && m["engine"] == engine && m["state"] == state)
+        .await
+}
+
+#[tokio::test]
+async fn opencode_lists_its_models_and_reports_its_providers() {
+    let sb = Sandbox::new("oc-models");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let models = c
+        .wait_for("opencode models", |m| (m["op"] == "snapshot" || m["op"] == "models") && m["models"]["opencode"].as_array().is_some_and(|l| !l.is_empty()))
+        .await["models"]["opencode"]
+        .clone();
+    assert_eq!(models, json!([{ "id": "opencode/fake-free", "name": "Fake Free (opencode)", "efforts": [] }]));
+
+    c.send(json!({ "op": "engines.status" })).await;
+    let st = c.wait_for("engine status", |m| m["op"] == "engines").await;
+    assert_eq!(st["engines"]["opencode"], json!({ "installed": true, "loggedIn": true, "providers": ["opencode"] }), "{st}");
+    // The others are still there.
+    assert!(st["engines"]["codex"].is_object() && st["engines"]["claude"].is_object(), "{st}");
+}
+
+#[tokio::test]
+async fn an_opencode_turn_streams_then_completes_and_follows_up() {
+    let sb = Sandbox::new("oc-plain");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "say hello", opencode()).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    c.wait_status(&sid, "idle").await;
+    let events = c.events(&sid);
+    assert_eq!(
+        types(&events),
+        ["user_message", "turn_started", "assistant_delta", "assistant_delta", "assistant_delta", "assistant_message", "turn_completed"]
+    );
+    assert_eq!(events[5]["text"], "Echo: say hello");
+    assert_eq!(events[2]["itemId"], events[5]["itemId"]);
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "again" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let log = acp_log(&sb);
+    assert_eq!(log.matches("opencode req session/new").count(), 1, "{log}");
+    assert_eq!(log.matches("opencode start").count(), 1, "one agent for both turns: {log}");
+    let p = prompts(&sb);
+    assert_eq!(p.len(), 2);
+    assert_eq!(p[0]["sessionId"], p[1]["sessionId"]);
+    assert_eq!(p[1]["prompt"][0]["text"], "again");
+}
+
+#[tokio::test]
+async fn opencode_thinking_streams_as_reasoning() {
+    let sb = Sandbox::new("oc-think");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[think] hmm", opencode()).await;
+    c.wait_turn_done(&sid, 0).await;
+    let events = c.events(&sid);
+    let reasoning = events.iter().find(|e| e["type"] == "reasoning").expect("a final thought");
+    assert_eq!(reasoning["text"], "Weighing it. Decided.");
+    assert_eq!(events.iter().filter(|e| e["type"] == "reasoning_delta").count(), 2);
+    let pos = |ty: &str| events.iter().position(|e| e["type"] == ty).unwrap();
+    assert!(pos("reasoning") < pos("assistant_message"), "the thought ends before the answer");
+}
+
+#[tokio::test]
+async fn opencode_asks_before_a_command_and_takes_the_answer() {
+    let sb = Sandbox::new("oc-approve");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[cmd] run it", opencode()).await;
+    let started = c.wait_event(&sid, "tool_started", 0).await;
+    assert_eq!((started["kind"].as_str(), started["title"].as_str(), started["detail"].as_str()), (Some("command"), Some("Ran"), Some("echo hi")));
+    let req = c.wait_event(&sid, "approval_request", 0).await;
+    assert_eq!(req["kind"], "command");
+    assert_eq!(req["title"], "echo hi");
+    c.wait_status(&sid, "needs_approval").await;
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
+    let done = c.wait_event(&sid, "tool_completed", 0).await;
+    assert_eq!((done["ok"].as_bool(), done["output"].as_str()), (Some(true), Some("hi")));
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    assert!(acp_log(&sb).contains(r#"answer {"outcome":{"optionId":"once","outcome":"selected"}}"#), "{}", acp_log(&sb));
+
+    // Denied: the agent hears "reject".
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[cmd] again" })).await;
+    let req = c.wait_event(&sid, "approval_request", next).await;
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "deny" })).await;
+    let done = c.wait_event(&sid, "tool_completed", next).await;
+    assert_eq!(done["ok"], false);
+    c.wait_turn_done(&sid, next).await;
+    assert!(acp_log(&sb).contains(r#""optionId":"reject""#), "{}", acp_log(&sb));
+}
+
+#[tokio::test]
+async fn opencode_edits_show_their_diff_and_follow_the_permission_mode() {
+    let sb = Sandbox::new("oc-modes");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+    fs::write(format!("{cwd}/notes.txt"), "old line\n").unwrap();
+
+    // Accept edits: allowed without asking, and the diff is shown.
+    let sid = c.create(&cwd, "[edit] change it", json!({ "engine": "opencode", "model": "opencode/fake-free", "effort": "default", "permission": "acceptEdits" })).await;
+    let change = c.wait_event(&sid, "file_change", 0).await;
+    assert_eq!(change["files"][0]["path"], "notes.txt");
+    assert_eq!(change["files"][0]["diff"], "-old line\n+edited by the fake\n ");
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    assert!(!c.event_types(&sid).contains(&"approval_request".to_string()), "{:?}", c.event_types(&sid));
+    assert_eq!(c.events(&sid).iter().find(|e| e["type"] == "tool_completed").unwrap()["ok"], true);
+
+    // Plan only: OpenCode's plan mode, and an edit is refused unasked.
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "plan" })).await;
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[edit] change it again" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let last = c.events(&sid);
+    assert_eq!(last.iter().rev().find(|e| e["type"] == "tool_completed").unwrap()["ok"], false);
+    assert_eq!(prompts(&sb)[1]["mode"], "plan");
+
+    // Full access: commands run unasked.
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "full" })).await;
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[cmd] go" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let types_now = c.event_types(&sid);
+    assert!(!types_now.contains(&"approval_request".to_string()), "{types_now:?}");
+    assert_eq!(prompts(&sb)[2]["mode"], "build", "back out of plan mode");
+}
+
+#[tokio::test]
+async fn opencode_takes_the_model_and_effort_from_the_session() {
+    let sb = Sandbox::new("oc-effort");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", on("opencode", "opencode/fake-free", "high")).await;
+    c.wait_turn_done(&sid, 0).await;
+    assert_eq!(prompts(&sb)[0]["effort"], "high");
+    // A model the agent does not know fails the turn with its reason.
+    c.send(json!({ "op": "session.setModel", "sessionId": sid, "model": "nope/none", "effort": "high" })).await;
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hi again" })).await;
+    let err = c.wait_event(&sid, "error", next).await;
+    assert!(err["message"].as_str().unwrap().contains("unknown model nope/none"), "{err}");
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "failed");
+}
+
+#[tokio::test]
+async fn messages_sent_during_an_opencode_turn_are_the_next_turn() {
+    let sb = Sandbox::new("oc-queue");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[cmd] first", opencode()).await;
+    let req = c.wait_event(&sid, "approval_request", 0).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "after that" })).await;
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
+    c.wait_turn_done(&sid, 0).await;
+    // OpenCode cannot take input mid-turn: the message waits for the turn to end.
+    let next = c.wait_for("the queued message as a turn", |m| is_event(m, &sid) && m["event"]["type"] == "user_message" && m["event"]["text"] == "after that").await;
+    assert!(next["event"]["steered"].is_null(), "{next}");
+    c.wait_turn_done(&sid, next["seq"].as_u64().unwrap()).await;
+    assert_eq!(prompts(&sb)[1]["prompt"][0]["text"], "after that");
+}
+
+#[tokio::test]
+async fn stop_ends_an_opencode_turn_even_when_it_does_not_listen() {
+    let sb = Sandbox::new("oc-stop");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[slow] long", opencode()).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "interrupted");
+    assert!(acp_log(&sb).contains("opencode req session/cancel"));
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[stuck] forever" })).await;
+    c.wait_event(&sid, "assistant_delta", next).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    let note = c.wait_event(&sid, "note", next).await;
+    assert_eq!(note["text"], "OpenCode did not stop the turn, so it was ended here.");
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "interrupted");
+    c.drain_for(Duration::from_millis(300)).await;
+    // A later answer from the agent cannot end the turn twice.
+    assert_eq!(c.events(&sid).iter().filter(|e| e["type"] == "turn_completed").count(), 2);
+}
+
+#[tokio::test]
+async fn an_opencode_agent_that_dies_fails_the_turn_and_the_next_one_resumes() {
+    let sb = Sandbox::new("oc-exit");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[exit] crash", opencode()).await;
+    let err = c.wait_event(&sid, "error", 0).await;
+    assert!(err["message"].as_str().unwrap().contains("OpenCode stopped before answering session/prompt"), "{err}");
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "failed");
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "back?" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let log = acp_log(&sb);
+    assert_eq!(log.matches("opencode start").count(), 2, "{log}");
+    assert!(log.contains("opencode req session/resume"), "{log}");
+    let p = prompts(&sb);
+    assert_eq!(p[0]["sessionId"], p[1]["sessionId"], "the same conversation");
+}
+
+#[tokio::test]
+async fn an_opencode_session_resumes_after_a_restart() {
+    let sb = Sandbox::new("oc-restart");
+    let cwd = sb.folder("proj");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&cwd, "remember me", opencode()).await;
+    c.wait_turn_done(&sid, 0).await;
+    c.wait_status(&sid, "idle").await;
+    d.stop();
+
+    let d = sb.start();
+    let mut c = d.client().await;
+    let next = c.history(&sid).await.len() as u64;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "still there?" })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "completed");
+    let p = prompts(&sb);
+    assert_eq!(p[0]["sessionId"], p[1]["sessionId"]);
+    assert!(acp_log(&sb).contains("opencode req session/resume"), "{}", acp_log(&sb));
+}
+
+#[tokio::test]
+async fn opencode_providers_log_in_from_the_app() {
+    let sb = Sandbox::new("oc-login");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    // An API key: pick the provider, paste the key, its models appear.
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "opencode" })).await;
+    let offered = login_state(&mut c, mark, "opencode", "providers").await;
+    let ids: Vec<&str> = offered["providers"].as_array().unwrap().iter().map(|p| p["id"].as_str().unwrap()).collect();
+    assert_eq!(ids, ["opencode", "fakeprov", "fakeauth"], "connected first, then by name");
+    c.send(json!({ "op": "login.choose", "engine": "opencode", "provider": "fakeprov", "method": 0 })).await;
+    let key = login_state(&mut c, mark, "opencode", "key").await;
+    assert_eq!(key["provider"], "fakeprov");
+    c.send(json!({ "op": "login.code", "engine": "opencode", "code": "sk-fake-key" })).await;
+    login_state(&mut c, mark, "opencode", "done").await;
+    c.wait_after(mark, "fakeprov models", |m| m["op"] == "models" && m["models"]["opencode"].as_array().is_some_and(|l| l.len() == 2)).await;
+    let st = c.wait_after(mark, "fakeprov connected", |m| m["op"] == "engines" && m["engines"]["opencode"]["providers"].as_array().is_some_and(|p| p.len() == 2)).await;
+    assert_eq!(st["engines"]["opencode"]["providers"], json!(["opencode", "fakeprov"]));
+    // yardd never keeps the key.
+    assert!(!fs::read_dir(sb.data()).unwrap().flatten().any(|f| fs::read(f.path()).is_ok_and(|b| String::from_utf8_lossy(&b).contains("sk-fake-key"))));
+    assert!(!d.log_text().contains("sk-fake-key"));
+
+    // A sign-in that gives back a code: a wrong one fails, the right one logs in.
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "opencode" })).await;
+    login_state(&mut c, mark, "opencode", "providers").await;
+    c.send(json!({ "op": "login.choose", "engine": "opencode", "provider": "fakeauth", "method": 0 })).await;
+    let url = login_state(&mut c, mark, "opencode", "url").await;
+    assert_eq!(url["url"], "https://fake.example/oauth?state=x");
+    c.send(json!({ "op": "login.code", "engine": "opencode", "code": "wrong" })).await;
+    let failed = login_state(&mut c, mark, "opencode", "failed").await;
+    assert!(failed["error"].as_str().unwrap().contains("not accepted"), "{failed}");
+
+    // A device code: shown, and the server finishes by itself.
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "opencode" })).await;
+    login_state(&mut c, mark, "opencode", "providers").await;
+    c.send(json!({ "op": "login.choose", "engine": "opencode", "provider": "fakeauth", "method": 1 })).await;
+    let code = login_state(&mut c, mark, "opencode", "code").await;
+    assert_eq!((code["url"].as_str(), code["code"].as_str()), (Some("https://fake.example/device"), Some("FAKE-4321")));
+    login_state(&mut c, mark, "opencode", "done").await;
+}
+
+#[tokio::test]
+async fn an_added_opencode_account_has_its_own_logins_and_sessions() {
+    let sb = Sandbox::new("oc-account");
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "account.add", "engine": "opencode", "name": "Work" })).await;
+    let accounts = c.wait_for("the new account", |m| m["op"] == "accounts" && m["accounts"].as_array().is_some_and(|l| !l.is_empty())).await;
+    let id = accounts["accounts"][0]["id"].as_str().unwrap().to_string();
+
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "opencode", "account": id })).await;
+    login_state(&mut c, mark, "opencode", "providers").await;
+    c.send(json!({ "op": "login.choose", "engine": "opencode", "account": id, "provider": "fakeprov", "method": 0 })).await;
+    login_state(&mut c, mark, "opencode", "key").await;
+    c.send(json!({ "op": "login.code", "engine": "opencode", "account": id, "code": "sk-work" })).await;
+    login_state(&mut c, mark, "opencode", "done").await;
+    let st = c.wait_after(mark, "the account's providers", |m| m["op"] == "engines" && m["accounts"][&id]["providers"].as_array().is_some_and(|p| p.len() == 2)).await;
+    // Default did not get the Work login.
+    assert_eq!(st["engines"]["opencode"]["providers"], json!(["opencode"]));
+    assert!(sb.data().join("accounts").join(&id).join("opencode/connected.json").exists());
+
+    let sid = c.create(&sb.folder("proj"), "hi", json!({ "engine": "opencode", "model": "opencode/fake-free", "effort": "default", "account": id })).await;
+    c.wait_turn_done(&sid, 0).await;
+    assert_eq!(prompts(&sb)[0]["account"], json!(id));
+}

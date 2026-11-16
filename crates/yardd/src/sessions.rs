@@ -5,7 +5,7 @@ use std::{sync::Arc, time::Duration};
 
 use serde_json::{json, Value};
 
-use crate::{claude, codex, state::{App, Backend, Delivery}};
+use crate::{acp, claude, codex, state::{App, Backend, Delivery}};
 
 /// How long Stop waits for the engine to end the turn before ending it itself.
 const STOP_GRACE: Duration = Duration::from_secs(5);
@@ -68,6 +68,7 @@ async fn start_engine(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
     let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
     match engine.as_str() {
         "codex" => codex::create(app, sid).await,
+        "opencode" | "grok" => acp::create(app, sid).await,
         _ => claude::create(app, sid).await,
     }
 }
@@ -139,6 +140,7 @@ async fn start_turn(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]
     let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
     let sent = match engine.as_str() {
         "codex" => codex::send(app, sid, text, attachments).await,
+        "opencode" | "grok" => acp::send(app, sid, text, attachments).await,
         _ => claude::send(app, sid, text, attachments),
     };
     if let Err(e) = sent {
@@ -181,6 +183,7 @@ pub async fn interrupt(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
             Ok(r) => r,
             Err(_) => Err(anyhow::anyhow!("Codex did not answer turn/interrupt")),
         },
+        "opencode" | "grok" => acp::interrupt(app, sid),
         _ => claude::interrupt(app, sid),
     };
     if let Err(e) = &asked {
@@ -207,16 +210,19 @@ fn force_stop(app: &Arc<App>, sid: &str, engine: &str) {
             }
         }
     }
+    if engine != "codex" && engine != "claude" {
+        acp::end_turn_here(app, sid);
+    }
     app.guard.turn_done(sid);
-    let text = if engine == "codex" {
-        "Codex did not stop the turn, so it was ended here."
+    let text = if engine == "claude" {
+        "Claude Code did not stop, so its process was ended. The next message resumes the conversation.".to_string()
     } else {
-        "Claude Code did not stop, so its process was ended. The next message resumes the conversation."
+        format!("{} did not stop the turn, so it was ended here.", crate::engines::name(engine))
     };
     app.emit(sid, json!({ "type": "note", "text": text }));
     // Ended before the kill, so the sidecar's exit does not report a failure.
     app.emit(sid, json!({ "type": "turn_completed", "status": "interrupted" }));
-    if engine != "codex" {
+    if engine == "claude" {
         claude::kill(app, sid);
     }
 }

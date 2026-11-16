@@ -109,6 +109,17 @@ pub enum Backend {
         /// Dropping this (with the session) kills the sidecar.
         _stop: oneshot::Sender<()>,
     },
+    /// A session on an ACP agent (OpenCode, Grok; see `acp`).
+    Acp {
+        session_id: String,
+        /// Which agent process knows the session; another one must resume it first.
+        epoch: u64,
+        /// The running prompt, so an answer that comes after Stop ended the
+        /// turn here says nothing.
+        turn: Option<u64>,
+        /// Model, effort and permission last set on the agent's session.
+        applied: Option<(String, String, String)>,
+    },
 }
 
 pub struct Session {
@@ -138,6 +149,8 @@ pub struct App {
     pub sessions: Mutex<HashMap<String, Session>>,
     /// One `codex app-server` per account, started on first use.
     pub codex: Mutex<HashMap<String, Arc<OnceCell<Arc<crate::codex::Client>>>>>,
+    /// One ACP agent per engine and account (`acp::key`), started on first use.
+    pub acp: Mutex<HashMap<String, Arc<OnceCell<Arc<crate::acp::Client>>>>>,
     pub accounts: crate::accounts::Accounts,
     pub models: Mutex<Value>,
     pub usage: Mutex<Value>,
@@ -186,6 +199,7 @@ impl App {
             tx,
             sessions: Mutex::new(HashMap::new()),
             codex: Mutex::new(HashMap::new()),
+            acp: Mutex::new(HashMap::new()),
             accounts: crate::accounts::Accounts::load(crate::store::data_dir()),
             models: Mutex::new(json!({ "claude": claude_models(), "codex": [] })),
             usage: Mutex::new(load_usage(&crate::store::data_dir())),

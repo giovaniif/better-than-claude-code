@@ -33,10 +33,11 @@ pub struct Logins {
     claude: Mutex<HashMap<String, ClaudeLogin>>,
     /// account -> Codex login id
     codex: Mutex<HashMap<String, String>>,
-    next: std::sync::atomic::AtomicU64,
+    pub opencode: crate::opencode::Logins,
+    pub next: std::sync::atomic::AtomicU64,
 }
 
-fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
+pub fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
     let mut msg = json!({ "op": "login", "engine": engine, "account": account, "state": state });
     if let (Some(m), Some(e)) = (msg.as_object_mut(), extra.as_object()) {
         m.extend(e.clone());
@@ -61,6 +62,7 @@ pub async fn status(app: &Arc<App>) -> Value {
 async fn engine_status(app: &Arc<App>, engine: &str, account: &str) -> Value {
     match engine {
         "codex" => codex_status(app, account).await,
+        "opencode" => crate::opencode::status(app, account).await,
         _ => claude_status(app, account).await,
     }
 }
@@ -118,6 +120,7 @@ pub async fn start(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
     match engine {
         "codex" => start_codex(app, account).await,
         "claude" => start_claude(app, account),
+        "opencode" => crate::opencode::start(app, account).await,
         _ => bail!("unknown engine {engine}"),
     }
 }
@@ -249,14 +252,18 @@ fn start_claude(app: &Arc<App>, account: &str) -> Result<()> {
     Ok(())
 }
 
-/// The code from the sign-in page, typed into `claude auth login`.
-pub fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<()> {
-    if engine != "claude" {
-        bail!("only Claude Code takes a code");
-    }
+/// The code from the sign-in page, typed into `claude auth login`; for
+/// OpenCode, a provider's API key or sign-in code.
+pub async fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<()> {
     let code = code.trim();
     if code.is_empty() || code.contains(['\r', '\n']) {
         bail!("paste the code from the sign-in page");
+    }
+    if engine == "opencode" {
+        return crate::opencode::code(app, account, code).await;
+    }
+    if engine != "claude" {
+        bail!("only Claude Code and OpenCode take a code");
     }
     let mut slot = app.logins.claude.lock().unwrap();
     let login = slot.get_mut(account).context("no Claude login is running; start again")?;
@@ -271,6 +278,7 @@ pub fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<(
 pub async fn cancel(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
     match engine {
         "claude" => cancel_claude(app, account),
+        "opencode" => crate::opencode::cancel(app, account),
         "codex" => {
             let old = app.logins.codex.lock().unwrap().remove(account);
             if let (Some(id), Some(client)) = (old, app.codex_running(account)) {

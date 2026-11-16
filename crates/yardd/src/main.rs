@@ -2,6 +2,7 @@
 //! Serves the UI and a WebSocket on 127.0.0.1 by default.
 
 mod accounts;
+mod acp;
 mod attachments;
 mod automations;
 mod claude;
@@ -13,6 +14,7 @@ mod guard;
 mod hosts;
 mod import;
 mod login;
+mod opencode;
 mod pr;
 mod pty;
 mod remote;
@@ -108,6 +110,13 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(async move {
         if let Err(e) = codex::load_models(&boot, accounts::DEFAULT).await {
             eprintln!("yardd: codex unavailable: {e:#}");
+        }
+    });
+    // OpenCode's list too, where it is installed; elsewhere it stays out of the pickers.
+    let boot = app.clone();
+    tokio::spawn(async move {
+        if let Err(e) = opencode::load_models(&boot).await {
+            eprintln!("yardd: opencode unavailable: {e:#}");
         }
     });
 
