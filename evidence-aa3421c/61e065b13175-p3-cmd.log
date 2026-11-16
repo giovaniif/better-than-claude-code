@@ -1,0 +1,26 @@
+$ cd verify && bun test src/cli.test.ts
+# exit 1 after 402 ms at b1356d013b72881f289f889515621e9b0827401f
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/cli.test.ts:
+148 |     expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     }\n+    #[tokio::test]\n+    async fn t() { let _ = std::fs::remove_dir_all(&dir); }\n }")])).toEqual([]);
+149 |     // The module ends at its closing brace: code after it in the same hunk is real code.
+150 |     expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     fn t() {}\n }\n \n+pub fn wipe(p: &Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+151 |     expect(codes([file("crates/yardd/src/git.rs", "@@ -1,3 +1,4 @@ pub async fn changes(cwd: &str) -> Result<Value> {\n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
+152 |     // A hunk past the module's brace keeps the `mod tests {` header when only comments follow it.
+153 |     expect(codes([file("crates/yardd/src/git.rs", "@@ -10,3 +10,4 @@ mod tests {\n // kept for later\n // more\n \n+pub fn wipe(p: &std::path::Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+                                                                                                                                                                                                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "data-loss"
+Received: []
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b/verify/src/cli.test.ts:153:195)
+(fail) land gate scan > test code cleaning up after itself is not data loss [0.92ms]
+
+ 35 pass
+ 1 fail
+ 82 expect() calls
+Ran 36 tests across 1 file. [393.00ms]

@@ -1,0 +1,11 @@
+{
+  "command": "land check",
+  "ok": false,
+  "problems": [
+    {
+      "code": "gate-not-main",
+      "msg": "this checkout's gate code or verify/land.json differs from origin/main",
+      "hint": "run the gate from main: `git checkout --detach origin/main` here (after the verdict), or use ~/.local/share/switchyard-loops/switchyard/verify/yv"
+    }
+  ]
+}
