@@ -764,6 +764,33 @@ async fn terminal_runs_commands_and_replays_its_scrollback() {
 }
 
 #[tokio::test]
+async fn resizing_an_exited_terminal_is_not_an_error() {
+    // A reloaded Terminal pane fits each xterm before it learns the shell
+    // exited, so its first resize reaches an exited terminal (issue #64).
+    let sb = Sandbox::new("term-exited");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    let opened = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    let term = opened["termId"].as_str().unwrap().to_string();
+    let from = c.mark();
+    c.send(json!({ "op": "term.input", "termId": term, "data": "exit\n" })).await;
+    c.wait_after(from, "term.exit", |m| m["op"] == "term.exit" && m["termId"] == term).await;
+
+    // Resizes run in order, so the second one's error comes after any from the first.
+    let from = c.mark();
+    c.send(json!({ "op": "term.resize", "termId": term, "cols": 100, "rows": 30, "ref": "exited" })).await;
+    c.send(json!({ "op": "term.resize", "termId": "no-such-term", "cols": 100, "rows": 30, "ref": "gone" })).await;
+    let gone = c.wait_after(from, "error for the closed terminal", |m| m["op"] == "error" && m["ref"] == "gone").await;
+    assert!(gone["message"].as_str().unwrap_or_default().contains("terminal is closed"), "{gone}");
+    let errors: Vec<&Value> = c.log[from..].iter().filter(|m| m["op"] == "error").collect();
+    assert_eq!(errors.len(), 1, "only the closed terminal is refused: {errors:?}");
+}
+
+#[tokio::test]
 async fn terminal_keystrokes_reach_the_shell_in_order() {
     let sb = Sandbox::new("term-order");
     let d = sb.start();
