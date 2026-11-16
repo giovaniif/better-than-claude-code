@@ -4,9 +4,14 @@
 // plugin in the desktop app (WKWebView has no `Notification`).
 
 import { useState } from "react";
-import type { SessionMeta, Status } from "./protocol";
+import type { AgentEvent, SessionMeta, Status } from "./protocol";
+import { duration } from "./thread";
 
 export type Notice = "approval" | "finished" | "failed";
+
+/** A finished turn shorter than this is not worth a banner: the user was
+ *  hardly away. Approvals and failures always are, since they wait on them. */
+export const MIN_TURN_MS = 60_000;
 
 /** What a session's change of status means for the user, if anything. A
  *  session seen for the first time (`prev` unset) is not news. */
@@ -32,8 +37,42 @@ export function shouldNotify(where: Where, sessionId: string | null): boolean {
   return !(sessionId !== null && where.focused && where.openSessionId === sessionId);
 }
 
-export function noticeText(kind: Notice, title: string): { title: string; body: string } {
-  const body = { approval: "Waiting for your approval", finished: "Finished its turn", failed: "Failed" }[kind];
+/** What the current turn did, from its events, so a banner can say it. */
+export interface TurnInfo {
+  /** Local time the turn started; unknown for one already running at load. */
+  startedAt?: number;
+  /** How long it took, set when it ends. */
+  ms?: number;
+  /** The turn's latest answer. */
+  answer?: string;
+  approval?: { title: string; detail: string };
+  error?: string;
+}
+
+/** Agent text as one plain line for a banner. Untrusted, but a notification
+ *  shows plain text only. */
+export function plainLine(text: string, max = 160): string {
+  const line = text
+    .replace(/```[^\n]*\n?/g, "")
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^\s{0,3}(#+|>|[-*+]|\d+\.)\s+/gm, "")
+    .replace(/[*_`~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return line.length > max ? `${line.slice(0, max - 1).trimEnd()}…` : line;
+}
+
+export function noticeText(kind: Notice, title: string, info: TurnInfo = {}): { title: string; body: string } {
+  const join = (head: string, rest?: string) => (rest ? `${head} · ${rest}` : head);
+  let body: string;
+  if (kind === "approval") {
+    const what = info.approval && plainLine([info.approval.title, info.approval.detail].filter(Boolean).join(": "));
+    body = join("Needs your approval", what);
+  } else if (kind === "failed") {
+    body = join(info.ms !== undefined ? `Failed after ${duration(info.ms)}` : "Failed", info.error && plainLine(info.error));
+  } else {
+    body = join(info.ms !== undefined ? `Done in ${duration(info.ms)}` : "Done", info.answer && plainLine(info.answer));
+  }
   return { title: title.trim() || "Switchyard", body };
 }
 
@@ -41,6 +80,40 @@ export function noticeText(kind: Notice, title: string): { title: string; body: 
 export class StatusWatcher {
   private seen = new Map<string, { status: Status; host: string }>();
   private ends = new Map<string, string>();
+  private turns = new Map<string, TurnInfo>();
+
+  /** `now` is the page's clock: yardd's `at` would mix in a remote host's. */
+  constructor(private now: () => number = () => Date.now()) {}
+
+  /** What a session's events say about its current turn. */
+  event(id: string, ev: AgentEvent) {
+    const turn = this.turns.get(id) ?? {};
+    switch (ev.type) {
+      case "turn_started":
+        this.turns.set(id, { startedAt: this.now() });
+        return;
+      case "assistant_message":
+        if (ev.text.trim()) turn.answer = ev.text;
+        break;
+      case "approval_request":
+        turn.approval = { title: ev.title, detail: ev.detail };
+        break;
+      case "error":
+        turn.error = ev.message;
+        break;
+      case "turn_completed":
+        this.turnEnded(id, String(ev.status));
+        if (turn.startedAt !== undefined) turn.ms = this.now() - turn.startedAt;
+        break;
+      default:
+        return;
+    }
+    this.turns.set(id, turn);
+  }
+
+  info(id: string): TurnInfo {
+    return this.turns.get(id) ?? {};
+  }
 
   /** A snapshot of one host's sessions: the new baseline, nothing to report. */
   seed(sessions: SessionMeta[], host = "local") {
@@ -62,12 +135,19 @@ export class StatusWatcher {
     this.ends.delete(session.id);
     if (kind !== "finished") return kind;
     // A turn the user stopped needs no banner.
-    return end === "failed" ? "failed" : end === "interrupted" ? null : kind;
+    if (end === "failed") return "failed";
+    if (end === "interrupted") return null;
+    // Only what is worth leaving another app for: an automation's run reports
+    // on its own page, and a quick turn ends before the user is really away.
+    if (session.automation) return null;
+    const ms = this.turns.get(session.id)?.ms;
+    return ms !== undefined && ms < MIN_TURN_MS ? null : kind;
   }
 
   forget(id: string) {
     this.seen.delete(id);
     this.ends.delete(id);
+    this.turns.delete(id);
   }
 }
 
@@ -218,7 +298,7 @@ export function createNotifier(opts: { openSessionId(): string | null; open(sess
         watcher.seed(msg.sessions ?? [], msg.hostId);
         break;
       case "event":
-        if (msg.event?.type === "turn_completed") watcher.turnEnded(msg.sessionId, String(msg.event.status));
+        if (msg.event) watcher.event(msg.sessionId, msg.event as AgentEvent);
         break;
       case "session.deleted":
         watcher.forget(msg.sessionId);
@@ -226,7 +306,7 @@ export function createNotifier(opts: { openSessionId(): string | null; open(sess
       case "session": {
         const session = msg.session as SessionMeta;
         const kind = watcher.change(session);
-        if (kind && shouldNotify(where(), session.id)) void show({ ...noticeText(kind, session.title), sessionId: session.id });
+        if (kind && shouldNotify(where(), session.id)) void show({ ...noticeText(kind, session.title, watcher.info(session.id)), sessionId: session.id });
         break;
       }
       case "notify": {
