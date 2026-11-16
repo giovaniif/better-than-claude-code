@@ -158,6 +158,15 @@ fn str_field<'a>(msg: &'a Value, key: &str) -> Result<&'a str> {
     msg[key].as_str().with_context(|| format!("missing `{key}`"))
 }
 
+/// A notification is a line or two of text: cut what an agent sends too long.
+fn clip(text: &str, max: usize) -> String {
+    if text.chars().count() <= max {
+        return text.to_string();
+    }
+    let cut: String = text.chars().take(max - 1).collect();
+    format!("{cut}…")
+}
+
 fn dim(msg: &Value, key: &str, fallback: u16) -> u16 {
     msg[key].as_u64().and_then(|n| u16::try_from(n).ok()).unwrap_or(fallback)
 }
@@ -462,6 +471,28 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "host.add" => remote::add(app, msg)?,
         "host.remove" => remote::remove(app, str_field(msg, "hostId")?)?,
         "host.install" => remote::install(app, str_field(msg, "hostId")?)?,
+        "notify" => {
+            let title = msg["title"].as_str().map(str::trim).filter(|t| !t.is_empty()).context("missing `title`")?;
+            let mut note = json!({ "op": "notify", "title": clip(title, 120) });
+            if let Some(body) = msg["body"].as_str().map(str::trim).filter(|b| !b.is_empty()) {
+                note["body"] = json!(clip(body, 400));
+            }
+            if let Some(sid) = msg["sessionId"].as_str().filter(|s| !s.is_empty()) {
+                note["sessionId"] = json!(sid);
+            }
+            // The window opens this on a click, so only web pages are allowed.
+            if let Some(url) = msg["url"].as_str().filter(|u| !u.is_empty()) {
+                if !(url.starts_with("https://") || url.starts_with("http://")) {
+                    bail!("`url` must be an http(s) link");
+                }
+                note["url"] = json!(url);
+            }
+            // Every client is a receiver, the sender included: the caller learns
+            // whether any window was there to show it.
+            let windows = app.tx.receiver_count();
+            app.broadcast(note);
+            let _ = direct.send(json!({ "op": "notify.sent", "windows": windows }).to_string());
+        }
         other => bail!("unknown op `{other}`"),
     }
     Ok(())

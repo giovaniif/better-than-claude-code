@@ -1,8 +1,15 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The window loads yardd's page over loopback; that page may open the folder dialog and nothing else.",
+  "description": "The window loads yardd's page over loopback; that page may open the folder dialog and show notifications (ask permission, show one, hear a click) and nothing else.",
   "windows": ["main"],
   "remote": { "urls": ["http://127.0.0.1:*"] },
-  "permissions": ["dialog:allow-open"]
+  "permissions": [
+    "dialog:allow-open",
+    "notification:allow-is-permission-granted",
+    "notification:allow-request-permission",
+    "notification:allow-notify",
+    "notification:allow-register-listener",
+    "notification:allow-remove-listener"
+  ]
 }
