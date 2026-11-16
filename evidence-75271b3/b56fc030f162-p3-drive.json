@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "75271b333f1888a7e7d318238d5210b91b01cf20",
+    "short": "75271b3",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T15:57:40.524Z"
+  },
+  "dir": ".verify/evidence/no-memory-limit-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3520,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/no-memory-limit-head/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1381,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/no-memory-limit-head/hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

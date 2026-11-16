@@ -1,0 +1,45 @@
+$ verify/yv map run hosts --recipe no-memory-limit-says-load-only
+# exit 1 after 26608 ms at aa3640e87dcff3496092d99932a78cefe55f4973
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-16T15:57:38.235Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "no-memory-limit-says-load-only",
+          "status": "fail",
+          "ms": 25415,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"expect\":{\"css\":\"section.usage\",\"hasText\":\"GB of memory\"},\"visible\":false}: expected {\"css\":\"section.usage\",\"hasText\":\"GB of memory\"} to be absent or hidden",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-57-13-118Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":{\"css\":\"section.usage\",\"hasText\":\"GB of memory\"},\"visible\":false}: expected {\"css\":\"section.usage\",\"hasText\":\"GB of memory\"} to be absent or hidden",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-57-13-118Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "memory\\\"} to be absent or hidden\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-57-13-118Z/fail-desktop-step1.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Import\\\"\\n  - text: No sessions yet.\\n  - group \\\"Plan usage\\\": Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 10% · 58%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Hosts\\\" [level=1]\\n  - button \\\"Add host\\\"\\n- region \\\"iso-host\\\":\\n  - heading \\\"iso-host\\\" [level=2]\\n  - text: Healthy CPU 10% load 1.5 of 28 Memory 13.5 GB of 23.4 GB Disk 65.1 GB of 97.9 GB\\n  - img \\\"CPU over the last hour\\\"\\n  - region \\\"Sessions\\\":\\n    - heading \\\"Sessions\\\" [level=2]\\n    - text: No session is running anything. New sessions are queued while load is above 28 or less than 0 GB of memory is free.\\n  - text: Claude Code logged in as me@example.com\\n  - button \\\"Add Claude Code account\\\": Add account\\n  - text: Codex logged in as me@example.com\\n  - button \\\"Add Codex account\\\": Add account\\n- button \\\"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\\\":\\n  - strong: Run sessions on another machine\\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"expect\\\":{\\\"css\\\":\\\"section.usage\\\",\\\"hasText\\\":\\\"GB of memory\\\"},\\\"visible\\\":false}: expected {\\\"css\\\":\\\"section.usage\\\",\\\"hasText\\\":\\\"GB of memory\\\"} to be absent or hidden\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-57-13-118Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":{\\\"css\\\":\\\"section.usage\\\",\\\"hasText\\\":\\\"GB of memory\\\"},\\\"visible\\\":false}: expected {\\\"css\\\":\\\"section.usage\\\",\\\"hasText\\\":\\\"GB of memory\\\"} to be absent or hidden\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-57-13-118Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "hosts/no-memory-limit-says-load-only",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

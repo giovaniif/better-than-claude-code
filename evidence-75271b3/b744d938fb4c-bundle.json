@@ -1,0 +1,150 @@
+{
+  "v": 1,
+  "claim": "With YARD_MIN_FREE_GB=0 (no memory limit) the Hosts page said new sessions queue while 'less than 0 GB of memory is free'; it should name the load rule only",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819",
+  "base": "b0f20d298bd4e6f154f57c91f23cc23f0c58496b",
+  "head": "75271b333f1888a7e7d318238d5210b91b01cf20",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T15:57:03.806Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "aa3640e87dcff3496092d99932a78cefe55f4973",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "9bb11ba11d357677f51bcd6f65b6d8d3450acd9ea6940fae0e543b4c6d4c6fdf"
+        },
+        {
+          "path": "p1-hosts-mobile.png",
+          "sha256": "c556893be959d738df9dafe12227ccfd8eef55d66a77e381e1bc92ebc73be980"
+        },
+        {
+          "path": "p1-hosts-desktop.png",
+          "sha256": "5ba9bb5a79cc002c1a652bf11e65a178020012335db04acaa8729185a6802d94"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:11.589Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "aa3640e87dcff3496092d99932a78cefe55f4973",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "513dc5b0433787c67c1b14632cf6a3549fd4dde209d143e84e1baccdf24767f3"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:11.630Z",
+      "cmd": "verify/yv map run hosts --recipe no-memory-limit-says-load-only",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "75271b333f1888a7e7d318238d5210b91b01cf20",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "b56fc030f16239a469ea47fd6e6051abc194f78d96889a3a47baf4a76f48b1f7"
+        },
+        {
+          "path": "p3-hosts-mobile.png",
+          "sha256": "4fa1e6f70a26c2671b473b474675d79ba0791bccf6c74053cc4374384ffa2861"
+        },
+        {
+          "path": "p3-hosts-desktop.png",
+          "sha256": "810c661b8c3d4378258a672482b109cfed791be80f61c8459a1625b60556b2b4"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:46.062Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "75271b333f1888a7e7d318238d5210b91b01cf20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "f0074244d9cb93d6c7b015f994a776d894d79f36b75c176530a32acc0562b37b"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:46.107Z",
+      "cmd": "verify/yv map run hosts --recipe no-memory-limit-says-load-only && cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "75271b333f1888a7e7d318238d5210b91b01cf20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "cc5d8f0f528944484fa3331ecb3e9af56d3ca4718190a762c9a690710b0da237"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:53.370Z",
+      "cmd": "verify/yv design-check --base b0f20d298bd4",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "75271b333f1888a7e7d318238d5210b91b01cf20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-queue.json",
+          "sha256": "486b085eff76336f107f36778e41f16e6088df612c121cbb1ca9deb3146950ff"
+        }
+      ],
+      "addedAt": "2026-11-16T15:57:53.453Z",
+      "cmd": "verify/yv map run queue",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "queue/new-session-queues",
+        "queue/start-anyway",
+        "queue/double-click-start-anyway",
+        "queue/hosts-page-shows-pressure"
+      ]
+    }
+  ]
+}
