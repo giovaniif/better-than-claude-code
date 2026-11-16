@@ -1,0 +1,269 @@
+{
+  "v": 1,
+  "claim": "On the Automations page or its Edit form, a reload (or Back from a run opened there) lands on the New session page; the route was never kept in the URL hash.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-286f",
+  "base": "a0ba6ebdc7a436c5e6b0118a058b9c39b190f8c5",
+  "head": "57b5b374684cfd382772978189f72dbbee173cb4",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T04:46:15.828Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6c20ae25306d7a74126735ee703b326c63fe4635",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "5b9784a062379a4bb55d0002ad941ad0984aeac09060adf89c8a79e8eb4f7657"
+        },
+        {
+          "path": "p1-before-reload-desktop.png",
+          "sha256": "614417429eedf56d7adfbcf4f98b6ccc0266eb91dde572cda20df761298c4ed4"
+        },
+        {
+          "path": "p1-after-reload-desktop.png",
+          "sha256": "ea1ce54da23542509bb2b135c718409585e5fcbb381f485c5cb4ea0cf13d4cc7"
+        },
+        {
+          "path": "p1-fail-desktop-step6.png",
+          "sha256": "e4af978c5c56d7297470b6d617561bcf2c41df23c575aae307681a5cbc9fc590"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:07.020Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6c20ae25306d7a74126735ee703b326c63fe4635",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "ad5a8b45e01fb56a4378256310fc59cf247c5d9ddd180bc85851e36026e41d4a"
+        },
+        {
+          "path": "p2-before-reload-mobile.png",
+          "sha256": "3cadb6b228eb6ac68428279a553a77e2f22276e8ce024aecda2ae0ac791f040d"
+        },
+        {
+          "path": "p2-after-reload-mobile.png",
+          "sha256": "237a310f94ac532a29f1c78caaa1a793b05ef74bc1c4d936791121ea4db080d7"
+        },
+        {
+          "path": "p2-fail-mobile-step6.png",
+          "sha256": "19616a204dfd98e21f2b93ec053f63a63b09e8b61f2c00c53713ac2958d8c243"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:07.070Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "6c20ae25306d7a74126735ee703b326c63fe4635",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "3cac1ab5ce22c1fa22484d9150553170a06040b2fbea6836a148552e4b6f1ebc"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:07.117Z",
+      "cmd": "cd ui && bun test src/store.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "6c20ae25306d7a74126735ee703b326c63fe4635",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "56991bca635dc3371fed11c1923309fb5953984bbf43838c689ce4b77575e39a"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:14.486Z",
+      "cmd": "verify/yv map run automations --recipe reload-and-back-keep-the-page",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "b182cde60796c588967bb7d849f66ad37fdeecc3d44709a1dd04a32d1cef7cb3"
+        },
+        {
+          "path": "p5-list-after-reload-mobile.png",
+          "sha256": "482fa6854ad2ee3e275dca0e5ece1111d0eb4c63e567ebe90eb877344ee419ba"
+        },
+        {
+          "path": "p5-edit-after-reload-mobile.png",
+          "sha256": "a8de984f6229502e6e671881ea650c12b6ae472bbc0ff84d7d1c9b795d59d325"
+        },
+        {
+          "path": "p5-back-from-run-mobile.png",
+          "sha256": "6ce88e8f33b5f3dc19ce66040ac1aff138ccd494f016fff5217d1091648db1f0"
+        },
+        {
+          "path": "p5-list-after-reload-desktop.png",
+          "sha256": "96bb7db52f0e6c71bd485d1377fc354c9c025af6d5b39206f4525a0e20770125"
+        },
+        {
+          "path": "p5-edit-after-reload-desktop.png",
+          "sha256": "24d2973e7be546176c31a47e9fd36f4e534497e5df7fd1d338d241d468a77d4f"
+        },
+        {
+          "path": "p5-back-from-run-desktop.png",
+          "sha256": "00a968879ff556335a6390e9f9a1037ee36caa74e9bfaa5e94d88f87675f91d7"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:55.716Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "d8d11132a7ae1344b32137bb5505bb717249f486f55c66a3ee5073daac4da504"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:55.774Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "f5775cf252caab34f59435049180b9a702b61c9fabcb9722a0e166fd175f567e"
+        }
+      ],
+      "addedAt": "2026-11-16T04:47:55.880Z",
+      "cmd": "verify/yv map run automations --recipe reload-and-back-keep-the-page",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "7e5bd65dccb6020b0b66ea8c0afd071961f654a04416e8212138d07e1ca1c09a"
+        }
+      ],
+      "addedAt": "2026-11-16T04:48:09.471Z",
+      "cmd": "verify/yv design-check --base a0ba6ebdc7a4",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-automations.json",
+          "sha256": "e11b10e5f2557c36142e9994001fb22c6cb3c8c90fdc0c9b5c809aaace255c7d"
+        }
+      ],
+      "addedAt": "2026-11-16T04:48:09.570Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "57b5b374684cfd382772978189f72dbbee173cb4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-persistence.json",
+          "sha256": "a150531c0ff9ea9acbeee380bda975a2da57cb84013783f8799a3a5139d1bfb9"
+        }
+      ],
+      "addedAt": "2026-11-16T04:49:06.487Z",
+      "cmd": "verify/yv map run persistence",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "persistence/survives-restart",
+        "persistence/mid-turn-restart",
+        "persistence/resume-after-restart",
+        "persistence/reload-keeps-open-session"
+      ]
+    }
+  ]
+}

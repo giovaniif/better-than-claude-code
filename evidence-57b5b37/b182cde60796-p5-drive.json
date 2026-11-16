@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "57b5b374684cfd382772978189f72dbbee173cb4",
+    "short": "57b5b37",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T04:47:30.214Z"
+  },
+  "dir": ".verify/evidence/automations-in-url-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 8281,
+      "steps": 19,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automations-in-url-head/list-after-reload-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automations-in-url-head/edit-after-reload-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automations-in-url-head/back-from-run-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 16,
+          "eval": "history.back()"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 8973,
+      "steps": 19,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automations-in-url-head/list-after-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automations-in-url-head/edit-after-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automations-in-url-head/back-from-run-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 16,
+          "eval": "history.back()"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

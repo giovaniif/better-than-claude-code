@@ -1,0 +1,31 @@
+$ cd ui && bun test src/store.test.ts
+# exit 1 after 31 ms at 6c20ae25306d7a74126735ee703b326c63fe4635
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/store.test.ts:
+163 |       { page: "session", id: "s1a1e19674866" },
+164 |       { page: "automations" },
+165 |       { page: "automation", host: "local", id: "new" },
+166 |       { page: "automation", host: "h1", id: "a/7 b" },
+167 |     ] as const)
+168 |       expect(parseHash(routeHash(route))).toEqual(route);
+                                                ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "page": "automations",
++   "page": "new",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-286f/ui/src/store.test.ts:168:43)
+(fail) route in the URL > hash round trip [1.24ms]
+
+ 22 pass
+ 1 fail
+ 67 expect() calls
+Ran 23 tests across 1 file. [26.00ms]

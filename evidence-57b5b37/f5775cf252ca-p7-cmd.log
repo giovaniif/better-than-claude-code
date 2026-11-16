@@ -1,0 +1,26 @@
+$ verify/yv map run automations --recipe reload-and-back-keep-the-page
+# exit 0 after 13541 ms at 57b5b374684cfd382772978189f72dbbee173cb4
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T04:48:09.417Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reload-and-back-keep-the-page",
+          "status": "pass",
+          "ms": 12561
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
