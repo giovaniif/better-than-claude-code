@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run terminal --recipe last-terminal-closed-offers-a-new-one
+# exit 0 after 6216 ms at dff135566b167620f60cc4b311e43d88dca56c26
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-16T12:56:46.581Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "last-terminal-closed-offers-a-new-one",
+          "status": "pass",
+          "ms": 5305
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 132 pass
+ 0 fail
+ 315 expect() calls
+Ran 132 tests across 10 files. [51.00ms]

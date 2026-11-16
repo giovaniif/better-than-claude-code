@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "claim": "Closing the last terminal leaves the Terminal pane blank with only a small + and no empty state; it should say no terminal is open and offer to open one",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1",
+  "base": "0d3b8e8386764915f7f9bcbd650ec939e74c4885",
+  "head": "dff135566b167620f60cc4b311e43d88dca56c26",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T12:56:07.165Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "fef035001c94ff7ab9830d9904487374c1b02405",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "22fdc976a8f6f963c3b543d028a55e96bf7ce64fb75142612dc55201346ca35e"
+        },
+        {
+          "path": "p1-no-terminal-desktop.png",
+          "sha256": "c21238464c5c7df7919a070794815db6d3e3a63eaf9971e03bc09dabfd595023"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:16.406Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "fef035001c94ff7ab9830d9904487374c1b02405",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8bab7eef5cdeacc0665b6050af3830b04cc8521d26b673df0e8510601d44b50b"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:16.452Z",
+      "cmd": "verify/yv map run terminal --recipe last-terminal-closed-offers-a-new-one",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "dff135566b167620f60cc4b311e43d88dca56c26",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "692bedf8ff2e0f673799f30d4d29726d434a36e8090889f09b60ddc5f3f0979e"
+        },
+        {
+          "path": "p3-no-terminal-desktop.png",
+          "sha256": "63027aec84916616d5093aeb79b6bec1357e73fce594d4959cf48fdb97d0b513"
+        },
+        {
+          "path": "p3-reopened-desktop.png",
+          "sha256": "79edb806146fa60bec751d8d1aafc60cb66f30aaa1ed2a78c110699f643969e7"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:40.178Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "dff135566b167620f60cc4b311e43d88dca56c26",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "1547ba7eefbadb56c053dec9370d2a2320fcc244dc5f603a0cd8fb455c9bcfc3"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:40.367Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run terminal --recipe last-terminal-closed-offers-a-new-one",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "dff135566b167620f60cc4b311e43d88dca56c26",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "8635c6588256a12b4686bd4c8874c5f29125968b78e71208a3107e85bcf9c4cc"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:46.629Z",
+      "cmd": "verify/yv design-check --base 0d3b8e838676",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "dff135566b167620f60cc4b311e43d88dca56c26",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-terminal.json",
+          "sha256": "736ddb6d0f3ad6c3ba815a61f17892f5e3eac2e4e57710a073ec726754e7d2f4"
+        }
+      ],
+      "addedAt": "2026-11-16T12:56:46.715Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads",
+        "terminal/last-terminal-closed-offers-a-new-one",
+        "terminal/close-terminal",
+        "terminal/folder-gone"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "dff135566b167620f60cc4b311e43d88dca56c26",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "12ab0ba7d83c408136b9b7d529cf01320003f2a4c014bb93e7adc33366852240"
+        },
+        {
+          "path": "p7-mobile-unchanged-mobile.png",
+          "sha256": "c30e7978a18002b86e8d7048b96cc3af3d72d9aeb6ff09b4c73593763ea74bc0"
+        }
+      ],
+      "addedAt": "2026-11-16T12:57:53.128Z",
+      "failedApi": []
+    }
+  ]
+}

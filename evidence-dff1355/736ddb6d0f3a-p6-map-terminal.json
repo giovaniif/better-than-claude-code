@@ -1,0 +1,68 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-16T12:57:49.669Z",
+      "counts": {
+        "pass": 9,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "runs-command",
+          "status": "pass",
+          "ms": 4827
+        },
+        {
+          "label": "keys-arrive-in-order",
+          "status": "pass",
+          "ms": 5951
+        },
+        {
+          "label": "second-terminal",
+          "status": "pass",
+          "ms": 4614
+        },
+        {
+          "label": "scrollback-after-reload",
+          "status": "pass",
+          "ms": 6950
+        },
+        {
+          "label": "scrollback-keeps-wrapped-lines",
+          "status": "pass",
+          "ms": 6189
+        },
+        {
+          "label": "scrollback-matches-after-reloads",
+          "status": "pass",
+          "ms": 17830
+        },
+        {
+          "label": "last-terminal-closed-offers-a-new-one",
+          "status": "pass",
+          "ms": 5411
+        },
+        {
+          "label": "close-terminal",
+          "status": "pass",
+          "ms": 6102
+        },
+        {
+          "label": "folder-gone",
+          "status": "pass",
+          "ms": 4220
+        },
+        {
+          "label": "add-to-message",
+          "status": "manual",
+          "why": "needs a mouse selection inside xterm"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

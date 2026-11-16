@@ -1,0 +1,40 @@
+$ verify/yv map run terminal --recipe last-terminal-closed-offers-a-new-one
+# exit 1 after 15267 ms at fef035001c94ff7ab9830d9904487374c1b02405
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-16T12:56:31.716Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "last-terminal-closed-offers-a-new-one",
+          "status": "fail",
+          "ms": 14438,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"expect\":\"text:No terminal is open.\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1/.verify/drives/2026-11-16T12-56-17-449Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "    \"action\": {\n          \"expect\": \"text:No terminal is open.\"\n        },\n        \"reason\": \"for: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1/.verify/drives/2026-11-16T12-56-17-449Z/fail-desktop-step4.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 35% · 47%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[think] TEST-plan the refactor\\\" [level=1]\\n  - code: yard/think-test-plan-the-refactor-07a3\\n  - button \\\"Delete\\\"\\n  - text: \\\"[think] TEST-plan the refactor\\\"\\n  - button \\\"Worked for 0s · Thought\\\"\\n  - paragraph: Thought it through.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - tablist \\\"Terminals\\\":\\n    - button \\\"New terminal\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"expect\\\":\\\"text:No terminal is open.\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1/.verify/drives/2026-11-16T12-56-17-449Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "terminal/last-terminal-closed-offers-a-new-one",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
