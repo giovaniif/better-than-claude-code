@@ -109,12 +109,12 @@ yv state --expect '{"sessions":[{"id":"{{sid_echo}}","group":null}]}'
 ```
 
 ### archived-header-stays-at-bottom
-With many sessions the list scrolls, but the Archived header stays just above the host rows, and opening it expands upward with its own scroll.
+With many sessions the list scrolls, but the Archived header stays at the bottom of the session list, just above the sidebar's footer (usage meters, Notifications, host rows), and opening it expands upward with its own scroll.
 
 ```sh
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14; do yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-many '$i'"}' > /dev/null; done
 yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":true}'
-yv drive new --viewport desktop --steps '[{"eval":"(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)","equals":true},{"expect":"role:button:Archived","inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".sidebar-bottom\").getBoundingClientRect().top) < 2","equals":true},{"click":"role:button:Archived"},{"expect":{"css":".session-row","hasText":"[think] TEST-plan"},"inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".sidebar-bottom\").getBoundingClientRect().top) < 2","equals":true}]'
+yv drive new --viewport desktop --steps '[{"eval":"(document.querySelector(\".session-list\").scrollTop = 9999, document.querySelector(\".session-list\").scrollHeight > document.querySelector(\".session-list\").clientHeight)","equals":true},{"expect":"role:button:Archived","inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2","equals":true},{"click":"role:button:Archived"},{"expect":{"css":".session-row","hasText":"[think] TEST-plan"},"inViewport":true},{"eval":"Math.abs(document.querySelector(\".archived-dock\").getBoundingClientRect().bottom - document.querySelector(\".archived-dock\").nextElementSibling.getBoundingClientRect().top) < 2","equals":true}]'
 ```
 
 ## Gotchas
