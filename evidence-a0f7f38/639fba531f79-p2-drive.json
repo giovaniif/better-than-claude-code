@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "route": "session:s1a1e2de5c378",
+  "build": {
+    "sha": "56d00e89844e5e9ff961cf26a17c0862ace26c5f",
+    "short": "56d00e8",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T05:44:14.838Z"
+  },
+  "dir": ".verify/evidence/pr-pane-double-click-base-review",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6390,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-pane-double-click-base-review/review-twice-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(async () => { const b = [...document.querySelectorAll(\"button\")].find((x) => x.textContent.trim() === \"Review with Claude\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \"clicked twice\"; })()",
+          "value": "clicked twice"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "Another session is working in this folder. Stop it first, or tick New worktree."
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

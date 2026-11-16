@@ -1,0 +1,244 @@
+{
+  "v": 1,
+  "claim": "In the Pull request pane, a double click on Send to session sends the review comment twice (two identical turns), and a double click on Review with Claude shows 'Another session is working in this folder... tick New worktree'. The buttons stayed live until yardd answered.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3c77",
+  "base": "a35b58342a7a4753b29973f4b1112aae061ddabd",
+  "head": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T05:44:12.288Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "56d00e89844e5e9ff961cf26a17c0862ace26c5f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "283982295a83f41662ffbc0bb907ceb806b6b9f52c6c13add6d7546b92d46a58"
+        },
+        {
+          "path": "p1-send-twice-desktop.png",
+          "sha256": "2b1752a0a2dd2cb3ec44ac7c4967e7b8b760f4d28c1e3ae8accf2712ace6fd23"
+        }
+      ],
+      "addedAt": "2026-11-16T05:44:37.384Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "56d00e89844e5e9ff961cf26a17c0862ace26c5f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "639fba531f796f8731ff617d65024c8344a6d3b574e3abbfefb037368e96bff9"
+        },
+        {
+          "path": "p2-review-twice-desktop.png",
+          "sha256": "a648092fad4e6c4df1f6926a4c9083d30499434974da06ae9bd95f1329a24934"
+        }
+      ],
+      "addedAt": "2026-11-16T05:44:37.428Z",
+      "failedApi": [
+        "session.create: Another session is working in this folder. Stop it first, or tick New worktree."
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "56d00e89844e5e9ff961cf26a17c0862ace26c5f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2426d7d72e2618f90138504c7f2d64c303db6e531342d49aac14bd98af009ce3"
+        }
+      ],
+      "addedAt": "2026-11-16T05:44:37.479Z",
+      "cmd": "verify/yv map run pr-pane --recipe double-click-send-to-session",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "56d00e89844e5e9ff961cf26a17c0862ace26c5f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "c0b38ff8540405d32cf773a0950b67882fa952335e7d899f65e511439b12799c"
+        }
+      ],
+      "addedAt": "2026-11-16T05:44:45.959Z",
+      "cmd": "verify/yv map run pr-pane --recipe double-click-review-with-other-engine",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "9175901f69e33c5fe27b81c72d909fd22ed2c4a3d765ea39ca931a8019ada55b"
+        },
+        {
+          "path": "p5-send-twice-desktop.png",
+          "sha256": "3ac04cade460119dd27d4de33b6be8934059b354041280cd4d15ab7674d37931"
+        }
+      ],
+      "addedAt": "2026-11-16T05:45:34.867Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "a4e5ede96336034c08979987375e0d6db018df2fff198c27d68e233f63ddecbc"
+        },
+        {
+          "path": "p6-review-twice-desktop.png",
+          "sha256": "485dfb08008c9066faa736bf472f32f396819140bdbf2b0df1dfbfdac30d70c3"
+        }
+      ],
+      "addedAt": "2026-11-16T05:45:34.910Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "cd0b6230f84fdd0721779dacf318d172f388407e6cacb44f645ea229b292dc76"
+        },
+        {
+          "path": "p7-mobile-session-mobile.png",
+          "sha256": "3900d7e0e4b71ea178c72e0acc2e464a99d8544f8be6e70ff2ee716339326854"
+        }
+      ],
+      "addedAt": "2026-11-16T05:45:34.949Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "5d8fa59848e54d18b7867fa8afdade48f025737c2ad42b689cbe5747a2a1fdf8"
+        }
+      ],
+      "addedAt": "2026-11-16T05:45:38.358Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "c20a1d8cfdb06468817f2924ccbef5343d7c907a868cbde8f80b85312323263c"
+        }
+      ],
+      "addedAt": "2026-11-16T05:45:56.511Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "97df850b7f64e0d6a4f76289221384830325188ea334478c80f894cf4247aec4"
+        }
+      ],
+      "addedAt": "2026-11-16T05:46:28.384Z",
+      "cmd": "verify/yv design-check --base a35b58342a7a",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a0f7f381e179dede8f576e031a433ac23af42d4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-pr-pane.json",
+          "sha256": "ed04fc99cfbaf3c08a3becb33b0956bfe8a4fdbbf42f5c1d5a4ca30e9de875ed"
+        }
+      ],
+      "addedAt": "2026-11-16T05:46:28.469Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "pr-pane/shows-pr",
+        "pr-pane/no-pr",
+        "pr-pane/send-thread-to-session",
+        "pr-pane/review-with-other-engine",
+        "pr-pane/double-click-send-to-session",
+        "pr-pane/double-click-review-with-other-engine"
+      ]
+    }
+  ]
+}

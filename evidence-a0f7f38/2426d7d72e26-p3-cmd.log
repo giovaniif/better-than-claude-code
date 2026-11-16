@@ -1,0 +1,40 @@
+$ verify/yv map run pr-pane --recipe double-click-send-to-session
+# exit 1 after 8439 ms at 56d00e89844e5e9ff961cf26a17c0862ace26c5f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-16T05:44:45.914Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "double-click-send-to-session",
+          "status": "fail",
+          "ms": 7532,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"eval\":\"(async () => { const n = () => [...document.querySelectorAll(\\\".thread .bubble\\\")].filter((b) => b.textContent.includes(\\\"Review comment on src/greet.ts:1\\\")).length; const before = n(); const b = [...document.querySelectorAll(\\\"button\\\")].find((x) => x.textContent.trim() === \\\"Send to session\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); await new Promise((r) => setTimeout(r, 3000)); return `sent ${n() - before}`; })()\",\"equals\":\"sent 1\"}: eval returned \"sent 2\", expected \"sent 1\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3c77/.verify/drives/2026-11-16T05-44-38-586Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "resh pull request\\\"\\n  - heading \\\"TEST-fix the greeting\\\" [level=2]\\n  - link \\\"#4242\\\":\\n    - /url: https://github.com/test-owner/test-demo-app/pull/4242\\n  - text: Open · into main · Review required\\n  - region \\\"Checks\\\":\\n    - text: Checks · 1 failed\\n    - link \\\"test\\\":\\n      - /url: https://example.com/1\\n    - text: passed\\n    - link \\\"lint\\\":\\n      - /url: https://example.com/2\\n    - text: failed\\n    - link \\\"build\\\":\\n      - /url: https://example.com/3\\n    - text: running\\n  - region \\\"Review comments\\\":\\n    - text: Review comments · 1 unresolved\\n    - code: src/greet.ts:1\\n    - text: \\\"@test-reviewer TEST-review: greet should trim the name.\\\"\\n    - button \\\"Send to session\\\"\\n    - code: README.md:2\\n    - text: \\\"resolved @test-reviewer TEST-review: resolved nit.\\\"\\n    - button \\\"Send to session\\\"\\n  - button \\\"Review with Claude\\\"\\n  - text: Starts a new Claude session in this folder. It reports and changes nothing.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(async () => { const n = () => [...document.querySelectorAll(\\\".thread .bubble\\\")].filter((b) => b.textContent.includes(\\\"Review comment on src/greet.ts:1\\\")).length; const before = n(); const b = [...document.querySelectorAll(\\\"button\\\")].find((x) => x.textContent.trim() === \\\"Send to session\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); await new Promise((r) => setTimeout(r, 3000)); return `sent ${n() - before}`; })()\",\n          \"value\": \"sent 2\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"eval\\\":\\\"(async () => { const n = () => [...document.querySelectorAll(\\\\\\\".thread .bubble\\\\\\\")].filter((b) => b.textContent.includes(\\\\\\\"Review comment on src/greet.ts:1\\\\\\\")).length; const before = n(); const b = [...document.querySelectorAll(\\\\\\\"button\\\\\\\")].find((x) => x.textContent.trim() === \\\\\\\"Send to session\\\\\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); await new Promise((r) => setTimeout(r, 3000)); return `sent ${n() - before}`; })()\\\",\\\"equals\\\":\\\"sent 1\\\"}: eval returned \\\"sent 2\\\", expected \\\"sent 1\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3c77/.verify/drives/2026-11-16T05-44-38-586Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "pr-pane/double-click-send-to-session",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

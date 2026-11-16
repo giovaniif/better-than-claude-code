@@ -1,0 +1,17 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "a35b58342a7a4753b29973f4b1112aae061ddabd",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/PrPane.tsx"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

@@ -1,0 +1,39 @@
+$ verify/yv map run pr-pane --recipe double-click-review-with-other-engine
+# exit 1 after 5795 ms at 56d00e89844e5e9ff961cf26a17c0862ace26c5f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-16T05:44:51.748Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "double-click-review-with-other-engine",
+          "status": "fail",
+          "ms": 4915,
+          "problems": [
+            {
+              "code": "errors",
+              "msg": "desktop: 0 console, 0 page, 1 API, 0 HTTP errors"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1e2e2f2828\",\n  \"build\": {\n    \"sha\": \"56d00e89844e5e9ff961cf26a17c0862ace26c5f\",\n    \"short\": \"56d00e8\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-16T05:44:14.838Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3c77/.verify/drives/2026-11-16T05-44-47-079Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 4349,\n      \"steps\": 5,\n      \"failed\": null,\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(async () => { const b = [...document.querySelectorAll(\\\"button\\\")].find((x) => x.textContent.trim() === \\\"Review with Claude\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \\\"clicked twice\\\"; })()\",\n          \"value\": \"clicked twice\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"error\",\n          \"for\": \"session.create\",\n          \"message\": \"Another session is working in this folder. Stop it first, or tick New worktree.\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"errors\",\n      \"msg\": \"desktop: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "pr-pane/double-click-review-with-other-engine",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

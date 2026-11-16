@@ -1,0 +1,51 @@
+$ verify/yv map run pr-pane
+# exit 0 after 31833 ms at a0f7f381e179dede8f576e031a433ac23af42d4c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-16T05:46:28.340Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-pr",
+          "status": "pass",
+          "ms": 3750
+        },
+        {
+          "label": "no-pr",
+          "status": "pass",
+          "ms": 3500
+        },
+        {
+          "label": "send-thread-to-session",
+          "status": "pass",
+          "ms": 5193
+        },
+        {
+          "label": "review-with-other-engine",
+          "status": "pass",
+          "ms": 6621
+        },
+        {
+          "label": "double-click-send-to-session",
+          "status": "pass",
+          "ms": 6427
+        },
+        {
+          "label": "double-click-review-with-other-engine",
+          "status": "pass",
+          "ms": 5454
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
