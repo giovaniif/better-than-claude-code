@@ -34,6 +34,8 @@ export interface SessionMeta {
   group?: string | null;
   /** The automation that started this session: a run, kept out of the sidebar. */
   automation?: string | null;
+  /** When a run's first turn ended; `updatedAt` moves on any later change. */
+  finishedAt?: number;
   /** Messages sent while a turn ran, oldest first. The next one starts when a turn completes; Stop or a failure holds them. */
   pending?: PendingMessage[];
   createdAt: number;
