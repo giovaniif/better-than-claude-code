@@ -2,14 +2,14 @@
 // Run with `cd verify && bun test`, or `verify/yv selftest`.
 
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { checkMedia } from "./assets";
 import { parseTarget } from "./browser";
 import { matches, parseArgs, pick, sha256File } from "./common";
 import { addedLines, lint } from "./design";
-import { type Bundle, type Proof, verifyBundle } from "./evidence";
+import { _test as evidenceTest, type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
 import { recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
@@ -337,5 +337,21 @@ describe("land watch", () => {
     expect(regressedJobs([{ name: "dmg", conclusion: "cancelled" }, { name: "linux", conclusion: "success" }])).toEqual([]);
     expect(regressedJobs([{ name: "dmg", conclusion: "failure" }, { name: "ui", conclusion: "cancelled" }])).toEqual(["dmg"]);
     expect(regressedJobs([{ name: "yardd", conclusion: "timed_out" }])).toEqual(["yardd"]);
+  });
+});
+
+describe("evidence artifacts", () => {
+  test("two files with the same name in one proof are both kept", () => {
+    const root = mkdtempSync(join(tmpdir(), "yv-keep-"));
+    const [a, b, dir] = ["a", "b", "bundle"].map((d) => join(root, d));
+    for (const d of [a, b, dir]) mkdirSync(d);
+    writeFileSync(join(a, "drive.json"), "first");
+    writeFileSync(join(b, "drive.json"), "second");
+    const one = evidenceTest.keep(dir, join(a, "drive.json"), 4);
+    const two = evidenceTest.keep(dir, join(b, "drive.json"), 4);
+    expect(one.path).not.toBe(two.path);
+    expect(readFileSync(join(dir, one.path), "utf8")).toBe("first");
+    expect(readFileSync(join(dir, two.path), "utf8")).toBe("second");
+    expect(sha256File(join(dir, one.path))).toBe(one.sha256);
   });
 });

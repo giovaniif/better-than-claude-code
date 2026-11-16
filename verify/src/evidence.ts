@@ -89,7 +89,10 @@ function init(dir: string, a: Args): Result {
 /** Copies an artifact into the bundle so later edits to the original cannot change the proof. */
 function keep(dir: string, src: string, id: number): Artifact {
   if (!existsSync(src)) fail("no-file", `${src} does not exist`);
-  const dest = join(dir, `p${id}-${basename(src)}`);
+  // Two files of one proof can share a name (a drive.json from each of two
+  // runs); copying both to one path keeps only the last and breaks its hash.
+  let dest = join(dir, `p${id}-${basename(src)}`);
+  for (let n = 2; existsSync(dest); n++) dest = join(dir, `p${id}-${n}-${basename(src)}`);
   copyFileSync(src, dest);
   return { path: basename(dest), sha256: sha256File(dest) };
 }
@@ -404,3 +407,5 @@ export async function evidence(a: Args): Promise<Result> {
       throw new Usage("evidence init|add|verify|show|markdown|publish|retarget <dir> | evidence fetch <bundle-url> <dir>");
   }
 }
+
+export const _test = { keep };
