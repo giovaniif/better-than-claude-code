@@ -1,7 +1,8 @@
 # Models, efforts and permission modes
 
-The composer's model button lists both engines' models and the current model's
-efforts. Same-engine switches apply from the next turn. Picking the other
+The composer's model button lists the current engine's models (the other
+engine folded into one row) and the current model's efforts.
+Same-engine switches apply from the next turn. Picking the other
 engine's model asks to hand off, then starts a new session in the same folder
 with a brief of the work so far. The permission picker (Ask first, Accept
 edits, Plan only, Full access) changes the session at once.
@@ -42,7 +43,7 @@ Picking a Claude model asks first; "Hand off" starts a Claude session with the
 same title in the same folder.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"role":"button","name":"Haiku 5.5","exact":true}},{"expect":"role:group:Confirm hand-off"},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Haiku 5.5","timeout":15000}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Haiku 5.5","exact":true}},{"expect":"role:group:Confirm hand-off"},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Haiku 5.5","timeout":15000}]'
 yv state --expect '{"sessions":[{"engine":"claude","title":"[edit] TEST-fix the greeting"}]}'
 ```
 
@@ -50,4 +51,4 @@ yv state --expect '{"sessions":[{"engine":"claude","title":"[edit] TEST-fix the 
 Changing a Claude session's effort mid-session goes through `applyFlagSettings`, which is not wired yet.
 
 ## Gotchas
-- The model menu shows both engines; the other engine's section is labelled "Picking one hands off to a new session."
+- The model menu opens on the current engine; the other engine is one row ("Claude · N models · switching hands off") that expands, and its models are labelled "Picking one hands off to a new session." Plan usage in the picker is covered in [usage](usage.md).

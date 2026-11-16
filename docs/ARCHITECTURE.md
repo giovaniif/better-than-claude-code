@@ -70,14 +70,16 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - `thread/start` per session, `turn/start` per message. `turn/start` takes `model` and `effort`, so switching is per turn.
 - Approvals arrive as server requests (`item/commandExecution/requestApproval`, `item/fileChange/requestApproval`) and are answered with `accept`, `acceptForSession` or `decline`.
 - `model/list` returns the models and each one's efforts. Today: `gpt-6.1-sol` (default), `gpt-6-astra`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; efforts `low` to `ultra`.
-- `account/rateLimits/updated` gives the usage percentage.
+- `account/rateLimits/updated` and `account/rateLimits/read` give `primary` (the 5-hour window) and `secondary` (the week), each with `usedPercent`, `windowDurationMins` and `resetsAt` (epoch seconds). yardd relays them untouched as `usage.codex`.
 - The protocol is marked experimental. Pin the CLI version.
 
 **Claude.** Agent SDK `query()` in streaming-input mode inside yard-claude.
 
 - `canUseTool` carries approvals. `setModel()` switches model mid-session. `interrupt()` stops a turn.
 - Effort is `low`, `medium`, `high`, `xhigh`, `max`. It is set at session start; changing it mid-session goes through `applyFlagSettings` (not wired yet).
-- `rate_limit_event` gives five-hour and seven-day utilization.
+- `rate_limit_event` describes ONE window per event (`rateLimitType`: `five_hour`, `seven_day`, `seven_day_opus`, `seven_day_sonnet`, ...) with `utilization` (a fraction) and `resetsAt` (epoch seconds); some CLI builds send them all as `unifiedWindows`. The sidecar (`src/usage.ts`, `mergeUsage`) folds events into `usage.claude = { status, windows }`, so a five-hour event does not wipe out the weekly one. (The old mapping read only `unifiedWindows`, which the SDK's types do not have.)
+
+**Plan usage in the UI.** `ui/src/usage.ts` turns either engine's shape into meters (5-hour, week, per-model weeks; amber above 70%, red above 90%; "resets in 2 h 10 min"). They show in the model picker's header and in a strip above the host rows in the sidebar (local host's usage). The picker opens on the current engine and folds the other into one row; on narrow screens it is a sheet over the window's bottom. No context-window meter: the SDK's `getContextUsage` is a control request per turn and would need a per-session event through yardd's log, which could not be proven without a real Claude turn; the result's `usage` is per turn, not the context size.
 - It runs on the CLI's own login (`apiKeySource: none`).
 - Never parse `~/.claude/projects/*.jsonl`. Use the SDK's `listSessions` and `getSessionMessages`.
 

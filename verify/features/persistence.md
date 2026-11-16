@@ -48,6 +48,14 @@ yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-after resta
 grep -q "req thread/resume" "$(v fake)/codex.log"
 ```
 
+### reload-keeps-open-session
+A reload keeps the open session (phone browsers reload discarded tabs), and
+Back returns to the session opened before.
+
+```sh
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"goto":"session:{{sid_edit}}"},{"expect":"css:.session-row.active","text":"TEST-fix the greeting"},{"eval":"(history.back(), true)","equals":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+```
+
 ### claude-resume-after-restart (manual: needs a real Claude turn)
 The scripted sidecar ignores `resume`; a real Claude resume spends the Claude
 subscription.

@@ -194,7 +194,7 @@ h1, h2, h3, p { margin: 0; }
 /* picker */
 .picker { position: relative; }
 .scrim { position: fixed; inset: 0; z-index: 9; }
-.popover { position: absolute; left: -8px; bottom: calc(100% + 8px); z-index: 10; width: 300px; max-height: 60vh; overflow: auto; display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); }
+.popover { position: absolute; left: -8px; bottom: calc(100% + 8px); z-index: 10; width: 300px; max-width: calc(100vw - 24px); max-height: 60vh; overflow: auto; display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); }
 /* On the new-session page the prompt box sits mid-screen: open downward. */
 .composer-large .popover { top: calc(100% + 8px); bottom: auto; max-height: 50vh; }
 .picker-group { display: flex; flex-direction: column; gap: 2px; }
@@ -206,6 +206,31 @@ h1, h2, h3, p { margin: 0; }
 .picker-item { height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; }
 .picker-item:hover { background: var(--fill); }
 .picker-item.active { background: var(--fill-strong); font-weight: 500; }
+.picker-model { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 28px; }
+.picker-fold { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: 13px; color: var(--muted); }
+.picker-fold:hover { background: var(--fill); color: var(--ink); }
+/* Narrow screens: the picker is a sheet over the bottom of the window, not a
+   popover next to a button that may sit near the right edge. */
+@media (max-width: 700px) {
+  .picker .popover.model-popover, .composer-large .picker .popover.model-popover { position: fixed; left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; max-width: none; max-height: 75vh; }
+}
+/* plan usage: meters in the picker, a compact strip in the sidebar */
+.picker-usage { display: flex; flex-direction: column; gap: 8px; padding: 6px 8px 8px; border-bottom: 1px solid var(--line); }
+.usage-engine { display: flex; flex-direction: column; gap: 6px; }
+.usage-engine-name { font-size: 12px; color: var(--muted); }
+.usage-meter { display: grid; grid-template-columns: 84px minmax(0, 1fr) 32px; align-items: center; column-gap: 8px; row-gap: 2px; font-size: 12px; }
+.usage-label { white-space: nowrap; }
+.usage-percent { text-align: right; font-variant-numeric: tabular-nums; }
+.usage-reset { grid-column: 1 / -1; font-size: 11px; color: var(--muted); }
+.level-warn .usage-percent { color: var(--warn-ink); }
+.level-high .usage-percent { color: var(--bad-ink); }
+.bar-fill.level-warn { background: var(--warn); }
+.bar-fill.level-high { background: var(--bad-ink); }
+.usage-strip { display: flex; flex-direction: column; gap: 4px; padding: 8px 18px; border-top: 1px solid var(--line); font-size: 12px; }
+.usage-strip + .sidebar-bottom { border-top: 0; padding-top: 0; }
+.usage-line { display: grid; grid-template-columns: 44px 44px minmax(0, 1fr) 32px; align-items: center; column-gap: 8px; }
+.usage-line-engine { color: var(--muted); }
+.usage-line .usage-label { color: var(--muted); }
 .efforts { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 4px 4px; }
 .effort { flex: 1 1 0; height: 30px; padding: 0 8px; border: 0; border-radius: 6px; background: var(--fill); }
 .effort.active { background: var(--ink); color: #fff; }

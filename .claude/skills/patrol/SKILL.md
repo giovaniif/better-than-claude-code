@@ -33,6 +33,8 @@ You are in a fresh worktree branched from origin/main, started by
 - **Notifications:** GitHub never notifies the owner of comments from their
   own account (you post as them). For anything they must see (a PR ready for
   "merge", a regression, a question), `verify/yv notify "<msg>" --click <url>`.
+  If it answers `"sent": false` (ntfy is off), nobody was pinged: say it in
+  the PR thread with `verify/yv pr comment`, once per blocker and head.
 - **Denied fingerprints:** closed `patrol` issues with status `denied`. Never
   re-propose one.
 
@@ -53,7 +55,9 @@ For each open patrol PR:
      (`git worktree add ../pr-<N> <branch>`), re-prove, push.
 2. Babysit it to ready: follow `.claude/skills/babysit/SKILL.md` (one pass).
    When it needs a verifier: `verify/yv loop run verify --pr <N>` starts a
-   fresh, independent session; do not verify your own PR.
+   fresh, independent session; do not verify your own PR. No verdict on head
+   and no verifier running (`verify/yv loop status`) means the last one died,
+   often on the usage cap (`verify/yv loop log <id>`): start a new one.
 3. Ready (checks green, PASS or PASS+NOTES verdict on head, no threads):
    `verify/yv land merge <N>` from a checkout at origin/main (your run's
    worktree starts there; the gate refuses to run from a PR head). The gate is live: it re-checks everything and

@@ -17,6 +17,7 @@ import { createInterface } from "node:readline";
 import { userMessage } from "./message";
 import { describe as describeTool, EDIT_TOOLS, patchFor, resultText, short } from "./tools";
 import { oneShot } from "./oneshot";
+import { mergeUsage, type ClaudeUsage } from "./usage";
 
 type Decision = "allow" | "allow_always" | "deny";
 
@@ -58,6 +59,8 @@ async function* input() {
 
 const waiting = new Map<string, (d: Decision) => void>();
 let q: any = null;
+// Plan usage so far: each rate_limit_event reports one window.
+let usage: ClaudeUsage | null = null;
 let cwd = process.cwd();
 
 /** yardd's permission modes, as the SDK names them. */
@@ -189,16 +192,8 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
     }
 
     if (m.type === "rate_limit_event") {
-      const info = m.rate_limit_info ?? {};
-      out({
-        type: "usage",
-        usage: {
-          status: info.status,
-          fiveHour: info.unifiedWindows?.five_hour?.utilization ?? null,
-          sevenDay: info.unifiedWindows?.seven_day?.utilization ?? null,
-          resetsAt: info.resetsAt ?? null,
-        },
-      });
+      usage = mergeUsage(usage, m.rate_limit_info);
+      out({ type: "usage", usage });
       continue;
     }
 

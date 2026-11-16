@@ -152,6 +152,13 @@ export function scanFiles(files: PrFile[]): { blockers: Blocker[]; category: str
   return { blockers: dedupe(blockers), category, touched };
 }
 
+/** Recipe labels a PR body lists under "## Recipes removed" (one per bullet, in backticks). */
+export function recipesDeclaredRemoved(body: string): string[] {
+  const m = body.match(/^##\s+Recipes removed\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m);
+  if (!m) return [];
+  return [...m[1].matchAll(/^\s*[-*]\s+`([^`]+)`/gm)].map((x) => x[1].trim());
+}
+
 function dedupe(b: Blocker[]): Blocker[] {
   const seen = new Set<string>();
   return b.filter((x) => (seen.has(x.code + x.msg) ? false : (seen.add(x.code + x.msg), true)));
@@ -249,7 +256,10 @@ export function check(n: number) {
 
   const files = prFiles(n);
   const scan = scanFiles(files);
-  blockers.push(...scan.blockers);
+  // A recipe may go when the PR says so: listed by name under "## Recipes
+  // removed", with the reason, where the verifier reads it too.
+  const declared = recipesDeclaredRemoved(String(pr.body ?? ""));
+  blockers.push(...scan.blockers.filter((b) => b.code !== "recipe-removed" || !declared.some((r) => b.msg.includes(`"${r}"`))));
 
   const skillAtBase = git(["cat-file", "-e", `origin/${pr.baseRefName}:.claude/skills/verify/SKILL.md`]).code === 0 || existsSync(join(ROOT, ".claude/skills/verify/SKILL.md"));
   if (!skillAtBase) add("no-verification-skill", "this repository has no verification skill");

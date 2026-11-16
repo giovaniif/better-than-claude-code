@@ -60,7 +60,9 @@ verify/yv assets check                   # no screenshots committed to the branc
 ```
 
 Also read the diff for: changes outside the claim, weakened or deleted
-recipes or tests, `dangerouslySetInnerHTML`, Origin/bind changes, data
+recipes or tests (a removed recipe must be listed under "## Recipes removed"
+in the PR body with a reason you agree with; the gate checks the listing, you
+check the reason), `dangerouslySetInnerHTML`, Origin/bind changes, data
 deletion, anything in CLAUDE.md's hard rules.
 
 ## 5. Decide
