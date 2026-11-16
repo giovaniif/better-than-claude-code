@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5b15ed56",
+  "build": {
+    "sha": "3116c2fb6386f00ad87e7ba262c0c703521372c9",
+    "short": "3116c2f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:49:25.119Z"
+  },
+  "dir": ".verify/evidence/reply-quote-cards-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3448,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-base/quote-dumped-in-text-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-base/bubble-shows-raw-markdown-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "Echo: TEST-say hello"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3411,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-base/quote-dumped-in-text-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-base/bubble-shows-raw-markdown-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "Echo: TEST-say hello"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,277 @@
+{
+  "v": 1,
+  "claim": "Reply on part of an agent's answer dumps the selection into the reply box as raw '> ' Markdown lines; the box fills with quoted text the user types under, quotes can't be removed or stacked as units, and sent bubbles show literal '>' characters",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a5bcec3f5382dfbe6",
+  "base": "fa5ba2f5dca0af294d4520c572db71c7b5080302",
+  "head": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T18:49:29.360Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3116c2fb6386f00ad87e7ba262c0c703521372c9",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "3c91698fffd30198ece9dad6ef241648a9dba82512d0b74d5bcea7ff29fce774"
+        },
+        {
+          "path": "p1-quote-dumped-in-text-mobile.png",
+          "sha256": "e852550b836b6775373e8079434ce84b06375947abcb95b51b63abc69005b4d5"
+        },
+        {
+          "path": "p1-bubble-shows-raw-markdown-mobile.png",
+          "sha256": "22423b3085b46fa2740d1f3334438656d4333a70bc79be0db680afedb6be5497"
+        },
+        {
+          "path": "p1-quote-dumped-in-text-desktop.png",
+          "sha256": "17591fb8ab5bc8d8692e7619c260d1b9710b30385769e66b737bc6bd526480a4"
+        },
+        {
+          "path": "p1-bubble-shows-raw-markdown-desktop.png",
+          "sha256": "5114043891de36620d7aba63ae531d6720f52fcf512e28dcaea22034bc876f8b"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:50.820Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "3116c2fb6386f00ad87e7ba262c0c703521372c9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8e7bd18082411b756f907046ed01fea7336a8182b27b8ea46cda559da3b8eb6a"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:50.864Z",
+      "cmd": "cd ui && bun test src/compose.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "7c42dbaa171ccbee60c0df1e48968d76a0ef69852831e827891706010e0f4eeb"
+        },
+        {
+          "path": "p3-reply-button-mobile.png",
+          "sha256": "14a2a3da9d61e94a29a8c1f7091dae5f314bfc15822b006bdfcfd0752ea464f3"
+        },
+        {
+          "path": "p3-two-quotes-mobile.png",
+          "sha256": "841d3e5b976c6fe47d3e5f60cdd3eaee73608a9aeff86eac9e6eeea4f192432d"
+        },
+        {
+          "path": "p3-quoted-mobile.png",
+          "sha256": "003e8496498a4cf3c277ba91d8af3c23ea555286f9762125e725e76706ac928d"
+        },
+        {
+          "path": "p3-sent-mobile.png",
+          "sha256": "b6b9f71dcdf7121273fa4454e429bd656264217b6fd92ca4538cfacf1f5fb17a"
+        },
+        {
+          "path": "p3-reply-button-desktop.png",
+          "sha256": "7fe7242b1337330acdd40eb6edc0d670d76f2c12c0f3334867620a8d2f8ef75b"
+        },
+        {
+          "path": "p3-two-quotes-desktop.png",
+          "sha256": "606e7ce4d9a4c9f343f53a91c5be7ca5575eaece44c2b6c251b0b3ee86401884"
+        },
+        {
+          "path": "p3-quoted-desktop.png",
+          "sha256": "b5e243d95be1f631e2971ae9878a60051392ddd8ae141080012c4730765e9124"
+        },
+        {
+          "path": "p3-sent-desktop.png",
+          "sha256": "c91ccf6b7c30ea12b913db69ac6a2c68a3ccdcebcc66f4849f4299cceec1a5c2"
+        }
+      ],
+      "addedAt": "2026-11-16T18:50:41.913Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "93297d186728139d642590e34f8136138e8260e1b219ce00f049ce7ec57916a9"
+        },
+        {
+          "path": "p4-long-quote-clamped-mobile.png",
+          "sha256": "e9869fdad6b0aff36a5e2e20f36c387724fd9a024bd83ddc365c0c8b47c50594"
+        },
+        {
+          "path": "p4-long-quote-open-mobile.png",
+          "sha256": "ce4795ea9f899f2dd7b5bb48fa33e0bb554121d9f999624ae7ba90f4c0414379"
+        },
+        {
+          "path": "p4-long-quote-sent-mobile.png",
+          "sha256": "f47404147599b904d6ec8b7c36e736a14475cf07e059892725b3fd012329ac61"
+        },
+        {
+          "path": "p4-long-quote-clamped-desktop.png",
+          "sha256": "3b169d4986f9261b96e6ff26029ca18099823e767af0cbfd7e3facfdaa52bcb1"
+        },
+        {
+          "path": "p4-long-quote-open-desktop.png",
+          "sha256": "4ea31155c7f4f45a725a65a2689636c44471154d4e87db378b659b06bd6fe712"
+        },
+        {
+          "path": "p4-long-quote-sent-desktop.png",
+          "sha256": "4814b48457d65379dbb1cb59abe9dd82e57edc69ed57f7e6e45e8f0086b603b3"
+        }
+      ],
+      "addedAt": "2026-11-16T18:50:41.959Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "dd28a72ecaf3905fb3bea8f169b706a4aaa85434867d24d365fb6acc51b1cb21"
+        }
+      ],
+      "addedAt": "2026-11-16T18:50:42.004Z",
+      "cmd": "(cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "d088ec84149c561595eacd9a38c0d1f76be91031f5a7774f20c1d8ca0dce42bc"
+        }
+      ],
+      "addedAt": "2026-11-16T18:50:42.110Z",
+      "cmd": "verify/yv design-check --base fa5ba2f5dca0",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-thread.json",
+          "sha256": "1a837a607975d74e807f30fb66bb1a2b9b6217b55331cd90febd7971d4424ee1"
+        }
+      ],
+      "addedAt": "2026-11-16T18:50:45.795Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/subagent-nests-and-expands"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-attachments.json",
+          "sha256": "aaffba8fed5d1a359695ef862a553e599aae77fc5bec6310556578451b80790b"
+        }
+      ],
+      "addedAt": "2026-11-16T18:52:40.289Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api"
+      ]
+    }
+  ]
+}

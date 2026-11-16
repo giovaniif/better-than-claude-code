@@ -1,0 +1,139 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5b15ed56",
+  "build": {
+    "sha": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+    "short": "e1d4b13",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:49:56.269Z"
+  },
+  "dir": ".verify/evidence/reply-quote-cards-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3852,
+      "steps": 27,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-head/reply-button-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-head/two-quotes-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-head/quoted-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-head/sent-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "Echo: TEST-say hello"
+        },
+        {
+          "step": 7,
+          "eval": "document.activeElement === document.querySelector(\"textarea[aria-label=Message]\")",
+          "value": true
+        },
+        {
+          "step": 9,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const t = document.createTreeWalker(p, NodeFilter.SHOW_TEXT).nextNode(); const r = document.createRange(); r.setStart(t, 11); r.setEnd(t, 20); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "say hello"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4659,
+      "steps": 27,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-head/reply-button-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-head/two-quotes-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-head/quoted-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-head/sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "Echo: TEST-say hello"
+        },
+        {
+          "step": 7,
+          "eval": "document.activeElement === document.querySelector(\"textarea[aria-label=Message]\")",
+          "value": true
+        },
+        {
+          "step": 9,
+          "eval": "(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const t = document.createTreeWalker(p, NodeFilter.SHOW_TEXT).nextNode(); const r = document.createRange(); r.setStart(t, 11); r.setEnd(t, 20); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()",
+          "value": "say hello"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

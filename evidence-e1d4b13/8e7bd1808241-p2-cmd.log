@@ -1,0 +1,18 @@
+$ cd ui && bun test src/compose.test.ts
+# exit 1 after 10 ms at 3116c2fb6386f00ad87e7ba262c0c703521372c9
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/compose.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'cleanQuote' not found in module '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a5bcec3f5382dfbe6/ui/src/compose.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5b239722",
+  "build": {
+    "sha": "e1d4b1392264ead77423b4dcec8d4f341de1f87e",
+    "short": "e1d4b13",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:49:56.269Z"
+  },
+  "dir": ".verify/evidence/reply-quote-cards-long",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3721,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-clamped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-sent-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const l = document.querySelector(\".thread .prose ol\"); l.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(l); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString().length > 200; })()",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4440,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-clamped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-open-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/reply-quote-cards-long/long-quote-sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const l = document.querySelector(\".thread .prose ol\"); l.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(l); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString().length > 200; })()",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
