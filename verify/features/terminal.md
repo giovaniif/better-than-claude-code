@@ -75,6 +75,17 @@ attach at xterm's default 80 columns made the shell redraw into the scrollback.
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
 ```
 
+### exited-shell-survives-reload
+Viewports: desktop
+A tab whose shell exited keeps its scrollback and the exited line after a
+reload, with no error. Found 2026-11-16: the fit before the attach resized
+the exited terminal and yardd's refusal showed as a "terminal is closed"
+banner.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-gone-$((6*7)); exit\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"shell exited"},{"reload":true},{"goto":"session:{{sid_echo}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm-rows","text":"TEST-gone-42"},{"expect":"css:.xterm-rows","text":"shell exited"},{"wait":1500},{"expect":"text:terminal is closed","count":0},{"shot":"exited-after-reload"}]'
+```
+
 ### close-terminal
 Viewports: desktop
 The selected tab has a "Close terminal" cross. Closing tab 2 removes it and

@@ -800,6 +800,38 @@ async fn terminal_keystrokes_reach_the_shell_in_order() {
     }
 }
 
+#[tokio::test]
+async fn resizing_an_exited_terminal_is_not_an_error() {
+    let sb = Sandbox::new("term-exited");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    let opened = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    let term = opened["termId"].as_str().unwrap().to_string();
+    c.send(json!({ "op": "term.input", "termId": term, "data": "exit\n" })).await;
+    c.wait_after(from, "the shell to exit", |m| m["op"] == "term.exit" && m["termId"] == term).await;
+
+    // The UI fits a terminal, and so resizes it, before the attach reply
+    // tells it the shell exited; after a reload that refusal showed as an
+    // error banner. A tab that is really gone is still refused.
+    let from = c.mark();
+    c.send(json!({ "op": "term.resize", "termId": term, "cols": 100, "rows": 30, "ref": "exited" })).await;
+    c.send(json!({ "op": "term.resize", "termId": "no-such-term", "cols": 100, "rows": 30, "ref": "gone" })).await;
+    // Resizes run in order, so once the second is refused the first was handled.
+    c.wait_after(from, "the gone terminal's resize refused", |m| m["op"] == "error" && m["ref"] == "gone").await;
+    let refused: Vec<&Value> = c.log[from..].iter().filter(|m| m["op"] == "error" && m["ref"] == "exited").collect();
+    assert!(refused.is_empty(), "resizing an exited terminal was refused: {refused:?}");
+
+    // Its tab and scrollback stay until it is closed.
+    let from = c.mark();
+    c.send(json!({ "op": "term.attach", "termId": term, "cols": 100, "rows": 30 })).await;
+    let again = c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    assert_eq!(again["exited"], true);
+}
+
 fn b64(s: &str) -> Vec<u8> {
     base64::engine::general_purpose::STANDARD.decode(s).unwrap()
 }
