@@ -10,7 +10,7 @@ import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
 import { appendToComposer, onAppend, quoted } from "./compose";
-import { tableSegments, type MdTable } from "./markdown";
+import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
@@ -2498,40 +2498,37 @@ function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
           .filter((p) => p.trim())
           .map((para, j) => {
             const lines = para.replace(/^\n+|\n+$/g, "").split("\n");
-            if (lines.every((l) => /^\s*[-*] /.test(l))) {
-              return (
-                <ul key={`${i}-${j}`}>
-                  {lines.map((l, k) => (
-                    <li key={k}>{inline(l.replace(/^\s*[-*] /, ""))}</li>
-                  ))}
-                </ul>
-              );
-            }
-            if (lines.every((l) => /^\s*\d+[.)] /.test(l))) {
-              return (
-                <ol key={`${i}-${j}`}>
-                  {lines.map((l, k) => (
-                    <li key={k}>{inline(l.replace(/^\s*\d+[.)] /, ""))}</li>
-                  ))}
-                </ol>
-              );
-            }
-            const heading = para.match(/^#{1,4} (.+)$/);
-            if (heading) return <h3 key={`${i}-${j}`}>{inline(heading[1])}</h3>;
-            return tableSegments(lines).map((seg, s) =>
-              seg.kind === "table" ? (
-                <MdTableView key={`${i}-${j}-${s}`} table={seg.table} />
-              ) : (
-                <p key={`${i}-${j}-${s}`}>
-                  {seg.lines.map((l, k) => (
-                    <span key={k}>
-                      {k > 0 && <br />}
-                      {inline(l)}
-                    </span>
-                  ))}
-                </p>
-              ),
-            );
+            return blockSegments(lines).map((seg, s) => {
+              const key = `${i}-${j}-${s}`;
+              switch (seg.kind) {
+                case "table":
+                  return <MdTableView key={key} table={seg.table} />;
+                case "heading":
+                  return <h3 key={key}>{inline(seg.text)}</h3>;
+                case "ul":
+                case "ol": {
+                  const List = seg.kind;
+                  return (
+                    <List key={key}>
+                      {seg.items.map((item, k) => (
+                        <li key={k}>{inline(item)}</li>
+                      ))}
+                    </List>
+                  );
+                }
+                default:
+                  return (
+                    <p key={key}>
+                      {seg.lines.map((l, k) => (
+                        <span key={k}>
+                          {k > 0 && <br />}
+                          {inline(l)}
+                        </span>
+                      ))}
+                    </p>
+                  );
+              }
+            });
           });
       })}
     </div>
