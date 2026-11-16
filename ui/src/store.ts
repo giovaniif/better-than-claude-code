@@ -47,19 +47,30 @@ export type Route =
 
 /** The URL hash for a route, so a reload or Back lands on the same screen. */
 export function routeHash(route: Route): string {
-  if (route.page === "session") return `#/s/${encodeURIComponent(route.id)}`;
-  return route.page === "hosts" ? "#/hosts" : "#/";
+  switch (route.page) {
+    case "session":
+      return `#/s/${encodeURIComponent(route.id)}`;
+    case "hosts":
+      return "#/hosts";
+    case "automations":
+      return "#/automations";
+    case "automation":
+      return `#/automations/${encodeURIComponent(route.host)}/${encodeURIComponent(route.id)}`;
+    default:
+      return "#/";
+  }
 }
 
 export function parseHash(hash: string): Route {
-  const m = /^#\/s\/(.+)$/.exec(hash);
-  if (m) {
-    try {
-      return { page: "session", id: decodeURIComponent(m[1]) };
-    } catch {
-      return { page: "new" };
-    }
+  try {
+    const s = /^#\/s\/(.+)$/.exec(hash);
+    if (s) return { page: "session", id: decodeURIComponent(s[1]) };
+    const a = /^#\/automations\/([^/]+)\/([^/]+)$/.exec(hash);
+    if (a) return { page: "automation", host: decodeURIComponent(a[1]), id: decodeURIComponent(a[2]) };
+  } catch {
+    return { page: "new" };
   }
+  if (hash === "#/automations") return { page: "automations" };
   return hash === "#/hosts" ? { page: "hosts" } : { page: "new" };
 }
 
