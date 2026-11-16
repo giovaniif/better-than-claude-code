@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useRef } from "react";
-import { appendToComposer } from "./compose";
+import { returnToComposer } from "./compose";
 import {
   applyEvent,
   type AgentEvent,
@@ -613,7 +613,7 @@ export function useYard(): { state: State; actions: Actions } {
         } else if (msg.op === "queue.returned") {
           // Stop or Edit gave queued text back: it goes to the reply box.
           const back = msg as QueueReturned;
-          if (back.text) appendToComposer(back.sessionId, back.text);
+          if (back.text) returnToComposer(back.sessionId, back.text);
         } else {
           dispatch({ t: "server", msg });
         }
