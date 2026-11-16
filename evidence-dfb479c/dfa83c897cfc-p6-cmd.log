@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run thread --recipe draft-survives-switching-sessions
+# exit 0 after 10879 ms at dfb479ca5fc33bd5cc3630c8f8e4bf28b1577eb7
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T19:46:01.961Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "draft-survives-switching-sessions",
+          "status": "pass",
+          "ms": 9913
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 185 pass
+ 0 fail
+ 401 expect() calls
+Ran 185 tests across 12 files. [95.00ms]
