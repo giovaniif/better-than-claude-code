@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T10:58:04.504Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "list-shows-schedule-next-and-last",
+          "status": "pass",
+          "ms": 5285
+        },
+        {
+          "label": "create-from-the-form",
+          "status": "pass",
+          "ms": 11277
+        },
+        {
+          "label": "run-now-archives-and-lists-the-run",
+          "status": "pass",
+          "ms": 8236
+        },
+        {
+          "label": "pinning-a-run-brings-it-back",
+          "status": "pass",
+          "ms": 2828
+        },
+        {
+          "label": "run-time-is-how-long-it-ran",
+          "status": "pass",
+          "ms": 9561
+        },
+        {
+          "label": "edit-changes-the-schedule",
+          "status": "pass",
+          "ms": 6717
+        },
+        {
+          "label": "disable-stops-the-schedule",
+          "status": "pass",
+          "ms": 6030
+        },
+        {
+          "label": "reload-and-back-keep-the-page",
+          "status": "pass",
+          "ms": 11456
+        },
+        {
+          "label": "delete-removes-the-automation-and-frees-its-runs",
+          "status": "pass",
+          "ms": 3710
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

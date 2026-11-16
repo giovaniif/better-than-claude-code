@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "claim": "On the Automations page a run's time is updatedAt - createdAt, so pinning, grouping or renaming a finished run later makes a sub-second run read as seconds or hours",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-43af",
+  "base": "663cfd74f0353935491c20721c0a9f36b336a473",
+  "head": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T10:56:03.904Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "663cfd74f0353935491c20721c0a9f36b336a473",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "dd0aabc90e5ba96eeadedbc6d1d8df1cdb6493f22005454772e83bb2b37f0242"
+        },
+        {
+          "path": "p1-run-times-mobile.png",
+          "sha256": "f47948749fe8d4c682e1fbc65ac7f9320b813975038a933e989758181ee08a5e"
+        },
+        {
+          "path": "p1-run-times-desktop.png",
+          "sha256": "c0b2c75f598a96bad4f3daa8423cf1c52ac3b4300c145dda0245d84461292086"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:03.950Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "4e544fba9bd740d17404b20165c2b8e6ccbaec7d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9c5c8bd66da0ef67e34e80f64031b7b7ffad4a164fadb3c305a01c971fd9d221"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:04.006Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_runs_finish_time_stays_put_when_it_is_pinned_later",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "08db7f65201c24bc1edefa788aa4233d57cce8201d6fff369778950a660087db"
+        },
+        {
+          "path": "p3-run-times-mobile.png",
+          "sha256": "c3ac9706e0b8d9d32ade02c8db90d5859fd0236ae2b2e05121a6996cf29f3d09"
+        },
+        {
+          "path": "p3-run-times-desktop.png",
+          "sha256": "242d13c4ffbc2fd1504eafdaefede19c51049f59ec545db80861d7c742609fbb"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:36.057Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e608c1b85d3c77dfdbc94b9ae6e7b167279dae290abfdb81e1f04a3d164b1a0d"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:36.103Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "e12984c337c719a33b135a25d3bec266444b0d99d425b57f1952d1f799c492ce"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:58.305Z",
+      "cmd": "verify/yv design-check --base 663cfd74f035",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-automations.json",
+          "sha256": "7386d16803f6ab6a61840740ed941ce0d3efb1787520d58b0485dcc6989cef7d"
+        }
+      ],
+      "addedAt": "2026-11-16T10:56:58.391Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs"
+      ]
+    }
+  ]
+}

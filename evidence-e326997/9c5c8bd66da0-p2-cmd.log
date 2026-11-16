@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_runs_finish_time_stays_put_when_it_is_pinned_later
+# exit 101 after 4580 ms at 4e544fba9bd740d17404b20165c2b8e6ccbaec7d
+
+
+running 1 test
+test a_runs_finish_time_stays_put_when_it_is_pinned_later ... FAILED
+
+failures:
+
+---- a_runs_finish_time_stays_put_when_it_is_pinned_later stdout ----
+
+thread 'a_runs_finish_time_stays_put_when_it_is_pinned_later' (1528247) panicked at crates/yardd/tests/daemon.rs:1712:66:
+a finished run says when it ended: {"account":"default","archived":true,"automation":"a1a1e40002bc1","branch":"yard/patrol-2026-11-16-07-2fc2","createdAt":1794826568466,"cwd":"/tmp/yardd-test-1528246-auto-finished-0/data/wt/repo/yard-patrol-2026-11-16-07-2fc2","effort":"low","engine":"codex","host":"local","id":"s1a1e40003123","model":"fake-fast","parent":null,"pending":[],"permission":"ask","pinned":false,"repo":"/tmp/yardd-test-1528246-auto-finished-0/work/repo","status":"idle","title":"Patrol · 2026-11-16 07:56","updatedAt":1794826568471}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-1528246-auto-finished-0 for inspection
+
+
+failures:
+    a_runs_finish_time_stays_put_when_it_is_pinned_later
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.26s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-43af/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 4.27s
+     Running tests/daemon.rs (target/debug/build/yardd/7bf3bc1ebbbe5c02/out/daemon-7bf3bc1ebbbe5c02)
+error: test failed, to rerun pass `-p yardd --test daemon`

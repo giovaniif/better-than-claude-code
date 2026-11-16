@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "e326997dc02f04c5607c7e4b3813c431634a57ce",
+    "short": "e326997",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T10:56:20.512Z"
+  },
+  "dir": ".verify/evidence/automation-run-duration-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1303,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automation-run-duration-head/run-times-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).join(\", \")",
+          "value": "0s"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1439,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automation-run-duration-head/run-times-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).join(\", \")",
+          "value": "0s"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
