@@ -1,7 +1,7 @@
 // How a thread's items are laid out, after T3 Code's work log: tool calls and
 // thinking between messages fold into one-line groups, and a finished turn
 // folds all of its work into "Worked for 1m 12s" above its final answer.
-import type { Item, ToolItem } from "./protocol";
+import type { Item, SessionMeta, ToolItem } from "./protocol";
 
 export type { ToolItem };
 export type WorkItem = Extract<Item, { kind: "tool" | "reasoning" }>;
@@ -160,4 +160,28 @@ export function duration(ms: number): string {
   const m = Math.floor(s / 60);
   if (m < 60) return `${m}m ${s % 60}s`;
   return `${Math.floor(m / 60)}h ${m % 60}m`;
+}
+
+/** The session each hand-off note in `meta`'s thread points at, by note key.
+ *  Both sides keep one title, so the notes are the way between them. yardd
+ *  writes "Handed off to X." in the source, once per hand-off, and "Handed
+ *  off from X." in the new session, whose `parent` is the source. A source's
+ *  n-th note is its n-th child by creation; a session that is gone gets none. */
+export function handoffLinks(items: Item[], meta: SessionMeta, sessions: Record<string, SessionMeta>): Record<string, string> {
+  const children = Object.values(sessions)
+    .filter((s) => s.parent === meta.id)
+    .sort((a, b) => a.createdAt - b.createdAt);
+  const parent = meta.parent && sessions[meta.parent] ? meta.parent : null;
+  const links: Record<string, string> = {};
+  let next = 0;
+  for (const it of items) {
+    if (it.kind !== "note") continue;
+    if (it.text.startsWith("Handed off to ")) {
+      const child = children[next++];
+      if (child) links[it.key] = child.id;
+    } else if (it.text.startsWith("Handed off from ") && parent) {
+      links[it.key] = parent;
+    }
+  }
+  return links;
 }

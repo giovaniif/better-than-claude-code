@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { applyEvent, type AgentEvent, type Item } from "./protocol";
-import { duration, layout, summarize, thoughtLine, type ToolItem, type WorkItem } from "./thread";
+import type { SessionMeta } from "./protocol";
+import { duration, handoffLinks, layout, summarize, thoughtLine, type ToolItem, type WorkItem } from "./thread";
 
 const fold = (events: AgentEvent[]): Item[] => events.reduce((acc, ev, i) => applyEvent(acc, ev, i), [] as Item[]);
 const shape = (rows: ReturnType<typeof layout>) =>
@@ -145,5 +146,31 @@ describe("subagents", () => {
     const rows = layout(items, false);
     expect(shape(rows)).toEqual(["user", "work(1)", "assistant"]);
     expect(tool(rows).state).toBe("running");
+  });
+});
+
+describe("handoffLinks", () => {
+  const meta = (id: string, extra: Partial<SessionMeta> = {}): SessionMeta =>
+    ({ id, title: "T", engine: "codex", model: "m", effort: "low", cwd: "/w", status: "idle", host: "local", createdAt: 0, updatedAt: 0, ...extra }) as SessionMeta;
+  const note = (key: string, text: string): Item => ({ kind: "note", key, text });
+
+  test("the source's note links to the session it handed off to, in order", () => {
+    const src = meta("s1");
+    const first = meta("s2", { parent: "s1", engine: "claude", createdAt: 10 });
+    const second = meta("s3", { parent: "s1", engine: "claude", createdAt: 20 });
+    const items = [note("e1", "Handed off to Claude."), { kind: "user", key: "e2", text: "more" } as Item, note("e3", "Handed off to Claude.")];
+    const links = handoffLinks(items, src, { s1: src, s3: second, s2: first });
+    expect(links).toEqual({ e1: "s2", e3: "s3" });
+  });
+
+  test("the new session's note links back to its source", () => {
+    const src = meta("h1~s1");
+    const child = meta("h1~s2", { parent: "h1~s1", engine: "claude" });
+    expect(handoffLinks([note("e0", "Handed off from Codex.")], child, { "h1~s1": src, "h1~s2": child })).toEqual({ e0: "h1~s1" });
+  });
+
+  test("no link to a session that is gone, and other notes stay plain", () => {
+    const child = meta("s2", { parent: "s1" });
+    expect(handoffLinks([note("e0", "Handed off from Codex."), note("e1", "Something else.")], child, { s2: child })).toEqual({});
   });
 });
