@@ -47,6 +47,15 @@ yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:butt
 yv state --expect '{"sessions":[{"engine":"claude","title":"[edit] TEST-fix the greeting"}]}'
 ```
 
+### hand-off-notes-link-both-sessions
+Both sessions keep the same title, so each hand-off note opens the other
+session: "Handed off from Codex." goes back to the source, "Handed off to
+Claude." goes to the new one.
+
+```sh
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Sonnet 5.5","exact":true}},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Sonnet 5.5","timeout":15000},{"expect":{"css":".note","hasText":"Handed off from Codex."}},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Fake Fast Low"},{"expect":"css:.thread","text":"Handed off to Claude."},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
+```
+
 ### effort-change-claude-mid-session (manual: not built, see ARCHITECTURE "Engines")
 Changing a Claude session's effort mid-session goes through `applyFlagSettings`, which is not wired yet.
 
