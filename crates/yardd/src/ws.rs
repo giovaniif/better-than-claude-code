@@ -71,7 +71,12 @@ async fn client(socket: WebSocket, app: Arc<App>) {
     let mut rx = app.tx.subscribe();
     // Replies meant for this client only.
     let (direct, mut direct_rx) = mpsc::unbounded_channel::<String>();
-    let _ = direct.send(app.snapshot().to_string());
+    // The snapshot goes out before the loop: queued, `select!` could send a
+    // broadcast first, and the UI replaces its state with a snapshot, so a
+    // change that overtook it was lost.
+    if sink.send(Message::Text(app.snapshot().to_string())).await.is_err() {
+        return;
+    }
     // This client's own connection to each remote host.
     let mut pipes: HashMap<String, remote::Pipe> = HashMap::new();
     let mut host_ids = app.remotes.ids();
@@ -100,7 +105,7 @@ async fn client(socket: WebSocket, app: Arc<App>) {
                 }
                 // Fell behind: resync from a fresh snapshot.
                 Err(broadcast::error::RecvError::Lagged(_)) => {
-                    let _ = direct.send(app.snapshot().to_string());
+                    if sink.send(Message::Text(app.snapshot().to_string())).await.is_err() { break; }
                 }
                 Err(broadcast::error::RecvError::Closed) => break,
             },
