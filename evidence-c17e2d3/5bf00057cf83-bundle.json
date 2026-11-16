@@ -1,0 +1,88 @@
+{
+  "v": 1,
+  "claim": "The land gate blocks a PR as data-loss when a Rust test added to an existing mod tests removes its own temp dir: the #[cfg(test)] marker is outside the hunk, though git names the module in the hunk header (#44 and #46 are blocked by this).",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-6b8b",
+  "base": "0c1f1c2384bc7532b1cee03dfa5a5523aea95975",
+  "head": "c17e2d3d548a91e097c6fc12ba0d4ba06c0d9c1e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/land.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T07:57:03.075Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1ff769602cb6ebd31a0d61325ac2985e72bc7fe6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-land44.json",
+          "sha256": "779fbff6d0aaa4c31c641a9df21756664de2dc6c61f1d3f3fb969a8e7b8b7803"
+        }
+      ],
+      "addedAt": "2026-11-16T07:57:04.976Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1ff769602cb6ebd31a0d61325ac2985e72bc7fe6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e81dcbc63d93345d23097abeb4becbd31ecd68ae58925172837980bddc600856"
+        }
+      ],
+      "addedAt": "2026-11-16T07:57:05.020Z",
+      "cmd": "cd verify && bun test src/cli.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "c17e2d3d548a91e097c6fc12ba0d4ba06c0d9c1e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "9f321b5d2858c5f4e0123279ce0a4d83002941e4ff04cfe0b5b678a8ad7b208f"
+        }
+      ],
+      "addedAt": "2026-11-16T07:57:05.587Z",
+      "cmd": "(cd verify && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c17e2d3d548a91e097c6fc12ba0d4ba06c0d9c1e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "008a50d5272721c3a7dacddf6fc4433c82f1b8bd6147e07919bf94e2dc819075"
+        }
+      ],
+      "addedAt": "2026-11-16T07:57:18.186Z",
+      "cmd": "/tmp/patrol-s/scan-live-prs.sh",
+      "exit": 0
+    }
+  ]
+}

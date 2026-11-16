@@ -1,0 +1,6 @@
+$ /tmp/patrol-s/scan-live-prs.sh
+# exit 0 after 1071 ms at c17e2d3d548a91e097c6fc12ba0d4ba06c0d9c1e
+
+44 []
+46 []
+
