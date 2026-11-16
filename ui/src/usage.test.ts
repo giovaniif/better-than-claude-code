@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatReset, levelOf, metersFor, percentText } from "./usage";
+import { formatReset, levelOf, metersFor, percentText, stripGroups } from "./usage";
 
 const NOW = 1_800_000_000_000;
 const S = 1000;
@@ -133,5 +133,109 @@ describe("metersFor", () => {
   test("meters carry their threshold level", () => {
     const meters = metersFor("claude", { claude: { windows: { five_hour: { utilization: 0.95, resetsAt: null }, seven_day: { utilization: 0.75, resetsAt: null } } } });
     expect(meters.map((m) => m.level)).toEqual(["high", "warn"]);
+  });
+});
+
+describe("stripGroups", () => {
+  const at = (ms: number) => Math.floor(ms / 1000);
+  const claude = (five: number, fiveReset: number | null, week = 0.2) => ({
+    windows: {
+      five_hour: { utilization: five, resetsAt: fiveReset == null ? null : at(fiveReset) },
+      seven_day: { utilization: week, resetsAt: at(NOW + 3 * DAY) },
+    },
+  });
+  const codex = (used: number, reset: number | null) => ({
+    primary: { usedPercent: used, windowDurationMins: 300, resetsAt: reset == null ? null : at(reset) },
+    secondary: { usedPercent: 30, windowDurationMins: 10080, resetsAt: at(NOW + 3 * DAY) },
+  });
+  const BOTH = ["claude", "codex"] as ("claude" | "codex")[];
+  const pick = (groups: ReturnType<typeof stripGroups>) => groups.map((g) => `${g.engine}/${g.account ?? "-"}@${g.host}`);
+
+  test("a host with no Claude data does not hide another's: the remote's Claude limits show", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { codex: codex(12, NOW + HOUR) }, accounts: [] },
+        { host: "server", usage: { claude: claude(0.47, NOW + HOUR) }, accounts: [] },
+      ],
+      BOTH,
+    );
+    expect(pick(groups)).toEqual(["claude/-@server", "codex/-@local"]);
+    expect(metersFor("claude", groups[0].usage).map((m) => m.percent)).toEqual([47, 20]);
+  });
+
+  test("the same engine on two hosts shows once, from the one that reported last (later reset time)", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { claude: claude(0.9, NOW - HOUR), codex: codex(40, NOW + 2 * HOUR) }, accounts: [] },
+        { host: "server", usage: { claude: claude(0.1, NOW + 4 * HOUR), codex: codex(10, NOW + HOUR) }, accounts: [] },
+      ],
+      BOTH,
+    );
+    expect(pick(groups)).toEqual(["claude/-@server", "codex/-@local"]);
+  });
+
+  test("same reset times: more used is the later report, since use only grows inside a window", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { claude: claude(0.3, NOW + HOUR) }, accounts: [] },
+        { host: "server", usage: { claude: claude(0.5, NOW + HOUR) }, accounts: [] },
+      ],
+      ["claude"],
+    );
+    expect(pick(groups)).toEqual(["claude/-@server"]);
+  });
+
+  test("no reset times to compare: the first host listed wins", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { claude: { fiveHour: 0.2, sevenDay: 0.1 } }, accounts: [] },
+        { host: "server", usage: { claude: { fiveHour: 0.6, sevenDay: 0.3 } }, accounts: [] },
+      ],
+      ["claude"],
+    );
+    expect(pick(groups)).toEqual(["claude/-@local"]);
+  });
+
+  test("added accounts get their own rows, labelled with their name, after Default", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { codex: codex(12, NOW + HOUR) }, accounts: [] },
+        {
+          host: "server",
+          usage: { claude: claude(0.47, NOW + HOUR), accounts: { a1: claude(0.91, NOW + HOUR), a2: codex(77, NOW + HOUR) } },
+          accounts: [
+            { id: "a1", engine: "claude", name: "Work" },
+            { id: "a2", engine: "codex", name: "Team" },
+          ],
+        },
+      ],
+      BOTH,
+    );
+    expect(pick(groups)).toEqual(["claude/-@server", "claude/Work@server", "codex/-@local", "codex/Team@server"]);
+    expect(metersFor("claude", groups[1].usage)[0].percent).toBe(91);
+    expect(metersFor("codex", groups[3].usage)[0].percent).toBe(77);
+  });
+
+  test("an account is matched across hosts by engine and name, not by its per-host id", () => {
+    const groups = stripGroups(
+      [
+        { host: "local", usage: { accounts: { x: claude(0.2, NOW + HOUR) } }, accounts: [{ id: "x", engine: "claude", name: "work" }] },
+        { host: "server", usage: { accounts: { y: claude(0.6, NOW + 3 * HOUR) } }, accounts: [{ id: "y", engine: "claude", name: "Work" }] },
+      ],
+      ["claude"],
+    );
+    expect(pick(groups)).toEqual(["claude/Work@server"]);
+  });
+
+  test("an account the host no longer lists, or one with no data yet, shows nothing", () => {
+    const groups = stripGroups(
+      [{ host: "local", usage: { accounts: { gone: claude(0.5, NOW + HOUR) } }, accounts: [{ id: "a1", engine: "claude", name: "Work" }] }],
+      ["claude"],
+    );
+    expect(groups).toEqual([]);
+  });
+
+  test("no hosts shown, no rows", () => {
+    expect(stripGroups([], BOTH)).toEqual([]);
   });
 });

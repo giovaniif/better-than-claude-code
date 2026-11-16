@@ -169,6 +169,7 @@ describe("route in the URL", () => {
     for (const route of [
       { page: "new" },
       { page: "hosts" },
+      { page: "settings" },
       { page: "session", id: "s1a1e19674866" },
       { page: "automations" },
       { page: "automation", host: "local", id: "new" },
@@ -177,6 +178,7 @@ describe("route in the URL", () => {
       expect(parseHash(routeHash(route))).toEqual(route);
     expect(parseHash("")).toEqual({ page: "new" });
     expect(parseHash("#/s/%E0%A4%A")).toEqual({ page: "new" });
+    expect(routeHash({ page: "settings" })).toBe("#/settings");
   });
 
   test("a reload opens the session the URL names once the snapshot lists it", () => {
