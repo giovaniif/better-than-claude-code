@@ -49,13 +49,15 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:butt
 Viewports: desktop
 A file the agent created is untracked, so `git diff` leaves it out. The pane
 still shows its lines, as a new file, and a binary one as "No text diff"
-(finding #43).
+(finding #43). With a dozen more files the cards still show their lines: the
+pane scrolls, the cards do not shrink to their headers.
 
 ```sh
 yv state --save echo_cwd='sessions[id={{sid_echo}}].cwd'
 printf 'TEST-first line\nTEST-second line\n' > "$(v echo_cwd)/TEST-new-file.txt"
 printf 'TEST\000binary' > "$(v echo_cwd)/TEST-new-blob.bin"
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".card","hasText":"TEST-new-file.txt"},"text":"+TEST-second line"},{"expect":{"css":".card","hasText":"TEST-new-blob.bin"},"text":"No text diff."},{"shot":"new-file"}]'
+for i in 01 02 03 04 05 06 07 08 09 10 11 12; do echo "TEST-more $i" > "$(v echo_cwd)/TEST-more-$i.txt"; done
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".card","hasText":"TEST-new-file.txt"},"text":"+TEST-second line"},{"expect":{"css":".card","hasText":"TEST-new-blob.bin"},"text":"No text diff."},{"eval":"[...document.querySelectorAll(\".pane-body .card\")].filter((c)=>c.scrollHeight>c.clientHeight+1).length","equals":0},{"shot":"new-file"}]'
 ```
 
 ## Gotchas
