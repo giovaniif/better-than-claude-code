@@ -1,0 +1,54 @@
+#!/usr/bin/env bun
+// A scripted stand-in for xAI's `grok` CLI (Grok Build), for yardd's tests
+// and verify/yv's isolated environments. No turn reaches a model.
+//
+//   grok agent stdio         the ACP agent in acp-agent.mjs; its `initialize`
+//                            lists two models in `_meta.modelState`, and
+//                            session/new needs a login, as the real one does
+//   grok models              "You are not authenticated." or "You are logged
+//                            in as <account>@grok.example.", then the models
+//   grok login --device-auth the real output: a link with a code, the code,
+//                            "Waiting for authorization...", then after 2.5 s
+//                            the login is saved and it exits 0. A code of
+//                            FAIL-FAKE (FAKE_GROK_LOGIN_FAIL set) exits 1.
+//
+// The login lives in GROK_HOME (an added account's folder) or else
+// FAKE_CODEX_DIR/grok-home, as a `logged-in` file. Default also counts as
+// logged in with FAKE_CODEX_DIR/grok-logged-in, which `yv iso up` writes.
+
+import { appendFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { runAgent } from "./acp-agent.mjs";
+
+const dir = process.env.FAKE_CODEX_DIR ?? "/tmp";
+const home = process.env.GROK_HOME || `${dir}/grok-home`;
+const account = process.env.GROK_HOME ? process.env.GROK_HOME.split("/").pop() : "default";
+mkdirSync(home, { recursive: true });
+const loggedIn = () => existsSync(`${home}/logged-in`) || (!process.env.GROK_HOME && existsSync(`${dir}/grok-logged-in`));
+const args = process.argv.slice(2);
+appendFileSync(`${dir}/grok.log`, `run ${args.join(" ")} account=${account}\n`);
+
+if (args[0] === "--version") {
+  console.log("grok 0.0.0-fake");
+} else if (args[0] === "agent" && args.includes("stdio")) {
+  runAgent({ engine: "grok", state: home, account, loggedIn });
+} else if (args[0] === "models") {
+  console.log(loggedIn() ? `You are logged in as ${account}@grok.example.` : "You are not authenticated.");
+  console.log("\nDefault model: fake-small\n\nAvailable models:\n  * fake-small (default)\n  - fake-large");
+} else if (args[0] === "login") {
+  const code = process.env.FAKE_GROK_LOGIN_FAIL ? "FAIL-FAKE" : "GROK-1234";
+  process.stdout.write(
+    `\r\nTo sign in, open this URL in your browser:\r\n\r\n  https://accounts.x.ai/oauth2/device?user_code=${code}\r\n\r\n` +
+      `Confirm this code in your browser:\r\n\r\n  ${code}\r\n\r\n\x1b[90mOnly continue with a code you requested.\x1b[0m\r\n\r\nWaiting for authorization...\r\n`,
+  );
+  // Long enough to see the code in a screenshot, as a person would.
+  await Bun.sleep(2500);
+  if (process.env.FAKE_GROK_LOGIN_FAIL) {
+    process.stdout.write("Error: the code expired\r\n");
+    process.exit(1);
+  }
+  writeFileSync(`${home}/logged-in`, "yes");
+  process.stdout.write("Logged in.\r\n");
+} else {
+  console.error(`fake grok: ${args.join(" ")} is not implemented`);
+  process.exit(2);
+}

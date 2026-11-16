@@ -656,7 +656,7 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
 pub fn route(msg: &Value) -> Option<String> {
     // Ops that name no session say which host they are for. An upload names
     // either: a host from the new-session page, a session from a reply box.
-    if ["session.create", "git.branches", "fs.dirs", "attach.put", "engines.status", "account.add", "account.remove", "login.start", "login.code", "login.cancel", "claude.sessions", "session.import", "automation.list", "automation.save", "automation.delete", "automation.run"]
+    if ["session.create", "git.branches", "fs.dirs", "attach.put", "engines.status", "account.add", "account.remove", "login.start", "login.code", "login.choose", "login.cancel", "claude.sessions", "session.import", "automation.list", "automation.save", "automation.delete", "automation.run"]
         .iter()
         .any(|op| msg["op"] == *op)
     {

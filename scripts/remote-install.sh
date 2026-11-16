@@ -141,11 +141,12 @@ done
 [ -n "$health" ] || fail "yardd did not answer on port $port; see $logs"
 echo "Running: $health"
 
-# What the engines look like from the service's PATH.
-for engine in claude codex; do
+# What the engines look like from the service's PATH. OpenCode and Grok are
+# optional: they are named only where they are installed.
+for engine in claude codex opencode grok; do
   bin="$(PATH="$login_path" command -v "$engine" || true)"
   if [ -z "$bin" ]; then
-    echo "@@engine $engine missing"
+    case "$engine" in claude|codex) echo "@@engine $engine missing" ;; esac
     continue
   fi
   state=ok
@@ -153,6 +154,9 @@ for engine in claude codex; do
     state=logged-out
   fi
   if [ "$engine" = claude ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ] && [ ! -s "$HOME/.claude/.credentials.json" ]; then
+    state=logged-out
+  fi
+  if [ "$engine" = grok ] && PATH="$login_path" grok models 2>/dev/null | head -n 1 | grep -q 'not authenticated'; then
     state=logged-out
   fi
   echo "@@engine $engine $state"

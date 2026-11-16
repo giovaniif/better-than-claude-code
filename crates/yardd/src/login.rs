@@ -33,10 +33,12 @@ pub struct Logins {
     claude: Mutex<HashMap<String, ClaudeLogin>>,
     /// account -> Codex login id
     codex: Mutex<HashMap<String, String>>,
-    next: std::sync::atomic::AtomicU64,
+    pub opencode: crate::opencode::Logins,
+    pub grok: crate::grok::Logins,
+    pub next: std::sync::atomic::AtomicU64,
 }
 
-fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
+pub fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
     let mut msg = json!({ "op": "login", "engine": engine, "account": account, "state": state });
     if let (Some(m), Some(e)) = (msg.as_object_mut(), extra.as_object()) {
         m.extend(e.clone());
@@ -48,17 +50,23 @@ fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
 /// `engines` is each engine's Default login; `accounts` has the added ones by id.
 pub async fn status(app: &Arc<App>) -> Value {
     let added = app.accounts.all();
-    let one = |engine: String, account: String| async move {
-        let state = if engine == "codex" { codex_status(app, &account).await } else { claude_status(app, &account).await };
-        (account, state)
-    };
-    let (claude, codex, rest) = tokio::join!(
-        one("claude".into(), DEFAULT.into()),
-        one("codex".into(), DEFAULT.into()),
+    let one = |engine: String, account: String| async move { (engine.clone(), account.clone(), engine_status(app, &engine, &account).await) };
+    let (defaults, rest) = tokio::join!(
+        futures_util::future::join_all(crate::engines::ALL.iter().map(|e| one(e.to_string(), DEFAULT.into()))),
         futures_util::future::join_all(added.iter().map(|a| one(a.engine.clone(), a.id.clone()))),
     );
-    let accounts: serde_json::Map<String, Value> = rest.into_iter().collect();
-    json!({ "op": "engines", "engines": { "claude": claude.1, "codex": codex.1 }, "accounts": accounts })
+    let engines: serde_json::Map<String, Value> = defaults.into_iter().map(|(engine, _, state)| (engine, state)).collect();
+    let accounts: serde_json::Map<String, Value> = rest.into_iter().map(|(_, account, state)| (account, state)).collect();
+    json!({ "op": "engines", "engines": engines, "accounts": accounts })
+}
+
+async fn engine_status(app: &Arc<App>, engine: &str, account: &str) -> Value {
+    match engine {
+        "codex" => codex_status(app, account).await,
+        "opencode" => crate::opencode::status(app, account).await,
+        "grok" => crate::grok::status(app, account).await,
+        _ => claude_status(app, account).await,
+    }
 }
 
 async fn claude_status(app: &Arc<App>, account: &str) -> Value {
@@ -114,6 +122,8 @@ pub async fn start(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
     match engine {
         "codex" => start_codex(app, account).await,
         "claude" => start_claude(app, account),
+        "opencode" => crate::opencode::start(app, account).await,
+        "grok" => crate::grok::start(app, account),
         _ => bail!("unknown engine {engine}"),
     }
 }
@@ -245,14 +255,18 @@ fn start_claude(app: &Arc<App>, account: &str) -> Result<()> {
     Ok(())
 }
 
-/// The code from the sign-in page, typed into `claude auth login`.
-pub fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<()> {
-    if engine != "claude" {
-        bail!("only Claude Code takes a code");
-    }
+/// The code from the sign-in page, typed into `claude auth login`; for
+/// OpenCode, a provider's API key or sign-in code.
+pub async fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<()> {
     let code = code.trim();
     if code.is_empty() || code.contains(['\r', '\n']) {
         bail!("paste the code from the sign-in page");
+    }
+    if engine == "opencode" {
+        return crate::opencode::code(app, account, code).await;
+    }
+    if engine != "claude" {
+        bail!("only Claude Code and OpenCode take a code");
     }
     let mut slot = app.logins.claude.lock().unwrap();
     let login = slot.get_mut(account).context("no Claude login is running; start again")?;
@@ -267,6 +281,8 @@ pub fn code(app: &Arc<App>, engine: &str, account: &str, code: &str) -> Result<(
 pub async fn cancel(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
     match engine {
         "claude" => cancel_claude(app, account),
+        "opencode" => crate::opencode::cancel(app, account),
+        "grok" => crate::grok::cancel(app, account),
         "codex" => {
             let old = app.logins.codex.lock().unwrap().remove(account);
             if let (Some(id), Some(client)) = (old, app.codex_running(account)) {
@@ -306,7 +322,7 @@ fn strip_claude_env_tokio(cmd: &mut Command) {
 
 /// Drop terminal escapes: CSI (`ESC [ … final`) and OSC (`ESC ] … BEL` or
 /// `ESC ] … ESC \`), which is how the CLI wraps its link.
-fn strip_ansi(s: &str) -> String {
+pub fn strip_ansi(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
     let mut chars = s.chars().peekable();
     while let Some(c) = chars.next() {
@@ -342,7 +358,7 @@ fn sign_in_url(text: &str) -> Option<String> {
     (text.len() > start + url.len() && url.contains("oauth")).then_some(url)
 }
 
-fn last_line(text: &str) -> Option<String> {
+pub fn last_line(text: &str) -> Option<String> {
     text.lines()
         .map(str::trim)
         .filter(|l| !l.is_empty() && !l.starts_with("Paste code"))

@@ -71,7 +71,8 @@ struct Inner {
     procs: HashMap<String, Vec<ProcRow>>,
     /// Claude session -> its sidecar.
     sidecars: HashMap<String, u32>,
-    /// Each account's `codex app-server`. It cannot be split by session, but
+    /// Each account's `codex app-server`, and each ACP agent (OpenCode, Grok)
+    /// keyed `<engine>/<account>`. It cannot be split by session, but
     /// the commands it runs are its children and can.
     codex_servers: HashMap<String, u32>,
     /// Codex session -> running command item.

@@ -6,6 +6,8 @@ import type { Automation, Engine, Permission, Schedule, SessionMeta } from "./pr
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, type Actions, type State } from "./store";
 import { describeLast, describeNext, describeSchedule, runsOf, scheduleProblem } from "./automations";
 import { duration } from "./thread";
+import { ENGINE_NAME, pickerEngines } from "./engines";
+import { metersFor } from "./usage";
 import {
   BranchPicker,
   Cloud,
@@ -208,7 +210,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   // engine on save.
   useEffect(() => {
     if (editing) return;
-    if (models.claude.length + models.codex.length > 0 && !models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
+    if (Object.values(models).some((l) => (l?.length ?? 0) > 0) && !models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
   }, [models, target]);
   useEffect(() => {
     if (!cwd && workspace && !editing) setCwd(workspace);
@@ -295,7 +297,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
               {isRepo && <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />}
             </div>
             <div className="automation-pickers">
-              <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"] as Engine[]} onChange={setChoice} />
+              <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={pickerEngines(models)} onChange={setChoice} />
               <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
             </div>
             <span className="muted small">
@@ -352,7 +354,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
                 <input aria-label="Weekly usage limit percent" className="field" type="number" min={0} max={100} placeholder="no limit" value={week} onChange={(e) => setWeek(e.target.value)} />%
               </label>
             </div>
-            <span className="muted small">Applies to scheduled runs; Run now always starts one. The limits read the {choice.engine === "claude" ? "Claude" : "Codex"} plan usage.</span>
+            <span className="muted small">Applies to scheduled runs; Run now always starts one. The limits read the {ENGINE_NAME[choice.engine]} plan usage{metersFor(choice.engine, usageOn(state, target)).length ? "" : ", which it does not report, so they never skip a run"}.</span>
           </div>
           {(error || problem) && (
             <div className="small automation-reason" role="alert">

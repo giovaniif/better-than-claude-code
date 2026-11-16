@@ -229,7 +229,7 @@ pub async fn create_session(
     if !Path::new(cwd).is_dir() {
         bail!("{cwd} is not a folder");
     }
-    if engine != "claude" && engine != "codex" {
+    if !crate::engines::is_engine(engine) {
         bail!("unknown engine {engine}");
     }
     let permission = msg["permission"].as_str().unwrap_or("ask");
@@ -314,7 +314,16 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 app.broadcast(json!({ "op": "login", "engine": engine, "account": account, "state": "failed", "error": format!("{e:#}") }));
             }
         }
-        "login.code" => crate::login::code(app, str_field(msg, "engine")?, account_field(msg), str_field(msg, "code")?)?,
+        "login.code" => crate::login::code(app, str_field(msg, "engine")?, account_field(msg), str_field(msg, "code")?).await?,
+        // OpenCode: the provider and way in picked in the login dialog.
+        "login.choose" => {
+            let account = account_field(msg);
+            app.accounts.check("opencode", account)?;
+            let index = msg["method"].as_u64().context("missing `method`")?;
+            if let Err(e) = crate::opencode::choose(app, account, str_field(msg, "provider")?, index).await {
+                app.broadcast(json!({ "op": "login", "engine": "opencode", "account": account, "state": "failed", "error": format!("{e:#}") }));
+            }
+        }
         "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?, account_field(msg)).await?,
         "account.add" => {
             let engine = str_field(msg, "engine")?;
@@ -340,6 +349,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 client.shutdown();
             }
             app.guard.clear_codex_server(&removed.id);
+            let agent = app.acp.lock().unwrap().remove(&crate::acp::key(&removed.engine, &removed.id));
+            if let Some(client) = agent.and_then(|cell| cell.get().cloned()) {
+                client.shutdown();
+            }
             app.broadcast_accounts();
             let app = app.clone();
             tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });
@@ -428,8 +441,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 bail!("unknown permission mode {permission}");
             }
             let meta = app.meta(sid).context("no such session")?;
-            // Codex takes the mode with each turn; a running Claude sidecar
-            // switches now, a queued one starts in the new mode.
+            // Codex and the ACP engines take the mode with their next turn (yardd
+            // answers an ACP engine's later questions by the new mode at once); a
+            // running Claude sidecar switches now, a queued one starts in it.
             if meta.engine == "claude" && meta.status != "queued" {
                 claude::set_permission(app, sid, permission)?;
             }
@@ -486,6 +500,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             // Each engine logs `approval_resolved` itself, before it passes the answer on.
             match meta.engine.as_str() {
                 "codex" => codex::approve(app, sid, request_id, decision).await?,
+                "opencode" | "grok" => crate::acp::approve(app, sid, request_id, decision).await?,
                 _ => claude::approve(app, sid, request_id, decision)?,
             }
         }
@@ -607,8 +622,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
 async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     // A queued session has no engine yet: this just drops it from the queue.
     app.guard.forget(sid);
-    if meta.engine == "codex" {
-        codex::forget(app, sid).await;
+    match meta.engine.as_str() {
+        "codex" => codex::forget(app, sid).await,
+        "opencode" | "grok" => crate::acp::forget(app, sid),
+        _ => {}
     }
     pty::close_session(app, sid);
     app.remove_session(sid);

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Engine, PrCheck, PrResult, PrThread, PullRequest, SessionMeta } from "./protocol";
 import { hostOf, hostOnline, modelsOn, type Actions, type State } from "./store";
-
-const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
+import { ENGINE_NAME, reviewEngine } from "./engines";
 const RESULT_LABEL: Record<PrCheck["result"], string> = {
   passed: "passed",
   failed: "failed",
@@ -99,9 +98,9 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
     last.current = { id: meta.id, busy };
   }, [meta.id, busy]);
 
-  const other: Engine = meta.engine === "claude" ? "codex" : "claude";
   const models = modelsOn(state, hostOf(meta));
-  const reviewModel = models[other].find((m) => m.isDefault) ?? models[other][0];
+  const other: Engine = reviewEngine(meta.engine, models) ?? (meta.engine === "claude" ? "codex" : "claude");
+  const reviewModel = models[other]?.find((m) => m.isDefault) ?? models[other]?.[0];
   const review = () => {
     if (!reviewModel || sent) return;
     setSent(true);

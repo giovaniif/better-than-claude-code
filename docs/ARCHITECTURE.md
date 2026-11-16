@@ -2,14 +2,14 @@
 
 Working name. Design: [Agent Harness UI](https://claude.ai/artifact/XQdXoraWtiuUwwrrCt3462), sources in [design/](../design).
 
-One UI for Claude Code and Codex sessions on my own subscriptions: fast switching between engines, models and efforts, a terminal and PR review next to each session, and the same view for sessions on a remote box.
+One UI for Claude Code, Codex, OpenCode and Grok sessions on my own subscriptions: fast switching between engines, models and efforts, a terminal and PR review next to each session, and the same view for sessions on a remote box.
 
-Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.1.318, codex-cli 0.159.2, Agent SDK 0.3.323.
+Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.1.318, codex-cli 0.159.2, Agent SDK 0.3.323. OpenCode and Grok added 2026-11-16, checked against opencode-ai 1.19.5 and @xai-official/grok 1.0.77.
 
 ## Decided
 
 - Tauri shell. Rust core, web UI. Personal first.
-- The app drives the installed `claude` and `codex` CLIs and turns their event streams into one UI. It never holds a login: credentials stay where each CLI keeps them. It can start a CLI's own login flow on a host (see Engine logins).
+- The app drives the installed `claude`, `codex`, `opencode` and `grok` CLIs and turns their event streams into one UI. Which engines exist, their names and what they can do live in one place each side: `crates/yardd/src/engines.rs` and `ui/src/engines.ts`. It never holds a login: credentials stay where each CLI keeps them. It can start a CLI's own login flow on a host (see Engine logins).
 - Chat UI in the Claude Code message style, not a terminal. The terminal is a separate pane.
 - White, minimal theme. One flat session list. A cloud icon marks sessions on a remote host.
 - New session is a full page with a centered prompt box, not a dialog.
@@ -20,6 +20,7 @@ Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.
 
 - **yardd** (`crates/yardd`): Rust daemon. Owns every agent process, the event log and host stats. Serves the UI and a WebSocket on `127.0.0.1:47717` (`YARD_BIND` changes it: one address or a comma-separated list; the container image uses `0.0.0.0`, a server behind a reverse proxy adds the proxy-facing address next to loopback). The port stays out of 4510-4559, which LocalStack publishes on every interface.
 - **yard-claude** (`sidecar/yard-claude`): TypeScript sidecar on the Claude Agent SDK, run with Bun. One per Claude session, JSON lines over stdio. The SDK exists only for TypeScript and Python.
+- **ACP agents**: `opencode acp` and `grok agent stdio`, one per engine and account, driven from yardd's `acp.rs` (see Engines).
 - **ui** (`ui`): React + Vite. Talks only to yardd.
 - **app** (`app/src-tauri`): Tauri v2 window. Starts yardd if nothing is listening, then loads yardd's page. It holds no agent state and yardd outlives it, so sessions survive closing the app.
 - **App updates:** the packaged app checks `releases/latest/download/latest.json` at launch and every 6 hours (Tauri updater plugin), installs a newer release in place, then asks before restarting. Restarting stops the local yardd (SIGTERM, found with `lsof` on the port) so the new app starts its own; sessions come back, a running turn stops. At launch, an older yardd than the bundled one gets the same question instead of only the title warning. The package is the notarized, stapled `.app`, tarred and signed with the updater key by `.github/scripts/macos-sign.sh`; `tauri.conf.json` holds the public key. A copy run from the repo never updates.
@@ -30,7 +31,7 @@ The WebSocket is on a localhost TCP port because a webview cannot open a unix so
 
 ## Events
 
-Both engines are normalized to one event list per session. The UI replays it on open.
+Every engine is normalized to one event list per session. The UI replays it on open.
 
 | Event | Meaning |
 |---|---|
@@ -84,18 +85,33 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - It runs on the CLI's own login (`apiKeySource: none`).
 - Never parse `~/.claude/projects/*.jsonl`. Use the SDK's `listSessions` and `getSessionMessages`.
 
+**ACP engines: OpenCode and Grok.** Both speak ACP, the Agent Client Protocol (JSON-RPC lines on stdio), so one driver, `crates/yardd/src/acp.rs`, runs both. One agent process per engine and account, started on first use like Codex's app-server, holds that account's sessions. `opencode serve` (HTTP + SSE) and a sidecar were the alternatives; ACP gave both engines from one client and needs no port.
+
+- `initialize` (we offer no file system and no terminal: the agent uses its own), `session/new { cwd }` per session, `session/prompt` per message. The prompt's answer (`stopReason`) ends the turn: `end_turn` completed, `cancelled` interrupted, `refusal` failed, `max_tokens` completed with a note.
+- `session/update` becomes events: `agent_message_chunk` deltas and `agent_thought_chunk` reasoning deltas, closed into `assistant_message` and `reasoning` when a tool call starts or the turn ends; `tool_call`/`tool_call_update` become `tool_started`/`tool_completed` (kinds `execute`, `read`, `edit`, `search`, `fetch` map to command, read, edit, search, other); a `diff` content becomes one `file_change` (the Claude sidecar's patch: changed lines with two lines of context), before the approval that asks about it.
+- Model, effort and mode are the session's `configOptions` (`session/set_config_option`; categories `model`, `thought_level`, `mode`), or `session/set_mode`. yardd sets them before a prompt when they differ from what it last set, so a switch takes effect from the next turn.
+- Approvals: `session/request_permission` becomes an `approval_request`; the answer picks the offered option of that kind (`allow_once`, `allow_always`, `reject_once`). The session's mode answers some itself (see Permission modes). Stop sends `session/cancel` and answers open requests `cancelled`; a turn still open after 5 s is ended here, and its late answer is ignored.
+- No steering: a message sent mid-turn waits for the next turn (`engines::can_steer`).
+- Resume: the ACP session id is the engine ref. After a yardd restart, or when the agent exited (its running turn fails with "stopped before answering"), the next message starts a new agent and reopens the session with `session/resume`, else `session/load` (its replayed history is dropped).
+- Usage: neither reports plan limits (ACP `usage_update` is context size and cost), so no meters and no usage skips for them.
+- Per-session processes: the agent is registered like a Codex app-server, so its command children are matched by folder.
+
+**OpenCode** (npm `opencode-ai`). `opencode acp`, with `OPENCODE_PERMISSION={"edit":"ask","bash":"ask","webfetch":"ask"}` on top of the user's config: without it OpenCode edits and runs commands unasked and Ask first would mean nothing. Models come from `opencode models --verbose` (ids `provider/model`; a model's `variants` are its efforts, after `default`); the list is Default's providers'. Modes are `build` and `plan` (the plan agent refuses edits). OpenCode works with its own free models and no login.
+
+**Grok** (xAI's Grok Build CLI, npm `@xai-official/grok`, command `grok`). Chosen over superagent-ai/grok-cli, which was renamed `grok-dev` and has had no release since 2026-05; xAI's own CLI ships near-daily, logs in with a Grok account and speaks ACP. `grok agent stdio`. Models and efforts come from `initialize` (`_meta.modelState`, `reasoningEfforts`), effort is the `reasoning_effort` option, and permission modes map to Grok's own modes. `session/new` answers "Authentication required" while logged out; the session shows it.
+
 **Permission modes.** A picker next to the model, named like Claude Code's modes. Saved on the session (`permission`), set by `session.create` and changed any time by `session.setPermission`; a hand-off keeps it.
 
-| Mode | Claude (SDK `permissionMode`) | Codex (`turn/start` overrides) |
-|---|---|---|
-| Ask first (`ask`, default) | `default`: asks before commands and edits | `on-request`, workspace-write sandbox |
-| Accept edits (`acceptEdits`) | `acceptEdits` | same as Ask first: Codex already edits inside its sandbox freely |
-| Plan only (`plan`) | `plan` | `on-request`, read-only sandbox |
-| Full access (`full`) | `bypassPermissions` | `never`, no sandbox |
+| Mode | Claude (SDK `permissionMode`) | Codex (`turn/start` overrides) | OpenCode, Grok (agent mode; what yardd answers itself) |
+|---|---|---|---|
+| Ask first (`ask`, default) | `default`: asks before commands and edits | `on-request`, workspace-write sandbox | `build` / `default`; every question goes to the user |
+| Accept edits (`acceptEdits`) | `acceptEdits` | same as Ask first: Codex already edits inside its sandbox freely | `build` / `acceptEdits`; edits allowed unasked |
+| Plan only (`plan`) | `plan` | `on-request`, read-only sandbox | `plan`; edits refused unasked, commands still asked |
+| Full access (`full`) | `bypassPermissions` | `never`, no sandbox | `build` / `bypassPermissions`; everything allowed unasked |
 
 Claude switches at once with `setPermissionMode` (the sidecar always passes `allowDangerouslySkipPermissions` so a later switch to full access works); Codex takes the mode from its next turn. Approving Claude's plan-mode exit leaves the picker showing Plan only until it is changed.
 
-**Switching engine** cannot share a thread, so it is a hand-off. Picking a model of the other engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch, title and sidebar group and a `parent` pointing back.
+**Switching engine** cannot share a thread, so it is a hand-off. Picking a model of another engine in a session asks for confirmation, then starts a new session on that engine in the same folder, with the same branch, title and sidebar group and a `parent` pointing back.
 
 - yardd builds the first message from the source session's event log, with no model call, because the source is usually out of quota.
 - The brief holds the original task, each later prompt, each turn's final answer, the uncommitted changed files and any unresolved state. It is capped at 12,000 characters, keeping the task and the most recent turns.
@@ -124,7 +140,7 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 - A `direct` host is a plain `ws://` URL, for local testing.
 - Remote sessions stay listed but offline while their host is down.
 - **The web version as a host:** its compose file publishes the container's 47717 on the server's loopback, so an `ssh` host for that server reaches the same yardd as the web page. The installer refuses to install over a yardd it did not set up.
-- **Install from the app:** when the ssh tunnel is up but no yardd answers behind it, the host reports `noDaemon` and its card offers "Install Switchyard". The hub runs `scripts/remote-install.sh` (compiled into yardd) over the host's ssh as `bash -s -- <port>`, streaming each line to every client as `host.install`. The script downloads `switchyard-linux-{x64,arm64}.tar.gz` from the `latest` release (built by `.github/workflows/linux-host.yml`), swaps it into `~/.local/share/switchyard`, runs yardd as a systemd user service with lingering (or detached where there is no user systemd), checks `/health`, and reports whether `claude` and `codex` are installed and logged in (`@@engine` lines). The same card offers "Update Switchyard" on a connected SSH host. `YARD_SSH` and `YARD_RELEASE_URL` exist for the tests.
+- **Install from the app:** when the ssh tunnel is up but no yardd answers behind it, the host reports `noDaemon` and its card offers "Install Switchyard". The hub runs `scripts/remote-install.sh` (compiled into yardd) over the host's ssh as `bash -s -- <port>`, streaming each line to every client as `host.install`. The script downloads `switchyard-linux-{x64,arm64}.tar.gz` from the `latest` release (built by `.github/workflows/linux-host.yml`), swaps it into `~/.local/share/switchyard`, runs yardd as a systemd user service with lingering (or detached where there is no user systemd), checks `/health`, and reports whether `claude` and `codex` are installed and logged in, and `opencode` and `grok` where installed (`@@engine` lines). The same card offers "Update Switchyard" on a connected SSH host. `YARD_SSH` and `YARD_RELEASE_URL` exist for the tests.
 - `scripts/install-host.sh` builds and installs from a checkout instead, for development.
 
 ## Web version
@@ -178,22 +194,24 @@ Scheduled work, built into yardd (`crates/yardd/src/automations.rs`, UI in `ui/s
 
 ## Engine logins
 
-- `engines.status` (per host) reports each engine as installed or not, and logged in or not: `claude auth status` (JSON) and Codex's `account/read`. The UI asks once per host snapshot. A logged-out engine shows a notice on the new-session page and in its sessions, with **Log in**; typing `/login` in a session opens the same dialog. The Hosts page lists both engines per host.
+- `engines.status` (per host) reports each engine as installed or not, and logged in or not: `claude auth status` (JSON), Codex's `account/read`, the first line of `grok models` ("You are not authenticated.", or who is signed in), and for OpenCode the providers `opencode models` lists (`providers`; it counts as logged in with any, its free ones included). The UI asks once per host snapshot. A logged-out engine shows a notice on the new-session page and in its sessions, with **Log in**; typing `/login` in a session opens the same dialog. The Hosts page lists every engine per host; OpenCode's button is **Add provider**, since it is never logged out.
 - Codex: `account/login/start` with `chatgptDeviceCode` on the shared app-server returns a link and a code; `account/login/completed` ends it, then models and limits reload. No terminal involved.
 - Claude Code: `claude auth login` runs in a PTY (wide, so the link never wraps). yardd strips the escapes, sends the sign-in link to the UI, and types the code the user pastes back. Exit 0 is success; "Invalid code" ends it as failed. Idle Claude sessions then get a fresh sidecar with their next message, since one started logged out keeps failing.
-- Both go through the CLIs' own flows and files; yardd never sees a token. See Policy and cost for the Claude side.
+- Grok: `grok login --device-auth` runs in a PTY like Claude's. yardd reads the link and code it prints and shows them like Codex's; exit 0 is success. The account's agent is then restarted once idle (it may have started logged out), and its sessions resume.
+- OpenCode: logging in adds a provider. There is no CLI flow to drive without its terminal UI, so a short-lived `opencode serve` on a free loopback port, with a random password and stopped by a shell in front of it once yardd lets go (it never reads stdin, so it would outlive a killed yardd), does it through its own endpoints. `login.start` answers `providers` (from `/provider` and `/provider/auth`: connected first, then popular, then by name; ways in that need a typed setting, such as GitLab's instance URL, are left to the terminal). `login.choose { provider, method }` answers `key` for an API key, `url` for a sign-in that gives back a code, or `code` for a device code (the server finishes it; yardd waits on `oauth/callback` up to 15 minutes). `login.code` carries the key or code: `PUT /auth/<provider>` or `oauth/callback`. The key passes through yardd's memory only. Every request has a time limit: the server accepts connections before it answers them.
+- All go through the CLIs' own flows and files; yardd never sees a token, and an OpenCode API key only passes through. See Policy and cost for the Claude side.
 - Every login op takes an optional `account` (Default when left out), and `login` progress messages name it. A Claude login runs `claude auth login` with that account's `CLAUDE_CONFIG_DIR`; a Codex login runs on that account's app-server. Logins of different accounts can run at once. After a Claude login, only idle sessions of that account get a fresh sidecar.
 
 ## Accounts
 
 More than one login per engine on a host, for example a personal and a company Claude Code subscription.
 
-- Each engine has a **Default** account: the login the CLI already has, run with yardd's own environment, unchanged. Added accounts (`account.add { engine, name, host? }`) each get a folder `<data dir>/accounts/<id>/`, used as `CLAUDE_CONFIG_DIR` for Claude Code (the sidecar, `claude auth status` and `claude auth login`) and as `CODEX_HOME` for Codex (that account's app-server). Both variables are documented by their CLIs; Switchyard never reads what is in the folders. Names are unique per engine (case-insensitive) and at most 40 plain characters.
+- Each engine has a **Default** account: the login the CLI already has, run with yardd's own environment, unchanged. Added accounts (`account.add { engine, name, host? }`) each get a folder `<data dir>/accounts/<id>/`, used as `CLAUDE_CONFIG_DIR` for Claude Code (the sidecar, `claude auth status` and `claude auth login`), as `CODEX_HOME` for Codex (that account's app-server), as `GROK_HOME` for Grok (its agent, `grok models`, `grok login`) and as `XDG_DATA_HOME` for OpenCode (its logins and sessions; its config stays the user's). OpenCode has no variable of its own for this, so commands its agent runs see the moved data folder too. These variables are documented by their CLIs (XDG by the spec OpenCode follows); Switchyard never reads what is in the folders. Names are unique per engine (case-insensitive) and at most 40 plain characters.
 - They are saved in `accounts.json` next to `hosts.json`, per host, and listed in the `snapshot` and the `accounts` broadcast. `account.remove { id, host? }` cancels a login in progress, stops the account's Codex app-server, and deletes the folder, and with it the login. It is refused while any session (archived ones too) uses the account.
-- `engines.status` answers `{ engines: { claude, codex }, accounts: { <id>: state } }`: Default under `engines`, the added ones by id. Adding or removing an account triggers a fresh answer.
+- `engines.status` answers `{ engines: { claude, codex, opencode, grok }, accounts: { <id>: state } }`: Default under `engines`, the added ones by id. Adding or removing an account triggers a fresh answer.
 - `session.create` takes `account` (an id of that engine; Default when left out) and checks it. It is saved in the session's metadata (`account`, `default` for older rows), so resume after a restart and every later turn use the same account: the Claude sidecar is started with the account's `CLAUDE_CONFIG_DIR`, and the session's Codex thread lives on that account's app-server (a thread is only known to the `CODEX_HOME` that made it). **The account cannot be changed mid-session**; start a new session instead.
-- A hand-off starts a session on the other engine, so the source's account does not carry over: it runs on the target engine's Default unless `session.handoff` names an `account` of that engine (the UI does not offer one yet).
-- **Usage is per account**: Default's limits stay at `usage.claude` and `usage.codex`; an added account's are at `usage.accounts[<id>]` in the same shape as its engine's. The model picker shows the limits of the account picked for each engine (a session's own account inside a session); the sidebar strip shows Default's and every added account's, from the hosts the sidebar shows. Codex model lists are loaded from Default's app-server and shared.
+- A hand-off starts a session on another engine, so the source's account does not carry over: it runs on the target engine's Default unless `session.handoff` names an `account` of that engine (the UI does not offer one yet).
+- **Usage is per account**: Default's limits stay at `usage.claude` and `usage.codex`; an added account's are at `usage.accounts[<id>]` in the same shape as its engine's. The model picker shows the limits of the account picked for each engine (a session's own account inside a session); the sidebar strip shows Default's and every added account's, from the hosts the sidebar shows. Codex model lists are loaded from Default's app-server and shared; so are Grok's (Default's agent) and OpenCode's (Default's providers, so an added OpenCode account with other providers still sees Default's list).
 - **UI.** The Hosts page lists each engine's added accounts under it with their login state, Log in and Remove (a second click confirms), and **Add account**. The model picker shows an account row under an engine only when it has more than one account, and the trigger names the account then. The session header and the sidebar row name the account, again only where the engine has a choice (or the session is not on Default).
 - Not built: moving a session to another account, per-account models, logging out without removing.
 
@@ -247,7 +265,8 @@ The right pane has a Terminal tab next to Changes.
 - `cd sidecar/yard-claude && bun test`: the Claude user message with attachments and the subagent mapping, without the SDK.
 - A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop, and a `[subagent]` turn (a nested subagent, and a `sleep 30` left running for the process list); a `[stuck]` fake Codex turn covers the Codex side of Stop.
 - `verify/yv` (docs/VERIFICATION.md) drives the built UI in headless Chromium against an isolated yardd with the same fakes plus a fake `gh` (one canned PR) and a fake `ssh`; the feature map `verify/features` covers the PR pane and the UI end to end. CI runs its selftest and two map areas.
-- Not covered: anything that needs the real Claude SDK, real SSH hosts.
+- OpenCode and Grok (`tests/acp.rs`): the scripted `opencode` and `grok` in `tests/fake-codex` share one ACP agent (`acp-agent.mjs`, the same prompt markers as the fake Codex) and fake the CLIs' other commands: `opencode models`, an `opencode serve` with the login endpoints, `grok models` and `grok login --device-auth` with the real output. They log every request to `acp.log` and every prompt with the session's model, effort and mode to `acp-prompts.jsonl`.
+- Not covered: anything that needs the real Claude SDK, real SSH hosts, real OpenCode or Grok turns.
 
 ## PR pane
 
@@ -256,7 +275,7 @@ The right pane has a Pull request tab.
 - yardd runs `gh pr view --json` and `gh api graphql` (review threads) in the session folder through my own `gh` login. It holds no token and only reads.
 - It shows the branch's PR: state, base and head, review decision, checks and review threads, unresolved first. It loads when first opened, refreshes when a turn ends, and polls every 60 s while visible.
 - **Send to session** turns a review thread into a normal prompt quoting the comment with its file and line.
-- **Review with the other engine** starts a new session on the other engine in the same folder, asking for a review of `git diff <base>...HEAD` and no file changes. The prompt leaves out the PR title and comments, because they are untrusted text.
+- **Review with another engine** starts a new session in the same folder on Codex for Claude work, Claude for anything else (or the first engine with models), asking for a review of `git diff <base>...HEAD` and no file changes. The prompt leaves out the PR title and comments, because they are untrusted text.
 - Not built: creating a PR, pushing, replying to or resolving threads.
 
 ## Policy and cost
@@ -292,6 +311,8 @@ Built and checked in the browser on 2026-11-13:
 
 Not checked:
 
+- Any real OpenCode or Grok turn: no model was asked anything. Checked against the real CLIs (2026-11-16): `opencode acp`'s `initialize`, `session/new`, `set_config_option` for model, effort and mode, and `session/resume`; `opencode models --verbose`; the whole OpenCode API-key login through a test yardd, with a made-up key in a throwaway HOME; `grok agent stdio`'s `initialize` models and its "Authentication required" answer; `grok models` logged out; the start of `grok login --device-auth` (cancelled). Not seen: Grok's session shapes when logged in (its `configOptions`, modes, tool calls), OpenCode's tool-call and permission updates outside its source, and an OAuth or device sign-in to a real provider.
+
 - A real SSH tunnel. This Mac has no SSH server to tunnel to, so only the failure and retry paths ran.
 - Anything that needs a Claude turn in the newer features: Claude resume after a restart, hand-off into Claude, and Claude's per-session usage and cap. Claude weekly usage was nearly exhausted.
 - Stop and a mid-session model switch on Claude. Both passed in the script spike.
@@ -316,5 +337,6 @@ Next:
 ## Risks
 
 - `codex app-server` is experimental and can change between CLI versions.
+- ACP's `session/resume` and `configOptions` are recent; Grok's ACP has `x.ai/` extensions and changes with its near-daily releases.
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.

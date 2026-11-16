@@ -36,9 +36,10 @@ recipe with its repro.
 | [persistence](persistence.md) | Sessions and history across a yardd restart |
 | [hosts](hosts.md) | The Hosts page, adding a direct host, an unreachable SSH host, removing a host |
 | [queue](queue.md) | The resource guard: sessions queue under pressure, Start anyway |
-| [logins](logins.md) | Engine login state and the Codex and Claude login flows |
+| [logins](logins.md) | Engine login state and the Codex, Claude, Grok and OpenCode login flows |
+| [acp-engines](acp-engines.md) | OpenCode and Grok: listed where installed, sessions, approvals, hand-off rows |
 | [attachments](attachments.md) | Files with a prompt: upload, chips, thumbnails, size cap |
-| [models](models.md) | Model and effort switches, permission modes, hand-off to the other engine |
+| [models](models.md) | Model and effort switches, permission modes, hand-off to another engine |
 | [worktrees](worktrees.md) | A worktree per session, in-place folders, removing a worktree |
 | [notifications](notifications.md) | OS notifications: the switch on the Settings page, when a session or the `notify` op shows one |
 | [settings](settings.md) | The Settings page: notifications, which hosts the sidebar shows, the usage strip from the shown hosts |

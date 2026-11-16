@@ -3,11 +3,10 @@
 import { Fragment, useEffect, useState } from "react";
 import type { Engine, Usage } from "./protocol";
 import { formatReset, metersFor, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
+import { ENGINES as ENGINE_IDS, ENGINE_NAME } from "./engines";
 
-const ENGINES: { id: Engine; name: string }[] = [
-  { id: "claude", name: "Claude" },
-  { id: "codex", name: "Codex" },
-];
+// An engine that reports no plan usage has no meters, so it shows nothing.
+const ENGINES: { id: Engine; name: string }[] = ENGINE_IDS.map((id) => ({ id, name: ENGINE_NAME[id] }));
 
 /** Re-renders now and then so "resets in" keeps counting down. */
 function useNow(everyMs = 30_000): number {

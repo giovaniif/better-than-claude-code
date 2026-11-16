@@ -183,6 +183,7 @@ export async function isoUp(a: Args): Promise<Result> {
     if (!a.flags["logged-out"]) {
       writeFileSync(join(dirs.fake, "codex-logged-in"), "");
       writeFileSync(join(dirs.fake, "claude-logged-in"), "");
+      writeFileSync(join(dirs.fake, "grok-logged-in"), "");
     }
   } else {
     // Real engines need the real HOME for their logins; the data dir stays throwaway.

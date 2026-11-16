@@ -1,6 +1,7 @@
 // Accounts: more than one login per engine on a host (see docs/ARCHITECTURE.md,
 // Accounts). Default is every engine's own login and is never listed by yardd.
 import type { AccountEntry, Engine, Models, Usage } from "./protocol";
+import { ENGINES } from "./engines";
 
 export const DEFAULT_ACCOUNT = "default";
 
@@ -42,7 +43,7 @@ export function usageForAccount(usage: Usage, engine: Engine, account: string): 
 /** The usage of each engine under the account picked for it. */
 export function usageForPicks(usage: Usage, picks: Partial<Record<Engine, string>>): Usage {
   const out: Usage = { ...usage };
-  for (const engine of ["claude", "codex"] as Engine[]) {
+  for (const engine of ENGINES) {
     const account = picks[engine] ?? DEFAULT_ACCOUNT;
     if (account !== DEFAULT_ACCOUNT) (out as any)[engine] = usage.accounts?.[account];
   }

@@ -1,6 +1,6 @@
 // Shapes shared with yardd (crates/yardd). Keep the two in step.
 
-export type Engine = "claude" | "codex";
+export type Engine = "claude" | "codex" | "opencode" | "grok";
 export type Status = "idle" | "queued" | "running" | "needs_approval" | "error";
 export type Decision = "allow" | "allow_always" | "deny";
 
@@ -60,7 +60,8 @@ export interface ModelInfo {
   isDefault?: boolean;
 }
 
-export type Models = Record<Engine, ModelInfo[]>;
+/** Per engine; an engine that is not installed on the host may be missing. */
+export type Models = Partial<Record<Engine, ModelInfo[]>>;
 
 export interface Host {
   id: string;
@@ -217,20 +218,38 @@ export interface EngineState {
   installed: boolean;
   loggedIn: boolean | null;
   account?: string | null;
+  /** OpenCode: the providers it can use (it works with its free ones alone). */
+  providers?: string[];
   error?: string;
 }
-export type EngineStates = Record<Engine, EngineState> & {
+export type EngineStates = Partial<Record<Engine, EngineState>> & {
   /** Added accounts' states by account id. */
   accounts?: Record<string, EngineState>;
 };
 
-/** Progress of `login.start`. Codex shows a link and a code to enter there;
- *  Claude shows a link whose page gives back a code to paste into the app. */
+/** Progress of `login.start`. Codex and Grok show a link and a code to enter
+ *  there; Claude shows a link whose page gives back a code to paste into the
+ *  app. OpenCode first offers its `providers`; picking one (`login.choose
+ *  { provider, method }`) asks for an API `key`, or goes on as `url` (paste
+ *  the code back) or `code` (a device code; it finishes by itself). */
 export interface LoginState {
-  state: "starting" | "code" | "url" | "checking" | "done" | "failed" | "cancelled";
+  state: "starting" | "providers" | "key" | "code" | "url" | "checking" | "done" | "failed" | "cancelled";
   url?: string;
-  code?: string;
+  code?: string | null;
   error?: string;
+  providers?: LoginProvider[];
+  /** OpenCode: the provider being logged in, and what its sign-in says to do. */
+  provider?: string;
+  instructions?: string;
+  label?: string;
+}
+
+/** One of OpenCode's providers and the ways into it that work from the app. */
+export interface LoginProvider {
+  id: string;
+  name: string;
+  connected: boolean;
+  methods: { index: number; type: "api" | "oauth"; label: string }[];
 }
 
 /** Reply to `fs.dirs { path, host? }`: the subfolders the folder picker offers. */

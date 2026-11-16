@@ -1,8 +1,8 @@
 # Models, efforts and permission modes
 
-The composer's model button lists the current engine's models (the other
-engine folded into one row) and the current model's efforts.
-Same-engine switches apply from the next turn. Picking the other
+The composer's model button lists the current engine's models (each other
+engine folded into a row of its own) and the current model's efforts.
+Same-engine switches apply from the next turn. Picking another
 engine's model asks to hand off, then starts a new session in the same folder
 with a brief of the work so far. The permission picker (Ask first, Accept
 edits, Plan only, Full access) changes the session at once.

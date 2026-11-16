@@ -673,3 +673,11 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
   .hosts-inner { padding: 20px 16px; }
 }
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) { .sidebar, .app.drawer-open .sidebar { transition: none; } }
+
+/* OpenCode's login: a provider list and the ways into one; a filter for long model lists */
+.provider-list { list-style: none; margin: 0; padding: 0; max-height: 46vh; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
+.provider-row { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.provider-methods { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 8px 8px; }
+.login-key { display: flex; flex-direction: column; gap: 8px; }
+.picker-filter { height: 28px; margin: 0 4px 4px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--bg); color: var(--ink); font-size: 12.5px; }
+.provider-filter { flex: none; }
