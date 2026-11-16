@@ -1,0 +1,17 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "14f9bb45e2ac18f9b15e4e769f01ea8245494b06",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

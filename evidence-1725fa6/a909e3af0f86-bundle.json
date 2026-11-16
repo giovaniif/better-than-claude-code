@@ -1,0 +1,188 @@
+{
+  "v": 1,
+  "claim": "Thread: a double click on Start anyway (a session queued by the resource guard) started the session and then showed a red 'this session is not queued' banner; it now starts once with no error",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-827f",
+  "base": "14f9bb45e2ac18f9b15e4e769f01ea8245494b06",
+  "head": "1725fa6130468688277c039c6ee99f803974213d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/queue.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T06:47:35.070Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "eefab137a75a321eeee9b174951e3559a2a5dacd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "f62497c883faad6bbfe81a61cfc8f9a96ba92e16b7952b4e97024f1e703d2d36"
+        },
+        {
+          "path": "p1-after-double-click-desktop.png",
+          "sha256": "23fbdcba95699cec48cbeda72fff80d48da7a46d3b099a532769c73ca5718a4f"
+        }
+      ],
+      "addedAt": "2026-11-16T06:47:43.455Z",
+      "failedApi": [
+        "session.startNow: this session is not queued"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "eefab137a75a321eeee9b174951e3559a2a5dacd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "fbdca4dac5389da8db679b0c219457a84bc49e2541f6a4bb61b551083d78ed09"
+        },
+        {
+          "path": "p2-after-double-click-mobile.png",
+          "sha256": "89899025d77de41b3c64125b6b576b75f8df712d0da95c91c715bcfbf299d0c8"
+        }
+      ],
+      "addedAt": "2026-11-16T06:47:47.175Z",
+      "failedApi": [
+        "session.startNow: this session is not queued"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "eefab137a75a321eeee9b174951e3559a2a5dacd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "681fd98e4ba3d866b6eb871f595641dccd74607afd618d40ca148f8cef7edd57"
+        }
+      ],
+      "addedAt": "2026-11-16T06:47:47.215Z",
+      "cmd": "verify/yv map run queue --recipe double-click-start-anyway",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1725fa6130468688277c039c6ee99f803974213d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "cb8d2f6c3c757f8680eb4f1f46f3389abd5523f63752154ad1f5e760d82900ab"
+        },
+        {
+          "path": "p4-after-double-click-desktop.png",
+          "sha256": "f4b8bb7000e8b6db36966a4e3988316c709b1cfb4906a9ebd5461f55dba318e3"
+        }
+      ],
+      "addedAt": "2026-11-16T06:47:57.899Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1725fa6130468688277c039c6ee99f803974213d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "1d0fa0498423660e844ada831858876f70b8b2e2434f32dad18391dcccd938be"
+        },
+        {
+          "path": "p5-after-double-click-mobile.png",
+          "sha256": "c139f3e092bcba968c63ad9977a215905485367d72832510456565336ac7d962"
+        }
+      ],
+      "addedAt": "2026-11-16T06:48:01.660Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "1725fa6130468688277c039c6ee99f803974213d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "8596e7a12c1d8c2ef32385081b9ce482b6a617f67dd6716e8f8d48f5af60fe2c"
+        }
+      ],
+      "addedAt": "2026-11-16T06:48:01.702Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run queue --recipe double-click-start-anyway",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "1725fa6130468688277c039c6ee99f803974213d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "3c04420e500e3c23fe5d5510268a5bab61e37a96d8b708b75da85fcc649c8a91"
+        }
+      ],
+      "addedAt": "2026-11-16T06:48:05.687Z",
+      "cmd": "verify/yv design-check --base 14f9bb45e2ac",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "1725fa6130468688277c039c6ee99f803974213d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-queue.json",
+          "sha256": "a336ae8ea5d14ab25857b47193af2c8c43511c10e4562104a4309094038eeba2"
+        }
+      ],
+      "addedAt": "2026-11-16T06:48:05.769Z",
+      "cmd": "verify/yv map run queue",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "queue/new-session-queues",
+        "queue/start-anyway",
+        "queue/double-click-start-anyway",
+        "queue/hosts-page-shows-pressure"
+      ]
+    }
+  ]
+}

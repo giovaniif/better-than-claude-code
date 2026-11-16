@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "route": "session:s1a1e31c846b2",
+  "build": {
+    "sha": "eefab137a75a321eeee9b174951e3559a2a5dacd",
+    "short": "eefab13",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T06:47:39.125Z"
+  },
+  "dir": ".verify/evidence/start-anyway-once-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3336,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/start-anyway-once-base-desktop/after-double-click-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(async () => { const b = [...document.querySelectorAll(\".queued-line button\")].find((x) => x.textContent.trim() === \"Start anyway\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \"clicked twice\"; })()",
+          "value": "clicked twice"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.startNow",
+          "message": "this session is not queued"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

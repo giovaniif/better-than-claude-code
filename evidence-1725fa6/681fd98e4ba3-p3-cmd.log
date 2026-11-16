@@ -1,0 +1,39 @@
+$ verify/yv map run queue --recipe double-click-start-anyway
+# exit 1 after 3527 ms at eefab137a75a321eeee9b174951e3559a2a5dacd
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "queue",
+      "at": "2026-11-16T06:47:50.737Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "double-click-start-anyway",
+          "status": "fail",
+          "ms": 3152,
+          "problems": [
+            {
+              "code": "errors",
+              "msg": "desktop: 0 console, 0 page, 1 API, 0 HTTP errors"
+            }
+          ],
+          "tail": "{\n  \"command\": \"api\",\n  \"ok\": true,\n  \"sent\": {\n    \"op\": \"session.create\",\n    \"engine\": \"codex\",\n    \"model\": \"fake-fast\",\n    \"effort\": \"low\",\n    \"cwd\": \"/tmp/yv-map-queue-4099975-mwiwixqv/work/TEST-demo-app\",\n    \"worktree\": true,\n    \"text\": \"TEST-start me once\"\n  },\n  \"reply\": {\n    \"op\": \"created\",\n    \"sessionId\": \"s1a1e31ca4492\"\n  },\n  \"saved\": {\n    \"q3_sid\": \"s1a1e31ca4492\"\n  },\n  \"received\": 6,\n  \"problems\": []\n}\n{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1e31ca4492\",\n  \"build\": {\n    \"sha\": \"eefab137a75a321eeee9b174951e3559a2a5dacd\",\n    \"short\": \"eefab13\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-16T06:47:39.125Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-827f/.verify/drives/2026-11-16T06-47-47-949Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 2457,\n      \"steps\": 4,\n      \"failed\": null,\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(async () => { const b = [...document.querySelectorAll(\\\".queued-line button\\\")].find((x) => x.textContent.trim() === \\\"Start anyway\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \\\"clicked twice\\\"; })()\",\n          \"value\": \"clicked twice\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"error\",\n          \"for\": \"session.startNow\",\n          \"message\": \"this session is not queued\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"errors\",\n      \"msg\": \"desktop: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "queue/double-click-start-anyway",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

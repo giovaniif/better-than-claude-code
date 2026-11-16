@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run queue --recipe double-click-start-anyway
+# exit 0 after 3941 ms at 1725fa6130468688277c039c6ee99f803974213d
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "queue",
+      "at": "2026-11-16T06:48:05.639Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "double-click-start-anyway",
+          "status": "pass",
+          "ms": 3453
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 122 pass
+ 0 fail
+ 305 expect() calls
+Ran 122 tests across 10 files. [119.00ms]
