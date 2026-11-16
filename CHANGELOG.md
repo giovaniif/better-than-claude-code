@@ -2,6 +2,15 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.4.3 (2026-11-16)
+
+- **Fixed: Install or Update Switchyard on a server failed at once** with "Cannot execute command-line and remote command" when your ssh config sets a `RemoteCommand` for that host (a tmux attach, say). Switchyard's own ssh connections now leave it and any forced terminal out; your own logins keep them.
+- **Tables in answers.** A Markdown table from the agent shows as a table, not as lines of pipes.
+- **Fixed:**
+  - An approval nobody answered says "Not answered" once its turn ends, not "Denied".
+  - The local host shows its own name right after Switchyard starts, not "This Mac".
+  - With no memory limit, the Hosts page's queue rule names only the load, not "less than 0 GB free".
+
 ## 0.4.2 (2026-11-16)
 
 - **Fixed: an update could leave the app showing the previous version's screens.** The app's window kept an old copy of the page in its cache and didn't check for a new one. It now checks on every load, so an update shows right away.
