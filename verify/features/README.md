@@ -24,17 +24,17 @@ recipe with its repro.
 
 | Area | What it covers |
 |---|---|
-| [new-session](new-session.md) | The new-session page: prompt, model, effort, permission, folder, host, worktree note |
+| [new-session](new-session.md) | The new-session page: prompt, model, effort, permission, folder, host, base branch, worktree note |
 | [thread](thread.md) | How a session's turns render: replies, thinking, edits, failures, the work-log fold |
 | [approvals](approvals.md) | Command approvals: allow once, always, deny, and the sidebar status |
 | [stop](stop.md) | Stopping a running turn, including one the engine ignores |
 | [changes-pane](changes-pane.md) | The Changes tab: the session folder's git diff |
 | [processes](processes.md) | The Processes tab: the session's process tree, refreshed while visible |
-| [terminal](terminal.md) | The Terminal tab: shells per session, tabs, scrollback, Add to message |
+| [terminal](terminal.md) | The Terminal tab: shells per session, tabs, closing a tab, scrollback, Add to message |
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |
-| [hosts](hosts.md) | The Hosts page, adding a direct host, an unreachable SSH host |
+| [hosts](hosts.md) | The Hosts page, adding a direct host, an unreachable SSH host, removing a host |
 | [queue](queue.md) | The resource guard: sessions queue under pressure, Start anyway |
 | [logins](logins.md) | Engine login state and the Codex and Claude login flows |
 | [attachments](attachments.md) | Files with a prompt: upload, chips, thumbnails, size cap |
@@ -45,4 +45,5 @@ recipe with its repro.
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
 | [automations](automations.md) | Scheduled runs: the Automations page, create, Run now, auto-archive, pin, edit, disable, delete |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
+| [usage](usage.md) | Plan usage meters in the sidebar and the model picker, the picker's engine sections |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |

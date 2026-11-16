@@ -75,6 +75,16 @@ attach at xterm's default 80 columns made the shell redraw into the scrollback.
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
 ```
 
+### close-terminal
+Viewports: desktop
+The selected tab has a "Close terminal" cross. Closing tab 2 removes it and
+selects tab 1 again. Read back: the daemon lists one terminal for the session.
+
+```sh
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":{"role":"tab","name":"1"}},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"click":"role:button:Close terminal"},{"expect":{"role":"tab","name":"2"},"count":0},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"1"}]'
+yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 1'
+```
+
 ### add-to-message (manual: needs a mouse selection inside xterm)
 Select text in the terminal, press "Add to message": the reply box gets a
 fenced block. Selecting through xterm's renderer is not scripted yet.
