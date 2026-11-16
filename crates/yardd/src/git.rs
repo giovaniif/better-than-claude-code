@@ -529,6 +529,33 @@ mod tests {
         // A new file is read through `ls-files`, which quotes too.
         assert!(diff.contains("+++ b/café.txt\n@@ -0,0 +1,1 @@\n+new\n"), "{diff}");
     }
+
+    #[tokio::test]
+    async fn a_subfolder_session_lists_every_file_from_the_repository_root() {
+        let dir = std::env::temp_dir().join(format!("yardd-subfolder-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("apps/web")).unwrap();
+        std::fs::create_dir_all(dir.join("docs")).unwrap();
+        std::fs::write(dir.join("apps/web/a.txt"), "a\n").unwrap();
+        std::fs::write(dir.join("docs/d.txt"), "d\n").unwrap();
+        run(&dir, &["init", "-q"]);
+        run(&dir, &["add", "."]);
+        run(&dir, &["commit", "-q", "-m", "first"]);
+        std::fs::write(dir.join("apps/web/a.txt"), "a\nb\n").unwrap();
+        std::fs::write(dir.join("apps/web/new.txt"), "inside\n").unwrap();
+        std::fs::write(dir.join("docs/other.txt"), "outside\n").unwrap();
+
+        let changes = changes(dir.join("apps/web").to_str().unwrap()).await.unwrap();
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // `git diff` names files from the root, so new files must too, or
+        // the pane names one folder two ways and drops the other new files.
+        let paths: Vec<&str> = changes["files"].as_array().unwrap().iter().map(|f| f["path"].as_str().unwrap()).collect();
+        assert_eq!(paths, ["apps/web/a.txt", "apps/web/new.txt", "docs/other.txt"]);
+        let diff = changes["diff"].as_str().unwrap();
+        assert!(diff.contains("+++ b/apps/web/new.txt\n@@ -0,0 +1,1 @@\n+inside\n"), "{diff}");
+        assert!(diff.contains("+++ b/docs/other.txt\n@@ -0,0 +1,1 @@\n+outside\n"), "{diff}");
+    }
 }
 
 /// The ref an automation's worktree is cut from, after fetching `origin`.
