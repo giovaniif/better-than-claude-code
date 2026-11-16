@@ -202,6 +202,76 @@ fn list_dirs(path: &str) -> Result<Vec<Value>> {
     Ok(dirs.into_iter().map(|(name, git)| json!({ "name": name, "git": git })).collect())
 }
 
+/// Start a session from a `session.create` message. `direct` gets `created`
+/// as soon as the session exists (the UI opens it); automations pass `None`
+/// and a title of their own, and tag the session with their id.
+pub async fn create_session(
+    app: &Arc<App>,
+    direct: Option<&mpsc::UnboundedSender<String>>,
+    msg: &Value,
+    title: Option<&str>,
+    automation: Option<&str>,
+) -> Result<String> {
+    let engine = str_field(msg, "engine")?;
+    let model = str_field(msg, "model")?;
+    let effort = str_field(msg, "effort")?;
+    let cwd = str_field(msg, "cwd")?;
+    let text = msg["text"].as_str().unwrap_or("").trim();
+    let files = attachments::resolve(&msg["attachments"])?;
+    if text.is_empty() && files.is_empty() {
+        bail!("the task is empty");
+    }
+    if !Path::new(cwd).is_dir() {
+        bail!("{cwd} is not a folder");
+    }
+    if engine != "claude" && engine != "codex" {
+        bail!("unknown engine {engine}");
+    }
+    let permission = msg["permission"].as_str().unwrap_or("ask");
+    if !PERMISSIONS.contains(&permission) {
+        bail!("unknown permission mode {permission}");
+    }
+    let account = account_field(msg);
+    app.accounts.check(engine, account)?;
+    let first = text.lines().next().filter(|l| !l.trim().is_empty());
+    let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
+    let title: String = match title {
+        Some(t) => t.to_string(),
+        None => first.chars().take(60).collect(),
+    };
+
+    // The worktree (and its setup) comes first: if it cannot be made,
+    // no session exists. Without one, the folder must be free.
+    // `worktree` asks for one where possible: a folder outside a
+    // repository, or in one with no commits, runs in place.
+    let asked = msg["worktree"].as_bool().unwrap_or(false);
+    let in_place = asked && !git::can_branch(cwd).await?;
+    let (sid, setup) = if asked && !in_place {
+        let unique = app.id("");
+        let suffix = &unique[unique.len().saturating_sub(4)..];
+        let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
+        let worktree = Worktree { branch: wt.branch, repo: wt.repo };
+        (app.insert_session(engine, model, effort, &wt.cwd, &title, Some(worktree), false, account, automation)?, wt.setup)
+    } else {
+        (app.insert_session(engine, model, effort, cwd, &title, None, true, account, automation)?, None)
+    };
+    if let Some(script) = setup {
+        app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
+    }
+    if in_place {
+        let text = "Not a git repository with commits, so this session works in the folder itself.";
+        app.emit(&sid, json!({ "type": "note", "text": text }));
+    }
+    app.update_meta(&sid, |m| {
+        m.permission = permission.to_string();
+    });
+    if let Some(direct) = direct {
+        let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
+    }
+    sessions::begin(app, &sid, text, &files).await;
+    Ok(sid)
+}
+
 async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
     if msg["op"].as_str().is_some_and(|op| op.starts_with("pr.")) {
         return pr::handle(app, direct, msg).await;
@@ -214,58 +284,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
     }
     match msg["op"].as_str().unwrap_or("") {
         "session.create" => {
-            let engine = str_field(msg, "engine")?;
-            let model = str_field(msg, "model")?;
-            let effort = str_field(msg, "effort")?;
-            let cwd = str_field(msg, "cwd")?;
-            let text = msg["text"].as_str().unwrap_or("").trim();
-            let files = attachments::resolve(&msg["attachments"])?;
-            if text.is_empty() && files.is_empty() {
-                bail!("the task is empty");
-            }
-            if !Path::new(cwd).is_dir() {
-                bail!("{cwd} is not a folder");
-            }
-            if engine != "claude" && engine != "codex" {
-                bail!("unknown engine {engine}");
-            }
-            let permission = msg["permission"].as_str().unwrap_or("ask");
-            if !PERMISSIONS.contains(&permission) {
-                bail!("unknown permission mode {permission}");
-            }
-            let account = account_field(msg);
-            app.accounts.check(engine, account)?;
-            let first = text.lines().next().filter(|l| !l.trim().is_empty());
-            let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
-            let title: String = first.chars().take(60).collect();
-
-            // The worktree (and its setup) comes first: if it cannot be made,
-            // no session exists. Without one, the folder must be free.
-            // `worktree` asks for one where possible: a folder outside a
-            // repository, or in one with no commits, runs in place.
-            let asked = msg["worktree"].as_bool().unwrap_or(false);
-            let in_place = asked && !git::can_branch(cwd).await?;
-            let (sid, setup) = if asked && !in_place {
-                let unique = app.id("");
-                let suffix = &unique[unique.len().saturating_sub(4)..];
-                let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
-                let worktree = Worktree { branch: wt.branch, repo: wt.repo };
-                (app.new_session(engine, model, effort, &wt.cwd, &title, Some(worktree), account), wt.setup)
-            } else {
-                (app.new_session_exclusive(engine, model, effort, cwd, &title, account)?, None)
-            };
-            if let Some(script) = setup {
-                app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
-            }
-            if in_place {
-                let text = "Not a git repository with commits, so this session works in the folder itself.";
-                app.emit(&sid, json!({ "type": "note", "text": text }));
-            }
-            app.update_meta(&sid, |m| {
-                m.permission = permission.to_string();
-            });
-            let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
-            sessions::begin(app, &sid, text, &files).await;
+            create_session(app, Some(direct), msg, None, None).await?;
         }
         "git.branches" => {
             let cwd = str_field(msg, "cwd")?;
@@ -429,6 +448,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 }
                 if let Some(p) = pinned {
                     m.pinned = p;
+                    // Pinning an archived run brings it back to the list.
+                    if p {
+                        m.archived = false;
+                    }
                 }
                 if let Some(a) = archived {
                     m.archived = a;
@@ -544,6 +567,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "term.input" => pty::input(app, str_field(msg, "termId")?, str_field(msg, "data")?)?,
         "term.resize" => pty::resize(app, str_field(msg, "termId")?, dim(msg, "cols", 80), dim(msg, "rows", 24))?,
         "term.close" => pty::close(app, str_field(msg, "termId")?)?,
+        op if op.starts_with("automation.") => crate::automations::handle(app, direct, msg).await?,
         "host.add" => remote::add(app, msg)?,
         "host.remove" => remote::remove(app, str_field(msg, "hostId")?)?,
         "host.install" => remote::install(app, str_field(msg, "hostId")?)?,

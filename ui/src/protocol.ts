@@ -32,6 +32,8 @@ export interface SessionMeta {
   archived?: boolean;
   /** The sidebar group it sits in; a group exists only while a session is in it. */
   group?: string | null;
+  /** The automation that started this session: a run, kept out of the sidebar. */
+  automation?: string | null;
   /** Messages sent while a turn ran, oldest first. The next one starts when a turn completes; Stop or a failure holds them. */
   pending?: PendingMessage[];
   createdAt: number;
@@ -564,3 +566,41 @@ export interface ClaudeSessionList {
   error?: string;
 }
 
+
+/** When an automation runs, in its host's local time zone. `day` is 0 (Sunday) to 6. */
+export type Schedule =
+  | { kind: "interval"; every: number; unit: "minutes" | "hours" }
+  | { kind: "daily"; time: string }
+  | { kind: "weekly"; day: number; time: string };
+
+export interface LastRun {
+  at: number;
+  outcome: "started" | "skipped" | "failed";
+  sessionId?: string | null;
+  /** Why it was skipped or failed. */
+  reason?: string | null;
+}
+
+/** A scheduled prompt. Each host runs its own; see yardd's automations.rs. */
+export interface Automation {
+  id: string;
+  name: string;
+  prompt: string;
+  cwd: string;
+  engine: Engine;
+  model: string;
+  effort: string;
+  permission: Permission;
+  /** The branch runs are cut from; empty is the repository's default branch. */
+  base: string;
+  schedule: Schedule;
+  skipWhileRunning: boolean;
+  /** Skip a scheduled run while the engine's usage is above these percentages. */
+  maxFiveHour: number | null;
+  maxWeek: number | null;
+  enabled: boolean;
+  createdAt: number;
+  /** Null while disabled. */
+  nextRun: number | null;
+  lastRun?: LastRun | null;
+}

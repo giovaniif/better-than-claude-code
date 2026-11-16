@@ -3,6 +3,7 @@
 
 mod accounts;
 mod attachments;
+mod automations;
 mod claude;
 mod codex;
 mod git;
@@ -75,6 +76,7 @@ async fn main() -> anyhow::Result<()> {
     });
 
     tokio::spawn(hosts::run(app.clone()));
+    tokio::spawn(automations::run_scheduler(app.clone()));
 
     // Queued messages: into the running turn at a step, or the next turn.
     // In order per session (tokio's Mutex queues waiters first come, first

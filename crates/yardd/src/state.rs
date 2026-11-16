@@ -57,6 +57,11 @@ pub struct Meta {
     /// session names it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group: Option<String>,
+    /// The automation that started this session. Such runs stay out of the
+    /// sidebar (see the Automations page) and archive themselves when their
+    /// first turn ends.
+    #[serde(default)]
+    pub automation: Option<String>,
     /// Messages sent while a turn ran and not yet given to the agent, oldest
     /// first: `{ id, text, attachments, at }`. Like Claude Code's queue, they
     /// go to the agent at its next step (see `Delivery`); Stop hands them back.
@@ -131,6 +136,7 @@ pub struct App {
     pub guard: crate::guard::Guard,
     pub store: crate::store::Store,
     pub remotes: crate::remote::Remotes,
+    pub automations: crate::automations::Automations,
     pub logins: crate::login::Logins,
     /// Sessions with queued messages to deliver; drained by a task in main
     /// (emit cannot talk to an engine itself).
@@ -158,6 +164,7 @@ impl App {
             guard: crate::guard::Guard::default(),
             store,
             remotes: crate::remote::Remotes::new(crate::store::data_dir()),
+            automations: crate::automations::Automations::load(crate::store::data_dir()),
             logins: crate::login::Logins::default(),
             next_turns,
             next_turns_rx: Mutex::new(Some(next_turns_rx)),
@@ -249,27 +256,12 @@ impl App {
         worktree: Option<Worktree>,
         account: &str,
     ) -> String {
-        self.insert_session(engine, model, effort, cwd, title, worktree, false, account)
+        self.insert_session(engine, model, effort, cwd, title, worktree, false, account, None)
             .expect("a non-exclusive insert cannot be refused")
     }
 
-    /// Like `new_session`, but refused while another session in the same
-    /// folder is working. The check and the insert share one lock, so two
-    /// creates at once cannot both get in.
-    pub fn new_session_exclusive(
-        &self,
-        engine: &str,
-        model: &str,
-        effort: &str,
-        cwd: &str,
-        title: &str,
-        account: &str,
-    ) -> anyhow::Result<String> {
-        self.insert_session(engine, model, effort, cwd, title, None, true, account)
-    }
-
     #[allow(clippy::too_many_arguments)]
-    fn insert_session(
+    pub fn insert_session(
         &self,
         engine: &str,
         model: &str,
@@ -279,6 +271,7 @@ impl App {
         worktree: Option<Worktree>,
         exclusive: bool,
         account: &str,
+        automation: Option<&str>,
     ) -> anyhow::Result<String> {
         let id = self.id("s");
         let now = now_ms();
@@ -303,6 +296,7 @@ impl App {
             pinned: false,
             archived: false,
             group: None,
+            automation: automation.map(str::to_string),
             pending: Vec::new(),
             created_at: now,
             updated_at: now,
@@ -369,7 +363,8 @@ impl App {
         // a completed turn sends what is left as the next one. After Stop or
         // a failure the user decides.
         let step = matches!(event["type"].as_str(), Some("tool_started") | Some("tool_completed"));
-        let completed = event["type"] == "turn_completed" && event["status"] == "completed";
+        let turn_completed = event["type"] == "turn_completed";
+        let completed = turn_completed && event["status"] == "completed";
         let next = {
             let mut map = self.sessions.lock().unwrap();
             let Some(s) = map.get_mut(sid) else { return };
@@ -388,6 +383,19 @@ impl App {
                     self.store.meta(&s.meta);
                     self.broadcast(json!({ "op": "session", "session": s.meta }));
                 }
+            }
+            // A run of an automation is archived when its first turn ends, so
+            // runs do not pile up in the sidebar. Later turns (someone
+            // reopened it) and pinned runs are left alone.
+            if turn_completed
+                && s.meta.automation.is_some()
+                && !s.meta.pinned
+                && !s.meta.archived
+                && s.events.iter().filter(|e| e["type"] == "turn_completed").count() == 1
+            {
+                s.meta.archived = true;
+                self.store.meta(&s.meta);
+                self.broadcast(json!({ "op": "session", "session": s.meta }));
             }
             if s.meta.pending.is_empty() {
                 None
@@ -519,6 +527,7 @@ impl App {
             "workspace": workspace(),
             "hosts": self.remotes.list(),
             "accounts": self.accounts.list(),
+            "automations": self.automations.list(),
         })
     }
 }

@@ -43,5 +43,6 @@ recipe with its repro.
 | [notifications](notifications.md) | OS notifications: the sidebar switch, when a session or the `notify` op shows one |
 | [security](security.md) | Origin checks on the WebSocket, loopback binding |
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
+| [automations](automations.md) | Scheduled runs: the Automations page, create, Run now, auto-archive, pin, edit, disable, delete |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |

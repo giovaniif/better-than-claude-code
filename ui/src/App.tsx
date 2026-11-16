@@ -10,17 +10,19 @@ import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
 import { appendToComposer, onAppend, quoted } from "./compose";
+import { AutomationForm, AutomationsPage } from "./AutomationsPage";
+import { hiddenFromSidebar } from "./automations";
 import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
-const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
+export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** Permission modes, as Claude Code names them, and what each means per engine. */
-const PERMISSIONS: { id: Permission; label: string; claude: string; codex: string }[] = [
+export const PERMISSIONS: { id: Permission; label: string; claude: string; codex: string }[] = [
   { id: "ask", label: "Ask first", claude: "Asks before commands and edits", codex: "Sandboxed to the folder, asks to go further" },
   { id: "acceptEdits", label: "Accept edits", claude: "Edits files freely, asks before commands", codex: "Edits in the folder freely, asks to go further" },
   { id: "plan", label: "Plan only", claude: "Reads and plans, changes nothing", codex: "Read-only: looks, never changes" },
   { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks" },
 ];
-const STATUS_LABEL: Record<Status, string> = {
+export const STATUS_LABEL: Record<Status, string> = {
   idle: "Idle",
   queued: "Queued",
   running: "Running",
@@ -28,33 +30,34 @@ const STATUS_LABEL: Record<Status, string> = {
   error: "Error",
 };
 
-const modelName = (models: Models, engine: Engine, id: string) =>
+export const modelName = (models: Models, engine: Engine, id: string) =>
   models[engine]?.find((m) => m.id === id)?.name ?? id;
 const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed(bytes > 100 * 1024 ** 3 ? 0 : 1);
 const pct = (n: number) => `${Math.round(n)}%`;
-const tilde = (path: string, home: string) => (home && path.startsWith(home) ? "~" + path.slice(home.length) : path);
+export const tilde = (path: string, home: string) => (home && path.startsWith(home) ? "~" + path.slice(home.length) : path);
 const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 /* ---------- icons ---------- */
 
-const Icon = ({ d, size = 14, width = 2 }: { d: string; size?: number; width?: number }) => (
+export const Icon = ({ d, size = 14, width = 2 }: { d: string; size?: number; width?: number }) => (
   <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={width} strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />
   </svg>
 );
-const PLUS = "M12 5v14M5 12h14";
+export const PLUS = "M12 5v14M5 12h14";
+const CLOCK = "M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const IMPORT = "M12 3v12M7 10l5 5 5-5M5 21h14";
-const CHEVRON_RIGHT = "M9 6l6 6-6 6";
+export const CHEVRON_RIGHT = "M9 6l6 6-6 6";
 const CHEVRON_DOWN = "M6 9l6 6 6-6";
 const ARROW_UP = "M12 19V5M5 12l7-7 7 7";
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
-const CLOUD = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
+export const CLOUD = "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z";
 const PAPERCLIP = "M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48";
 const FILE = "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM14 3v5h5";
 const CLOSE = "M18 6 6 18M6 6l12 12";
 const MORE = "M5 12h.01M12 12h.01M19 12h.01";
 const REPLY = "M9 17 4 12l5-5M20 18v-2a4 4 0 0 0-4-4H4";
-const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
+export const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
 const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
 const BELL = "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0";
 const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM12 11v6M9 14h6";
@@ -62,7 +65,7 @@ const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
-const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
+export const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
   label ? (
     <svg className="cloud" role="img" aria-label={label} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <path d={CLOUD} />
@@ -128,6 +131,8 @@ export function App() {
         )}
         {route.page === "new" && <NewSession state={state} actions={actions} />}
         {route.page === "hosts" && <Hosts state={state} actions={actions} />}
+        {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
+        {route.page === "automation" && <AutomationForm key={`${route.host}/${route.id}`} state={state} actions={actions} host={route.host} id={route.id} />}
         {route.page === "session" && state.sessions[route.id] && (
           <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
         )}
@@ -548,13 +553,18 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
 }
 
 function Sidebar({ state, actions }: { state: State; actions: Actions }) {
-  const all = Object.values(state.sessions);
+  // Runs of automations live on the Automations page, not in this list.
+  const everything = Object.values(state.sessions);
+  const all = everything.filter((s) => !hiddenFromSidebar(s));
   const { pinned, ungrouped: active, groups, archived } = sidebarLayout(all);
   // Every group a session can be moved to, including ones whose only live
   // members are pinned.
   const groupNames = [...new Set(all.filter((s) => s.group && !s.archived).map((s) => s.group as string))].sort((a, b) => a.localeCompare(b));
   const [collapsed, toggleGroup] = useCollapsedGroups();
   const { route } = state;
+  // Runs of automations live on the Automations page, not in this list.
+  const runs = everything.filter(hiddenFromSidebar);
+  const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
   // Opening an archived session shows the section, so its row stays in view.
   const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
@@ -572,6 +582,11 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
           <Icon d={PLUS} />
           New session
+        </button>
+        <button className={`nav-row ${route.page === "automations" || route.page === "automation" || inRun ? "active" : ""}`} onClick={() => actions.go({ page: "automations" })}>
+          <Icon d={CLOCK} />
+          Automations
+          {runs.some((s) => s.status === "running" || s.status === "needs_approval") && <span className="dot dot-running" role="img" aria-label="A run is working" />}
         </button>
         <button className="nav-row" onClick={() => setImporting(true)}>
           <Icon d={IMPORT} />
@@ -657,13 +672,13 @@ const hostPressure = (h: Host) =>
 
 /* ---------- model picker ---------- */
 
-interface Choice {
+export interface Choice {
   engine: Engine;
   model: string;
   effort: string;
 }
 
-function effortFor(model: ModelInfo | undefined, wanted: string): string {
+export function effortFor(model: ModelInfo | undefined, wanted: string): string {
   if (!model) return wanted;
   if (model.efforts.includes(wanted)) return wanted;
   return model.defaultEffort ?? model.efforts[0] ?? wanted;
@@ -671,7 +686,7 @@ function effortFor(model: ModelInfo | undefined, wanted: string): string {
 
 /** What the engine may do without asking. Changing it mid-session applies
  *  to Claude at once and to Codex from its next turn. */
-function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: Permission; onChange(p: Permission): void }) {
+export function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: Permission; onChange(p: Permission): void }) {
   const [open, setOpen] = useState(false);
   useEscape(open, () => setOpen(false));
   const current = PERMISSIONS.find((p) => p.id === value) ?? PERMISSIONS[0];
@@ -715,7 +730,7 @@ function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: 
   );
 }
 
-function ModelPicker(props: {
+export function ModelPicker(props: {
   models: Models;
   usage: Usage;
   value: Choice;
@@ -1179,7 +1194,7 @@ function SentAttachment({ attachment: a, load }: { attachment: Attachment; load(
 
 /* ---------- new session ---------- */
 
-function loadChoice(models: Models): Choice {
+export function loadChoice(models: Models): Choice {
   try {
     const saved = JSON.parse(localStorage.getItem("yard.choice") ?? "null") as Choice | null;
     if (saved && models[saved.engine]?.some((m) => m.id === saved.model)) return saved;
@@ -1193,7 +1208,7 @@ function loadChoice(models: Models): Choice {
 /** Remembered per host: the folder last used there, and recent picks. */
 const cwdKey = (host: string) => (host === "local" ? "yard.cwd" : `yard.cwd.${host}`);
 const recentKey = (host: string) => `yard.recent.${host}`;
-function readRecent(host: string): string[] {
+export function readRecent(host: string): string[] {
   try {
     const list = JSON.parse(localStorage.getItem(recentKey(host)) ?? "[]");
     return Array.isArray(list) ? list.filter((p) => typeof p === "string") : [];
@@ -1352,7 +1367,7 @@ const LAPTOP = "M4 5h16v11H4ZM2 20h20";
 const CHECK = "M5 12l5 5 9-11";
 
 /** Close an open menu on Escape, wherever focus is. */
-function useEscape(open: boolean, close: () => void) {
+export function useEscape(open: boolean, close: () => void) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: globalThis.KeyboardEvent) => e.key === "Escape" && close();
@@ -1392,7 +1407,7 @@ function ChipMenu(props: {
   );
 }
 
-function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void }) {
+export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void }) {
   const { state, value } = props;
   const [open, setOpen] = useState(false);
   const pick = (host: string) => {
@@ -1441,7 +1456,7 @@ const baseName = (path: string) => path.slice(path.lastIndexOf("/") + 1) || path
 
 /** Recent folders, a search that browses the host's folders as a path is
  *  typed, and the Finder dialog when the session runs on this Mac. */
-function FolderPicker(props: {
+export function FolderPicker(props: {
   host: string;
   home: string;
   /** The folder whose subfolders are offered first: the host's projects. */
@@ -1616,7 +1631,7 @@ function FolderPicker(props: {
 }
 
 /** What the new worktree is cut from. */
-function BranchPicker(props: { current: string; branches: string[]; value: string; onChange(base: string): void }) {
+export function BranchPicker(props: { current: string; branches: string[]; value: string; onChange(base: string): void }) {
   const { current, value } = props;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
