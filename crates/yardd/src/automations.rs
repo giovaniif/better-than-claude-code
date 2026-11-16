@@ -314,7 +314,7 @@ fn save(app: &App, input: &Value) -> Result<Automation> {
     if !std::path::Path::new(&a.cwd).is_dir() {
         bail!("{} is not a folder", a.cwd);
     }
-    if a.engine != "claude" && a.engine != "codex" {
+    if !crate::engines::is_engine(&a.engine) {
         bail!("unknown engine {}", a.engine);
     }
     if !PERMISSIONS.contains(&a.permission.as_str()) {

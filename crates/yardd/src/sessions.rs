@@ -92,12 +92,16 @@ pub async fn deliver(app: &Arc<App>, sid: &str, when: Delivery) {
             send_turn(app, sid, &text, &attachments).await;
         }
         Delivery::Steer => {
+            let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
+            // The engine cannot take input mid-turn: it waits for the next one.
+            if !crate::engines::can_steer(&engine) {
+                return;
+            }
             let items = app.take_all_queued(sid, |s| s == "running");
             if items.is_empty() {
                 return;
             }
             let (text, attachments) = combine(&items);
-            let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
             let sent = match engine.as_str() {
                 "codex" => codex::steer(app, sid, &text, &attachments).await,
                 _ => claude::push(app, sid, &text, &attachments),

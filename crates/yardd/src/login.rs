@@ -48,17 +48,21 @@ fn report(app: &App, engine: &str, account: &str, state: &str, extra: Value) {
 /// `engines` is each engine's Default login; `accounts` has the added ones by id.
 pub async fn status(app: &Arc<App>) -> Value {
     let added = app.accounts.all();
-    let one = |engine: String, account: String| async move {
-        let state = if engine == "codex" { codex_status(app, &account).await } else { claude_status(app, &account).await };
-        (account, state)
-    };
-    let (claude, codex, rest) = tokio::join!(
-        one("claude".into(), DEFAULT.into()),
-        one("codex".into(), DEFAULT.into()),
+    let one = |engine: String, account: String| async move { (engine.clone(), account.clone(), engine_status(app, &engine, &account).await) };
+    let (defaults, rest) = tokio::join!(
+        futures_util::future::join_all(crate::engines::ALL.iter().map(|e| one(e.to_string(), DEFAULT.into()))),
         futures_util::future::join_all(added.iter().map(|a| one(a.engine.clone(), a.id.clone()))),
     );
-    let accounts: serde_json::Map<String, Value> = rest.into_iter().collect();
-    json!({ "op": "engines", "engines": { "claude": claude.1, "codex": codex.1 }, "accounts": accounts })
+    let engines: serde_json::Map<String, Value> = defaults.into_iter().map(|(engine, _, state)| (engine, state)).collect();
+    let accounts: serde_json::Map<String, Value> = rest.into_iter().map(|(_, account, state)| (account, state)).collect();
+    json!({ "op": "engines", "engines": engines, "accounts": accounts })
+}
+
+async fn engine_status(app: &Arc<App>, engine: &str, account: &str) -> Value {
+    match engine {
+        "codex" => codex_status(app, account).await,
+        _ => claude_status(app, account).await,
+    }
 }
 
 async fn claude_status(app: &Arc<App>, account: &str) -> Value {

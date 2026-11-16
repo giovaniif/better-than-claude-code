@@ -77,6 +77,8 @@ export function metersFor(engine: Engine, usage: Usage, now?: number): Meter[] {
     if (c?.secondary) out.push(meter("secondary", windowLabel(c.secondary.windowDurationMins, "Week"), c.secondary.usedPercent, toMs(c.secondary.resetsAt), now));
     return out;
   }
+  // Only Claude and Codex report plan limits.
+  if (engine !== "claude") return [];
   const c = usage.claude;
   if (!c) return [];
   const windows = { ...(c.windows ?? {}) };

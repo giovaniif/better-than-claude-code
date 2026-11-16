@@ -81,7 +81,7 @@ impl Accounts {
 
     pub fn add(&self, id: String, engine: &str, name: &str) -> Result<Account> {
         let name = name.trim();
-        if engine != "claude" && engine != "codex" {
+        if !crate::engines::is_engine(engine) {
             bail!("unknown engine {engine}");
         }
         if name.is_empty() {

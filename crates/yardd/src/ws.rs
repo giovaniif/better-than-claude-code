@@ -229,7 +229,7 @@ pub async fn create_session(
     if !Path::new(cwd).is_dir() {
         bail!("{cwd} is not a folder");
     }
-    if engine != "claude" && engine != "codex" {
+    if !crate::engines::is_engine(engine) {
         bail!("unknown engine {engine}");
     }
     let permission = msg["permission"].as_str().unwrap_or("ask");

@@ -1,7 +1,7 @@
-//! Engine hand-off: move a piece of work to the other engine.
+//! Engine hand-off: move a piece of work to another engine.
 //!
-//! The two engines cannot share a thread, so a hand-off is a new session on
-//! the other engine in the same folder, seeded with a brief of the old one.
+//! Engines cannot share a thread, so a hand-off is a new session on the
+//! engine the message names, in the same folder, seeded with a brief of the old one.
 //! The brief is built here from the event log with no model call: the usual
 //! reason to hand off is that the source engine is out of quota, so it cannot
 //! be asked to summarize.
@@ -35,12 +35,7 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
     }
 }
 
-fn engine_name(engine: &str) -> &'static str {
-    match engine {
-        "codex" => "Codex",
-        _ => "Claude",
-    }
-}
+use crate::engines::name as engine_name;
 
 async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
     let field = |key: &str| msg[key].as_str().with_context(|| format!("missing `{key}`"));
@@ -48,7 +43,7 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
     let engine = field("engine")?;
     let model = field("model")?;
     let effort = field("effort")?;
-    if engine != "claude" && engine != "codex" {
+    if !crate::engines::is_engine(engine) {
         bail!("unknown engine {engine}");
     }
     let source = app.meta(sid).context("no such session")?;

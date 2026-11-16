@@ -16,9 +16,9 @@ import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
+import { ENGINES, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines } from "./engines";
 import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
-export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex" };
 /** Permission modes, as Claude Code names them, and what each means per engine. */
 export const PERMISSIONS: { id: Permission; label: string; claude: string; codex: string }[] = [
   { id: "ask", label: "Ask first", claude: "Asks before commands and edits", codex: "Sandboxed to the folder, asks to go further" },
@@ -928,7 +928,7 @@ export function ModelPicker(props: {
   /** Without it the account is fixed (a session's) and only named. */
   onAccount?(engine: Engine, account: string): void;
   onChange(next: Choice): void;
-  /** In a session, a model of the other engine means a hand-off, never a silent switch. */
+  /** In a session, a model of another engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
   const { models, usage, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
@@ -937,8 +937,8 @@ export function ModelPicker(props: {
   const triggerAccount = choicesOf(value.engine).length > 1 ? accountName(accounts, value.engine, pickOf(value.engine)) : null;
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
-  // The engine not in use starts folded.
-  const [expanded, setExpanded] = useState(false);
+  // Engines not in use start folded, each opened on its own.
+  const [expanded, setExpanded] = useState<Engine[]>([]);
   const ordered = [value.engine, ...engines.filter((e) => e !== value.engine)];
   // The confirmation sits at the top of the list, which is usually scrolled
   // down to the model that was just clicked. Bring it into view.
@@ -950,7 +950,7 @@ export function ModelPicker(props: {
   const close = () => {
     setOpen(false);
     setConfirm(null);
-    setExpanded(false);
+    setExpanded([]);
   };
   useEscape(open, close);
   return (
@@ -996,13 +996,13 @@ export function ModelPicker(props: {
             {ordered.map((engine) => {
               const isHandoff = !!handoff && engine !== value.engine;
               const disabled = isHandoff && handoff.blocked;
-              const list = models[engine];
-              // The engine in use is open; the other is one row until asked for.
-              const folded = engine !== value.engine && !expanded;
+              const list = models[engine] ?? [];
+              // The engine in use is open; each other one is a row until asked for.
+              const folded = engine !== value.engine && !expanded.includes(engine);
               return (
                 <div key={engine} className="picker-group">
                   {folded ? (
-                    <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded(true)}>
+                    <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                       <span>
                         {ENGINE_NAME[engine]} · {list.length} {list.length === 1 ? "model" : "models"}
                         {handoff ? " · switching hands off" : ""}
@@ -1462,7 +1462,7 @@ export function loadChoice(models: Models): Choice {
   } catch {
     /* fall through to the default */
   }
-  const first = models.claude[0];
+  const first = models.claude?.[0];
   return { engine: "claude", model: first?.id ?? "", effort: first?.defaultEffort ?? "medium" };
 }
 
@@ -1500,7 +1500,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     const wanted = picked[pickKey(engine)] ?? localStorage.getItem(pickKey(engine)) ?? DEFAULT_ACCOUNT;
     return accountChoices(accounts, engine).some((a) => a.id === wanted) ? wanted : DEFAULT_ACCOUNT;
   };
-  const picks: Record<Engine, string> = { claude: pickOf("claude"), codex: pickOf("codex") };
+  const picks = Object.fromEntries(ENGINES.map((e) => [e, pickOf(e)])) as Record<Engine, string>;
   const pickAccount = (engine: Engine, id: string) => {
     localStorage.setItem(pickKey(engine), id);
     setPicked({ ...picked, [pickKey(engine)]: id });
@@ -1588,7 +1588,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             models={models}
             usage={usageForPicks(usageOn(state, target), picks)}
             value={choice}
-            engines={["claude", "codex"]}
+            engines={pickerEngines(models)}
             accounts={accounts}
             picks={picks}
             onAccount={pickAccount}
@@ -2107,7 +2107,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               accounts={accounts}
               picks={{ [meta.engine]: accountOf(meta) }}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
-              engines={meta.engine === "claude" ? ["claude", "codex"] : ["codex", "claude"]}
+              engines={pickerEngines(models, meta.engine)}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
@@ -3288,10 +3288,6 @@ function InstallLog({ install, machine }: { install: State["installs"][string]; 
   );
 }
 
-const ENGINE_LABEL: Record<string, string> = { claude: "Claude Code", codex: "Codex" };
-const ENGINE_LOGIN: Record<string, string> = { claude: "claude setup-token", codex: "codex login --device-auth" };
-const ENGINE_INSTALL: Record<string, string> = { claude: "npm i -g @anthropic-ai/claude-code", codex: "npm i -g @openai/codex" };
-
 /** What the installer found about the engines, with what to run for each that is not ready. */
 function EngineSummary({ install, machine }: { install: State["installs"][string]; machine: string }) {
   const engines = install.lines
@@ -3305,10 +3301,10 @@ function EngineSummary({ install, machine }: { install: State["installs"][string
       {engines.map((e) => (
         <div key={e.name} className="engine-row">
           <span className={`dot ${e.state === "ok" ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
-          <span>{ENGINE_LABEL[e.name] ?? e.name}</span>
+          <span>{ENGINE_LABEL[e.name as Engine] ?? e.name}</span>
           <span className="muted small">{e.state === "ok" ? "ready" : e.state === "missing" ? "not installed" : "not logged in"}</span>
           {e.state !== "ok" && (
-            <code className="engine-cmd">{e.state === "missing" ? ENGINE_INSTALL[e.name] : ENGINE_LOGIN[e.name]}</code>
+            <code className="engine-cmd">{e.state === "missing" ? ENGINE_INSTALL[e.name as Engine] : ENGINE_LOGIN[e.name as Engine]}</code>
           )}
         </div>
       ))}
@@ -3331,7 +3327,7 @@ function Engines(props: {
   const [adding, setAdding] = useState<Engine | null>(null);
   return (
     <div className="engines">
-      {(["claude", "codex"] as Engine[]).map((engine) => {
+      {ENGINES.map((engine) => {
         const st = engines[engine];
         if (!st) return null;
         const ready = st.installed && st.loggedIn === true;

@@ -6,6 +6,7 @@ mod attachments;
 mod automations;
 mod claude;
 mod codex;
+mod engines;
 mod git;
 mod handoff;
 mod guard;

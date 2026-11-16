@@ -60,7 +60,8 @@ export interface ModelInfo {
   isDefault?: boolean;
 }
 
-export type Models = Record<Engine, ModelInfo[]>;
+/** Per engine; an engine that is not installed on the host may be missing. */
+export type Models = Partial<Record<Engine, ModelInfo[]>>;
 
 export interface Host {
   id: string;
@@ -219,7 +220,7 @@ export interface EngineState {
   account?: string | null;
   error?: string;
 }
-export type EngineStates = Record<Engine, EngineState> & {
+export type EngineStates = Partial<Record<Engine, EngineState>> & {
   /** Added accounts' states by account id. */
   accounts?: Record<string, EngineState>;
 };
