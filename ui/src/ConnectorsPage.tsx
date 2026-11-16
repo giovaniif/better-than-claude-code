@@ -7,7 +7,8 @@ import { accountChoices, DEFAULT_ACCOUNT } from "./accounts";
 import { actionFor, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
 import type { Engine, McpServer } from "./protocol";
 import { accountsOn, hostName, hostOnline, mcpAuthKey, mcpKey, type Actions, type State } from "./store";
-import { Cloud, ENGINE_NAME, Icon, MenuButton, PLUS } from "./App";
+import { Cloud, Icon, MenuButton, PLUS } from "./App";
+import { ENGINE_NAME } from "./engines";
 
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
 const ENGINES: Engine[] = ["claude", "codex"];

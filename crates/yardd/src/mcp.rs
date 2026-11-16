@@ -130,7 +130,7 @@ pub async fn handle(app: &Arc<App>, msg: &Value) -> Result<()> {
     let op = msg["op"].as_str().unwrap_or("");
     let engine = str_field(msg, "engine")?.to_string();
     if engine != "claude" && engine != "codex" {
-        bail!("unknown engine {engine}");
+        bail!("Connectors are listed for Claude and Codex; {engine} keeps its own MCP setup");
     }
     let account = account_of(msg).to_string();
     app.accounts.check(&engine, &account)?;
