@@ -162,6 +162,8 @@ pub struct App {
     pub remotes: crate::remote::Remotes,
     pub automations: crate::automations::Automations,
     pub logins: crate::login::Logins,
+    /// Connectors processes and replies owed by sidecars (see mcp.rs).
+    pub mcp: crate::mcp::Connectors,
     /// Sessions with queued messages to deliver; drained by a task in main
     /// (emit cannot talk to an engine itself).
     next_turns: mpsc::UnboundedSender<(String, Delivery)>,
@@ -211,6 +213,7 @@ impl App {
             remotes: crate::remote::Remotes::new(crate::store::data_dir()),
             automations: crate::automations::Automations::load(crate::store::data_dir()),
             logins: crate::login::Logins::default(),
+            mcp: crate::mcp::Connectors::default(),
             next_turns,
             next_turns_rx: Mutex::new(Some(next_turns_rx)),
             next: AtomicU64::new(1),
@@ -402,6 +405,8 @@ impl App {
     /// Append a normalized event to the session log and fan it out.
     /// Session status is derived here so both engines behave the same.
     pub fn emit(&self, sid: &str, mut event: Value) {
+        // A widget's HTML and data go to a file; the log keeps its id.
+        crate::widgets::take(self, &mut event);
         // Turn boundaries carry the time, so the UI can say how long one took.
         if matches!(event["type"].as_str(), Some("turn_started") | Some("turn_completed")) && event["at"].is_null() {
             event["at"] = json!(now_ms());

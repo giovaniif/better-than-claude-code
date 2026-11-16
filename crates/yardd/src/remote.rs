@@ -656,7 +656,7 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
 pub fn route(msg: &Value) -> Option<String> {
     // Ops that name no session say which host they are for. An upload names
     // either: a host from the new-session page, a session from a reply box.
-    if ["session.create", "git.branches", "fs.dirs", "attach.put", "engines.status", "account.add", "account.remove", "login.start", "login.code", "login.choose", "login.cancel", "claude.sessions", "session.import", "automation.list", "automation.save", "automation.delete", "automation.run"]
+    if ["session.create", "git.branches", "fs.dirs", "attach.put", "engines.status", "account.add", "account.remove", "login.start", "login.code", "login.choose", "login.cancel", "claude.sessions", "session.import", "automation.list", "automation.save", "automation.delete", "automation.run", "mcp.status", "mcp.auth", "mcp.callback", "mcp.reconnect"]
         .iter()
         .any(|op| msg["op"] == *op)
     {
@@ -755,7 +755,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             rewrite_stats(host, name, &mut msg["host"]);
             msg["hostId"] = json!(host);
         }
-        "models" | "usage" | "accounts" | "error" | "git.branches" | "fs.dirs" | "attach.stored" | "engines" | "login" | "claude.sessions" | "automations" => {
+        "models" | "usage" | "accounts" | "error" | "git.branches" | "fs.dirs" | "attach.stored" | "engines" | "login" | "claude.sessions" | "automations" | "mcp" | "mcp.auth" => {
             msg["hostId"] = json!(host)
         }
         "term.list" => {

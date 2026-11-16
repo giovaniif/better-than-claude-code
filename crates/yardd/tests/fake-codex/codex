@@ -18,6 +18,15 @@
 //           a message sent in that second has no step left to join
 //   [steps] three commands, 400 ms apart, then "Echo: <prompt>"; input
 //           steered in meanwhile (turn/steer) is appended as " | steered: …"
+//   [chart] an MCP call to the `chart` server (verify/fakes/mcp-chart) whose
+//           tool declares a widget (`mcpAppUi`), then "Here is the chart."
+//
+// MCP: `mcpServerStatus/list` lists `chart` (connected, from mcp-chart) and
+// `fake-oauth` (not logged in until its sign-in completes); `app/list` one
+// ChatGPT app that is not connected. `mcpServer/oauth/login` answers with a
+// sign-in link whose redirect is a real loopback page on this host: a GET of
+// /callback?code=… there completes it (`mcpServer/oauthLogin/completed`).
+// `mcpServer/resource/read` and `mcpServer/tool/call` go to mcp-chart.
 //   other   a plain streamed reply: "Echo: <prompt>"
 //
 // CODEX_HOME (set for an extra account) moves the login state and the thread
@@ -31,6 +40,7 @@
 // one started, and refuses one it never saw.
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { CHART_URI, chartCall, rpc } from "./chart.mjs";
 
 const dir = process.env.FAKE_CODEX_DIR;
 const log = (line) => {
@@ -205,6 +215,61 @@ async function handle(msg) {
       ctl.wake();
       return;
     }
+    case "mcpServerStatus/list": {
+      const { tools } = await rpc("tools/list");
+      const oauthOk = state && existsSync(`${state}/mcp-oauth-ok`);
+      const data = [
+        { name: "chart", runtimeStatus: null, pluginId: null, httpOrigin: null, tools: Object.fromEntries(tools.map((t) => [t.name, t])), toolsError: null, authStatus: "unsupported" },
+        {
+          name: "fake-oauth",
+          runtimeStatus: null,
+          pluginId: null,
+          httpOrigin: "https://mcp.fake-oauth.example",
+          tools: oauthOk ? { lookup: { name: "lookup", inputSchema: { type: "object" } } } : {},
+          toolsError: oauthOk ? null : "Auth required",
+          authStatus: oauthOk ? "oAuth" : "notLoggedIn",
+        },
+      ].filter((s) => !p.serverName || s.name === p.serverName);
+      return reply({ data, nextCursor: null });
+    }
+    case "app/list":
+      return reply({
+        data: [{ id: "github", name: "GitHub", description: null, isAccessible: false, isEnabled: true, installUrl: "https://chatgpt.com/apps/github" }],
+        nextCursor: null,
+      });
+    case "mcpServer/oauth/login": {
+      if (p.name !== "fake-oauth") return fail(`${p.name} does not use OAuth`);
+      const loginId = newId("mcp-login");
+      const server = Bun.serve({
+        port: 0,
+        hostname: "127.0.0.1",
+        fetch(req) {
+          const url = new URL(req.url);
+          if (url.pathname !== "/callback" || !url.searchParams.get("code")) return new Response("bad", { status: 400 });
+          log(`mcp oauth callback code=${url.searchParams.get("code")}`);
+          if (state) writeFileSync(`${state}/mcp-oauth-ok`, "");
+          setTimeout(() => {
+            server.stop();
+            notify("mcpServer/oauthLogin/completed", { name: p.name, threadId: null, loginId, success: true });
+          }, 50);
+          return new Response("Signed in. You can close this tab.");
+        },
+      });
+      const redirect = `http://127.0.0.1:${server.port}/callback`;
+      return reply({ authorizationUrl: `https://auth.fake-oauth.example/authorize?state=s1&redirect_uri=${encodeURIComponent(redirect)}`, loginId });
+    }
+    case "config/mcpServer/reload":
+      return reply({});
+    case "mcpServer/resource/read": {
+      if (p.server !== "chart") return fail(`no server ${p.server}`);
+      const read = await rpc("resources/read", { uri: p.uri });
+      return reply({ contents: read.contents, originCallId: p.originCallId ?? null });
+    }
+    case "mcpServer/tool/call": {
+      if (p.server !== "chart") return fail(`no server ${p.server}`);
+      if (dir) appendFileSync(`${dir}/mcp-calls.jsonl`, `${JSON.stringify({ threadId: p.threadId, tool: p.tool, arguments: p.arguments })}\n`);
+      return reply(await rpc("tools/call", { name: p.tool, arguments: p.arguments ?? {} }));
+    }
     default:
       return fail(`fake codex does not implement ${method}`);
   }
@@ -265,6 +330,17 @@ async function runTurn(threadId, cwd, turn, text) {
     const steered = ctl.steered?.length ? ` | steered: ${ctl.steered.join(" / ")}` : "";
     const answer = `Echo: ${text}${steered}`;
     say(answer, [answer]);
+    return finish("completed");
+  }
+
+  if (text.includes("[chart]")) {
+    const itemId = newId("mcp");
+    const args = { metric: "p95 latency", points: 8 };
+    const base = { type: "mcpToolCall", id: itemId, server: "chart", tool: "show_chart", arguments: args, appContext: null, mcpAppUi: { resourceUri: CHART_URI, preferredModelDisplayMode: "inline" }, pluginId: null, readOnlyHint: true };
+    item("item/started", { ...base, status: "inProgress", result: null, error: null });
+    const { result } = await chartCall(args);
+    item("item/completed", { ...base, status: "completed", result: { content: result.content, structuredContent: result.structuredContent, _meta: null }, error: null, durationMs: 5 });
+    say("Here is the chart.", ["Here is the chart."]);
     return finish("completed");
   }
 

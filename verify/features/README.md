@@ -55,3 +55,4 @@ prompt).
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
 | [usage](usage.md) | Plan usage meters in the sidebar and the model picker, the picker's engine sections |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
+| [connectors](connectors.md) | MCP servers per engine account: states, sign-in (claude.ai, pasted redirects, ChatGPT apps), chart widgets in the thread |

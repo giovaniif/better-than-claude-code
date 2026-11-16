@@ -11,7 +11,10 @@ export type Row =
   /** Consecutive tool calls and thinking. `live` while the turn is still adding to it. */
   | { type: "work"; key: string; entries: WorkItem[]; live: boolean }
   /** Everything a finished turn did before its answer. */
-  | { type: "fold"; key: string; rows: Row[]; ms: number | null; status: string; summary: string };
+  | { type: "fold"; key: string; rows: Row[]; ms: number | null; status: string; summary: string }
+  /** A tool call's widget (MCP Apps: a chart, a table). It stays in view
+   *  when its turn folds, between the fold and the answer. */
+  | { type: "widget"; key: string; tool: ToolItem };
 
 const isWork = (it: Item): it is WorkItem => it.kind === "tool" || it.kind === "reasoning";
 
@@ -38,7 +41,10 @@ function nest(items: Item[]): Item[] {
   return top;
 }
 
-/** Group runs of work items; `liveTail` marks the last run live. */
+const widgetRow = (t: ToolItem): Row => ({ type: "widget", key: `widget-${t.key}`, tool: t });
+
+/** Group runs of work items; `liveTail` marks the last run live. A widget
+ *  shows right after its call and starts a new run. */
 function group(items: Item[], liveTail: boolean): Row[] {
   const rows: Row[] = [];
   for (const it of items) {
@@ -47,6 +53,7 @@ function group(items: Item[], liveTail: boolean): Row[] {
     if (isWork(it)) {
       if (last?.type === "work") last.entries.push(it);
       else rows.push({ type: "work", key: it.key, entries: [it], live: false });
+      if (it.kind === "tool" && it.app) rows.push(widgetRow(it));
     } else {
       rows.push({ type: "item", key: it.key, item: it });
     }
@@ -103,11 +110,13 @@ export function layout(items: Item[], running: boolean): Row[] {
     rows.push({
       type: "fold",
       key: `fold-${folded[0]?.key ?? body[0].key}`,
-      rows: group(folded, false),
+      // Widgets are shown outside the fold, so not twice inside it.
+      rows: group(folded, false).filter((r) => r.type !== "widget"),
       ms,
       status: marker?.status ?? "completed",
       summary: summarize(work),
     });
+    for (const t of work) if (t.kind === "tool" && t.app) rows.push(widgetRow(t));
     rows.push(...group(shown, false));
   });
   return rows;

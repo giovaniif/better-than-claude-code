@@ -1,0 +1,193 @@
+#!/usr/bin/env bun
+// A tiny MCP server with an MCP Apps (SEP-1865) widget, for tests and for
+// proving charts end to end with a real engine. Stdio, newline-delimited
+// JSON-RPC, no SDK.
+//
+// Tools:
+//   show_chart { metric?, points? }   returns a series as structuredContent;
+//                                     its `_meta.ui.resourceUri` is the chart
+//   refresh_chart { metric, points }  read-only, app-only: the chart's
+//                                     "More points" button calls it through
+//                                     the host (`tools/call`)
+//   delete_everything {}              not read-only: a host must not let an
+//                                     app run it unchecked
+// Resource: ui://chart/view.html, an SVG bar chart that speaks the MCP Apps
+// protocol over postMessage and tries a network fetch the CSP must block.
+//
+// MCP_CHART_LOG names a file that gets one line per request.
+
+import { appendFileSync } from "node:fs";
+
+const logFile = process.env.MCP_CHART_LOG;
+const log = (line) => {
+  if (logFile) appendFileSync(logFile, `${line}\n`);
+};
+
+const series = (metric, points) =>
+  Array.from({ length: Math.max(1, Math.min(48, points | 0 || 8)) }, (_, i) => ({
+    t: `${String(i).padStart(2, "0")}:00`,
+    v: Math.round(40 + 30 * Math.sin(i / 2) + (metric.length % 7) * 3),
+  }));
+
+const result = (metric, points) => {
+  const data = series(metric, points);
+  return {
+    content: [{ type: "text", text: `${metric}: ${data.length} points, max ${Math.max(...data.map((d) => d.v))}` }],
+    structuredContent: { metric, data },
+  };
+};
+
+const VIEW = `<!doctype html>
+<html><head><meta charset="utf-8"><title>Chart</title>
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; color: #1f2328; background: transparent; }
+  .wrap { padding: 12px 14px; }
+  h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
+  svg { display: block; width: 100%; height: 140px; }
+  rect { fill: #6e56cf; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; color: #59636e; }
+  button { font: inherit; padding: 3px 10px; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; cursor: pointer; }
+</style></head>
+<body><div class="wrap">
+  <h3 id="title">Waiting for data…</h3>
+  <svg id="chart" viewBox="0 0 480 140" preserveAspectRatio="none"></svg>
+  <div class="row"><button id="more">More points</button><button id="link">Open docs</button><span id="status"></span></div>
+</div>
+<script>
+  let next = 1;
+  const pending = new Map();
+  const post = (msg) => window.parent.postMessage(msg, "*");
+  const request = (method, params) => new Promise((resolve, reject) => {
+    const id = next++;
+    pending.set(id, { resolve, reject });
+    post({ jsonrpc: "2.0", id, method, params });
+  });
+  const status = (t) => { document.getElementById("status").textContent = t; };
+  let metric = "requests";
+  let points = 8;
+  function draw(sc) {
+    if (!sc || !Array.isArray(sc.data)) return;
+    metric = sc.metric || metric;
+    points = sc.data.length;
+    document.getElementById("title").textContent = metric + " · " + points + " points";
+    const max = Math.max(...sc.data.map((d) => d.v), 1);
+    const w = 480 / sc.data.length;
+    document.getElementById("chart").innerHTML = sc.data
+      .map((d, i) => '<rect x="' + (i * w + 2) + '" y="' + (140 - (d.v / max) * 130) + '" width="' + (w - 4) + '" height="' + (d.v / max) * 130 + '"><title>' + d.t + ": " + d.v + "</title></rect>")
+      .join("");
+    post({ jsonrpc: "2.0", method: "ui/notifications/size-changed", params: { height: document.documentElement.scrollHeight } });
+  }
+  window.addEventListener("message", (e) => {
+    if (e.source !== window.parent) return;
+    const m = e.data || {};
+    if (m.id != null && pending.has(m.id)) {
+      const p = pending.get(m.id);
+      pending.delete(m.id);
+      m.error ? p.reject(m.error) : p.resolve(m.result);
+      return;
+    }
+    if (m.method === "ui/notifications/tool-result") draw(m.params && m.params.structuredContent);
+    if (m.method === "ui/notifications/tool-input") metric = (m.params && m.params.arguments && m.params.arguments.metric) || metric;
+    if (m.method === "ui/resource-teardown" && m.id != null) post({ jsonrpc: "2.0", id: m.id, result: {} });
+  });
+  document.getElementById("more").onclick = async () => {
+    status("Loading…");
+    try {
+      const r = await request("tools/call", { name: "refresh_chart", arguments: { metric, points: points + 4 } });
+      draw(r.structuredContent);
+      status("Loaded " + points + " points");
+    } catch (err) {
+      status("Refused: " + (err && err.message ? err.message : String(err)));
+    }
+  };
+  document.getElementById("link").onclick = () => request("ui/open-link", { url: "https://modelcontextprotocol.io/extensions/apps" });
+  // The CSP allows no network: this must fail.
+  fetch("https://example.com/").then(() => { document.body.dataset.network = "open"; }, () => { document.body.dataset.network = "blocked"; });
+  request("ui/initialize", {
+    appInfo: { name: "fake-chart", version: "1" },
+    appCapabilities: {},
+    protocolVersion: "2026-01-26",
+  }).then((r) => {
+    document.body.dataset.host = (r && r.hostInfo && r.hostInfo.name) || "";
+    post({ jsonrpc: "2.0", method: "ui/notifications/initialized", params: {} });
+  });
+</script></body></html>`;
+
+const TOOLS = [
+  {
+    name: "show_chart",
+    description: "Show a metric as a bar chart. Use when asked for a chart of a metric.",
+    inputSchema: { type: "object", properties: { metric: { type: "string" }, points: { type: "number" } } },
+    annotations: { readOnlyHint: true },
+    _meta: { ui: { resourceUri: "ui://chart/view.html", visibility: ["model", "app"] }, "ui/resourceUri": "ui://chart/view.html" },
+  },
+  {
+    name: "refresh_chart",
+    description: "Reload the chart's series.",
+    inputSchema: { type: "object", properties: { metric: { type: "string" }, points: { type: "number" } } },
+    annotations: { readOnlyHint: true },
+    _meta: { ui: { resourceUri: "ui://chart/view.html", visibility: ["app"] } },
+  },
+  {
+    name: "delete_everything",
+    description: "Test tool with side effects. Never call it.",
+    inputSchema: { type: "object", properties: {} },
+    annotations: { readOnlyHint: false, destructiveHint: true },
+  },
+];
+
+const write = (msg) => process.stdout.write(`${JSON.stringify(msg)}\n`);
+
+function handle(msg) {
+  const { id, method, params = {} } = msg;
+  log(`${method}${params.name ? ` ${params.name}` : ""}${params.uri ? ` ${params.uri}` : ""}`);
+  const reply = (result) => write({ jsonrpc: "2.0", id, result });
+  switch (method) {
+    case "initialize":
+      return reply({
+        protocolVersion: params.protocolVersion ?? "2025-06-18",
+        capabilities: { tools: {}, resources: {}, extensions: { "io.modelcontextprotocol/ui": { mimeTypes: ["text/html;profile=mcp-app"] } } },
+        serverInfo: { name: "mcp-chart", version: "1.0.0" },
+      });
+    case "ping":
+      return reply({});
+    case "tools/list":
+      return reply({ tools: TOOLS });
+    case "tools/call": {
+      const a = params.arguments ?? {};
+      if (params.name === "show_chart" || params.name === "refresh_chart") return reply(result(String(a.metric ?? "requests"), Number(a.points ?? 8)));
+      if (params.name === "delete_everything") return reply({ content: [{ type: "text", text: "Deleted everything (not really)." }] });
+      return write({ jsonrpc: "2.0", id, error: { code: -32602, message: `unknown tool ${params.name}` } });
+    }
+    case "resources/list":
+      return reply({ resources: [{ uri: "ui://chart/view.html", name: "chart", mimeType: "text/html;profile=mcp-app" }] });
+    case "resources/templates/list":
+      return reply({ resourceTemplates: [] });
+    case "resources/read":
+      if (params.uri !== "ui://chart/view.html") return write({ jsonrpc: "2.0", id, error: { code: -32002, message: "no such resource" } });
+      return reply({
+        contents: [{ uri: params.uri, mimeType: "text/html;profile=mcp-app", text: VIEW, _meta: { ui: { csp: { connectDomains: [], resourceDomains: [] }, prefersBorder: true } } }],
+      });
+    case "prompts/list":
+      return reply({ prompts: [] });
+    default:
+      if (id !== undefined) write({ jsonrpc: "2.0", id, error: { code: -32601, message: `method not found: ${method}` } });
+  }
+}
+
+let buf = "";
+process.stdin.on("data", (chunk) => {
+  buf += chunk;
+  let n;
+  while ((n = buf.indexOf("\n")) >= 0) {
+    const line = buf.slice(0, n).trim();
+    buf = buf.slice(n + 1);
+    if (!line) continue;
+    try {
+      handle(JSON.parse(line));
+    } catch (e) {
+      log(`bad line: ${e}`);
+    }
+  }
+});
+process.stdin.on("end", () => process.exit(0));

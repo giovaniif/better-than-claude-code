@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { AgentEvent, SessionMeta } from "./protocol";
-import { cleanGroupName, go, hostErrorText, hostName, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
+import { cleanGroupName, go, hostErrorText, hostName, initial, mcpAuthKey, mcpKey, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
 const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
@@ -179,6 +179,8 @@ describe("route in the URL", () => {
     expect(parseHash("")).toEqual({ page: "new" });
     expect(parseHash("#/s/%E0%A4%A")).toEqual({ page: "new" });
     expect(routeHash({ page: "settings" })).toBe("#/settings");
+    expect(routeHash({ page: "connectors" })).toBe("#/connectors");
+    expect(parseHash("#/connectors")).toEqual({ page: "connectors" });
   });
 
   test("a reload opens the session the URL names once the snapshot lists it", () => {
@@ -325,5 +327,26 @@ describe("the local host's name", () => {
       host: { id: "local", name: "TEST-renamed", cpu: 1, cores: 2, load: 0, memUsed: 1, memTotal: 2, diskUsed: 1, diskTotal: 2, cpuHistory: [] },
     });
     expect(hostName(s, "local")).toBe("TEST-renamed");
+  });
+});
+
+describe("connectors", () => {
+  test("a listing replaces the loading mark; an older host's refusal ends it with what to do", () => {
+    let s = server(initial, { op: "mcp.loading", host: "h1", engine: "claude", account: "default" });
+    s = server(s, { op: "mcp.loading", host: "local", engine: "codex", account: "default" });
+    expect(s.mcp[mcpKey("h1", "claude")].loading).toBe(true);
+    s = server(s, { op: "mcp", engine: "codex", account: "default", servers: [{ name: "chart", status: "connected", source: "config", tools: 3, appTools: 2 }] });
+    expect(s.mcp[mcpKey("local", "codex")]).toEqual({ engine: "codex", account: "default", servers: [{ name: "chart", status: "connected", source: "config", tools: 3, appTools: 2 }] });
+    s = server(s, { op: "error", for: "mcp.status", hostId: "h1", message: "unknown op `mcp.status`" });
+    expect(s.mcp[mcpKey("h1", "claude")]).toMatchObject({ loading: false, error: expect.stringContaining("older") });
+    expect(s.error).toBeNull();
+  });
+
+  test("sign-in states are kept per server and cleared on request", () => {
+    let s = server(initial, { op: "mcp.auth", hostId: "h1", engine: "claude", account: "default", server: "claude.ai Datadog", state: "open", url: "https://claude.ai/x", paste: false });
+    const key = mcpAuthKey("h1", "claude", "default", "claude.ai Datadog");
+    expect(s.mcpAuth[key]).toEqual({ state: "open", url: "https://claude.ai/x", paste: false });
+    s = server(s, { op: "mcp.auth", host: "h1", engine: "claude", account: "default", server: "claude.ai Datadog", state: null });
+    expect(s.mcpAuth[key]).toBeUndefined();
   });
 });

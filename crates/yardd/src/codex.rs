@@ -240,6 +240,10 @@ impl Client {
             crate::login::codex_completed(app, &self.account, p);
             return;
         }
+        if method == "mcpServer/oauthLogin/completed" {
+            crate::mcp::codex_login_completed(app, &self.account, p);
+            return;
+        }
         let Some(sid) = self.session_for(p) else { return };
         match method {
             "turn/started" => set_turn(app, &sid, p["turn"]["id"].as_str()),
@@ -370,6 +374,7 @@ fn on_item(app: &Arc<App>, sid: &str, started: bool, item: &Value) {
                 .unwrap_or_default();
             app.emit(sid, json!({ "type": "file_change", "itemId": id, "files": files }));
         }
+        "mcpToolCall" if !started => crate::widgets::codex_completed(app, sid, item),
         kind @ ("mcpToolCall" | "webSearch" | "dynamicToolCall") => {
             if started {
                 let detail = item["tool"]
@@ -580,6 +585,15 @@ pub async fn forget(app: &Arc<App>, sid: &str) {
             .await;
     }
     c.threads.lock().unwrap().remove(&thread_id);
+}
+
+/// The session's thread for a widget's call, resumed first when the session
+/// was restored and has not run a turn since.
+pub async fn thread_for_widget(app: &Arc<App>, sid: &str) -> Result<String> {
+    if let Some(thread_id) = app.resumable(sid) {
+        resume(app, sid, thread_id).await?;
+    }
+    Ok(thread_of(app, sid)?.0)
 }
 
 fn thread_of(app: &Arc<App>, sid: &str) -> Result<(String, Option<String>)> {

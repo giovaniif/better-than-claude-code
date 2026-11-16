@@ -16,6 +16,8 @@ import { ProcPane } from "./ProcPane";
 import { draftOf, fenceSegments, keepDraft, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
+import { ConnectorsPage } from "./ConnectorsPage";
+import { WidgetFrame } from "./WidgetFrame";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
 import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
@@ -97,6 +99,8 @@ const MENU = "M4 6h16M4 12h16M4 18h16";
 const MIC = "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v3";
 const STOP = "M7 7h10v10H7Z";
 const WAVES = "M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3";
+/** A plug: the Connectors page. */
+const PLUG = "M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0ZM12 18v4";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
 export const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
@@ -208,6 +212,7 @@ export function App() {
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
+          {route.page === "connectors" && <ConnectorsPage state={state} actions={actions} />}
           {route.page === "automation" &&
             // The form reads its automation once, on mount: after a reload it waits on the list
             // until the host's snapshot has it, instead of opening blank and saving a copy.
@@ -799,6 +804,10 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
           <Icon d={CLOCK} />
           Automations
           {runs.some((s) => s.status === "running" || s.status === "needs_approval") && <span className="dot dot-running" role="img" aria-label="A run is working" />}
+        </button>
+        <button className={`nav-row ${route.page === "connectors" ? "active" : ""}`} onClick={() => actions.go({ page: "connectors" })}>
+          <Icon d={PLUG} />
+          Connectors
         </button>
         <button className="nav-row" onClick={() => setImporting(true)}>
           <Icon d={IMPORT} />
@@ -2266,7 +2275,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
         >
           <div className="column">
             {rows.map((row) => (
-              <RowView key={row.key} row={row} render={renderItem} />
+              <RowView key={row.key} row={row} render={renderItem} widget={(t) => t.app && <WidgetFrame sessionId={meta.id} app={t.app} actions={actions} />} />
             ))}
             {working && <Working since={turnStart} />}
           </div>
@@ -2517,9 +2526,10 @@ function Working({ since }: { since: number | null }) {
   );
 }
 
-function RowView({ row, render }: { row: Row; render(item: Item): ReactNode }) {
+function RowView({ row, render, widget }: { row: Row; render(item: Item): ReactNode; widget?(tool: ToolItem): ReactNode }) {
   if (row.type === "item") return <>{render(row.item)}</>;
   if (row.type === "work") return <WorkGroup entries={row.entries} live={row.live} />;
+  if (row.type === "widget") return <>{widget?.(row.tool) ?? null}</>;
   return <TurnFold row={row} render={render} />;
 }
 

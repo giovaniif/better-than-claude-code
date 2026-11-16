@@ -15,6 +15,7 @@ mod guard;
 mod hosts;
 mod import;
 mod login;
+mod mcp;
 mod opencode;
 mod pr;
 mod pty;
@@ -22,6 +23,7 @@ mod remote;
 mod sessions;
 mod state;
 mod store;
+mod widgets;
 mod ws;
 
 use std::{path::PathBuf, sync::Arc, time::Duration};

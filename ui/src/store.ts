@@ -26,7 +26,10 @@ import {
   type QueueReturned,
   type AccountEntry,
   type Automation,
+  type McpAuthState,
+  type McpStatus,
 } from "./protocol";
+import type { WidgetRecord } from "./widget";
 import { createNotifier } from "./notify";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
 
@@ -37,6 +40,8 @@ export type UploadTarget = { host?: string; sessionId?: string };
 /** Thumbnails already fetched, as object URLs, by session and attachment.
  *  Kept for the page's life: the bytes never change. */
 const thumbs = new Map<string, Promise<string>>();
+/** Widgets already fetched, by session and widget id. They never change. */
+const widgets = new Map<string, Promise<{ widget?: WidgetRecord; error?: string }>>();
 
 export type Route =
   | { page: "new" }
@@ -44,6 +49,8 @@ export type Route =
   | { page: "settings" }
   | { page: "session"; id: string }
   | { page: "automations" }
+  /** Every engine account's MCP servers (connectors), per host. */
+  | { page: "connectors" }
   /** The create/edit form; `id` is `new` for a new automation. */
   | { page: "automation"; host: string; id: string };
 
@@ -58,6 +65,8 @@ export function routeHash(route: Route): string {
       return "#/settings";
     case "automations":
       return "#/automations";
+    case "connectors":
+      return "#/connectors";
     case "automation":
       return `#/automations/${encodeURIComponent(route.host)}/${encodeURIComponent(route.id)}`;
     default:
@@ -76,6 +85,7 @@ export function parseHash(hash: string): Route {
   }
   if (hash === "#/automations") return { page: "automations" };
   if (hash === "#/settings") return { page: "settings" };
+  if (hash === "#/connectors") return { page: "connectors" };
   return hash === "#/hosts" ? { page: "hosts" } : { page: "new" };
 }
 
@@ -130,6 +140,11 @@ export interface State {
   importError: string | null;
   /** Each host's own automations, by host id (`local` is this machine). */
   automations: Record<string, Automation[]>;
+  /** MCP servers per engine account, by `mcpKey(host, engine, account)`.
+   *  `loading` while a listing is on its way. */
+  mcp: Record<string, McpStatus & { loading?: boolean }>;
+  /** Sign-ins of MCP servers, by `mcpAuthKey(host, engine, account, server)`. */
+  mcpAuth: Record<string, McpAuthState>;
   /** `host.install` progress by host id. */
   installs: Record<string, { lines: string[]; running: boolean; ok?: boolean }>;
   error: string | null;
@@ -175,6 +190,8 @@ export const initial: State = {
   claudeSessions: {},
   importError: null,
   automations: {},
+  mcp: {},
+  mcpAuth: {},
   installs: {},
   error: null,
   errorCount: 0,
@@ -232,6 +249,8 @@ const NO_ACCOUNTS: AccountEntry[] = [];
 
 export const branchKey = (host: string, cwd: string) => `${host}\n${cwd}`;
 /** Default's key is the same as before accounts existed. */
+export const mcpKey = (host: string, engine: Engine, account = "default") => `${host}\n${engine}\n${account}`;
+export const mcpAuthKey = (host: string, engine: Engine, account: string, server: string) => `${mcpKey(host, engine, account)}\n${server}`;
 export const loginKey = (host: string, engine: Engine, account = "default") =>
   account === "default" ? `${host}\n${engine}` : `${host}\n${engine}\n${account}`;
 export const accountsOn = (state: State, host: string): AccountEntry[] => state.accounts[host] ?? NO_ACCOUNTS;
@@ -407,6 +426,14 @@ function reduceServer(state: State, msg: any): State {
       if (msg.for === "engines.status" || msg.for === "session.procs") return state;
       // The import dialog says why; no banner behind it.
       if (msg.for === "session.import") return { ...state, importError: msg.message };
+      // The Connectors page shows it on the host's cards instead of waiting forever.
+      if (typeof msg.for === "string" && msg.for.startsWith("mcp.")) {
+        const host = msg.hostId ?? "local";
+        const error = /unknown op/.test(msg.message ?? "") ? "This host's Switchyard is older and cannot list connectors. Update it from the Hosts page." : msg.message;
+        const mcp = { ...state.mcp };
+        for (const [key, st] of Object.entries(mcp)) if (key.startsWith(`${host}\n`) && st.loading) mcp[key] = { ...st, loading: false, error };
+        return { ...state, mcp };
+      }
       // The refusal names no request, so every waiting card gets its buttons back.
       const threads = msg.for === "session.approve" ? releaseApprovals(state.threads) : state.threads;
       const error = hostErrorText(state, msg.hostId, msg.message);
@@ -437,6 +464,26 @@ function reduceServer(state: State, msg: any): State {
       const key = loginKey(msg.hostId ?? "local", msg.engine, msg.account);
       const { op: _op, hostId: _h, engine: _e, account: _a, ...login } = msg;
       return { ...state, logins: { ...state.logins, [key]: login as LoginState } };
+    }
+    case "mcp": {
+      const key = mcpKey(msg.hostId ?? "local", msg.engine, msg.account);
+      const { op: _op, hostId: _h, ...status } = msg;
+      return { ...state, mcp: { ...state.mcp, [key]: status as McpStatus } };
+    }
+    // Local: a listing was asked for; the last one stays on screen meanwhile.
+    case "mcp.loading": {
+      const key = mcpKey(msg.host, msg.engine, msg.account);
+      const cur = state.mcp[key] ?? { engine: msg.engine, account: msg.account ?? "default" };
+      return { ...state, mcp: { ...state.mcp, [key]: { ...cur, loading: true } } };
+    }
+    case "mcp.auth": {
+      const key = mcpAuthKey(msg.hostId ?? msg.host ?? "local", msg.engine, msg.account ?? "default", msg.server);
+      if (msg.state === null) {
+        const { [key]: _gone, ...rest } = state.mcpAuth;
+        return { ...state, mcpAuth: rest };
+      }
+      const { op: _op, hostId: _h, host: _ho, engine: _e, account: _a, server: _s, ...auth } = msg;
+      return { ...state, mcpAuth: { ...state.mcpAuth, [key]: auth as McpAuthState } };
     }
     // Local: a new import (or a closed dialog) forgets the last refusal.
     case "import.started":
@@ -572,6 +619,19 @@ export interface Actions {
   deleteAutomation(host: string, id: string): void;
   /** Run now: starts a run whatever the skip rules say. Resolves with what happened. */
   runAutomation(host: string, id: string): Promise<{ outcome?: string; sessionId?: string; reason?: string; error?: string }>;
+  /** List an engine account's MCP servers on a host; answers as `mcp`. */
+  mcpStatus(host: string, engine: Engine, account?: string): void;
+  /** Start signing a server in; progress arrives as `mcp.auth`. */
+  mcpAuth(host: string, engine: Engine, account: string, server: string): void;
+  /** The address the browser ended on after a sign-in, for a host it cannot reach. */
+  mcpCallback(host: string, engine: Engine, account: string, server: string, url: string): void;
+  mcpReconnect(host: string, engine: Engine, account: string, server: string): void;
+  /** Forget a finished or abandoned sign-in on this page. */
+  mcpAuthClear(host: string, engine: Engine, account: string, server: string): void;
+  /** A tool call's widget: its HTML, CSP, input and result. */
+  widget(sessionId: string, id: string): Promise<{ widget?: WidgetRecord; error?: string }>;
+  /** A call a widget makes to its own server. */
+  widgetCall(sessionId: string, id: string, tool: string, args: Record<string, unknown>): Promise<{ result?: unknown; error?: string }>;
 }
 
 function socketUrl(): string {
@@ -796,6 +856,36 @@ export function useYard(): { state: State; actions: Actions } {
       loginCancel: (host, engine, account) => post(onHost(host, { op: "login.cancel", engine, account })),
       addAccount: (host, engine, name) => post(onHost(host, { op: "account.add", engine, name })),
       removeAccount: (host, id) => post(onHost(host, { op: "account.remove", id })),
+      mcpStatus: (host, engine, account = "default") => {
+        dispatch({ t: "server", msg: { op: "mcp.loading", host, engine, account } });
+        post(onHost(host, { op: "mcp.status", engine, account }));
+      },
+      mcpAuth: (host, engine, account, server) => {
+        dispatch({ t: "server", msg: { op: "mcp.auth", host, engine, account, server, state: "starting" } });
+        post(onHost(host, { op: "mcp.auth", engine, account, server }));
+      },
+      mcpCallback: (host, engine, account, server, url) => {
+        dispatch({ t: "server", msg: { op: "mcp.auth", host, engine, account, server, state: "sending" } });
+        post(onHost(host, { op: "mcp.callback", engine, account, server, url }));
+      },
+      mcpReconnect: (host, engine, account, server) => {
+        dispatch({ t: "server", msg: { op: "mcp.loading", host, engine, account } });
+        post(onHost(host, { op: "mcp.reconnect", engine, account, server }));
+      },
+      mcpAuthClear: (host, engine, account, server) => dispatch({ t: "server", msg: { op: "mcp.auth", host, engine, account, server, state: null } }),
+      widget: (sessionId, id) => {
+        const key = `${sessionId}\n${id}`;
+        let p = widgets.get(key);
+        if (!p) {
+          p = ask({ op: "widget.get", sessionId, id }, 60_000).then((r) => (r.widget ? { widget: r.widget as WidgetRecord } : { error: r.error ?? "The widget did not load." }));
+          // A failure (host offline) is tried again next time.
+          p.then((r) => r.error && widgets.delete(key));
+          widgets.set(key, p);
+        }
+        return p;
+      },
+      widgetCall: (sessionId, id, tool, args) =>
+        ask({ op: "widget.call", sessionId, id, tool, arguments: args }, 150_000).then((r) => (r.error ? { error: String(r.error) } : { result: r.result })),
     }),
     [],
   );

@@ -284,6 +284,12 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
     if msg["op"].as_str().is_some_and(|op| op.starts_with("session.handoff")) {
         return handoff::handle(app, direct, msg).await;
     }
+    if msg["op"].as_str().is_some_and(|op| op.starts_with("mcp.")) {
+        return crate::mcp::handle(app, msg).await;
+    }
+    if msg["op"].as_str().is_some_and(|op| op.starts_with("widget.")) {
+        return crate::widgets::handle(app, direct, msg).await;
+    }
     if matches!(msg["op"].as_str(), Some("claude.sessions" | "session.import")) {
         return crate::import::handle(app, direct, msg).await;
     }
@@ -343,6 +349,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             // A login still waiting on the account would write into a deleted folder.
             crate::login::cancel(app, &found.engine, id).await?;
             let removed = app.accounts.remove(id)?;
+            crate::mcp::forget(app, &removed.id);
             // Its app-server (and the login it holds open) goes with it.
             let gone = app.codex.lock().unwrap().remove(&removed.id);
             if let Some(client) = gone.and_then(|cell| cell.get().cloned()) {

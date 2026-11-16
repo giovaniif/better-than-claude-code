@@ -5,7 +5,9 @@ import { duration, handoffLinks, layout, summarize, thoughtLine, type ToolItem, 
 
 const fold = (events: AgentEvent[]): Item[] => events.reduce((acc, ev, i) => applyEvent(acc, ev, i), [] as Item[]);
 const shape = (rows: ReturnType<typeof layout>) =>
-  rows.map((r) => (r.type === "item" ? r.item.kind : r.type === "work" ? `work(${r.entries.length}${r.live ? ",live" : ""})` : `fold(${r.summary})`));
+  rows.map((r) =>
+    r.type === "item" ? r.item.kind : r.type === "work" ? `work(${r.entries.length}${r.live ? ",live" : ""})` : r.type === "widget" ? `widget(${r.tool.app?.id})` : `fold(${r.summary})`,
+  );
 
 const turn: AgentEvent[] = [
   { type: "user_message", text: "fix it" },
@@ -50,6 +52,23 @@ describe("layout", () => {
     const f = rows[1];
     expect(f.type === "fold" && f.ms).toBe(72_000);
     expect(f.type === "fold" && shape(f.rows)).toEqual(["work(2)", "assistant", "work(2)"]);
+  });
+
+  test("a widget shows under its call while live, and stays in view when the turn folds", () => {
+    const chart: AgentEvent[] = [
+      { type: "user_message", text: "p95 please" },
+      { type: "turn_started", at: 1_000 },
+      { type: "tool_started", itemId: "q", kind: "other", title: "query", detail: "datadog" },
+      { type: "tool_completed", itemId: "q", ok: true, app: { id: "w1", server: "datadog", tool: "query" } },
+      { type: "tool_started", itemId: "r", kind: "read", title: "Read", detail: "a" },
+      { type: "tool_completed", itemId: "r", ok: true },
+    ];
+    expect(shape(layout(fold(chart), true))).toEqual(["user", "work(1)", "widget(w1)", "work(1,live)"]);
+    const done = fold([...chart, { type: "assistant_message", itemId: "m", text: "Here." }, { type: "turn_completed", status: "completed", at: 5_000 }]);
+    const rows = layout(done, false);
+    expect(shape(rows)).toEqual(["user", "fold(1 other step, read 1 file)", "widget(w1)", "assistant"]);
+    const f = rows[1];
+    expect(f.type === "fold" && shape(f.rows)).toEqual(["work(1)", "work(1)"]);
   });
 
   test("a turn with no tools is left alone, and errors stay in view", () => {

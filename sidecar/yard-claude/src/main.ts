@@ -2,10 +2,15 @@
 // (Or, with `sessions` / `messages <id>`, a one-shot for importing; see oneshot.ts.)
 //
 // stdin  (JSON lines): start | user | set_model | interrupt | permission
+//                      | mcp_reconnect { server } | mcp_call { ref, server, tool, arguments }
 //                      `user` is { text, attachments? }: files yardd saved on
 //                      this host (see message.ts)
 // stdout (JSON lines): { type: "event", event } | { type: "usage", usage }
 //                      | { type: "session", claudeSessionId }
+//                      | { type: "reply", ref, result } | { type: "reply", ref, error }
+//
+// An MCP tool with a widget (MCP Apps) ends with `tool_completed` carrying
+// `app` (see apps.ts); yardd stores the widget and keeps an id in the log.
 //
 // `start` may carry `resume`: a Claude Code session id to continue after a
 // yardd restart. yardd learns that id from the `session` line.
@@ -18,6 +23,8 @@ import { userMessage } from "./message";
 import { createSubagents } from "./subagents";
 import { describe as describeTool, EDIT_TOOLS, patchFor, resultText, short, toolStarted } from "./tools";
 import { oneShot } from "./oneshot";
+import { createApps } from "./apps";
+import { connectors } from "./connectors";
 import { mergeUsage, type ClaudeUsage } from "./usage";
 
 type Decision = "allow" | "allow_always" | "deny";
@@ -36,6 +43,11 @@ if (mode === "sessions" || mode === "messages") {
   } catch (error: any) {
     done({ error: String(error?.message ?? error) }, 1);
   }
+  await new Promise(() => {});
+}
+// `connectors <cwd>`: list and sign in MCP servers, no session (see connectors.ts).
+if (mode === "connectors") {
+  await connectors(process.argv[3] || process.cwd());
   await new Promise(() => {});
 }
 const emit = (event: Record<string, unknown>) => out({ type: "event", event });
@@ -60,6 +72,7 @@ async function* input() {
 
 const waiting = new Map<string, (d: Decision) => void>();
 let q: any = null;
+let apps: ReturnType<typeof createApps> | null = null;
 // Plan usage so far: each rate_limit_event reports one window.
 let usage: ClaudeUsage | null = null;
 let cwd = process.cwd();
@@ -124,6 +137,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
   if (claudeBin) options.pathToClaudeCodeExecutable = claudeBin;
 
   q = query({ prompt: input() as any, options: options as any });
+  apps = createApps(q);
 
   // The id of the text block currently streaming, so deltas and the final
   // text land on the same item.
@@ -164,6 +178,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
         } else if (block.type === "tool_use") {
           const d = describeTool(block.name, block.input, cwd);
           emit(toolStarted(block, cwd));
+          apps?.started(block);
           const patch = patchFor(block.name, block.input);
           if (patch) {
             emit({
@@ -184,11 +199,13 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
         if (block?.type !== "tool_result") continue;
         // An Agent call ends with its task's notification, not with this.
         if (subagents.holds(block.tool_use_id)) continue;
+        const app = await apps?.completed(block, m.tool_use_result).catch(() => null);
         emit({
           type: "tool_completed",
           itemId: block.tool_use_id,
           ok: !block.is_error,
           output: short(resultText(block.content), 4000),
+          ...(app ? { app } : {}),
         });
       }
       continue;
@@ -255,6 +272,23 @@ createInterface({ input: process.stdin }).on("line", async (line) => {
       case "permission":
         waiting.get(msg.requestId)?.(msg.decision as Decision);
         break;
+      // A server was signed in elsewhere (the Connectors page): dial it again
+      // so its tools work in this session without a restart.
+      case "mcp_reconnect":
+        await q?.reconnectMcpServer(String(msg.server)).catch(() => {});
+        break;
+      case "mcp_call": {
+        const ref = msg.ref;
+        if (!apps) {
+          out({ type: "reply", ref, error: "The session has not started yet." });
+          break;
+        }
+        apps.call(String(msg.server), String(msg.tool), msg.arguments).then(
+          (result) => out({ type: "reply", ref, result }),
+          (error) => out({ type: "reply", ref, error: String(error?.message ?? error).slice(0, 1000) }),
+        );
+        break;
+      }
     }
   } catch (error: any) {
     emit({ type: "error", message: String(error?.message ?? error) });

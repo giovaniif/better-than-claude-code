@@ -12,7 +12,19 @@
 //           result with its duration (`ms`), then "Echo: <prompt>". It also
 //           leaves a `sleep 30` running under the sidecar, so a session's
 //           process list has something to show.
+//   [chart] an MCP call to `chart` (verify/fakes/mcp-chart) that ends with
+//           its widget on `tool_completed` (`app`), then "Here is the chart."
 //   other   replies "Echo: <prompt>"
+// A widget's calls (`mcp_call`) go to mcp-chart: a read-only tool runs, any
+// other is refused as Claude Code's permission check would without an answer.
+// `mcp_reconnect` is logged (`reconnect <server>`).
+//
+// `connectors <cwd>` (see sidecar/yard-claude/src/connectors.ts) lists four
+// servers: `claude.ai Datadog` (needs sign-in on claude.ai; a sign-in
+// completes by itself 1 s later), `plugin:engineering:sentry` (needs sign-in;
+// completes when its callback address with `code=` is pasted), `chart`
+// (connected, two widget tools) and a failed `plugin:engineering:gmail`.
+// Sign-ins are kept in FAKE_CODEX_DIR (or CLAUDE_CONFIG_DIR) as files.
 // Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%;
 // 91% of 5 hours when CLAUDE_CONFIG_DIR names an extra account).
 // FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id and
@@ -24,7 +36,8 @@
 //                   one whose folder no longer exists
 //   messages <id>   that session's history as yardd events
 
-import { appendFileSync } from "node:fs";
+import { appendFileSync, existsSync, writeFileSync } from "node:fs";
+import { CHART_URI, chartCall, rpc } from "./chart.mjs";
 
 const dir = process.env.FAKE_CODEX_DIR;
 const log = (line) => {
@@ -70,6 +83,68 @@ if (mode === "sessions" || mode === "messages") {
     ],
   });
   process.exit(0);
+}
+
+if (mode === "connectors") {
+  const store = process.env.CLAUDE_CONFIG_DIR || dir || "/tmp";
+  const ok = (name) => existsSync(`${store}/mcp-ok-${name}`);
+  const mark = (name) => writeFileSync(`${store}/mcp-ok-${name}`, "");
+  log(`connectors pid=${process.pid} cwd=${process.argv[3] ?? ""} config=${process.env.CLAUDE_CONFIG_DIR ?? ""}`);
+  const status = async () => {
+    const { tools } = await rpc("tools/list");
+    return [
+      { name: "claude.ai Datadog", status: ok("datadog") ? "connected" : "needs-auth", source: "claudeai", tools: ok("datadog") ? 12 : 0, appTools: 0, origin: "https://mcp-proxy.anthropic.com" },
+      { name: "plugin:engineering:sentry", status: ok("sentry") ? "connected" : "needs-auth", source: "plugin", tools: ok("sentry") ? 9 : 0, appTools: 0, origin: "https://mcp.sentry.dev" },
+      { name: "chart", status: "connected", source: "user", tools: tools.length, appTools: tools.filter((t) => t._meta?.ui?.resourceUri).length },
+      { name: "plugin:engineering:gmail", status: "failed", source: "plugin", tools: 0, appTools: 0, error: "No URL configured for this server" },
+    ];
+  };
+  for await (const line of console) {
+    let msg;
+    try {
+      msg = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    log(`connectors ${msg.type}${msg.server ? ` ${msg.server}` : ""}`);
+    const answer = (result) => out({ id: msg.id, ok: true, result });
+    const refuse = (error) => out({ id: msg.id, ok: false, error });
+    if (msg.type === "status") answer(await status());
+    else if (msg.type === "auth" && msg.server === "claude.ai Datadog") {
+      answer({ url: "https://claude.ai/fake-connect/datadog", paste: false });
+      setTimeout(() => {
+        mark("datadog");
+        out({ type: "auth_done", server: msg.server, ok: true });
+      }, 1000);
+    } else if (msg.type === "auth" && msg.server === "plugin:engineering:sentry") {
+      answer({ url: "https://sentry.example/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A39999%2Fcallback", paste: true });
+    } else if (msg.type === "auth") refuse(`Server type "stdio" does not support OAuth authentication`);
+    else if (msg.type === "callback") {
+      if (!String(msg.url).includes("code=")) refuse("Invalid callback URL: missing authorization code. Please paste the full redirect URL including the code parameter.");
+      else {
+        mark("sentry");
+        answer({ done: true });
+      }
+    } else if (msg.type === "reconnect") answer({ done: true });
+    else refuse(`unknown request ${msg.type}`);
+  }
+  process.exit(0);
+}
+
+async function runChart(text) {
+  const id = `tool-${process.pid}-${++n}`;
+  const input = { metric: "p95 latency", points: 8 };
+  emit({ type: "tool_started", itemId: id, kind: "other", title: "show_chart", detail: `chart · ${JSON.stringify(input)}` });
+  const { result, html, ui } = await chartCall(input);
+  emit({
+    type: "tool_completed",
+    itemId: id,
+    ok: true,
+    output: result.content[0].text,
+    app: { server: "chart", tool: "show_chart", uri: CHART_URI, html, csp: ui.csp, prefersBorder: ui.prefersBorder, input, result },
+  });
+  emit({ type: "assistant_message", itemId: `text-${process.pid}-${++n}`, text: "Here is the chart." });
+  emit({ type: "turn_completed", status: "completed" });
 }
 
 let n = 0;
@@ -148,6 +223,10 @@ for await (const line of console) {
       runSteps(text);
       continue;
     }
+    if (text.includes("[chart]")) {
+      runChart(text);
+      continue;
+    }
     if (text.includes("[subagent]")) {
       runSubagent(text);
       continue;
@@ -161,6 +240,15 @@ for await (const line of console) {
     }
     emit({ type: "assistant_message", itemId, text: `Echo: ${text}` });
     emit({ type: "turn_completed", status: "completed" });
+  } else if (msg.type === "mcp_reconnect") {
+    log(`reconnect ${msg.server}`);
+  } else if (msg.type === "mcp_call") {
+    log(`mcp_call ${msg.server} ${msg.tool}`);
+    const { tools } = await rpc("tools/list");
+    const tool = msg.server === "chart" ? tools.find((t) => t.name === msg.tool) : null;
+    if (!tool) out({ type: "reply", ref: msg.ref, error: `${msg.server} has no tool ${msg.tool}` });
+    else if (!tool.annotations?.readOnlyHint) out({ type: "reply", ref: msg.ref, error: `The tool did not run: Claude requested permissions to use ${msg.tool}, but you haven't granted it yet.` });
+    else out({ type: "reply", ref: msg.ref, result: await rpc("tools/call", { name: msg.tool, arguments: msg.arguments ?? {} }) });
   } else if (msg.type === "interrupt" && steps) {
     steps.interrupted = true;
   } else if (msg.type === "interrupt" && !stuck) {

@@ -22,6 +22,7 @@
   --add: #e8f5ec;
   --del: #fcebea;
   --scrim: rgba(0, 0, 0, 0.28);
+  --off: #b8b8b8;
   --mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -695,6 +696,47 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .automation-limits label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
 .automation-limits .field { width: 120px; }
 .danger { color: var(--bad-ink); }
+
+/* Connectors page */
+.connectors-intro { margin: 0; line-height: 1.55; }
+.connectors-host { display: flex; flex-direction: column; gap: 12px; }
+.connectors-host-name { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.connectors-card { gap: 10px; padding: 14px 16px; }
+.connectors-card-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.connectors-note { line-height: 1.5; }
+.connector-list { list-style: none; margin: 0 -16px -14px; padding: 0; border-top: 1px solid var(--line); }
+.connector { display: flex; flex-direction: column; gap: 6px; padding: 9px 16px; border-bottom: 1px solid var(--line); }
+.connector:last-child { border-bottom: 0; }
+.connector-row { display: flex; align-items: center; justify-content: space-between; gap: 4px 8px; min-height: 28px; flex-wrap: wrap; }
+.connector-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.connector-side { display: flex; align-items: center; gap: 8px; margin-left: auto; white-space: nowrap; }
+.connector-name { font-weight: 500; overflow-wrap: anywhere; }
+.connector-via { white-space: nowrap; }
+.connector-badge { padding: 1px 6px; border-radius: 6px; background: var(--fill); color: var(--muted); font-size: 11px; }
+.connector-status { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.connector-status-needs-auth { color: var(--warn-ink); }
+.connector-status-failed { color: var(--bad-ink); }
+.connector-dot-connected { background: var(--ok); }
+.connector-dot-needs-auth { background: var(--warn); }
+.connector-dot-failed { background: var(--bad-ink); }
+.connector-dot-pending, .connector-dot-disabled { border: 1.5px solid var(--off); }
+.connector-error { padding-left: 15px; overflow-wrap: anywhere; }
+.connector-auth { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; margin-left: 15px; border-radius: 10px; background: var(--fill); line-height: 1.5; }
+.connector-auth-done { color: var(--ok-ink); }
+.connector-paste { display: flex; flex-direction: column; gap: 6px; flex: 1 1 100%; }
+.connector-paste .row { flex-wrap: nowrap; }
+.connector-paste .field { height: 32px; font-size: 12px; }
+.btn-small { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; font-size: 12px; text-decoration: none; color: inherit; white-space: nowrap; }
+a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
+
+/* MCP Apps widgets in the thread */
+.widget { margin: 4px 0 6px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg); }
+.widget-bare { border-color: transparent; }
+.widget-frame { display: block; width: 100%; border: 0; background: transparent; transition: height 0.15s ease; }
+.widget-note { display: flex; align-items: center; justify-content: center; padding: 12px; }
+.widget-status { padding: 6px 12px; border-top: 1px solid var(--line); }
+@media (prefers-reduced-motion: reduce) { .widget-frame { transition: none; } }
+@media (max-width: 700px) { .connector-paste .row { flex-wrap: wrap; } .connector-auth { margin-left: 0; } }
 
 /* Narrow windows (phones): the sidebar is a drawer over the page, opened by
    the menu button first in each page's bar, so the page keeps the full width.
