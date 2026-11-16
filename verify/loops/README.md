@@ -26,7 +26,7 @@ or once Claude's 5-hour window passes 70% or its week passes 80%
 (`maxFiveHour`/`maxWeek` on the automation), so the owner's own sessions keep room.
 Schedules are in the server's time zone (America/Sao_Paulo). yardd counts an
 interval from when it was saved, so patrol runs at the minute it was installed
-(2026-11-16: around :37), drifting a few seconds per run.
+(installed 2026-11-16 16:38, so around :38), drifting a few seconds per run.
 
 ## Install
 
