@@ -131,3 +131,11 @@ gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
   `--kind test --cmd`. Without one the verifier must answer FAIL.
 - Every surprise becomes a Gotcha in the feature map, a CLI fix, or a rule in
   this file (in a PR). Don't let the same failure happen twice.
+- Branch every fix from `origin/main` (`git checkout -b patrol/<slug>
+  origin/main`), never `git checkout main`: a worktree's local `main` can be
+  days old.
+- `iso restart` keeps the data dir. When you re-record proofs on the same iso
+  (after a rebase or a review fix), use names not taken by the first run, or
+  yardd refuses them as duplicates and the head shows failed API calls.
+- `annotate --box` is in CSS pixels (the viewport, 1440x900 or 390x844), not
+  in the 2x screenshot's pixels.
