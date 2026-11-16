@@ -48,6 +48,10 @@ pub struct Meta {
     /// Moved out of the list into Archived; still there to open or restore.
     #[serde(default)]
     pub archived: bool,
+    /// The sidebar group this session sits in. A group exists only while a
+    /// session names it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group: Option<String>,
     /// Messages sent while a turn ran and not yet given to the agent, oldest
     /// first: `{ id, text, attachments, at }`. Like Claude Code's queue, they
     /// go to the agent at its next step (see `Delivery`); Stop hands them back.
@@ -268,6 +272,7 @@ impl App {
             permission: default_permission(),
             pinned: false,
             archived: false,
+            group: None,
             pending: Vec::new(),
             created_at: now,
             updated_at: now,

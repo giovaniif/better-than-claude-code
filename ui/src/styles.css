@@ -476,6 +476,17 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .row-menu { position: fixed; z-index: 40; width: 230px; display: flex; flex-direction: column; gap: 2px; padding: 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12); font-size: 13px; }
 .row-menu .menu-item { height: 30px; gap: 8px; }
 .row-menu .danger { color: var(--bad-ink); }
+.row-menu .menu-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-menu .menu-item svg { flex-shrink: 0; }
+.row-menu-form { padding: 2px; }
+.group-head { margin-top: 4px; }
+.group-head .group-toggle { width: 100%; padding-top: 6px; padding-bottom: 6px; }
+.group-head .group-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-head .group-rename { height: 28px; font-family: inherit; font-size: 13px; }
+.archived-dock { flex: 0 0 auto; display: flex; flex-direction: column; padding: 0 8px; border-top: 1px solid var(--line); }
+.archived-dock .list-toggle { padding: 8px 10px; }
+.archived-dock .tool-chevron.open { transform: rotate(-90deg); }
+.archived-list { display: flex; flex-direction: column; gap: 2px; max-height: min(40vh, 320px); overflow: auto; padding-bottom: 4px; }
 .row-menu-note { padding: 4px 8px 6px; color: var(--muted); font-size: 12px; line-height: 1.4; }
 
 /* reply to part of an answer: the button over a selection */

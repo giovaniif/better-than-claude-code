@@ -1296,6 +1296,49 @@ async fn sessions_are_pinned_and_archived_across_restarts() {
 }
 
 #[tokio::test]
+async fn sessions_are_grouped_across_restarts() {
+    let sb = Sandbox::new("group");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+    let a = c.create(&cwd, "first", json!({})).await;
+    c.wait_turn_done(&a, 0).await;
+    c.wait_status(&a, "idle").await;
+    let b = c.create(&cwd, "second", json!({})).await;
+    c.wait_turn_done(&b, 0).await;
+
+    c.send(json!({ "op": "session.update", "sessionId": a, "group": "  Release  " })).await;
+    let set = c.wait_for("a grouped", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["group"] == "Release").await;
+    assert_eq!(set["session"]["group"], "Release", "the name is trimmed");
+    c.send(json!({ "op": "session.update", "sessionId": b, "group": "Release" })).await;
+    c.send(json!({ "op": "session.update", "sessionId": b, "group": null })).await;
+    let cleared = c
+        .wait_for("b ungrouped", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["group"].is_null() && m["session"]["pinned"] == false)
+        .await;
+    assert!(cleared["session"]["group"].is_null());
+    // An empty name is no group either, and an update without `group` leaves it.
+    c.send(json!({ "op": "session.update", "sessionId": a, "pinned": true })).await;
+    let pinned = c.wait_for("a pinned", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["pinned"] == true).await;
+    assert_eq!(pinned["session"]["group"], "Release");
+
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &a).map(|m| m["group"] == "Release") != Some(true) {
+        assert!(Instant::now() < deadline, "the group never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sessions = c.log[0]["sessions"].as_array().unwrap();
+    let find = |id: &str| sessions.iter().find(|s| s["id"] == id).unwrap().clone();
+    assert_eq!(find(&a)["group"], "Release");
+    assert!(find(&b)["group"].is_null());
+    c.send(json!({ "op": "session.update", "sessionId": a, "group": "" })).await;
+    c.wait_for("a ungrouped", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["group"].is_null()).await;
+}
+
+#[tokio::test]
 async fn stop_ends_a_codex_turn_that_ignores_the_interrupt() {
     let sb = Sandbox::new("stuck-codex");
     let d = sb.start();

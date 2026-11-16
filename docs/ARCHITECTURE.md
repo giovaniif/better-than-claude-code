@@ -139,7 +139,9 @@ A container image (`Dockerfile`, `docker-compose.yml`) runs yardd as a web app, 
 
 ## Sidebar
 
-- Each session row has a menu (the … button, or right-click): Pin, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived? }` stores both flags in the session's metadata, so every window and the web version agree, and they survive restarts. Archiving unpins. Archived sessions sit in a collapsed Archived section and still open and run.
+- Each session row has a menu (the … button, or right-click): Pin, Move to group…, Remove from group, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived?, group? }` stores the flags and the group name in the session's metadata, so every window and the web version agree, and they survive restarts; remote sessions route through the hub like every session op. Archiving unpins. `group` is a trimmed name (max 60 characters); null or blank clears it, and leaving the field out leaves it alone.
+- Groups have no record of their own: a group exists while a session names it. The sidebar lists Pinned, then ungrouped sessions (creation order), then one collapsible section per group (sorted by name, newest activity first inside; `sidebarLayout` in `store.ts`). Pinned and archived sessions are not shown inside groups. A group header shows name, count and chevron; its menu renames or ungroups every session that carries the name, archived ones included. Which groups are collapsed is per browser (`yard.groups.collapsed` in localStorage).
+- Archived is a dock under the scrolling list, just above the host rows, so it never scrolls away. It is shown whenever something is archived, collapsed by default; opened, its rows expand upward in a list with its own scroll (max 40% of the window height, at most 320 px). Archived sessions still open and run.
 - The sessions sidebar and the workspace pane are resizable; widths are per browser.
 
 ## Notifications
