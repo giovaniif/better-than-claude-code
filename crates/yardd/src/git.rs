@@ -408,6 +408,47 @@ mod tests {
         assert_eq!(last_lines("a\n\nb\nc\n", 2), "b\nc");
         assert_eq!(last_lines("", 3), "");
     }
+
+    fn run(dir: &std::path::Path, args: &[&str]) {
+        let ok = std::process::Command::new("git")
+            .arg("-C")
+            .arg(dir)
+            .args(["-c", "user.name=TEST", "-c", "user.email=test@example.invalid", "-c", "commit.gpgsign=false"])
+            .args(args)
+            .output()
+            .unwrap()
+            .status
+            .success();
+        assert!(ok, "git {args:?}");
+    }
+
+    #[tokio::test]
+    async fn new_files_show_their_lines_in_the_diff() {
+        let dir = std::env::temp_dir().join(format!("yardd-changes-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("tracked.txt"), "a\n").unwrap();
+        run(&dir, &["init", "-q"]);
+        run(&dir, &["add", "."]);
+        run(&dir, &["commit", "-q", "-m", "first"]);
+        std::fs::write(dir.join("tracked.txt"), "a\nb\n").unwrap();
+        std::fs::write(dir.join("src/new.txt"), "one\ntwo").unwrap();
+        std::fs::write(dir.join("blob.bin"), b"x\0y").unwrap();
+
+        let changes = changes(dir.to_str().unwrap()).await.unwrap();
+        let diff = changes["diff"].as_str().unwrap();
+        let _ = std::fs::remove_dir_all(&dir);
+
+        assert!(diff.contains("diff --git a/tracked.txt b/tracked.txt"), "{diff}");
+        assert!(
+            diff.contains("diff --git a/src/new.txt b/src/new.txt\nnew file mode 100644\n--- /dev/null\n+++ b/src/new.txt\n@@ -0,0 +1,2 @@\n+one\n+two\n\\ No newline at end of file\n"),
+            "{diff}"
+        );
+        // A binary file is named with no lines, like `git diff` does.
+        assert!(diff.contains("diff --git a/blob.bin b/blob.bin\n"), "{diff}");
+        assert!(!diff.contains("+x"), "{diff}");
+        assert_eq!(changes["truncated"], false);
+    }
 }
 
 /// The ref an automation's worktree is cut from, after fetching `origin`.

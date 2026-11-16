@@ -45,5 +45,18 @@ echo "TEST-written outside" > "$(v echo_cwd)/TEST-outside.txt"
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"role":"region","name":"Workspace"},"text":"TEST-outside.txt"}]'
 ```
 
+### new-file-shows-its-content
+Viewports: desktop
+A file the agent created is untracked, so `git diff` leaves it out. The pane
+still shows its lines, as a new file, and a binary one as "No text diff"
+(finding #43).
+
+```sh
+yv state --save echo_cwd='sessions[id={{sid_echo}}].cwd'
+printf 'TEST-first line\nTEST-second line\n' > "$(v echo_cwd)/TEST-new-file.txt"
+printf 'TEST\000binary' > "$(v echo_cwd)/TEST-new-blob.bin"
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".card","hasText":"TEST-new-file.txt"},"text":"+TEST-second line"},{"expect":{"css":".card","hasText":"TEST-new-blob.bin"},"text":"No text diff."},{"shot":"new-file"}]'
+```
+
 ## Gotchas
 - Below 1100 px the pane is hidden (`@media (max-width: 1100px)`): no Changes, Terminal or Pull request on mobile.
