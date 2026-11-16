@@ -1,14 +1,14 @@
 ---
 name: patrol
-description: The hourly patrol loop for Switchyard - handle in-flight agent PRs (owner replies, babysitting, land gate, post-merge watch), then find one real issue in the running app, fix it, prove it with an evidence bundle and open a PR. Started by the loop timer; use when asked to run a patrol.
+description: The hourly patrol loop for Switchyard - handle in-flight agent PRs (owner replies, babysitting, land gate, post-merge watch), then find one real issue in the running app, fix it, prove it with an evidence bundle and open a PR. Started hourly by the Loop patrol automation; use when asked to run a patrol.
 ---
 
 # Patrol run
 
 About 50 minutes per run. Use the whole budget: stopping after the warm-up is
 a failure mode. Read the clock with `date -u`; never write an estimated time.
-You are in a fresh worktree branched from origin/main, started by
-`verify/yv loop run patrol`. Read CLAUDE.md and `.claude/skills/verify/SKILL.md` first.
+You are in a fresh worktree branched from origin/main, started by the
+`Loop patrol` automation on the live yardd (or by hand with `verify/yv loop run patrol`). Read CLAUDE.md and `.claude/skills/verify/SKILL.md` first.
 
 ## 0. Coordination
 
@@ -26,7 +26,8 @@ You are in a fresh worktree branched from origin/main, started by
 - **Lock:** the issue titled `Patrol run log` (label `patrol-log`). Create it
   if missing. At start, read its last comments: if a `run-start <UTC>` less
   than 55 minutes old has no matching `run-end`, exit silently (post nothing).
-  Otherwise comment `run-start <date -u output>`; at the very end comment
+  (yardd already skips a scheduled run while the previous one is going; this
+  lock also covers a run started by hand.) Otherwise comment `run-start <date -u output>`; at the very end comment
   `run-end <date -u output>: <one-line summary>`. Use
   `verify/yv pr comment`-style markers: every comment you write ends with
   `<!-- yv:agent -->` (`gh issue comment --body-file -` with the marker appended).
@@ -113,7 +114,8 @@ For each open patrol PR:
 
 `verify/yv iso down --all`, `run-end` on the run log, and remove your
 `target/` if you will not need it (`rm -rf target`): each worktree's build is
-gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
+gigabytes. Leave the worktree itself: yardd archives the run when its turn
+ends, and `verify/yv loop tidy` frees the `target/` of a run idle for two hours.
 
 ## Rules
 

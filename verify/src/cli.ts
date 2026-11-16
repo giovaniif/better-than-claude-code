@@ -47,11 +47,12 @@ const HELP = `verify/yv <command> [args]   (every command prints one JSON object
   land merge|watch <pr> [--dry-run] | land ledger [pr] | land review [--days 7]
   notify "<message>" [--title t] [--click url]   an OS notification in every open Switchyard window
   loop run patrol|maintain|review|verify|babysit [--pr N] [--engine e --model m --effort x] [--dry-run] [--force]
+  loop automations [--apply] [--iso n] [--checkout dir]   patrol, maintain, review as yardd automations (live yardd unless --iso)
   loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume
   selftest [--smoke]
 `;
 
-const BOOLS = ["force", "all", "keep", "logged-out", "pressure", "no-build", "full", "video", "dry-run", "resolve", "smoke", "allow-spend", "help", "json", "fix-hint", "keep-open", "allow-errors", "no-fetch", "no-checkout"];
+const BOOLS = ["force", "all", "keep", "logged-out", "pressure", "no-build", "full", "video", "dry-run", "resolve", "smoke", "allow-spend", "help", "json", "fix-hint", "keep-open", "allow-errors", "no-fetch", "no-checkout", "apply"];
 
 async function main(argv: string[]): Promise<[string, Result]> {
   const [cmd, ...rest] = argv;

@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# Installs the agent loops as systemd user timers on this machine:
-#   switchyard-loop@patrol    hourly at :37
-#   switchyard-loop@maintain  daily 03:30 America/Sao_Paulo
-#   switchyard-loop@review    Mondays 08:00 America/Sao_Paulo
-# Usage: verify/loops/install.sh [--enable]   (without --enable, units are written but timers stay off)
-# Pause every loop without touching systemd: verify/yv loop pause / resume.
+# Installs the agent loops on this machine.
+#   patrol (hourly), maintain (daily 03:30), review (Mondays 08:00) are yardd
+#   automations on the live yardd: `verify/yv loop automations --apply`
+#   creates or updates them from verify/loops.json and turns off the systemd
+#   timers that used to start them. They are not written here any more.
+#   switchyard-loop-tidy.timer, every 5 minutes: refreshes the loops' checkout
+#   and archives finished loop sessions (`verify/yv loop tidy`).
+#   switchyard-loop@.service: one run by hand (`systemctl --user start switchyard-loop@patrol`).
+# Usage: verify/loops/install.sh [--enable]   (--enable turns the tidy timer on and applies the automations)
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 share="$HOME/.local/share/switchyard-loops"
@@ -30,25 +33,8 @@ TimeoutStartSec=10min
 Nice=10
 UNIT
 
-timer() { # kind, OnCalendar, description
-  cat > "$units/switchyard-loop-$1.timer" <<UNIT
-[Unit]
-Description=Switchyard $3
-
-[Timer]
-OnCalendar=$2
-Unit=switchyard-loop@$1.service
-RandomizedDelaySec=2min
-Persistent=false
-
-[Install]
-WantedBy=timers.target
-UNIT
-}
-timer patrol "*-*-* *:37:00" "patrol loop, hourly"
-
 # Finished loop sessions are archived within minutes, so only running ones
-# sit in the sidebar. Read-only for the checkout: no reset, no fetch.
+# sit in the sidebar. It also keeps the loops' checkout at origin/main.
 cat > "$units/switchyard-loop-tidy.service" <<UNIT
 [Unit]
 Description=Switchyard: archive finished agent-loop sessions
@@ -57,7 +43,8 @@ After=yardd.service
 [Service]
 Type=oneshot
 Environment="PATH=$path"
-ExecStart=%h/.local/share/switchyard-loops/switchyard/verify/yv loop tidy
+ExecStart=%h/.local/share/switchyard-loops/run tidy
+TimeoutStartSec=5min
 Nice=10
 UNIT
 cat > "$units/switchyard-loop-tidy.timer" <<UNIT
@@ -71,11 +58,10 @@ Persistent=false
 [Install]
 WantedBy=timers.target
 UNIT
-timer maintain "*-*-* 03:30:00 America/Sao_Paulo" "feature-map maintenance loop, daily"
-timer review "Mon *-*-* 08:00:00 America/Sao_Paulo" "land gate weekly review"
 
 systemctl --user daemon-reload
 if [ "${1:-}" = "--enable" ]; then
-  systemctl --user enable --now switchyard-loop-patrol.timer switchyard-loop-maintain.timer switchyard-loop-review.timer switchyard-loop-tidy.timer
+  systemctl --user enable --now switchyard-loop-tidy.timer
+  "$here/../yv" loop automations --apply
 fi
 systemctl --user list-timers --all --no-pager | grep -E "NEXT|switchyard-loop" || true

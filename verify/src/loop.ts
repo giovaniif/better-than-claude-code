@@ -1,19 +1,27 @@
-// `loop`: starts an agent loop (patrol, maintain, review, verify, babysit) as
-// a Switchyard session on the live yardd, so it shows in the user's sidebar
-// and can be read or steered from any window.
+// `loop`: the agent loops on the live yardd. The scheduled ones (patrol,
+// maintain, review) are yardd automations that `loop automations --apply`
+// creates or updates, so their runs live on the Automations page. `loop run`
+// starts one as an ordinary session: verify and babysit runs, and a scheduled
+// loop by hand.
 //
 // This is the only code in verify/ that talks to the live yardd (47717). It
-// reads the snapshot, creates sessions and archives finished loop sessions.
-// It never deletes a session and never touches a session it did not start.
+// reads the snapshot, creates sessions, saves the loop automations and
+// archives finished loop sessions. It never deletes a session and never
+// touches a session it did not start.
 
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync, unlinkSync } from "node:fs";
 import { cpus, homedir, loadavg } from "node:os";
 import { join } from "node:path";
-import { type Args, matches, nowIso, readJson, REPO, SHARED, sleep, str, VERIFY } from "./common";
+import { type Args, matches, nowIso, readJson, REPO, run, SHARED, sleep, str, VERIFY } from "./common";
+import { loadIso } from "./iso";
 import { fail, Usage, type Result } from "./out";
 
 const KINDS = ["patrol", "maintain", "review", "verify", "babysit"] as const;
 type Kind = (typeof KINDS)[number];
+/** The loops yardd schedules as automations; verify and babysit are started per PR. */
+const SCHEDULED = ["patrol", "maintain", "review"] as const;
+// Also the automation's name: yardd titles its runs `<name> · <date>`, so
+// tidy, status, log and the busy check find them by the same prefix.
 const TITLE = (kind: string) => `Loop ${kind}`;
 const PAUSED = () => join(SHARED, "loops", "paused");
 
@@ -92,19 +100,68 @@ function skipReason(kind: Kind, engine: string, sessions: any[], usage: any, cfg
   return null;
 }
 
+/** What every loop is told about how it runs. */
+function unattended(started: string, budget: string): string {
+  return `${started} It runs unattended in its own worktree, branched from origin/main, with full access. Nobody is watching live: never wait for an answer in this session; questions for the owner go to the PR thread or \`verify/yv notify\`.\n\n${budget} Read the clock with \`date -u\`; never estimate times.`;
+}
+
 function prompt(kind: Kind, l: any, start: Date, pr: number | null): string {
   const t = start.toISOString().slice(0, 16).replace("T", " ");
   const end = new Date(start.getTime() + l.minutes * 60000).toISOString().slice(11, 16);
   const head = `${TITLE(kind)}${pr ? ` #${pr}` : ""} ${t} UTC`;
-  const common = `This session was started by a timer (verify/yv loop run ${kind}). It runs unattended in its own worktree, branched from origin/main, with full access. Nobody is watching live: never wait for an answer in this session; questions for the owner go to the PR thread or \`verify/yv notify\`.\n\nYour budget ends at ${end} UTC (${l.minutes} minutes). Read the clock with \`date -u\`; never estimate times.`;
+  const common = unattended(`This session was started by \`verify/yv loop run ${kind}\`.`, `Your budget ends at ${end} UTC (${l.minutes} minutes).`);
   switch (kind) {
     case "verify":
       return `${head}\n\nYou are an independent verifier. You know only this pull request: https://github.com/${REPO}/pull/${pr}\n\nRead and follow .claude/skills/verifier/SKILL.md exactly. Do not read other sessions, other worktrees or the author's notes.\n\n${common}`;
     case "babysit":
       return `${head}\n\nBabysit https://github.com/${REPO}/pull/${pr} to ready. Read and follow .claude/skills/babysit/SKILL.md.\n\n${common}`;
     default:
-      return `${head}\n\nRead and follow ${l.skill} exactly. Also read CLAUDE.md and .claude/skills/verify/SKILL.md before you start.\n\n${common}`;
+      return `${head}\n\n${task(l)}\n\n${common}`;
   }
+}
+
+const task = (l: any) => `Read and follow ${l.skill} exactly. Also read CLAUDE.md and .claude/skills/verify/SKILL.md before you start.`;
+
+/**
+ * A scheduled loop's prompt. An automation's prompt is fixed, so where
+ * `prompt()` writes the start and end times this tells the agent to read them.
+ */
+function automationPrompt(kind: Kind, l: any): string {
+  const started = `This session is a run of the Switchyard automation "${TITLE(kind)}" (schedule and settings: verify/loops.json, installed by \`verify/yv loop automations --apply\`).`;
+  const budget = `Your budget is ${l.minutes} minutes from the start of this run: run \`date -u\` first and note the start time and the end time (start plus ${l.minutes} minutes).`;
+  return `${task(l)}\n\n${unattended(started, budget)}`;
+}
+
+/** The fields `automation.save` gets for one scheduled loop. */
+function automationSpec(kind: Kind, cfg: any, checkout: string, model: string): Record<string, unknown> {
+  const l = cfg.loops[kind];
+  if (!l?.schedule) fail("no-schedule", `verify/loops.json gives the ${kind} loop no schedule`);
+  const b = cfg.budget[l.engine] ?? {};
+  const [five, week] = l.engine === "codex" ? [b.primaryMax, b.secondaryMax] : [b.fiveHourMax, b.sevenDayMax];
+  return {
+    name: TITLE(kind),
+    prompt: automationPrompt(kind, l),
+    cwd: checkout,
+    engine: l.engine,
+    model,
+    effort: l.effort,
+    permission: "full",
+    base: "main",
+    schedule: l.schedule,
+    skipWhileRunning: true,
+    maxFiveHour: five ?? null,
+    maxWeek: week ?? null,
+  };
+}
+
+/** The keys of `want` whose value differs in `have`. */
+function changed(want: Record<string, unknown>, have: any): string[] {
+  // yardd writes a schedule's keys in its own order.
+  const canon = (v: unknown): string =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? `{${Object.keys(v).sort().map((k) => `${k}:${canon((v as any)[k])}`).join(",")}}`
+      : JSON.stringify(v ?? null);
+  return Object.keys(want).filter((k) => canon(want[k]) !== canon(have?.[k]));
 }
 
 /** Archives finished loop sessions beyond the newest few, and frees their build output. */
@@ -211,9 +268,103 @@ async function runLoop(a: Args): Promise<Result> {
   }
 }
 
+const TIMER = (kind: string) => `switchyard-loop-${kind}.timer`;
+
+/** The old systemd timer of a scheduled loop: `enabled`, `disabled`, `not-found`… */
+function timerState(kind: string): { timer: string; enabled: string; active: string } {
+  const q = (verb: string) => run(["systemctl", "--user", verb, TIMER(kind)]).out.trim() || "unknown";
+  return { timer: TIMER(kind), enabled: q("is-enabled"), active: q("is-active") };
+}
+
+/**
+ * Creates or updates the scheduled loops as automations on a yardd (the live
+ * one by default), found by name so a second run edits instead of adding.
+ * An existing automation keeps its Enabled switch: the owner may have turned
+ * one off on the page. Applied to the live yardd, it also turns off the old
+ * systemd timers that started the same loops.
+ */
+async function installAutomations(a: Args): Promise<Result> {
+  const cfg = loopsConfig();
+  const iso = str(a, "iso");
+  const url = iso ? `ws://127.0.0.1:${loadIso(iso).port}/ws` : cfg.yardUrl;
+  const checkout = expand(str(a, "checkout") ?? cfg.checkout);
+  if (!existsSync(join(checkout, ".git"))) fail("no-checkout", `${checkout} is not a checkout`, "verify/loops/install.sh sets it up");
+  const { ws, snap } = await live(url);
+  try {
+    const request = async (msg: { op: string }, want: string, ms = 15000): Promise<any> => {
+      const ref = `yv-${Math.random().toString(36).slice(2)}`;
+      const from = ws.log.length;
+      ws.send({ ...msg, ref });
+      const end = Date.now() + ms;
+      while (Date.now() < end) {
+        const m = ws.log.slice(from).find((x) => x.ref === ref && (x.op === want || x.op === "error"));
+        if (m?.op === "error") fail("automation-error", `${msg.op}: ${m.message}`);
+        if (m) return m;
+        await sleep(50);
+      }
+      return fail("timeout", `the yardd at ${url} did not answer ${msg.op} within ${ms / 1000} s`);
+    };
+    const list: any[] = (await request({ op: "automation.list" }, "automations")).automations ?? [];
+    const plan = SCHEDULED.map((kind) => {
+      const l = cfg.loops[kind];
+      const models = snap.models?.[l.engine] ?? [];
+      const model = l.model === "default" ? (models.find((m: any) => m.isDefault) ?? models[0])?.id : l.model;
+      if (!model) fail("no-model", `the yardd lists no ${l.engine} models`);
+      const spec = automationSpec(kind, cfg, checkout, model);
+      const same = list.filter((x) => x.name === spec.name);
+      if (same.length > 1) fail("duplicate-automations", `${same.length} automations are named "${spec.name}": ${same.map((x) => x.id).join(", ")}`, "delete the extras on the Automations page");
+      const have = same[0];
+      return { kind, spec, have, changes: have ? changed(spec, have) : [] };
+    });
+    const show = (x: any) => ({
+      id: x.id,
+      name: x.name,
+      enabled: x.enabled,
+      schedule: x.schedule,
+      nextRun: x.nextRun ? new Date(x.nextRun).toISOString() : null,
+      lastRun: x.lastRun ?? null,
+    });
+    // Only the live yardd's loops had timers; an isolated one leaves them alone.
+    const touchTimers = !iso;
+    if (!a.flags.apply) {
+      return {
+        ok: true,
+        dryRun: true,
+        url,
+        plan: plan.map((p) => ({ kind: p.kind, action: !p.have ? "create" : p.changes.length ? "update" : "unchanged", id: p.have?.id ?? null, changes: p.changes })),
+        timers: touchTimers ? SCHEDULED.map(timerState) : "left alone (--iso)",
+        hint: "add --apply to save them",
+      };
+    }
+    const saved: any[] = [];
+    for (const p of plan) {
+      if (p.have && !p.changes.length) {
+        saved.push({ ...show(p.have), action: "unchanged" });
+        continue;
+      }
+      const automation = p.have ? { id: p.have.id, ...p.spec } : { ...p.spec, enabled: true };
+      const r = await request({ op: "automation.save", automation } as { op: string }, "automation.saved");
+      saved.push({ ...show(r.automation), action: p.have ? "updated" : "created", changes: p.changes });
+    }
+    const timers = touchTimers
+      ? SCHEDULED.map((kind) => {
+          const before = timerState(kind);
+          if (before.enabled === "not-found") return before;
+          const off = run(["systemctl", "--user", "disable", "--now", TIMER(kind)]);
+          return { ...timerState(kind), was: before.enabled, ...(off.code ? { error: (off.err || off.out).trim() } : {}) };
+        })
+      : "left alone (--iso)";
+    const stuck = Array.isArray(timers) ? timers.filter((t: any) => t.error) : [];
+    if (stuck.length) fail("timers", `could not turn off ${stuck.map((t: any) => t.timer).join(", ")}`, "systemctl --user disable --now <timer>", { automations: saved, timers });
+    return { ok: true, url, automations: saved, timers };
+  } finally {
+    ws.close();
+  }
+}
+
 async function status(): Promise<Result> {
   const cfg = loopsConfig();
-  const { ws } = await live(cfg.yardUrl);
+  const { ws, snap } = await live(cfg.yardUrl);
   try {
     const sessions = sessionsOf(ws)
       .filter((s) => s.title.startsWith("Loop "))
@@ -221,7 +372,12 @@ async function status(): Promise<Result> {
       .map((s) => ({ id: s.id, title: s.title, status: s.status, archived: !!s.archived, branch: s.branch, cwd: s.cwd }));
     const dir = join(SHARED, "loops");
     const last = existsSync(dir) ? Object.fromEntries(readdirSync(dir).filter((f) => f.endsWith(".last.json")).map((f) => [f.replace(".last.json", ""), readJson(join(dir, f))])) : {};
-    return { ok: true, paused: existsSync(PAUSED()), usage: usageOf(ws), sessions, last };
+    // The scheduled loops' state lives in yardd, on their automations.
+    const names: string[] = SCHEDULED.map(TITLE);
+    const automations = (snap.automations ?? [])
+      .filter((x: any) => names.includes(x.name))
+      .map((x: any) => ({ id: x.id, name: x.name, enabled: x.enabled, nextRun: x.nextRun ? new Date(x.nextRun).toISOString() : null, lastRun: x.lastRun ?? null }));
+    return { ok: true, paused: existsSync(PAUSED()), usage: usageOf(ws), automations, sessions, last };
   } finally {
     ws.close();
   }
@@ -280,6 +436,7 @@ export async function loop(a: Args): Promise<Result> {
   if (sub === "log") return logOf(a);
   if (sub === "run") return runLoop(a);
   if (sub === "status") return status();
+  if (sub === "automations") return installAutomations(a);
   if (sub === "pause") {
     mkdirSync(join(SHARED, "loops"), { recursive: true });
     writeFileSync(PAUSED(), nowIso());
@@ -289,7 +446,7 @@ export async function loop(a: Args): Promise<Result> {
     if (existsSync(PAUSED())) unlinkSync(PAUSED());
     return { ok: true, paused: false };
   }
-  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume");
+  throw new Usage("loop run <kind> [--pr N] [--engine e --model m --effort x] [--dry-run] [--force] | loop automations [--apply] [--iso n] [--checkout dir] | loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume");
 }
 
-export const _test = { skipReason, prompt, matches, statSync };
+export const _test = { skipReason, prompt, automationPrompt, automationSpec, changed, matches, statSync };

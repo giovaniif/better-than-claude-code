@@ -329,6 +329,35 @@ describe("loop budget", () => {
   });
 });
 
+describe("loop automations", () => {
+  const cfg = JSON.parse(readFileSync(join(import.meta.dir, "..", "loops.json"), "utf8"));
+  test("each scheduled loop maps loops.json onto an automation", () => {
+    const want: Record<string, unknown> = {
+      patrol: { kind: "interval", every: 1, unit: "hours" },
+      maintain: { kind: "daily", time: "03:30" },
+      review: { kind: "weekly", day: 1, time: "08:00" },
+    };
+    for (const kind of ["patrol", "maintain", "review"] as const) {
+      const s = loopTest.automationSpec(kind, cfg, "/tmp/loops", cfg.loops[kind].model);
+      expect(s).toMatchObject({ name: `Loop ${kind}`, cwd: "/tmp/loops", engine: "claude", model: "claude-opus-5-5", effort: cfg.loops[kind].effort, permission: "full", base: "main", skipWhileRunning: true, maxFiveHour: 70, maxWeek: 80, schedule: want[kind] });
+    }
+    expect(loopTest.automationSpec("patrol", cfg, "/x", "m").effort).toBe("high");
+  });
+  test("the fixed prompt names the skill and has the agent read the clock", () => {
+    const p = loopTest.automationPrompt("patrol", cfg.loops.patrol);
+    expect(p).toContain(".claude/skills/patrol/SKILL.md");
+    expect(p).toContain("50 minutes");
+    expect(p).toContain("date -u");
+    // Nothing per run: no time of day baked in.
+    expect(p).not.toMatch(/\d\d:\d\d/);
+  });
+  test("a schedule saved by yardd in another key order is not a change", () => {
+    const want = { schedule: { kind: "weekly", day: 1, time: "08:00" }, maxWeek: 80, effort: "high" };
+    expect(loopTest.changed(want, { schedule: { time: "08:00", kind: "weekly", day: 1 }, maxWeek: 80, effort: "high" })).toEqual([]);
+    expect(loopTest.changed(want, { schedule: { kind: "weekly", day: 2, time: "08:00" }, maxWeek: 80 })).toEqual(["schedule", "effort"]);
+  });
+});
+
 
 describe("land watch", () => {
   test("a job that never got a runner is not a regression; a failed one is", () => {

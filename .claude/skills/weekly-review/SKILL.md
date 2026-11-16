@@ -1,6 +1,6 @@
 ---
 name: weekly-review
-description: Weekly review of the Switchyard land gate - compare every gate decision with what happened afterwards (reverts, follow-up changes, owner objections), count false accepts per category, and recommend which categories stay live. Started by the weekly loop timer; use when asked for the gate review.
+description: Weekly review of the Switchyard land gate - compare every gate decision with what happened afterwards (reverts, follow-up changes, owner objections), count false accepts per category, and recommend which categories stay live. Started every Monday by the Loop review automation; use when asked for the gate review.
 ---
 
 # Weekly gate review

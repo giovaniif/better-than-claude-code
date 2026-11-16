@@ -14,12 +14,14 @@ Set up 2026-11-15.
 | Land gate | `verify/yv land`, `verify/land.json` | **live** for every category: merges PRs it finds landable (PASS or PASS+NOTES) |
 | Verifier | `.claude/skills/verifier/SKILL.md`, `loop run verify --pr N` | a fresh session that knows only the PR URL |
 | Babysitting | `.claude/skills/babysit/SKILL.md`, `verify/yv pr …` | written |
-| Patrol / maintenance / weekly review | `.claude/skills/{patrol,map-maintenance,weekly-review}`, `verify/loops/` | systemd user timers starting Switchyard sessions |
+| Patrol / maintenance / weekly review | `.claude/skills/{patrol,map-maintenance,weekly-review}`, `verify/loops/` | yardd automations `Loop patrol`/`maintain`/`review` on the live yardd (`verify/yv loop automations --apply`); runs show on the Automations page |
 | CI | `.github/workflows/ci.yml` | yardd, ui, sidecar, verify (unit tests + a real Chromium round trip) |
 
 ## State on 2026-11-15
 
 - Timers enabled on the server (`systemctl --user list-timers 'switchyard-loop*'`).
+  Since 2026-11-16 only the tidy timer is left: the scheduled loops are
+  automations (`verify/yv loop status` shows their next and last run).
 - Every loop runs on Claude Opus 5.5, skipped above 70% of the 5-hour window
   or 80% of the week.
 - The land gate is live: the verifier posts PASS or PASS+NOTES, then runs
