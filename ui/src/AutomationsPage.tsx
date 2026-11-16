@@ -198,7 +198,11 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Models, the home folder and branches arrive per host, after the first render.
+  // An automation being edited keeps its saved model even when the host no
+  // longer lists it (the picker names it by id): the default would switch its
+  // engine on save.
   useEffect(() => {
+    if (editing) return;
     if (models.claude.length + models.codex.length > 0 && !models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
   }, [models, target]);
   useEffect(() => {
