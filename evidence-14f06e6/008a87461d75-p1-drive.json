@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e502f7876",
+  "build": {
+    "sha": "18fbc78da4f76282cdb4ca8e6168b5c9dcf9acca",
+    "short": "18fbc78",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T15:52:18.753Z"
+  },
+  "dir": ".verify/evidence/markdown-blocks-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3279,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/markdown-blocks-base/blocks-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3161,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/markdown-blocks-base/blocks-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
