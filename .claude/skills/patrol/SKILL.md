@@ -137,5 +137,9 @@ gigabytes. Leave the worktree itself; the launcher archives old loop sessions.
 - `iso restart` keeps the data dir. When you re-record proofs on the same iso
   (after a rebase or a review fix), use names not taken by the first run, or
   yardd refuses them as duplicates and the head shows failed API calls.
+- One merge per 20 minutes: a verifier that passes lands its PR itself, so
+  two PRs verified at once race for the slot and the less important one can
+  win. Start the next PR's verifier only after the first has landed (or keep
+  the second PR for the next run).
 - `annotate --box` is in CSS pixels (the viewport, 1440x900 or 390x844), not
   in the 2x screenshot's pixels.
