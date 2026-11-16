@@ -7,7 +7,8 @@ const s = (name: string, status: string, extra: Partial<McpServer> = {}): McpSer
 test("names read as the service, with where it comes from", () => {
   expect(displayName(s("claude.ai Datadog", "connected", { source: "claudeai" }))).toEqual({ name: "Datadog", via: "claude.ai" });
   expect(displayName(s("plugin:engineering:sentry", "connected", { source: "plugin" }))).toEqual({ name: "sentry", via: "engineering plugin" });
-  expect(displayName(s("posthog", "connected", { source: "config" }))).toEqual({ name: "posthog", via: "config.toml" });
+  expect(displayName(s("posthog", "connected", { source: "config" }))).toEqual({ name: "PostHog", via: "config.toml" });
+  expect(displayName(s("metabase", "connected", { source: "config" }))).toEqual({ name: "metabase", via: "config.toml" });
   expect(displayName(s("x", "connected", { source: "something-new" }))).toEqual({ name: "x", via: "something-new" });
   expect(displayName(s("linear", "connected", { source: "user", origin: "https://mcp.linear.app" }))).toEqual({ name: "Linear", via: "Your config" });
   expect(displayName(s("linear", "connected", { source: "user", origin: "https://evil.example" }))).toEqual({ name: "linear", via: "Your config" });
