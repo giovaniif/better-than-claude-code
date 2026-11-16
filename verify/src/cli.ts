@@ -46,22 +46,19 @@ const HELP = `verify/yv <command> [args]   (every command prints one JSON object
   land check <pr> | land verdict <pr> --verdict PASS|PASS+NOTES|FAIL|HUMAN [--bundle dir] [--notes t] [--dry-run]
   land merge|watch <pr> [--dry-run] | land ledger [pr] | land review [--days 7]
   notify "<message>" [--title t] [--click url]   an OS notification in every open Switchyard window
-  preview <pr|branch> [--notify]  that build on scripted engines with demo sessions, at a tailnet URL
-                                 for your other devices (replaces an older preview of it)
-  preview ls | preview down <pr|branch> | preview down --all
   loop run patrol|maintain|review|verify|babysit [--pr N] [--engine e --model m --effort x] [--dry-run] [--force]
   loop status | loop log <sessionId> [--last n] | loop tidy | loop pause | loop resume
   selftest [--smoke]
 `;
 
-const BOOLS = ["force", "all", "keep", "logged-out", "pressure", "no-build", "full", "video", "dry-run", "resolve", "smoke", "allow-spend", "help", "json", "fix-hint", "keep-open", "allow-errors", "no-fetch", "no-checkout", "notify"];
+const BOOLS = ["force", "all", "keep", "logged-out", "pressure", "no-build", "full", "video", "dry-run", "resolve", "smoke", "allow-spend", "help", "json", "fix-hint", "keep-open", "allow-errors", "no-fetch", "no-checkout"];
 
 async function main(argv: string[]): Promise<[string, Result]> {
   const [cmd, ...rest] = argv;
   const a = parseArgs(rest, BOOLS);
   if (!cmd || cmd === "help" || a.flags.help) return ["help", { ok: true, usage: HELP }];
   const sub = a.pos[0];
-  const label = ["iso", "map", "evidence", "assets", "pr", "land", "loop", "var", "preview"].includes(cmd) && sub ? `${cmd} ${sub}` : cmd;
+  const label = ["iso", "map", "evidence", "assets", "pr", "land", "loop", "var"].includes(cmd) && sub ? `${cmd} ${sub}` : cmd;
   const shift = () => ({ ...a, pos: a.pos.slice(1) });
   switch (cmd) {
     case "doctor":
@@ -103,12 +100,6 @@ async function main(argv: string[]): Promise<[string, Result]> {
       return [label, await (await import("./gh")).pr(a)];
     case "land":
       return [label, await (await import("./land")).land(a)];
-    case "preview": {
-      const p = await import("./preview");
-      if (sub === "ls") return [label, p.previewLs()];
-      if (sub === "down") return [label, await p.previewDown(shift())];
-      return ["preview", await p.previewUp(a)];
-    }
     case "notify":
       return [label, await (await import("./notify")).notifyCmd(a)];
     case "loop":
