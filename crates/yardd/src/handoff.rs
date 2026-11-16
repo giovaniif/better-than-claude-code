@@ -71,7 +71,11 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
         (Some(branch), Some(repo)) => Some(Worktree { branch, repo }),
         _ => None,
     };
-    let new_sid = app.new_session(engine, model, effort, &source.cwd, &source.title, worktree);
+    // The source's account belongs to its engine, so the new session runs on
+    // the target engine's Default unless the message names one of its accounts.
+    let account = msg["account"].as_str().filter(|a| !a.is_empty()).unwrap_or(crate::accounts::DEFAULT);
+    app.accounts.check(engine, account)?;
+    let new_sid = app.new_session(engine, model, effort, &source.cwd, &source.title, worktree, account);
     app.update_meta(&new_sid, |m| {
         m.parent = Some(sid.to_string());
         m.permission = source.permission.clone();

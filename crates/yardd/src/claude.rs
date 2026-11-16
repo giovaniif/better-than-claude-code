@@ -51,6 +51,10 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
         .kill_on_drop(true);
+    // An added account is its own config folder; Default keeps the environment.
+    if let Some(dir) = app.accounts.config_dir("claude", &meta.account)? {
+        cmd.env(crate::accounts::env_var("claude"), dir);
+    }
     let mut child = cmd
         .spawn()
         .context("could not start the Claude sidecar (YARD_SIDECAR unset: is `bun` on PATH?)")?;
@@ -102,7 +106,11 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
             };
             match msg["type"].as_str() {
                 Some("event") => reader_app.emit(&reader_sid, msg["event"].clone()),
-                Some("usage") => reader_app.set_usage("claude", msg["usage"].clone()),
+                Some("usage") => {
+                    if let Some(account) = reader_app.meta(&reader_sid).map(|m| m.account) {
+                        reader_app.set_usage("claude", &account, msg["usage"].clone());
+                    }
+                }
                 Some("session") => {
                     if let Some(id) = msg["claudeSessionId"].as_str() {
                         reader_app.set_engine_ref(&reader_sid, id);
@@ -248,7 +256,7 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("yardd-unit-{}-approve", std::process::id()));
         let (store, _) = crate::store::open(&dir).unwrap();
         let app = Arc::new(App::new(dir.clone(), 0, store));
-        let sid = app.new_session("claude", "claude-opus-5-5", "high", "/tmp", "t", None);
+        let sid = app.new_session("claude", "claude-opus-5-5", "high", "/tmp", "t", None, crate::accounts::DEFAULT);
         let (tx, mut rx) = mpsc::unbounded_channel();
         let (stop, _keep) = oneshot::channel();
         app.sessions.lock().unwrap().get_mut(&sid).unwrap().backend = Backend::Claude { tx, _stop: stop };

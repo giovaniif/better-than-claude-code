@@ -1,9 +1,10 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
-import { branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
+import { accountChoices, accountLabel, accountName, accountOf, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
+import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
@@ -278,6 +279,7 @@ function SessionRow({ state, actions, session: s, active, groups }: { state: Sta
       window.removeEventListener("resize", close);
     };
   }, [menu]);
+  const rowAccount = accountLabel(accountsOn(state, host), s);
   const worktree = !!(s.branch && s.repo);
   const remove = (removeWorktree: boolean) => {
     close();
@@ -305,6 +307,7 @@ function SessionRow({ state, actions, session: s, active, groups }: { state: Sta
           <span className="session-title">{s.title}</span>
           <span className="session-sub">
             {modelName(modelsOn(state, host), s.engine, s.model)} · {online ? STATUS_LABEL[s.status] : "Offline"}
+            {rowAccount && <span className="row-account"> · {rowAccount}</span>}
           </span>
         </span>
         {host !== "local" && <Cloud size={14} label={`Runs on ${hostName(state, host)}`} />}
@@ -716,11 +719,20 @@ function ModelPicker(props: {
   usage: Usage;
   value: Choice;
   engines: Engine[];
+  /** The host's added accounts. An engine with any gets an account row; shown only where there is a choice. */
+  accounts?: AccountEntry[];
+  /** The account picked per engine; Default where missing. */
+  picks?: Partial<Record<Engine, string>>;
+  /** Without it the account is fixed (a session's) and only named. */
+  onAccount?(engine: Engine, account: string): void;
   onChange(next: Choice): void;
   /** In a session, a model of the other engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
-  const { models, usage, value, engines, onChange, handoff } = props;
+  const { models, usage, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
+  const choicesOf = (engine: Engine): AccountChoice[] => accountChoices(accounts, engine);
+  const pickOf = (engine: Engine) => picks?.[engine] ?? DEFAULT_ACCOUNT;
+  const triggerAccount = choicesOf(value.engine).length > 1 ? accountName(accounts, value.engine, pickOf(value.engine)) : null;
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // The engine not in use starts folded.
@@ -744,6 +756,7 @@ function ModelPicker(props: {
       <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
         <span>{current?.name ?? value.model}</span>
         <span className="muted">{capitalize(value.effort)}</span>
+        {triggerAccount && <span className="muted picker-account">{triggerAccount}</span>}
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
         </span>
@@ -801,6 +814,24 @@ function ModelPicker(props: {
                       <div className="picker-head">
                         <span>{ENGINE_NAME[engine]}</span>
                       </div>
+                      {choicesOf(engine).length > 1 && onAccount && !isHandoff && (
+                        <div className="picker-accounts" role="group" aria-label={`${ENGINE_NAME[engine]} account`}>
+                          {choicesOf(engine).map((a) => (
+                            <button
+                              key={a.id}
+                              className={`effort ${a.id === pickOf(engine) ? "active" : ""}`}
+                              aria-label={`Use account ${a.name}`}
+                              aria-pressed={a.id === pickOf(engine)}
+                              onClick={() => onAccount(engine, a.id)}
+                            >
+                              {a.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {choicesOf(engine).length > 1 && !onAccount && engine === value.engine && (
+                        <div className="picker-note">Runs on the {accountName(accounts, engine, pickOf(engine))} account. It can't change mid-session.</div>
+                      )}
                       {isHandoff && (
                         <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
                       )}
@@ -1183,6 +1214,20 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const workspace = state.workspace[target] || home;
   const [loggingIn, setLoggingIn] = useState(false);
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
+  // The account per engine on this host, remembered like the model. One that
+  // was removed meanwhile falls back to Default.
+  const accounts = accountsOn(state, target);
+  const [picked, setPicked] = useState<Record<string, string>>({});
+  const pickKey = (engine: Engine) => `yard.account.${target}.${engine}`;
+  const pickOf = (engine: Engine): string => {
+    const wanted = picked[pickKey(engine)] ?? localStorage.getItem(pickKey(engine)) ?? DEFAULT_ACCOUNT;
+    return accountChoices(accounts, engine).some((a) => a.id === wanted) ? wanted : DEFAULT_ACCOUNT;
+  };
+  const picks: Record<Engine, string> = { claude: pickOf("claude"), codex: pickOf("codex") };
+  const pickAccount = (engine: Engine, id: string) => {
+    localStorage.setItem(pickKey(engine), id);
+    setPicked({ ...picked, [pickKey(engine)]: id });
+  };
   const [permission, setPermission] = useState<Permission>(() => {
     const saved = localStorage.getItem("yard.permission");
     return PERMISSIONS.some((p) => p.id === saved) ? (saved as Permission) : "ask";
@@ -1234,6 +1279,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     actions.create({
       ...choice,
       permission,
+      account: picks[choice.engine] === DEFAULT_ACCOUNT ? undefined : picks[choice.engine],
       cwd,
       text,
       worktree: true,
@@ -1258,7 +1304,16 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           onSubmit={start}
           busy={pending || !state.connected || !choice.model || !cwd}
         >
-          <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={["claude", "codex"]} onChange={setChoice} />
+          <ModelPicker
+            models={models}
+            usage={usageForPicks(usageOn(state, target), picks)}
+            value={choice}
+            engines={["claude", "codex"]}
+            accounts={accounts}
+            picks={picks}
+            onAccount={pickAccount}
+            onChange={setChoice}
+          />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
         <div className="new-chips">
@@ -1281,8 +1336,10 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
           )}
         </div>
-        <EngineNotice state={state} host={target} engine={choice.engine} onLogin={() => setLoggingIn(true)} />
-        {loggingIn && <LoginDialog state={state} actions={actions} host={target} engine={choice.engine} onClose={() => setLoggingIn(false)} />}
+        <EngineNotice state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onLogin={() => setLoggingIn(true)} />
+        {loggingIn && (
+          <LoginDialog state={state} actions={actions} host={target} engine={choice.engine} account={picks[choice.engine]} onClose={() => setLoggingIn(false)} />
+        )}
       </div>
     </div>
   );
@@ -1652,6 +1709,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   // Files go to the session's own host, through the hub for a remote one.
   const uploadTarget = useMemo<UploadTarget>(() => ({ sessionId: meta.id }), [meta.id]);
   const [loggingIn, setLoggingIn] = useState(false);
+  const accounts = accountsOn(state, host);
+  const sessionAccount = accountLabel(accounts, meta);
   // The engines' own /login cannot run inside a session; the app's does it.
   const submit = (text: string, attachments: Attachment[]) => {
     if (/^\/login\s*$/.test(text.trim()) && !attachments.length) setLoggingIn(true);
@@ -1675,6 +1734,11 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
         <header className="bar">
           <h1>{meta.title}</h1>
           <code className="muted">{meta.branch || changes?.branch || tilde(meta.cwd, homeOn(state, host))}</code>
+          {sessionAccount && (
+            <span className="muted small session-account" title="The account this session runs under. It can't be changed mid-session.">
+              {sessionAccount}
+            </span>
+          )}
           {host !== "local" && (
             <span className="muted small bar-host">
               <Cloud size={13} />
@@ -1714,8 +1778,10 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
         {online && <QuoteReply sessionId={meta.id} />}
         <div className="dock">
           {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
-          {online && <EngineNotice state={state} host={host} engine={meta.engine} onLogin={() => setLoggingIn(true)} />}
-          {loggingIn && <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} onClose={() => setLoggingIn(false)} />}
+          {online && <EngineNotice state={state} host={host} engine={meta.engine} account={accountOf(meta)} onLogin={() => setLoggingIn(true)} />}
+          {loggingIn && (
+            <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} account={accountOf(meta)} onClose={() => setLoggingIn(false)} />
+          )}
           {online && (
             <PendingList pending={meta.pending ?? []} busy={busy} onEdit={(id) => actions.unqueue(meta.id, id)} onRemove={(id) => actions.unqueue(meta.id, id, true)} />
           )}
@@ -1737,7 +1803,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           >
             <ModelPicker
               models={models}
-              usage={usageOn(state, host)}
+              usage={usageForPicks(usageOn(state, host), { [meta.engine]: accountOf(meta) })}
+              accounts={accounts}
+              picks={{ [meta.engine]: accountOf(meta) }}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
               engines={meta.engine === "claude" ? ["claude", "codex"] : ["codex", "claude"]}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
@@ -2380,17 +2448,18 @@ function explainHostError(entry: HostEntry): { title: string; hint?: ReactNode; 
 }
 
 /** An engine that cannot run here yet: not installed, or not logged in. */
-function EngineNotice({ state, host, engine, onLogin }: { state: State; host: string; engine: Engine; onLogin(): void }) {
-  const st = state.engines[host]?.[engine];
+function EngineNotice({ state, host, engine, account = DEFAULT_ACCOUNT, onLogin }: { state: State; host: string; engine: Engine; account?: string; onLogin(): void }) {
+  const st = account === DEFAULT_ACCOUNT ? state.engines[host]?.[engine] : state.engines[host]?.accounts?.[account];
   if (!st || (st.installed && st.loggedIn !== false)) return null;
   const machine = hostName(state, host);
+  const which = account === DEFAULT_ACCOUNT ? ENGINE_LABEL[engine] : `${ENGINE_LABEL[engine]} (${accountName(accountsOn(state, host), engine, account)})`;
   return (
     <div className="engine-notice" role="status">
       <span className="dot host-dot-busy" aria-hidden="true" />
       {st.installed ? (
         <>
           <span>
-            {ENGINE_LABEL[engine]} isn't logged in on {machine}.
+            {which} isn't logged in on {machine}.
           </span>
           <span className="spacer" />
           <button className="btn-primary" onClick={onLogin}>
@@ -2408,8 +2477,12 @@ function EngineNotice({ state, host, engine, onLogin }: { state: State; host: st
 
 /** Runs an engine's login on a host. Codex: open a link and enter a code
  *  there. Claude Code: open a link, sign in, paste the code it shows here. */
-function LoginDialog({ state, actions, host, engine, onClose }: { state: State; actions: Actions; host: string; engine: Engine; onClose(): void }) {
-  const current = state.logins[loginKey(host, engine)];
+function LoginDialog(props: { state: State; actions: Actions; host: string; engine: Engine; account?: string; onClose(): void }) {
+  const { state, actions, host, engine, onClose } = props;
+  const account = props.account ?? DEFAULT_ACCOUNT;
+  // Which login this is, when the engine has several: "Claude Code (Work)".
+  const which = account === DEFAULT_ACCOUNT ? ENGINE_LABEL[engine] : `${ENGINE_LABEL[engine]} (${accountName(accountsOn(state, host), engine, account)})`;
+  const current = state.logins[loginKey(host, engine, account)];
   // Whatever was there before this dialog opened belongs to an older login.
   const before = useRef(current);
   const login = current === before.current ? undefined : current;
@@ -2418,7 +2491,7 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
   const machine = hostName(state, host);
   const finished = login?.state === "done";
   useEffect(() => {
-    actions.login(host, engine);
+    actions.login(host, engine, account);
   }, []);
   useEffect(() => {
     if (!finished) return;
@@ -2426,14 +2499,14 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
     return () => clearTimeout(timer);
   }, [finished]);
   const close = () => {
-    if (!finished && login?.state !== "failed") actions.loginCancel(host, engine);
+    if (!finished && login?.state !== "failed") actions.loginCancel(host, engine, account);
     onClose();
   };
   useEscape(true, close);
   const retry = () => {
-    before.current = state.logins[loginKey(host, engine)];
+    before.current = state.logins[loginKey(host, engine, account)];
     setCode("");
-    actions.login(host, engine);
+    actions.login(host, engine, account);
   };
   const copy = async (text: string) => {
     try {
@@ -2487,7 +2560,7 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
           className="login-code"
           onSubmit={(e) => {
             e.preventDefault();
-            if (code.trim()) actions.loginCode(host, engine, code.trim());
+            if (code.trim()) actions.loginCode(host, engine, code.trim(), account);
           }}
         >
           <input
@@ -2509,7 +2582,7 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
   } else if (login.state === "done") {
     body = (
       <p className="login-done">
-        <Icon d={CHECK} /> {ENGINE_LABEL[engine]} is logged in on {machine}.
+        <Icon d={CHECK} /> {which} is logged in on {machine}.
       </p>
     );
   } else {
@@ -2527,10 +2600,10 @@ function LoginDialog({ state, actions, host, engine, onClose }: { state: State; 
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-label={`Log in to ${ENGINE_LABEL[engine]}`}>
+      <div className="modal" role="dialog" aria-modal="true" aria-label={`Log in to ${which}`}>
         <header className="modal-head">
           <h2>
-            Log in to {ENGINE_LABEL[engine]} on {machine}
+            Log in to {which} on {machine}
           </h2>
           <span className="spacer" />
           <button className="btn-icon" aria-label="Close" onClick={close}>
@@ -2663,8 +2736,15 @@ function ImportDialog({ state, actions, onClose }: { state: State; actions: Acti
   );
 }
 
-function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void }) {
-  const { state, id, onRemove, onInstall, onLogin } = props;
+/** What the Hosts page can do with a host's accounts. */
+interface AccountActions {
+  login(engine: Engine, account: string): void;
+  add(engine: Engine, name: string): void;
+  remove(id: string): void;
+}
+
+function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void; accountActions?: AccountActions }) {
+  const { state, id, onRemove, onInstall, onLogin, accountActions } = props;
   const install = state.installs[id];
   const entry = state.hosts.find((h) => h.id === id);
   const status = hostState(state, id);
@@ -2729,7 +2809,7 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
       {host && state.engines[id] ? (
-        <Engines engines={state.engines[id]} onLogin={onLogin} />
+        <Engines engines={state.engines[id]} accounts={accountsOn(state, id)} accountActions={accountActions} errorCount={state.errorCount} onLogin={onLogin} />
       ) : (
         install?.ok && !install.running && <EngineSummary install={install} machine={name} />
       )}
@@ -2786,7 +2866,16 @@ function EngineSummary({ install, machine }: { install: State["installs"][string
 }
 
 /** Each engine on a host and whether it is ready, with a login for one that is not. */
-function Engines({ engines, onLogin }: { engines: EngineStates; onLogin?(engine: Engine): void }) {
+function Engines(props: {
+  engines: EngineStates;
+  accounts: AccountEntry[];
+  accountActions?: AccountActions;
+  errorCount: number;
+  onLogin?(engine: Engine): void;
+}) {
+  const { engines, accounts, accountActions, errorCount, onLogin } = props;
+  // The engine whose Add account form is open.
+  const [adding, setAdding] = useState<Engine | null>(null);
   return (
     <div className="engines">
       {(["claude", "codex"] as Engine[]).map((engine) => {
@@ -2794,30 +2883,130 @@ function Engines({ engines, onLogin }: { engines: EngineStates; onLogin?(engine:
         if (!st) return null;
         const ready = st.installed && st.loggedIn === true;
         return (
-          <div key={engine} className="engine-row">
-            <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
-            <span>{ENGINE_LABEL[engine]}</span>
-            <span className="muted small">
-              {!st.installed
-                ? "not installed"
-                : st.loggedIn === true
-                  ? st.account
-                    ? `logged in as ${st.account}`
-                    : "logged in"
-                  : st.loggedIn === false
-                    ? "not logged in"
-                    : st.error || "status unknown"}
-            </span>
-            {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
-            {st.installed && st.loggedIn !== true && onLogin && (
-              <button className="btn engine-login" onClick={() => onLogin(engine)}>
-                Log in
-              </button>
+          <div key={engine} className="engine-block">
+            <div className="engine-row">
+              <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
+              <span>{ENGINE_LABEL[engine]}</span>
+              <span className="muted small">{engineStateText(st)}</span>
+              {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
+              {st.installed && st.loggedIn !== true && onLogin && (
+                <button className="btn engine-login" onClick={() => onLogin(engine)}>
+                  Log in
+                </button>
+              )}
+              {st.installed && accountActions && adding !== engine && (
+                <button className="btn-text engine-add" aria-label={`Add ${ENGINE_LABEL[engine]} account`} onClick={() => setAdding(engine)}>
+                  <Icon d={PLUS} size={12} />
+                  Add account
+                </button>
+              )}
+            </div>
+            {accounts
+              .filter((a) => a.engine === engine)
+              .map((a) => (
+                <AccountRow
+                  key={a.id}
+                  account={a}
+                  state={engines.accounts?.[a.id]}
+                  onLogin={accountActions ? () => accountActions.login(engine, a.id) : undefined}
+                  onRemove={accountActions ? () => accountActions.remove(a.id) : undefined}
+                />
+              ))}
+            {adding === engine && accountActions && (
+              <AddAccount
+                engine={engine}
+                errorCount={errorCount}
+                onAdd={(name) => accountActions.add(engine, name)}
+                onDone={() => setAdding(null)}
+              />
             )}
           </div>
         );
       })}
     </div>
+  );
+}
+
+function engineStateText(st: EngineState): string {
+  if (!st.installed) return "not installed";
+  if (st.loggedIn === true) return st.account ? `logged in as ${st.account}` : "logged in";
+  if (st.loggedIn === false) return "not logged in";
+  return st.error || "status unknown";
+}
+
+/** An added account under its engine: its login state, Log in and Remove
+ *  (which asks for a second click, like removing a host). */
+function AccountRow({ account, state: st, onLogin, onRemove }: { account: AccountEntry; state?: EngineState; onLogin?(): void; onRemove?(): void }) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const timer = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(timer);
+  }, [armed]);
+  const ready = st?.installed && st.loggedIn === true;
+  return (
+    <div className="account-row">
+      <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
+      <span className="account-name">{account.name}</span>
+      <span className="muted small">{st ? engineStateText(st) : "checking…"}</span>
+      {st?.installed && st.loggedIn !== true && onLogin && (
+        <button className="btn engine-login" aria-label={`Log in ${account.name}`} onClick={onLogin}>
+          Log in
+        </button>
+      )}
+      {onRemove && (
+        <button
+          className="btn-text account-remove"
+          aria-label={`Remove ${account.name}`}
+          title="Deletes the account's login on this host"
+          onClick={() => (armed ? onRemove() : setArmed(true))}
+        >
+          {armed ? "Click again to remove" : "Remove"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AddAccount({ engine, errorCount, onAdd, onDone }: { engine: Engine; errorCount: number; onAdd(name: string): void; onDone(): void }) {
+  const [name, setName] = useState("");
+  const [sent, setSent] = useState(false);
+  // A refusal (a name already in use) keeps the form open; a new list closes it.
+  const errors = useRef(errorCount);
+  useEffect(() => {
+    if (sent && errorCount !== errors.current) setSent(false);
+  }, [errorCount]);
+  return (
+    <form
+      className="account-add"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        errors.current = errorCount;
+        setSent(true);
+        onAdd(name.trim());
+        // The list comes back from yardd; closing now loses nothing.
+        setTimeout(onDone, 150);
+      }}
+    >
+      <input
+        autoFocus
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={`Name, such as Work`}
+        maxLength={40}
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="Account name"
+        onKeyDown={(e) => e.key === "Escape" && onDone()}
+      />
+      <button className="btn-primary" type="submit" disabled={!name.trim() || sent}>
+        Add
+      </button>
+      <button className="btn-text" type="button" onClick={onDone}>
+        Cancel
+      </button>
+    </form>
   );
 }
 
@@ -2946,7 +3135,12 @@ function AddHost({ actions, errorCount, onDone }: { actions: Actions; errorCount
 
 function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [adding, setAdding] = useState(false);
-  const [login, setLogin] = useState<{ host: string; engine: Engine } | null>(null);
+  const [login, setLogin] = useState<{ host: string; engine: Engine; account?: string } | null>(null);
+  const accountActions = (host: string): AccountActions => ({
+    login: (engine, account) => setLogin({ host, engine, account }),
+    add: (engine, name) => actions.addAccount(host, engine, name),
+    remove: (id) => actions.removeAccount(host, id),
+  });
   return (
     <div className="hosts">
       <header className="bar">
@@ -2962,7 +3156,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
       <div className="scroll">
         <div className="hosts-inner">
           {adding && <AddHost actions={actions} errorCount={state.errorCount} onDone={() => setAdding(false)} />}
-          <HostCard state={state} id="local" onLogin={(engine) => setLogin({ host: "local", engine })} />
+          <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
           {state.hosts.map((h) => (
             <HostCard
               key={h.id}
@@ -2970,10 +3164,11 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
               id={h.id}
               onRemove={() => actions.removeHost(h.id)}
               onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
+              accountActions={accountActions(h.id)}
               onLogin={(engine) => setLogin({ host: h.id, engine })}
             />
           ))}
-          {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} onClose={() => setLogin(null)} />}
+          {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} account={login.account} onClose={() => setLogin(null)} />}
           {state.hosts.length === 0 && !adding && (
             <button className="host-empty" onClick={() => setAdding(true)}>
               <Icon d={CLOUD} size={16} />

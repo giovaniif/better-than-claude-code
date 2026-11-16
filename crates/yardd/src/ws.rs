@@ -167,6 +167,11 @@ fn clip(text: &str, max: usize) -> String {
     format!("{cut}…")
 }
 
+/// The account a login op is for; Default when it names none.
+fn account_field(msg: &Value) -> &str {
+    msg["account"].as_str().filter(|a| !a.is_empty()).unwrap_or(crate::accounts::DEFAULT)
+}
+
 fn dim(msg: &Value, key: &str, fallback: u16) -> u16 {
     msg[key].as_u64().and_then(|n| u16::try_from(n).ok()).unwrap_or(fallback)
 }
@@ -228,6 +233,8 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if !PERMISSIONS.contains(&permission) {
                 bail!("unknown permission mode {permission}");
             }
+            let account = account_field(msg);
+            app.accounts.check(engine, account)?;
             let first = text.lines().next().filter(|l| !l.trim().is_empty());
             let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
             let title: String = first.chars().take(60).collect();
@@ -243,9 +250,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 let suffix = &unique[unique.len().saturating_sub(4)..];
                 let wt = git::add_worktree(cwd, msg["branch"].as_str(), msg["base"].as_str(), &title, suffix).await?;
                 let worktree = Worktree { branch: wt.branch, repo: wt.repo };
-                (app.new_session(engine, model, effort, &wt.cwd, &title, Some(worktree)), wt.setup)
+                (app.new_session(engine, model, effort, &wt.cwd, &title, Some(worktree), account), wt.setup)
             } else {
-                (app.new_session_exclusive(engine, model, effort, cwd, &title)?, None)
+                (app.new_session_exclusive(engine, model, effort, cwd, &title, account)?, None)
             };
             if let Some(script) = setup {
                 app.emit(&sid, json!({ "type": "note", "text": format!("Worktree setup ran: {script}") }));
@@ -254,7 +261,9 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 let text = "Not a git repository with commits, so this session works in the folder itself.";
                 app.emit(&sid, json!({ "type": "note", "text": text }));
             }
-            app.update_meta(&sid, |m| m.permission = permission.to_string());
+            app.update_meta(&sid, |m| {
+                m.permission = permission.to_string();
+            });
             let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
             sessions::begin(app, &sid, text, &files).await;
         }
@@ -276,12 +285,41 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         }
         "login.start" => {
             let engine = str_field(msg, "engine")?;
-            if let Err(e) = crate::login::start(app, engine).await {
-                app.broadcast(json!({ "op": "login", "engine": engine, "state": "failed", "error": format!("{e:#}") }));
+            let account = account_field(msg);
+            if let Err(e) = crate::login::start(app, engine, account).await {
+                app.broadcast(json!({ "op": "login", "engine": engine, "account": account, "state": "failed", "error": format!("{e:#}") }));
             }
         }
-        "login.code" => crate::login::code(app, str_field(msg, "engine")?, str_field(msg, "code")?)?,
-        "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?).await?,
+        "login.code" => crate::login::code(app, str_field(msg, "engine")?, account_field(msg), str_field(msg, "code")?)?,
+        "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?, account_field(msg)).await?,
+        "account.add" => {
+            let engine = str_field(msg, "engine")?;
+            app.accounts.add(app.id("a"), engine, str_field(msg, "name")?)?;
+            app.broadcast_accounts();
+            // The new account's login state, for the Hosts page.
+            let app = app.clone();
+            tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });
+        }
+        "account.remove" => {
+            let id = str_field(msg, "id")?;
+            let used = app.sessions.lock().unwrap().values().filter(|s| s.meta.account == id).count();
+            if used > 0 {
+                bail!("{used} session{} still use this account. Delete {} first.", if used == 1 { "" } else { "s" }, if used == 1 { "it" } else { "them" });
+            }
+            let found = app.accounts.all().into_iter().find(|a| a.id == id).context("no such account")?;
+            // A login still waiting on the account would write into a deleted folder.
+            crate::login::cancel(app, &found.engine, id).await?;
+            let removed = app.accounts.remove(id)?;
+            // Its app-server (and the login it holds open) goes with it.
+            let gone = app.codex.lock().unwrap().remove(&removed.id);
+            if let Some(client) = gone.and_then(|cell| cell.get().cloned()) {
+                client.shutdown();
+            }
+            app.guard.clear_codex_server(&removed.id);
+            app.broadcast_accounts();
+            let app = app.clone();
+            tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });
+        }
         "fs.dirs" => {
             let path = str_field(msg, "path")?;
             let reply = match list_dirs(path) {

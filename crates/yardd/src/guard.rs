@@ -53,9 +53,9 @@ struct Command {
 struct Inner {
     /// Claude session -> its sidecar.
     sidecars: HashMap<String, u32>,
-    /// The shared `codex app-server`. It cannot be split by session, but the
-    /// commands it runs are its children and can.
-    codex_server: Option<u32>,
+    /// Each account's `codex app-server`. It cannot be split by session, but
+    /// the commands it runs are its children and can.
+    codex_servers: HashMap<String, u32>,
     /// Codex session -> running command item.
     commands: HashMap<String, HashMap<String, Command>>,
     /// Session id and why it waits, oldest first.
@@ -94,8 +94,12 @@ impl Guard {
         }
     }
 
-    pub fn set_codex_server(&self, pid: u32) {
-        self.inner.lock().unwrap().codex_server = Some(pid);
+    pub fn set_codex_server(&self, account: &str, pid: u32) {
+        self.inner.lock().unwrap().codex_servers.insert(account.to_string(), pid);
+    }
+
+    pub fn clear_codex_server(&self, account: &str) {
+        self.inner.lock().unwrap().codex_servers.remove(account);
     }
 
     pub fn command_started(&self, sid: &str, item: &str, cwd: &str) {
@@ -209,10 +213,10 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
         ));
     }
 
-    let (sidecars, codex_server, commands) = {
+    let (sidecars, codex_servers, commands) = {
         let mut inner = guard.inner.lock().unwrap();
         inner.pressure = (!reasons.is_empty()).then(|| reasons.join("; "));
-        (inner.sidecars.clone(), inner.codex_server, inner.commands.clone())
+        (inner.sidecars.clone(), inner.codex_servers.values().copied().collect::<Vec<u32>>(), inner.commands.clone())
     };
 
     let procs = sys.processes();
@@ -258,7 +262,7 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
     // later than the process did, the latest when several match. Helpers the
     // server keeps for itself match no command. Two sessions running
     // commands in one folder at the same moment can be mixed up.
-    if let Some(server) = codex_server {
+    for server in codex_servers {
         for child in children.get(&Pid::from_u32(server)).into_iter().flatten() {
             let Some(p) = procs.get(child) else { continue };
             let Some(cwd) = p.cwd() else { continue };

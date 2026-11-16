@@ -128,7 +128,7 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
             let models = app.models.lock().unwrap()["claude"].clone();
             let (model, effort) = pick_model(&models, session["model"].as_str());
             // Permission stays the default, Ask first: the session is new to Switchyard.
-            let sid = app.new_session("claude", &model, &effort, cwd, &title, None);
+            let sid = app.new_session("claude", &model, &effort, cwd, &title, None, crate::accounts::DEFAULT);
             app.set_engine_ref(&sid, claude_id);
             let mut events = v["events"].as_array().cloned().unwrap_or_default();
             if events.len() > MAX_EVENTS {

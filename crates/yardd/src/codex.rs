@@ -1,4 +1,5 @@
-//! Codex adapter: one shared `codex app-server` over stdio JSON-RPC.
+//! Codex adapter: one `codex app-server` per account over stdio JSON-RPC,
+//! started the first time the account is used (Default included).
 //! Threads map to sessions; notifications are normalized into session events.
 
 use std::{
@@ -24,6 +25,10 @@ use crate::{
 };
 
 pub struct Client {
+    /// The account this app-server runs for (`CODEX_HOME` is its folder).
+    account: String,
+    /// Fires to stop the app-server: the reader ends and its child is killed.
+    stop: Mutex<Option<oneshot::Sender<()>>>,
     tx: mpsc::UnboundedSender<String>,
     pending: Mutex<HashMap<u64, oneshot::Sender<Result<Value, String>>>>,
     next: AtomicU64,
@@ -34,8 +39,12 @@ pub struct Client {
 }
 
 impl Client {
-    async fn start(app: Arc<App>) -> Result<Arc<Client>> {
-        let mut child = Command::new("codex")
+    async fn start(app: Arc<App>, account: String) -> Result<Arc<Client>> {
+        let mut cmd = Command::new("codex");
+        if let Some(home) = app.accounts.config_dir("codex", &account)? {
+            cmd.env(crate::accounts::env_var("codex"), home);
+        }
+        let mut child = cmd
             .arg("app-server")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -44,7 +53,7 @@ impl Client {
             .spawn()
             .context("could not start `codex app-server`")?;
         if let Some(pid) = child.id() {
-            app.guard.set_codex_server(pid);
+            app.guard.set_codex_server(&account, pid);
         }
         let mut stdin = child.stdin.take().context("codex stdin")?;
         let stdout = child.stdout.take().context("codex stdout")?;
@@ -62,7 +71,10 @@ impl Client {
             }
         });
 
+        let (stop, stopped) = oneshot::channel::<()>();
         let client = Arc::new(Client {
+            account,
+            stop: Mutex::new(Some(stop)),
             tx,
             pending: Mutex::new(HashMap::new()),
             next: AtomicU64::new(1),
@@ -72,10 +84,21 @@ impl Client {
 
         let reader = client.clone();
         tokio::spawn(async move {
-            let _child = child; // dropped (and killed) when the reader ends
+            let mut child = child; // killed when the reader ends (kill_on_drop)
+            let mut stopped = stopped;
             let mut lines = BufReader::new(stdout).lines();
-            while let Ok(Some(line)) = lines.next_line().await {
-                reader.on_line(&app, &line);
+            loop {
+                tokio::select! {
+                    line = lines.next_line() => match line {
+                        Ok(Some(line)) => reader.on_line(&app, &line),
+                        _ => break,
+                    },
+                    // The account was removed.
+                    _ = &mut stopped => {
+                        let _ = child.kill().await;
+                        break;
+                    }
+                }
             }
             eprintln!("yardd: codex app-server exited");
         });
@@ -92,6 +115,13 @@ impl Client {
             .await?;
         client.send(json!({ "method": "initialized" }));
         Ok(client)
+    }
+
+    /// Stop the app-server, for an account that was removed.
+    pub fn shutdown(&self) {
+        if let Some(stop) = self.stop.lock().unwrap().take() {
+            let _ = stop.send(());
+        }
     }
 
     fn send(&self, msg: Value) {
@@ -203,11 +233,11 @@ impl Client {
 
     fn on_notification(&self, app: &Arc<App>, method: &str, p: &Value) {
         if method == "account/rateLimits/updated" {
-            app.set_usage("codex", p["rateLimits"].clone());
+            app.set_usage("codex", &self.account, p["rateLimits"].clone());
             return;
         }
         if method == "account/login/completed" {
-            crate::login::codex_completed(app, p);
+            crate::login::codex_completed(app, &self.account, p);
             return;
         }
         let Some(sid) = self.session_for(p) else { return };
@@ -386,17 +416,31 @@ fn clean_command(command: &str) -> String {
     command.to_string()
 }
 
-pub async fn client(app: &Arc<App>) -> Result<Arc<Client>> {
-    let app2 = app.clone();
-    app.codex
-        .get_or_try_init(|| async move { Client::start(app2).await })
+/// The app-server for an account, started on first use.
+pub async fn client(app: &Arc<App>, account: &str) -> Result<Arc<Client>> {
+    let (app2, account2) = (app.clone(), account.to_string());
+    let cell = app.codex_cell(account);
+    cell.get_or_try_init(|| async move { Client::start(app2, account2).await })
         .await
         .cloned()
 }
 
-/// Ask Codex which models and efforts this account has.
-pub async fn load_models(app: &Arc<App>) -> Result<()> {
-    let c = client(app).await?;
+/// The app-server of a session's account.
+async fn client_of(app: &Arc<App>, sid: &str) -> Result<Arc<Client>> {
+    let account = app.meta(sid).context("no such session")?.account;
+    client(app, &account).await
+}
+
+/// Ask Codex which models and efforts the Default account has. Other
+/// accounts share the list; they differ in limits, which load per account.
+pub async fn load_models(app: &Arc<App>, account: &str) -> Result<()> {
+    let c = client(app, account).await?;
+    if account != crate::accounts::DEFAULT {
+        if let Ok(limits) = c.request("account/rateLimits/read", json!({})).await {
+            app.set_usage("codex", account, limits["rateLimits"].clone());
+        }
+        return Ok(());
+    }
     let res = c.request("model/list", json!({})).await?;
     let models: Vec<Value> = res["data"]
         .as_array()
@@ -426,7 +470,7 @@ pub async fn load_models(app: &Arc<App>) -> Result<()> {
     app.broadcast(json!({ "op": "models", "models": all }));
 
     if let Ok(limits) = c.request("account/rateLimits/read", json!({})).await {
-        app.set_usage("codex", limits["rateLimits"].clone());
+        app.set_usage("codex", account, limits["rateLimits"].clone());
     }
     Ok(())
 }
@@ -473,7 +517,7 @@ fn turn_policy(permission: &str) -> (Value, Value) {
 
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
-    let c = client(app).await?;
+    let c = client(app, &meta.account).await?;
     let res = c
         .request(
             "thread/start",
@@ -506,7 +550,7 @@ fn attach(app: &Arc<App>, c: &Client, sid: &str, thread_id: String) {
 /// Reopen the saved thread of a session restored after a yardd restart.
 async fn resume(app: &Arc<App>, sid: &str, thread_id: String) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
-    let c = client(app).await?;
+    let c = client(app, &meta.account).await?;
     c.request(
         "thread/resume",
         json!({
@@ -528,7 +572,8 @@ async fn resume(app: &Arc<App>, sid: &str, thread_id: String) -> Result<()> {
 /// mapping, so late notifications go nowhere.
 pub async fn forget(app: &Arc<App>, sid: &str) {
     let Ok((thread_id, turn_id)) = thread_of(app, sid) else { return };
-    let Some(c) = app.codex.get().cloned() else { return };
+    let Some(account) = app.meta(sid).map(|m| m.account) else { return };
+    let Some(c) = app.codex_running(&account) else { return };
     if let Some(turn_id) = turn_id {
         let _ = c
             .request("turn/interrupt", json!({ "threadId": thread_id, "turnId": turn_id }))
@@ -564,7 +609,7 @@ fn user_input(text: &str, attachments: &[Value]) -> Vec<Value> {
 pub async fn steer(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
     let (thread_id, turn_id) = thread_of(app, sid)?;
     let turn_id = turn_id.context("no turn is running")?;
-    let c = client(app).await?;
+    let c = client_of(app, sid).await?;
     c.request(
         "turn/steer",
         json!({ "threadId": thread_id, "expectedTurnId": turn_id, "input": user_input(text, attachments) }),
@@ -579,7 +624,7 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
     }
     let meta = app.meta(sid).context("no such session")?;
     let (thread_id, _) = thread_of(app, sid)?;
-    let c = client(app).await?;
+    let c = client(app, &meta.account).await?;
     let input = user_input(text, attachments);
     // Model, effort and permission mode ride on every turn, so switching
     // needs no extra call.
@@ -605,12 +650,12 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
 pub async fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {
     let (thread_id, turn_id) = thread_of(app, sid)?;
     let turn_id = turn_id.context("no turn is running")?;
-    let c = client(app).await?;
+    let c = client_of(app, sid).await?;
     c.request("turn/interrupt", json!({ "threadId": thread_id, "turnId": turn_id }))
         .await?;
     Ok(())
 }
 
 pub async fn approve(app: &Arc<App>, sid: &str, request_id: &str, decision: &str) -> Result<()> {
-    client(app).await?.approve(request_id, decision, || crate::sessions::approval_resolved(app, sid, request_id, decision))
+    client_of(app, sid).await?.approve(request_id, decision, || crate::sessions::approval_resolved(app, sid, request_id, decision))
 }

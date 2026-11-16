@@ -1544,3 +1544,294 @@ async fn two_imports_of_one_claude_code_session_at_once_make_one_session() {
         .collect::<std::collections::HashSet<_>>();
     assert!(claude_sessions.len() <= 1, "{claude_sessions:?}");
 }
+
+// Accounts: more than one login per engine, each with its own config folder
+// (CLAUDE_CONFIG_DIR for Claude Code, CODEX_HOME for Codex) under the data dir.
+
+/// `account.add`, waiting for the `accounts` list that holds the new one.
+async fn add_account(c: &mut Client, engine: &str, name: &str) -> String {
+    let from = c.mark();
+    c.send(json!({ "op": "account.add", "engine": engine, "name": name })).await;
+    let list = c
+        .wait_after(from, "the accounts list with the new account", |m| {
+            m["op"] == "accounts" && m["accounts"].as_array().is_some_and(|a| a.iter().any(|x| x["name"] == name))
+        })
+        .await;
+    let found = list["accounts"].as_array().unwrap().iter().find(|a| a["name"] == name).unwrap().clone();
+    assert_eq!(found["engine"], engine, "{list}");
+    found["id"].as_str().unwrap().to_string()
+}
+
+fn claude_log(sb: &Sandbox) -> String {
+    fs::read_to_string(sb.fake_state().join("claude.log")).unwrap_or_default()
+}
+
+fn sidecar_starts(sb: &Sandbox) -> Vec<String> {
+    let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap_or_default();
+    log.lines().filter(|l| l.starts_with("start")).map(str::to_string).collect()
+}
+
+async fn log_in_claude_account(c: &mut Client, id: &str) {
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "claude", "account": id })).await;
+    c.wait_after(mark, "the account's sign-in link", |m| m["op"] == "login" && m["account"] == id && m["state"] == "url").await;
+    c.send(json!({ "op": "login.code", "engine": "claude", "account": id, "code": "good-code" })).await;
+    c.wait_after(mark, "the account's login done", |m| m["op"] == "login" && m["account"] == id && m["state"] == "done").await;
+}
+
+#[tokio::test]
+async fn an_account_is_added_logged_in_and_removed_without_touching_default() {
+    let sb = Sandbox::new("accounts");
+    let d = sb.start();
+    let mut c = d.client().await;
+    assert_eq!(c.log[0]["accounts"], json!([]), "the snapshot lists the added accounts");
+
+    let id = add_account(&mut c, "claude", "Work").await;
+    let dir = sb.data().join("accounts").join(&id);
+    assert!(dir.is_dir(), "the account's config folder exists: {}", dir.display());
+
+    // Names are unique per engine, and an engine must be known.
+    let from = c.mark();
+    c.send(json!({ "op": "account.add", "engine": "claude", "name": "work" })).await;
+    let dup = c.wait_error(from, "account.add").await;
+    assert!(dup.contains("already"), "{dup}");
+    let from = c.mark();
+    c.send(json!({ "op": "account.add", "engine": "gemini", "name": "X" })).await;
+    c.wait_error(from, "account.add").await;
+
+    // Status is per account: Default and Work are both logged out.
+    let from = c.mark();
+    c.send(json!({ "op": "engines.status" })).await;
+    let before = c.wait_after(from, "engine status", |m| m["op"] == "engines").await;
+    assert_eq!(before["engines"]["claude"]["loggedIn"], false, "{before}");
+    assert_eq!(before["accounts"][&id]["loggedIn"], false, "{before}");
+
+    log_in_claude_account(&mut c, &id).await;
+    let from = c.mark();
+    c.send(json!({ "op": "engines.status" })).await;
+    let after = c.wait_after(from, "engine status", |m| m["op"] == "engines").await;
+    assert_eq!(after["accounts"][&id]["loggedIn"], true, "{after}");
+    assert_eq!(after["accounts"][&id]["account"], format!("{id}@example.com"), "{after}");
+    assert_eq!(after["engines"]["claude"]["loggedIn"], false, "the Default login is untouched: {after}");
+    assert!(dir.join("claude-logged-in").exists(), "the login landed in the account's folder");
+    assert!(!sb.fake_state().join("claude-logged-in").exists(), "and not in the Default one");
+    assert!(claude_log(&sb).contains(&format!("args=auth login config={}", dir.display())), "{}", claude_log(&sb));
+
+    // It survives a restart, login included.
+    d.kill();
+    let d = sb.start();
+    let mut c = d.client().await;
+    assert_eq!(c.log[0]["accounts"], json!([{ "id": id, "engine": "claude", "name": "Work" }]));
+    let from = c.mark();
+    c.send(json!({ "op": "engines.status" })).await;
+    let again = c.wait_after(from, "engine status", |m| m["op"] == "engines").await;
+    assert_eq!(again["accounts"][&id]["loggedIn"], true, "{again}");
+
+    // Removing it deletes its folder (and so its login) and leaves Default alone.
+    c.send(json!({ "op": "account.remove", "id": id })).await;
+    c.wait_for("the empty accounts list", |m| m["op"] == "accounts" && m["accounts"] == json!([])).await;
+    assert!(!dir.exists(), "the folder is gone");
+    let from = c.mark();
+    c.send(json!({ "op": "engines.status" })).await;
+    let last = c.wait_after(from, "engine status", |m| m["op"] == "engines").await;
+    assert!(last["accounts"].get(&id).is_none(), "{last}");
+    d.kill();
+    let d = sb.start();
+    assert_eq!(d.client().await.log[0]["accounts"], json!([]));
+}
+
+#[tokio::test]
+async fn a_claude_session_runs_under_its_accounts_config_dir() {
+    let sb = Sandbox::new("accounts-claude");
+    let sidecar = claude_sidecar();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let id = add_account(&mut c, "claude", "Work").await;
+    let dir = sb.data().join("accounts").join(&id);
+    let claude = |extra: Value| {
+        let mut v = json!({ "engine": "claude", "model": "claude-haiku-5-5" });
+        v.as_object_mut().unwrap().extend(extra.as_object().unwrap().clone());
+        v
+    };
+
+    let work = c.create(&sb.folder("work"), "on the company plan", claude(json!({ "account": id }))).await;
+    assert_eq!(c.wait_turn_done(&work, 0).await["status"], "completed");
+    let plain = c.create(&sb.folder("own"), "on my own plan", claude(json!({}))).await;
+    assert_eq!(c.wait_turn_done(&plain, 0).await["status"], "completed");
+
+    let starts = sidecar_starts(&sb);
+    assert_eq!(starts.len(), 2, "{starts:?}");
+    assert!(starts[0].contains(&format!("config={} ", dir.display())), "{starts:?}");
+    assert!(starts[1].contains("config= "), "Default runs with no config dir set: {starts:?}");
+
+    // The account is saved on the session, and each account has its own usage.
+    let meta = c.wait_for("the work session", |m| m["op"] == "session" && m["session"]["id"] == work).await;
+    assert_eq!(meta["session"]["account"], id);
+    let meta = c.wait_for("the plain session", |m| m["op"] == "session" && m["session"]["id"] == plain).await;
+    assert_eq!(meta["session"]["account"], "default");
+    let usage = c.wait_for("usage for both accounts", |m| {
+        m["op"] == "usage"
+            && m["usage"]["accounts"][&id]["windows"]["five_hour"]["utilization"] == 0.91
+            && m["usage"]["claude"]["windows"]["five_hour"]["utilization"] == 0.47
+    }).await;
+    let _ = usage;
+
+    // Unknown accounts and another engine's account are refused.
+    let err = c.try_create(&sb.folder("x"), "x", claude(json!({ "account": "nope" }))).await.unwrap_err();
+    assert!(err.contains("account"), "{err}");
+    let err = c.try_create(&sb.folder("y"), "y", json!({ "account": id })).await.unwrap_err();
+    assert!(err.contains("account"), "{err}");
+
+    // An account that sessions use cannot be removed.
+    let from = c.mark();
+    c.send(json!({ "op": "account.remove", "id": id })).await;
+    let refused = c.wait_error(from, "account.remove").await;
+    assert!(refused.contains("session"), "{refused}");
+    assert!(dir.is_dir());
+
+    // After a restart the session resumes under the same account.
+    c.wait_status(&work, "idle").await;
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &work).map(|m| m["account"] == json!(id)) != Some(true) {
+        assert!(Instant::now() < deadline, "the account never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let kept = c.log[0]["sessions"].as_array().unwrap().iter().find(|s| s["id"] == work).unwrap().clone();
+    assert_eq!(kept["account"], id);
+    c.send(json!({ "op": "session.open", "sessionId": work })).await;
+    c.send(json!({ "op": "session.send", "sessionId": work, "text": "back again" })).await;
+    c.wait_event(&work, "turn_completed", 0).await;
+    let starts = sidecar_starts(&sb);
+    let last = starts.last().unwrap();
+    assert!(last.contains(&format!("config={} ", dir.display())) && last.contains("resume=fake-claude-"), "{starts:?}");
+}
+
+#[tokio::test]
+async fn a_codex_session_runs_on_its_accounts_own_app_server() {
+    let sb = Sandbox::new("accounts-codex");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let id = add_account(&mut c, "codex", "Work").await;
+    let dir = sb.data().join("accounts").join(&id);
+
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "codex", "account": id })).await;
+    c.wait_after(mark, "the account's device code", |m| m["op"] == "login" && m["account"] == id && m["state"] == "code").await;
+    c.wait_after(mark, "the account's login done", |m| m["op"] == "login" && m["account"] == id && m["state"] == "done").await;
+    let status = c
+        .wait_after(mark, "the account logged in", |m| m["op"] == "engines" && m["accounts"][&id]["loggedIn"] == true)
+        .await;
+    assert_eq!(status["accounts"][&id]["account"], format!("{id}@example.com"));
+    assert_eq!(status["engines"]["codex"]["loggedIn"], false, "Default stays logged out: {status}");
+    assert!(dir.join("codex-logged-in").exists());
+
+    let work = c.create(&sb.folder("work"), "company task", json!({ "account": id })).await;
+    assert_eq!(c.wait_turn_done(&work, 0).await["status"], "completed");
+    let plain = c.create(&sb.folder("own"), "own task", json!({})).await;
+    assert_eq!(c.wait_turn_done(&plain, 0).await["status"], "completed");
+
+    // One app-server per account, each started with its own CODEX_HOME.
+    let log = sb.codex_log();
+    let starts: Vec<&str> = log.lines().filter(|l| l.starts_with("start")).collect();
+    assert!(starts.iter().any(|l| l.ends_with(&format!("home={}", dir.display()))), "{log}");
+    assert!(starts.iter().any(|l| l.ends_with("home=")), "{log}");
+    let inputs: Vec<Value> = fs::read_to_string(sb.fake_state().join("turn-inputs.jsonl"))
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
+    assert_eq!(inputs[0]["home"], dir.to_str().unwrap(), "{inputs:?}");
+    assert_eq!(inputs[1]["home"], "", "{inputs:?}");
+
+    // Limits are per account.
+    let usage = c.wait_for("usage for the account", |m| {
+        m["op"] == "usage" && m["usage"]["accounts"][&id]["primary"]["usedPercent"] == 77
+    }).await;
+    assert_eq!(usage["usage"]["codex"]["primary"]["usedPercent"], 12, "{usage}");
+
+    // A restart resumes the thread on the account's server: the other one never saw it.
+    c.wait_status(&work, "idle").await;
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &work).map(|m| m["account"] == json!(id)) != Some(true) {
+        assert!(Instant::now() < deadline, "the account never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "session.open", "sessionId": work })).await;
+    c.send(json!({ "op": "session.send", "sessionId": work, "text": "again" })).await;
+    assert_eq!(c.wait_turn_done(&work, 0).await["status"], "completed");
+    let answer = c.wait_event(&work, "assistant_message", 0).await;
+    assert_eq!(answer["text"], "Echo: again");
+}
+
+#[tokio::test]
+async fn accounts_are_per_host_through_the_hub() {
+    let remote_sb = Sandbox::new("accounts-remote");
+    let remote = remote_sb.start();
+    let hub_sb = Sandbox::new("accounts-hub");
+    let hub = hub_sb.start();
+    let mut c = hub.client().await;
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "direct", "url": remote.url() })).await;
+    let hosts = c
+        .wait_for("the direct host to connect", |m| {
+            m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] == "connected"))
+        })
+        .await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+    c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+
+    let from = c.mark();
+    c.send(json!({ "op": "account.add", "engine": "claude", "name": "Work", "host": host })).await;
+    let list = c.wait_after(from, "the remote's accounts", |m| m["op"] == "accounts" && m["hostId"] == host).await;
+    let id = list["accounts"][0]["id"].as_str().unwrap().to_string();
+    assert!(remote_sb.data().join("accounts").join(&id).is_dir(), "the folder is on the remote");
+    assert!(!hub_sb.data().join("accounts").exists(), "and not on the hub");
+
+    // Its status comes back tagged with the host.
+    let from = c.mark();
+    c.send(json!({ "op": "engines.status", "host": host })).await;
+    let status = c.wait_after(from, "the remote's engine status", |m| m["op"] == "engines" && m["hostId"] == host).await;
+    assert_eq!(status["accounts"][&id]["loggedIn"], false, "{status}");
+
+    c.send(json!({ "op": "account.remove", "id": id, "host": host })).await;
+    c.wait_for("the remote's empty list", |m| m["op"] == "accounts" && m["hostId"] == host && m["accounts"] == json!([])).await;
+}
+
+fn alive(pid: &str) -> bool {
+    std::process::Command::new("kill").args(["-0", pid]).stderr(std::process::Stdio::null()).status().map(|s| s.success()).unwrap_or(false)
+}
+
+#[tokio::test]
+async fn removing_a_codex_account_stops_its_app_server() {
+    let sb = Sandbox::new("accounts-rm-codex");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let id = add_account(&mut c, "codex", "Work").await;
+    let dir = sb.data().join("accounts").join(&id);
+    // A session on the account starts its app-server.
+    let sid = c.create(&sb.folder("work"), "task", json!({ "account": id })).await;
+    c.wait_turn_done(&sid, 0).await;
+    let pid = sb
+        .codex_log()
+        .lines()
+        .find(|l| l.starts_with("start") && l.ends_with(&format!("home={}", dir.display())))
+        .and_then(|l| l.split_whitespace().find_map(|w| w.strip_prefix("pid=")))
+        .expect("the account's app-server started")
+        .to_string();
+    assert!(alive(&pid));
+
+    c.send(json!({ "op": "session.delete", "sessionId": sid })).await;
+    c.wait_for("the session gone", |m| m["op"] == "session.deleted").await;
+    c.send(json!({ "op": "account.remove", "id": id })).await;
+    c.wait_for("the empty accounts list", |m| m["op"] == "accounts" && m["accounts"] == json!([])).await;
+    let deadline = Instant::now() + WAIT;
+    while alive(&pid) {
+        assert!(Instant::now() < deadline, "the removed account's app-server (pid {pid}) is still running");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}

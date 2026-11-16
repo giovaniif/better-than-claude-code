@@ -23,6 +23,8 @@ export interface SessionMeta {
   /** The session this one was handed off from. */
   /** How much the engine may do unasked. Missing on sessions from an older yardd: `ask`. */
   permission?: Permission;
+  /** `default`, or the id of an added account (see accounts.ts). Missing on sessions from an older yardd. */
+  account?: string;
   parent?: string | null;
   /** Kept at the top of the sidebar. */
   pinned?: boolean;
@@ -113,6 +115,15 @@ export interface Usage {
   };
   /** Codex: primary is the short window (5 hours), secondary the week. */
   codex?: { primary?: RateWindow | null; secondary?: RateWindow | null };
+  /** Added accounts' limits by account id, in the same shape as their engine's above. */
+  accounts?: Record<string, any>;
+}
+
+/** An added account on a host. Default is every engine's own and is not listed. */
+export interface AccountEntry {
+  id: string;
+  engine: Engine;
+  name: string;
 }
 
 export interface ChangedFile {
@@ -201,7 +212,10 @@ export interface EngineState {
   account?: string | null;
   error?: string;
 }
-export type EngineStates = Record<Engine, EngineState>;
+export type EngineStates = Record<Engine, EngineState> & {
+  /** Added accounts' states by account id. */
+  accounts?: Record<string, EngineState>;
+};
 
 /** Progress of `login.start`. Codex shows a link and a code to enter there;
  *  Claude shows a link whose page gives back a code to paste into the app. */
