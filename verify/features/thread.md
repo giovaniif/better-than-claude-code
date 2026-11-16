@@ -110,13 +110,14 @@ yv drive 'session:{{dropq_sid}}' --viewport desktop --steps '[{"fill":"label:Mes
 ### steer-a-running-turn
 A message sent while the agent runs commands reaches it before its answer:
 the answer accounts for it, in one turn, and the message shows where it went in.
+The commands it interrupted still finish as succeeded, not failed.
 (Sent over the API: a drive waits for the page to go quiet, which a running
 turn never does.)
 
 ```sh
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[steps] TEST-three steps"}' --wait '{"op":"event","event":{"type":"tool_started"}}' --save steps_sid=sessionId
 yv api '{"op":"session.send","sessionId":"{{steps_sid}}","text":"TEST-steer"}'
-yv drive 'session:{{steps_sid}}' --steps '[{"expect":"css:.thread","text":"steered: TEST-steer","timeout":15000},{"expect":"css:.thread","text":"TEST-steer"},{"shot":"steered"}]'
+yv drive 'session:{{steps_sid}}' --steps '[{"expect":"css:.thread","text":"steered: TEST-steer","timeout":15000},{"expect":"css:.thread","text":"TEST-steer"},{"expect":"css:.thread","text":"Worked for"},{"expect":{"css":".thread","hasText":"failed"},"visible":false},{"shot":"steered"}]'
 yv state --expect '{"sessions":[{"id":"{{steps_sid}}","status":"idle"}]}'
 ```
 

@@ -334,17 +334,23 @@ export type Item =
 /** Where an item with this engine id sits in the current turn, or -1. Ids
  *  are matched only after the last user message: an engine may reuse them
  *  across turns (older Claude sidecars restarted their counter), and a match
- *  in an earlier turn would put new text above the question it answers. */
+ *  in an earlier turn would put new text above the question it answers.
+ *  A steered message goes in mid-turn, so it is not a boundary: a command
+ *  that started before it still completes after it. */
 function inTurn(items: Item[], match: (it: Item) => boolean): number {
   for (let i = items.length - 1; i >= 0; i--) {
-    if (items[i].kind === "user") return -1;
+    if (startsTurn(items[i])) return -1;
     if (match(items[i])) return i;
   }
   return -1;
 }
 
+function startsTurn(it: Item): boolean {
+  return it.kind === "user" && !it.steered;
+}
+
 function turnStart(items: Item[]): number {
-  for (let i = items.length - 1; i >= 0; i--) if (items[i].kind === "user") return i + 1;
+  for (let i = items.length - 1; i >= 0; i--) if (startsTurn(items[i])) return i + 1;
   return 0;
 }
 

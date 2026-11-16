@@ -6,6 +6,20 @@ const fold = (events: AgentEvent[], items: Item[] = [], first = 0): Item[] =>
   events.reduce((acc, ev, i) => applyEvent(acc, ev, first + i), items);
 
 describe("applyEvent", () => {
+  test("a command that started before a steered message still completes after it", () => {
+    // Steering happens at a step's start, so the completion arrives after the steered message.
+    const items = fold([
+      { type: "user_message", text: "run the steps" },
+      { type: "turn_started", at: 1_000 },
+      { type: "tool_started", itemId: "c1", kind: "command", title: "Ran", detail: "step 1" },
+      { type: "user_message", text: "also this", steered: true, at: 1_500 },
+      { type: "tool_completed", itemId: "c1", ok: true, output: "one" },
+      { type: "turn_completed", status: "completed", at: 2_000 },
+    ]);
+    const tool = items.find((it) => it.kind === "tool");
+    expect(tool).toMatchObject({ state: "ok", output: "one" });
+  });
+
   test("an id reused in a later turn makes a new item under its own question", () => {
     // A restarted Claude sidecar used to count its ids from 1 again.
     const items = fold([
