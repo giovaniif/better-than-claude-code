@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { branchKey, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, usageOn, useYard, type Actions, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -394,6 +395,7 @@ function Sidebar({ state, actions }: { state: State; actions: Actions }) {
           </>
         )}
       </div>
+      <UsageStrip usage={usageOn(state, "local")} />
       <div className="sidebar-bottom">
         {["local", ...state.hosts.map((h) => h.id)].map((id) => {
           const stats = state.host[id];
@@ -422,21 +424,6 @@ const hostPressure = (h: Host) =>
   h.pressure !== undefined ? !!h.pressure : h.load > h.cores || h.memUsed / h.memTotal > 0.9;
 
 /* ---------- model picker ---------- */
-
-function usageText(engine: Engine, usage: Usage): string {
-  if (engine === "claude" && usage.claude) {
-    const parts: string[] = [];
-    if (usage.claude.fiveHour != null) parts.push(`${pct(usage.claude.fiveHour * 100)} of 5-hour window`);
-    if (usage.claude.sevenDay != null) parts.push(`${pct(usage.claude.sevenDay * 100)} of week`);
-    return parts.join(" · ");
-  }
-  if (engine === "codex" && usage.codex?.primary) {
-    const p = usage.codex.primary;
-    const window = p.windowDurationMins >= 10080 ? "weekly limit" : `${Math.round(p.windowDurationMins / 60)}-hour window`;
-    return `${pct(p.usedPercent)} of ${window}`;
-  }
-  return "";
-}
 
 interface Choice {
   engine: Engine;
@@ -508,6 +495,9 @@ function ModelPicker(props: {
   const { models, usage, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
+  // The engine not in use starts folded.
+  const [expanded, setExpanded] = useState(false);
+  const ordered = [value.engine, ...engines.filter((e) => e !== value.engine)];
   // The confirmation sits at the top of the list, which is usually scrolled
   // down to the model that was just clicked. Bring it into view.
   const popover = useRef<HTMLDivElement>(null);
@@ -518,6 +508,7 @@ function ModelPicker(props: {
   const close = () => {
     setOpen(false);
     setConfirm(null);
+    setExpanded(false);
   };
   useEscape(open, close);
   return (
@@ -532,7 +523,7 @@ function ModelPicker(props: {
       {open && (
         <>
           <div className="scrim" onClick={close} />
-          <div className="popover" ref={popover}>
+          <div className="popover model-popover" ref={popover}>
             {confirm && handoff && (
               <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
                 <div>
@@ -558,39 +549,61 @@ function ModelPicker(props: {
                 </div>
               </div>
             )}
-            {engines.map((engine) => {
+            <UsageMeters usage={usage} first={value.engine} />
+            {ordered.map((engine) => {
               const isHandoff = !!handoff && engine !== value.engine;
               const disabled = isHandoff && handoff.blocked;
+              const list = models[engine];
+              // The engine in use is open; the other is one row until asked for.
+              const folded = engine !== value.engine && !expanded;
               return (
                 <div key={engine} className="picker-group">
-                  <div className="picker-head">
-                    <span>{ENGINE_NAME[engine]}</span>
-                    <span>{usageText(engine, usage)}</span>
-                  </div>
-                  {isHandoff && (
-                    <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
-                  )}
-                  {models[engine].length === 0 && <div className="picker-empty">Not available</div>}
-                  {models[engine].map((m) => (
-                    <button
-                      key={m.id}
-                      disabled={disabled}
-                      className={`picker-item ${engine === value.engine && m.id === value.model ? "active" : ""} ${
-                        confirm?.engine === engine && confirm.model === m.id ? "active" : ""
-                      }`}
-                      onClick={() => {
-                        const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
-                        if (isHandoff) {
-                          setConfirm(next);
-                          return;
-                        }
-                        onChange(next);
-                        close();
-                      }}
-                    >
-                      {m.name}
+                  {folded ? (
+                    <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded(true)}>
+                      <span>
+                        {ENGINE_NAME[engine]} · {list.length} {list.length === 1 ? "model" : "models"}
+                        {handoff ? " · switching hands off" : ""}
+                      </span>
+                      <span className="muted">
+                        <Icon d={CHEVRON_RIGHT} size={12} />
+                      </span>
                     </button>
-                  ))}
+                  ) : (
+                    <>
+                      <div className="picker-head">
+                        <span>{ENGINE_NAME[engine]}</span>
+                      </div>
+                      {isHandoff && (
+                        <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
+                      )}
+                      {list.length === 0 && <div className="picker-empty">Not available</div>}
+                      {list.map((m) => {
+                        const isCurrent = engine === value.engine && m.id === value.model;
+                        return (
+                          <button
+                            key={m.id}
+                            disabled={disabled}
+                            aria-current={isCurrent ? "true" : undefined}
+                            className={`picker-item picker-model ${isCurrent ? "active" : ""} ${
+                              confirm?.engine === engine && confirm.model === m.id ? "active" : ""
+                            }`}
+                            onClick={() => {
+                              const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
+                              if (isHandoff) {
+                                setConfirm(next);
+                                return;
+                              }
+                              onChange(next);
+                              close();
+                            }}
+                          >
+                            <span>{m.name}</span>
+                            {isCurrent && <Icon d={CHECK} size={13} />}
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
                 </div>
               );
             })}
