@@ -75,14 +75,25 @@ const SECRET_TEXT = /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bghp_[A-Za-z0-9]{30,}|\
 /**
  * Added lines that are not test code: a test cleaning up its own temp dir is
  * not a data-loss risk. Skips files under tests/ and, in a Rust file, every
- * line after a `#[cfg(test)]` marker in the patch (test modules close a file).
+ * line after a `#[cfg(test)]` marker in the patch (test modules close a file),
+ * and a hunk inside an existing `mod tests`, which git names in the hunk
+ * header, up to that module's closing brace at column 0.
  */
 export function addedNonTest(filename: string, patch: string | undefined): string[] {
   if (/(^|\/)tests?\//.test(filename)) return [];
   const out: string[] = [];
   let inTests = false;
+  let inTestHunk = false;
   for (const l of (patch ?? "").split("\n")) {
-    if (l.startsWith("@@")) continue;
+    if (l.startsWith("@@")) {
+      inTestHunk = /^@@ [^@]*@@ +mod tests\b/.test(l);
+      continue;
+    }
+    if (inTestHunk && /^[ +]}\s*$/.test(l)) {
+      inTestHunk = false;
+      continue;
+    }
+    if (inTestHunk) continue;
     if (/#\[cfg\(test\)\]/.test(l) && !l.startsWith("-")) inTests = true;
     if (l.startsWith("+") && !l.startsWith("+++") && !inTests) out.push(l.slice(1));
   }
