@@ -1,0 +1,204 @@
+{
+  "v": 1,
+  "claim": "Hosts: Add account with a name yardd refuses ('default', or one in use) showed the error and closed the form anyway, losing the name; the form now stays open with the name and closes once the new account appears",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-827f",
+  "base": "14f9bb45e2ac18f9b15e4e769f01ea8245494b06",
+  "head": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T06:55:41.002Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ccd55b817df9532a71f41c1726bb1a543bd73da4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "80ba32c890c13dcdecc6e0fedf486cd97e1b0766d3ba5ea90542e8b340941832"
+        },
+        {
+          "path": "p1-after-refused-add-desktop.png",
+          "sha256": "2bdbd328479b4dc932a7cbee5cbb6cef5003b0b6f146ba787ff3ec583f438ef2"
+        }
+      ],
+      "addedAt": "2026-11-16T06:55:50.592Z",
+      "failedApi": [
+        "account.add: a claude account named default already exists"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ccd55b817df9532a71f41c1726bb1a543bd73da4",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "1d54f410c11b0f7afe9c31fa7ce97fc04868d7df524a306b5a7f845ca9e4fa52"
+        },
+        {
+          "path": "p2-after-refused-add-mobile.png",
+          "sha256": "984592b6d58a65de69f640bf21cb19ab64e8017b102e72b0279a925ee59025d7"
+        }
+      ],
+      "addedAt": "2026-11-16T06:55:54.857Z",
+      "failedApi": [
+        "account.add: a claude account named default already exists"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ccd55b817df9532a71f41c1726bb1a543bd73da4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "0c8720e8953958fccbc597d49fae405abe2ae98fbe5d237a1cc21932ee05a15e"
+        }
+      ],
+      "addedAt": "2026-11-16T06:55:54.900Z",
+      "cmd": "verify/yv map run accounts --recipe refused-add-account-keeps-the-form",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "ddf7c8a4a37d76670c4c6d6eec22bb994b1761e605330b2bc8da6623da6adc93"
+        },
+        {
+          "path": "p4-after-refused-add-desktop.png",
+          "sha256": "f10de8d1de6717953e443aeda44f0e9f3ac454176c648673a9902b00185ff504"
+        },
+        {
+          "path": "p4-after-fixed-add-desktop.png",
+          "sha256": "ea1b0841275388944e867e89b9a6d606e1b014144e6565ad255d1d9f1a32d6dd"
+        }
+      ],
+      "addedAt": "2026-11-16T07:04:51.315Z",
+      "failedApi": [
+        "account.add: a claude account named default already exists"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "665095a4ce8ab92218ff0f125540065008d037fa176f36237375ea885eb8c936"
+        },
+        {
+          "path": "p5-after-refused-add-mobile.png",
+          "sha256": "e75e90a256f131ab988354b3ad08895b9265baf70e00a146af2a3618f659dbf0"
+        },
+        {
+          "path": "p5-after-fixed-add-mobile.png",
+          "sha256": "087020e8a0f8e1923bdfef05db326ff53ef055685beecd6ea4670566a8fced77"
+        }
+      ],
+      "addedAt": "2026-11-16T07:04:56.898Z",
+      "failedApi": [
+        "account.add: a claude account named default already exists"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "699024b080dcd3ead70d890fc16f895633b5cf477ae86f202cc7945d660ba7e9"
+        }
+      ],
+      "addedAt": "2026-11-16T07:04:56.940Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run accounts --recipe refused-add-account-keeps-the-form",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "3c04420e500e3c23fe5d5510268a5bab61e37a96d8b708b75da85fcc649c8a91"
+        }
+      ],
+      "addedAt": "2026-11-16T07:05:04.551Z",
+      "cmd": "verify/yv design-check --base 14f9bb45e2ac",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f0d84a0099ab8b6dbf2f8be2c8f22e281eeca3a7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-accounts.json",
+          "sha256": "5a483affea4d3a55e0c0db6fb23e8e2718a84a51288bb896e222b06a0bc1358c"
+        }
+      ],
+      "addedAt": "2026-11-16T07:05:04.633Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account"
+      ]
+    }
+  ]
+}
