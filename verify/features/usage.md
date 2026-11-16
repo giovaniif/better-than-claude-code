@@ -80,4 +80,4 @@ yv drive new --steps '[{"expect":{"css":".usage-strip","hasText":"Codex"}},{"exp
 ```
 
 ## Gotchas
-- The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a fresh yardd shows no Claude meters until then.
+- The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a yardd on a fresh data dir shows no Claude meters until then (later restarts keep the last ones, from `usage.json`).
