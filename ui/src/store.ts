@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { returnToComposer } from "./compose";
+import { peekKey, peekResult, prPeeks, type PeekResult } from "./prPeek";
 import {
   applyEvent,
   type AgentEvent,
@@ -626,6 +627,8 @@ export interface Actions {
    *  and everything below it. Resolves with yardd's verdict, or `error` (with
    *  the `hostId` of a remote that refused the op) for `hostErrorText`. */
   killProc(sessionId: string, pid: number, start: number | undefined, signal: "term" | "kill", tree: boolean): Promise<KillReply | { error: string; hostId?: string }>;
+  /** A PR link's hover card, through the session's host; cached per host and URL. */
+  peekPr(sessionId: string, url: string): Promise<PeekResult>;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
   /** Install or update yardd on an SSH host from the release, over SSH. */
@@ -855,6 +858,8 @@ export function useYard(): { state: State; actions: Actions } {
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
       loadProcs: (sessionId) => post({ op: "session.procs", sessionId }),
       killProc,
+      // gh gives up after 30 s; a remote host adds its own round trip.
+      peekPr: (sessionId, url) => prPeeks.get(peekKey(sessionId, url), () => ask({ op: "pr.peek", sessionId, url }, 40_000).then(peekResult)),
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),

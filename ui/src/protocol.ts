@@ -394,6 +394,39 @@ export type PrResult =
    */
   | { error: string; repo?: boolean; defaultBranch?: string | null };
 
+/** A PR link's hover card, from `pr.peek { sessionId, url, ref }`, run with
+ *  `gh` on the session's host. Title and names come from GitHub: text only. */
+export interface PrPeek {
+  number: number;
+  title: string;
+  /** Canonical: `https://github.com/<owner>/<repo>/pull/<number>`. */
+  url: string;
+  /** `owner/repo`. */
+  repo: string;
+  state: "OPEN" | "CLOSED" | "MERGED";
+  isDraft: boolean;
+  author: string;
+  base: string | null;
+  head: string | null;
+  reviewDecision?: string | null;
+  mergeState?: string | null;
+  additions?: number | null;
+  deletions?: number | null;
+  updatedAt?: string | null;
+  /** Counts; `failing` names at most 5 of the failed checks. */
+  checks: { passed: number; failed: number; running: number; failing: string[] };
+}
+
+/** Reply to `pr.peek`, sent only to the asking client. */
+export interface PrPeekReply {
+  op: "pr.peek";
+  sessionId: string;
+  ref?: string;
+  url: string;
+  pr?: PrPeek;
+  error?: string;
+}
+
 /** Normalized session events. Both engines produce exactly these. */
 export type AgentEvent =
   /** `session.create` and `session.send` take `attachments: string[]` (ids
