@@ -1,0 +1,127 @@
+{
+  "v": 1,
+  "claim": "yv drive/shot session:<id> resolves the id to its title and clicks the first sidebar row with that title, so after a hand-off (same title on both sessions) it opens the wrong session.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329",
+  "base": "cdc7b63000c1dc3347bca12043ffcc78a6b7c7ff",
+  "head": "4cf077ead4dfa1242be545d45d96d9f1f2ec4f23",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/selftest.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T17:50:41.813Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "628eb2ec28649fe855539911587878f9d08bc7b0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "5bca534a2291c05fba89f43974d61ea462ee61a2fe4427dea9dee5fcd02610e2"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "c8beb5893e6c29ba7f5c7cd4aa6c9041d6276d7b9cef253e170f01ed510e8f40"
+        }
+      ],
+      "addedAt": "2026-11-16T17:50:50.071Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "628eb2ec28649fe855539911587878f9d08bc7b0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f15b408fa70ac59a4bbd2f5cc2b6fd965a8ae048b5f506f8495120c468603c82"
+        }
+      ],
+      "addedAt": "2026-11-16T17:50:50.120Z",
+      "cmd": "verify/yv selftest --smoke",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "4cf077ead4dfa1242be545d45d96d9f1f2ec4f23",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "592c855a28224506acc01598ac420b742935ee6854a690cddfa04b18dc541c88"
+        },
+        {
+          "path": "p3-echo-mobile.png",
+          "sha256": "c072184a5c32b6c6034d0697f96592fcc3a48b21411b04a320377a01355997bc"
+        },
+        {
+          "path": "p3-echo-desktop.png",
+          "sha256": "2bbf526ba53e89c706b4f3e84f55509f3d592906a384ca6b32e938c63aa2710c"
+        }
+      ],
+      "addedAt": "2026-11-16T17:51:43.433Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "4cf077ead4dfa1242be545d45d96d9f1f2ec4f23",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "14be85ee7d01a63951e017fbf35b18bebe855bc5af53742b38c9bddd467fa05e"
+        }
+      ],
+      "addedAt": "2026-11-16T17:51:43.477Z",
+      "cmd": "verify/yv selftest --smoke",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "4cf077ead4dfa1242be545d45d96d9f1f2ec4f23",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-models.json",
+          "sha256": "d94ee2b36c15770ed4ea7d11375ffc0c68bec25b84da2b01db876110b2184528"
+        }
+      ],
+      "addedAt": "2026-11-16T17:52:03.395Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/permission-mode",
+        "models/hand-off-to-claude"
+      ]
+    }
+  ]
+}

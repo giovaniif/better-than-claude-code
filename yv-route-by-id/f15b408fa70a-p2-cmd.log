@@ -1,0 +1,76 @@
+$ verify/yv selftest --smoke
+# exit 1 after 36160 ms at 628eb2ec28649fe855539911587878f9d08bc7b0
+
+{
+  "command": "selftest",
+  "ok": false,
+  "unit": {
+    "exit": 0,
+    "pass": 44,
+    "fail": 0
+  },
+  "smoke": {
+    "ok": false,
+    "steps": [
+      {
+        "cmd": "yv iso up",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv iso seed",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv state --expect {\"sessions\":[{\"title\":\"TEST-say hello\",\"status\":\"idle\"}]}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv shot session:{{sid_echo}}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_cmd}} --viewport desktop --steps [{\"click\":\"role:button:Allow once\"},{\"expect\":\"css:.thread\",\"text\":\"Ran it.\"}]",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv api {\"op\":\"session.handoff\",\"sessionId\":\"{{sid_echo}}\",\"engine\":\"claude\",\"model\":\"claude-haiku-5-5\",\"effort\":\"low\"} --wait {\"op\":\"created\"}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_echo}} --steps [{\"expect\":\"role:button:Fake Fast Low\"}]",
+        "exit": 1,
+        "problems": [
+          {
+            "code": "step-failed",
+            "msg": "mobile: step 0 {\"expect\":\"role:button:Fake Fast Low\"}: for: Timeout 10000ms exceeded.",
+            "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329/.verify/drives/2026-11-16T17-51-01-220Z/fail-mobile-step0.png and the aria snapshot"
+          },
+          {
+            "code": "step-failed",
+            "msg": "desktop: step 0 {\"expect\":\"role:button:Fake Fast Low\"}: for: Timeout 10000ms exceeded.",
+            "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329/.verify/drives/2026-11-16T17-51-01-220Z/fail-desktop-step0.png and the aria snapshot"
+          }
+        ]
+      },
+      {
+        "cmd": "yv iso down",
+        "exit": 0,
+        "problems": []
+      }
+    ]
+  },
+  "problems": [
+    {
+      "code": "smoke",
+      "msg": "the smoke round trip failed",
+      "hint": "see smoke.steps"
+    }
+  ]
+}
+
