@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+    "short": "e06c7f7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T00:45:55.157Z"
+  },
+  "dir": ".verify/evidence/usage-after-reset-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 32484,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-after-reset-head/strip-after-reset-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-after-reset-head/strip-checked-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 'clock +3 h'; })()",
+          "value": "clock +3 h"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 32643,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-after-reset-head/strip-after-reset-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-after-reset-head/strip-checked-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 'clock +3 h'; })()",
+          "value": "clock +3 h"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

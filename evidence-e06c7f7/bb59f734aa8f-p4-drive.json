@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "session:s1a1e1cbd8a86",
+  "build": {
+    "sha": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+    "short": "e06c7f7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T00:45:55.157Z"
+  },
+  "dir": ".verify/evidence/usage-after-reset-head-picker",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 33260,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-after-reset-head-picker/picker-after-reset-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 33688,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-after-reset-head-picker/picker-after-reset-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const real = Date.now; Date.now = () => real() + 3 * 3600 * 1000; return 1; })()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

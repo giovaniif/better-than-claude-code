@@ -1,0 +1,36 @@
+$ cd ui && bun test src/usage.test.ts
+# exit 1 after 13 ms at 1b7f87344f574192dbf836830a3650b95af0b4ba
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/usage.test.ts:
+73 |           secondary: { usedPercent: 34, windowDurationMins: 10080, resetsAt: later },
+74 |         },
+75 |       },
+76 |       NOW,
+77 |     );
+78 |     expect(codex.map((m) => [m.label, m.percent, m.level, m.resetsAt])).toEqual([
+                                                                             ^
+error: expect(received).toEqual(expected)
+
+@@ -3,5 +3,5 @@
+      "5-hour",
+-     0,
+-     "ok",
+-     null,
++     95,
++     "high",
++     1799999940000,
+    ],
+
+- Expected  - 3
++ Received  + 3
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3945/ui/src/usage.test.ts:78:73)
+(fail) metersFor > a window whose reset time has passed reads as 0%, with no reset time [0.49ms]
+
+ 13 pass
+ 1 fail
+ 30 expect() calls
+Ran 14 tests across 1 file. [8.00ms]

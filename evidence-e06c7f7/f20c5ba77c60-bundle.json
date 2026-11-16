@@ -1,0 +1,220 @@
+{
+  "v": 1,
+  "claim": "The plan-usage meters (sidebar strip, model picker) kept a window's old percentage after its reset time had passed, e.g. a red 95% 'resets now' for hours while idle; the plan had rolled over to 0%.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3945",
+  "base": "859175392d3e0f41e631f31b88f4d12cc402d84b",
+  "head": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T00:42:54.895Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1b7f87344f574192dbf836830a3650b95af0b4ba",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "3db665a5cc45aefa606894737604b9a8499b9b6b854f87dc9684584522af77c2"
+        },
+        {
+          "path": "p1-strip-after-reset-mobile.png",
+          "sha256": "b6d7eec1e0e9e36e00e27deca075dda528d4547e636034ed2e87cd73d78183ee"
+        },
+        {
+          "path": "p1-fail-mobile-step4.png",
+          "sha256": "b99760f03f1795256e2ef059abf59f508e9070d21294acfb1c4861bf2350fe01"
+        },
+        {
+          "path": "p1-strip-after-reset-desktop.png",
+          "sha256": "fab50473c5b3be805487dd586e725d693c30b12e58ae9f2a678ca983285c78a6"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "449c81f076f91bb2932739df3d57b08eaa7187c27207df0274f7c9b80d0c70e5"
+        }
+      ],
+      "addedAt": "2026-11-16T00:44:28.486Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1b7f87344f574192dbf836830a3650b95af0b4ba",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "fcfff5a3996a1664b32d6c553de0e03cf51152f09e0a04bcac58d1281d0f2f72"
+        }
+      ],
+      "addedAt": "2026-11-16T00:44:28.545Z",
+      "cmd": "cd ui && bun test src/usage.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "c863b8ae6aa165d461c34bb31f3036c8f39f5b9e63592b4dd091f5295b8813c6"
+        },
+        {
+          "path": "p3-strip-after-reset-mobile.png",
+          "sha256": "e50218a52aafaa0779b0c4d2689dbf26f7da2ee048c12557d2ba7b5c8667cdb8"
+        },
+        {
+          "path": "p3-strip-checked-mobile.png",
+          "sha256": "e50218a52aafaa0779b0c4d2689dbf26f7da2ee048c12557d2ba7b5c8667cdb8"
+        },
+        {
+          "path": "p3-strip-after-reset-desktop.png",
+          "sha256": "373ace9dbdf4b997d368a24beff3ce8946624cea89866ef44c8df43bc6807583"
+        },
+        {
+          "path": "p3-strip-checked-desktop.png",
+          "sha256": "373ace9dbdf4b997d368a24beff3ce8946624cea89866ef44c8df43bc6807583"
+        }
+      ],
+      "addedAt": "2026-11-16T00:48:13.939Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "bb59f734aa8fef0a0428324ea51d4e71f738fc3b52c359f546af33d3986d132f"
+        },
+        {
+          "path": "p4-picker-after-reset-mobile.png",
+          "sha256": "ffb348cc0ff1368df864884a9982fcdc84077bae348793d3d3d431363d9bd298"
+        },
+        {
+          "path": "p4-picker-after-reset-desktop.png",
+          "sha256": "435ce951688a7936a83f7968657ae7e195e5efb9e968662fbd168bbf6f9d6709"
+        }
+      ],
+      "addedAt": "2026-11-16T00:48:13.986Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "e96c716899bf4f63697462f0c153d8adc6ebfd57871f3adda1408e5119476512"
+        }
+      ],
+      "addedAt": "2026-11-16T00:48:21.955Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "5a5bf2a4f7dee40b060f0914907ea04b98b8b7555ca5a4d4904e0eb9cee8a0ea"
+        }
+      ],
+      "addedAt": "2026-11-16T00:48:22.034Z",
+      "cmd": "verify/yv map run usage --recipe meters-zero-after-reset",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "8a7d1935e84f8b2e7588ae36b0d208b830ea908b2b5c421346741297b385d5e4"
+        }
+      ],
+      "addedAt": "2026-11-16T00:50:02.295Z",
+      "cmd": "verify/yv design-check --base 859175392d3e",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e06c7f7d8116c7b8ac87399955f5d7cb4855abf5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-usage.json",
+          "sha256": "32f2c9cbacc652c30fdee7bbe5798a65244c9ebd06069609c75d242758727ab4"
+        }
+      ],
+      "addedAt": "2026-11-16T00:50:02.372Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-meters-with-reset-times",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+$ verify/yv map run usage --recipe meters-zero-after-reset
+# exit 0 after 100212 ms at e06c7f7d8116c7b8ac87399955f5d7cb4855abf5
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-16T00:50:02.243Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "meters-zero-after-reset",
+          "status": "pass",
+          "ms": 99361
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
