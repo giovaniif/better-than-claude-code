@@ -14,6 +14,12 @@
 //! - `mcp.callback { engine, account?, server, url }`: the address the browser
 //!   ended on after signing in, for a host the browser cannot reach
 //! - `mcp.reconnect { engine, account?, server }`
+//! - `mcp.add { engine, account?, name, url }`: a remote (HTTP) server added to
+//!   the account's own config (Claude: `claude mcp add --scope user`; Codex:
+//!   the app-server's `config/value/write`, since `codex mcp add` goes on to
+//!   wait for a browser sign-in), then signed in like any other; `mcp.remove
+//!   { engine, account?, server }` takes one out. Both broadcast `mcp.change
+//!   { engine, account, name, state: "done" | "failed", error? }` and a fresh list.
 //!
 //! yardd never sees a token: the CLIs run their own OAuth flows and keep the
 //! tokens where they always do.
@@ -49,6 +55,10 @@ pub struct Connectors {
     probes: Mutex<HashMap<String, Arc<Probe>>>,
     /// Answers a session's sidecar owes yardd (a widget's tool call), by ref.
     replies: Mutex<HashMap<String, Reply>>,
+    /// One start at a time: two callers at once (a listing and a sign-in
+    /// right after an add) must share one process, or the sign-in's callback
+    /// page dies with the one that is dropped.
+    starting: tokio::sync::Mutex<()>,
 }
 
 struct Probe {
@@ -162,7 +172,96 @@ pub async fn handle(app: &Arc<App>, msg: &Value) -> Result<()> {
                 broadcast_status(&app, &engine, &account).await;
             });
         }
+        "mcp.add" | "mcp.remove" => {
+            let adding = op == "mcp.add";
+            let name = if adding { str_field(msg, "name")? } else { str_field(msg, "server")? }.trim().to_string();
+            let url = if adding { Some(str_field(msg, "url")?.trim().to_string()) } else { None };
+            if adding {
+                check_new_server(&name, url.as_deref().unwrap_or(""))?;
+            }
+            let app = app.clone();
+            tokio::spawn(async move {
+                let result = change(&app, &engine, &account, &name, url.as_deref()).await;
+                let mut note = json!({ "op": "mcp.change", "engine": engine, "account": account, "name": name, "state": "done" });
+                if let Err(e) = result {
+                    note["state"] = json!("failed");
+                    note["error"] = json!(clip(&format!("{e:#}"), 500));
+                }
+                app.broadcast(note);
+                broadcast_status(&app, &engine, &account).await;
+            });
+        }
         other => bail!("unknown op `{other}`"),
+    }
+    Ok(())
+}
+
+/// A name the CLIs take as a config key and a plain https URL: neither can
+/// become a flag or carry anything but an address.
+pub fn check_new_server(name: &str, url: &str) -> Result<()> {
+    let name_ok = !name.is_empty()
+        && name.len() <= 40
+        && name.chars().next().is_some_and(|c| c.is_ascii_alphanumeric())
+        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_');
+    if !name_ok {
+        bail!("Name it with letters, digits, - or _ (up to 40), starting with a letter or digit");
+    }
+    let rest = url.strip_prefix("https://").context("The address must start with https://")?;
+    let host = rest.split(['/', '?', '#']).next().unwrap_or("");
+    let host_ok = !host.is_empty() && host.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | ':'));
+    if !host_ok || url.len() > 300 || url.chars().any(|c| c.is_whitespace() || c.is_control()) {
+        bail!("That is not a valid https address");
+    }
+    Ok(())
+}
+
+/// Add (`url` given) or remove a server in the account's own config.
+async fn change(app: &Arc<App>, engine: &str, account: &str, name: &str, url: Option<&str>) -> Result<()> {
+    if engine == "codex" {
+        // `codex mcp add` starts the server's sign-in and waits for a browser
+        // (codex-cli 0.164), so the config is written through the app-server.
+        let c = crate::codex::client(app, account).await?;
+        let config = c.request("config/read", json!({})).await?;
+        let exists = !config["config"]["mcp_servers"][name].is_null();
+        match url {
+            Some(_) if exists => bail!("This account already has a server named {name}"),
+            None if !exists => bail!("No server named {name} in this account's config.toml"),
+            _ => {}
+        }
+        let value = url.map_or(Value::Null, |u| json!({ "url": u }));
+        c.request("config/value/write", json!({ "keyPath": format!("mcp_servers.{name}"), "value": value, "mergeStrategy": "replace" }))
+            .await?;
+        let _ = c.request("config/mcpServer/reload", json!({})).await;
+        return Ok(());
+    }
+    let mut cmd = tokio::process::Command::new("claude");
+    match url {
+        Some(url) => cmd.args(["mcp", "add", "--transport", "http", "--scope", "user", name, url]),
+        None => cmd.args(["mcp", "remove", "--scope", "user", name]),
+    };
+    crate::login::strip_claude_env_tokio(&mut cmd);
+    if let Some(dir) = app.accounts.config_dir(engine, account)? {
+        cmd.env(crate::accounts::env_var(engine), dir);
+    }
+    cmd.stdin(Stdio::null()).kill_on_drop(true);
+    let out = tokio::time::timeout(Duration::from_secs(30), cmd.output())
+        .await
+        .with_context(|| format!("`{engine} mcp` did not answer"))?
+        .with_context(|| format!("could not run `{engine}`"))?;
+    if !out.status.success() {
+        let text = String::from_utf8_lossy(&out.stderr);
+        let text = if text.trim().is_empty() { String::from_utf8_lossy(&out.stdout) } else { text };
+        bail!("{}", clip(text.trim(), 400));
+    }
+    // The connectors process read the old config; the next listing starts a
+    // new one. Idle sessions get a fresh sidecar (resuming) with their next
+    // message, so they see the change; a running turn keeps its set.
+    forget(app, account);
+    let mut map = app.sessions.lock().unwrap();
+    for s in map.values_mut() {
+        if s.meta.engine == "claude" && s.meta.account == account && s.meta.status == "idle" && matches!(s.backend, Backend::Claude { .. }) {
+            s.backend = Backend::Pending;
+        }
     }
     Ok(())
 }
@@ -350,6 +449,7 @@ fn probe<'a>(app: &'a Arc<App>, account: &'a str) -> std::pin::Pin<Box<dyn std::
 }
 
 async fn start_probe(app: &Arc<App>, account: &str) -> Result<Arc<Probe>> {
+    let _one = app.mcp.starting.lock().await;
     if let Some(p) = app.mcp.probes.lock().unwrap().get(account) {
         if !p.tx.is_closed() {
             return Ok(p.clone());
@@ -504,6 +604,18 @@ mod tests {
         assert!(loopback_target("http://127.0.0.1/x").is_err());
         assert!(loopback_target("http://127.0.0.1:80/a b").is_err());
         assert!(loopback_target("http://127.0.0.1:80/a\r\nHost: x").is_err());
+    }
+
+    #[test]
+    fn added_servers_are_a_plain_name_and_https_address() {
+        assert!(check_new_server("linear", "https://mcp.linear.app/mcp").is_ok());
+        assert!(check_new_server("metabase-prod", "https://metabase.example.com:8443/api/mcp").is_ok());
+        assert!(check_new_server("-x", "https://a.example/mcp").is_err());
+        assert!(check_new_server("a b", "https://a.example/mcp").is_err());
+        assert!(check_new_server("ok", "http://a.example/mcp").is_err());
+        assert!(check_new_server("ok", "https://a.example/m cp").is_err());
+        assert!(check_new_server("ok", "https://user@a.example/mcp").is_err());
+        assert!(check_new_server("ok", "https:///mcp").is_err());
     }
 
     #[test]

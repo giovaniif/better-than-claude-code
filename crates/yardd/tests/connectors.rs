@@ -202,3 +202,66 @@ async fn a_claude_chart_calls_back_through_the_sidecar_even_after_a_restart() {
     let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap();
     assert!(log.contains("resume=fake-claude-"), "a sidecar resumed the conversation for the call: {log}");
 }
+
+async fn change(c: &mut Client, msg: Value) -> Value {
+    let from = c.mark();
+    let name = msg["name"].as_str().or(msg["server"].as_str()).unwrap().to_string();
+    c.send(msg).await;
+    c.wait_after(from, "an mcp.change", |m| m["op"] == "mcp.change" && m["name"] == name.as_str()).await
+}
+
+#[tokio::test]
+async fn linear_is_added_to_each_engine_signed_in_and_removed() {
+    let sb = Sandbox::new("mcp-add");
+    let sidecar = fake_bin().join("yard-claude");
+    let d = sb.start_with(&[("YARD_SIDECAR", sidecar.to_str().unwrap())]);
+    let mut c = d.client().await;
+    let linear = "https://mcp.linear.app/mcp";
+
+    // Codex: added through `codex mcp add`, then signed in through the pasted loopback redirect.
+    let done = change(&mut c, json!({ "op": "mcp.add", "engine": "codex", "name": "linear", "url": linear })).await;
+    assert_eq!(done["state"], "done", "{done}");
+    let st = status(&mut c, "codex").await;
+    assert_eq!((row(&st, "linear")["status"].as_str(), row(&st, "linear")["origin"].as_str()), (Some("needs-auth"), Some("https://mcp.linear.app")));
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.auth", "engine": "codex", "server": "linear" })).await;
+    let open = auth_state(&mut c, from, "linear", "open").await;
+    let redirect = redirect_of(open["url"].as_str().unwrap());
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.callback", "engine": "codex", "server": "linear", "url": format!("{redirect}?code=TEST&state=s1") })).await;
+    auth_state(&mut c, from, "linear", "done").await;
+    assert_eq!(row(&status(&mut c, "codex").await, "linear")["status"], "connected");
+    // The same name again is the CLI's refusal, shown as is.
+    let again = change(&mut c, json!({ "op": "mcp.add", "engine": "codex", "name": "linear", "url": linear })).await;
+    assert_eq!(again["state"], "failed");
+    assert!(again["error"].as_str().unwrap().contains("already has a server named linear"), "{again}");
+    assert!(sb.codex_log().contains(r#"config write mcp_servers.linear {"url":"https://mcp.linear.app/mcp"}"#));
+
+    // Claude: `claude mcp add --scope user`, then a pasted address.
+    let done = change(&mut c, json!({ "op": "mcp.add", "engine": "claude", "name": "linear", "url": linear })).await;
+    assert_eq!(done["state"], "done", "{done}");
+    assert_eq!(row(&status(&mut c, "claude").await, "linear")["status"], "needs-auth");
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.auth", "engine": "claude", "server": "linear" })).await;
+    assert_eq!(auth_state(&mut c, from, "linear", "open").await["paste"], true);
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.callback", "engine": "claude", "server": "linear", "url": "http://localhost:39998/callback?code=TEST" })).await;
+    auth_state(&mut c, from, "linear", "done").await;
+    assert_eq!(row(&status(&mut c, "claude").await, "linear")["status"], "connected");
+
+    let gone = change(&mut c, json!({ "op": "mcp.remove", "engine": "codex", "server": "linear" })).await;
+    assert_eq!(gone["state"], "done", "{gone}");
+    assert!(status(&mut c, "codex").await["servers"].as_array().unwrap().iter().all(|s| s["name"] != "linear"));
+    let gone = change(&mut c, json!({ "op": "mcp.remove", "engine": "claude", "server": "linear" })).await;
+    assert_eq!(gone["state"], "done", "{gone}");
+    let st = status(&mut c, "claude").await;
+    assert!(st["servers"].as_array().unwrap().iter().all(|s| s["name"] != "linear"), "{st}");
+
+    // Not a name or not https: refused before any CLI runs.
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.add", "engine": "codex", "name": "--evil", "url": linear })).await;
+    assert!(c.wait_error(from, "mcp.add").await.contains("Name it"));
+    let from = c.mark();
+    c.send(json!({ "op": "mcp.add", "engine": "codex", "name": "x", "url": "http://plain.example/mcp" })).await;
+    assert!(c.wait_error(from, "mcp.add").await.contains("https://"));
+}

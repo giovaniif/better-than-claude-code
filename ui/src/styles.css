@@ -726,6 +726,10 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .connector-paste { display: flex; flex-direction: column; gap: 6px; flex: 1 1 100%; }
 .connector-paste .row { flex-wrap: nowrap; }
 .connector-paste .field { height: 32px; font-size: 12px; }
+.connector-add { align-self: flex-start; gap: 4px; margin: 2px 0 0 -10px; color: var(--muted); }
+.connector-add-panel { margin-left: 0; }
+.connector-catalog { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 100%; }
+.connector-name-field { flex: 0 0 140px; }
 .btn-small { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; font-size: 12px; text-decoration: none; color: inherit; white-space: nowrap; }
 a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 

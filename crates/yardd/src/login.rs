@@ -314,7 +314,7 @@ fn restart_idle_claude(app: &Arc<App>, account: &str) {
     }
 }
 
-fn strip_claude_env_tokio(cmd: &mut Command) {
+pub fn strip_claude_env_tokio(cmd: &mut Command) {
     for (key, _) in std::env::vars() {
         if key == "CLAUDECODE" || key.starts_with("CLAUDE_CODE_") || key.starts_with("CLAUDE_AGENT_SDK") {
             cmd.env_remove(key);

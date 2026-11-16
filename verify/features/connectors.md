@@ -14,7 +14,9 @@ and the row turns Connected by itself; a server that redirects to a page on the
 host asks for that page's address to be pasted back (Claude Code takes it
 directly; for Codex yardd delivers it to the loopback page on the host). A wrong
 address is refused with the CLI's reason and Try again. A ChatGPT app links to
-chatgpt.com. After a sign-in the account's running Claude sessions dial the
+chatgpt.com. "Add connector" adds a catalog server (Linear first) or any https
+address to the account's own config and opens its sign-in; Remove takes one
+out. After a sign-in the account's running Claude sessions dial the
 server again.
 
 A tool with a widget (`_meta.ui.resourceUri`) shows it in the thread under its
@@ -72,6 +74,18 @@ that address finishes it through yardd and the card reads 2 connected.
 
 ```sh
 yv drive connectors --viewport desktop --steps '[{"click":{"css":".connector:has-text(\"fake-oauth\") button","hasText":"Connect"}},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes('Open the sign-in page')); const cb = new URL(a.href).searchParams.get('redirect_uri') + '?code=TEST-code&state=s1'; const i = document.querySelector('#connector-paste'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, cb); i.dispatchEvent(new Event('input', { bubbles: true })); return cb.startsWith('http://127.0.0.1:'); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"Running sessions pick it up now"},{"expect":{"css":".connectors-card","hasText":"Codex"},"text":"2 connected \u00b7 1 needs sign-in"},{"shot":"codex-signed-in"}]'
+```
+
+### add-linear
+Viewports: desktop
+"Add connector" offers Linear first. Picking it on Claude's card adds it to the
+account's config and opens its sign-in at once (a pasted address finishes it);
+the same on Codex's card, through the loopback page. Remove (then Confirm)
+takes Claude's out again. "Other address…" refuses a plain `http://` address
+before sending anything.
+
+```sh
+yv drive connectors --viewport desktop --steps '[{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"expect":{"css":".connector-catalog button","hasText":"Linear"}},{"click":{"css":".connectors-card:has-text(\"Claude\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"paste that page"},{"fill":"css:#connector-paste","value":"http://localhost:39998/callback?code=TEST"},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"click":{"css":".connectors-card:has-text(\"Codex\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Codex\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll('a')].find((x) => x.textContent.includes('Open the sign-in page')); const cb = new URL(a.href).searchParams.get('redirect_uri') + '?code=TEST-code&state=s1'; const i = document.querySelector('#connector-paste'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, cb); i.dispatchEvent(new Event('input', { bubbles: true })); return cb.startsWith('http://127.0.0.1:'); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"shot":"linear-both"},{"click":"role:button:Remove Linear"},{"click":"role:button:Confirm removing Linear"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"count":0},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Other address"}},{"fill":"label:Connector name","value":"metabase"},{"fill":"label:Connector address","value":"http://metabase.local/mcp"},{"expect":{"css":".connector-add-panel"},"text":"https://"}]'
 ```
 
 ### codex-chart

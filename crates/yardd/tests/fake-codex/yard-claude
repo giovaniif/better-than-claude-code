@@ -25,6 +25,8 @@
 // completes when its callback address with `code=` is pasted), `chart`
 // (connected, two widget tools) and a failed `plugin:engineering:gmail`.
 // Sign-ins are kept in FAKE_CODEX_DIR (or CLAUDE_CONFIG_DIR) as files.
+// Servers added with the fake `claude mcp add` (claude-mcp.txt there) are
+// listed too, needing sign-in until a pasted address with `code=` arrives.
 // Each start also reports plan usage (47% of 5 hours, 17% of the week, Sonnet 8%;
 // 91% of 5 hours when CLAUDE_CONFIG_DIR names an extra account).
 // FAKE_CODEX_DIR gets `sidecar.log`: one line per start, with its resume id and
@@ -36,7 +38,7 @@
 //                   one whose folder no longer exists
 //   messages <id>   that session's history as yardd events
 
-import { appendFileSync, existsSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { CHART_URI, chartCall, rpc } from "./chart.mjs";
 
 const dir = process.env.FAKE_CODEX_DIR;
@@ -90,9 +92,23 @@ if (mode === "connectors") {
   const ok = (name) => existsSync(`${store}/mcp-ok-${name}`);
   const mark = (name) => writeFileSync(`${store}/mcp-ok-${name}`, "");
   log(`connectors pid=${process.pid} cwd=${process.argv[3] ?? ""} config=${process.env.CLAUDE_CONFIG_DIR ?? ""}`);
+  const added = () =>
+    (existsSync(`${store}/claude-mcp.txt`) ? readFileSync(`${store}/claude-mcp.txt`, "utf8") : "")
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => ({ name: l.split(" ")[0], url: l.split(" ")[1] }));
   const status = async () => {
     const { tools } = await rpc("tools/list");
+    const extra = added().map((a) => ({
+      name: a.name,
+      status: ok(a.name) ? "connected" : "needs-auth",
+      source: "user",
+      tools: ok(a.name) ? 5 : 0,
+      appTools: 0,
+      origin: new URL(a.url).origin,
+    }));
     return [
+      ...extra,
       { name: "claude.ai Datadog", status: ok("datadog") ? "connected" : "needs-auth", source: "claudeai", tools: ok("datadog") ? 12 : 0, appTools: 0, origin: "https://mcp-proxy.anthropic.com" },
       { name: "plugin:engineering:sentry", status: ok("sentry") ? "connected" : "needs-auth", source: "plugin", tools: ok("sentry") ? 9 : 0, appTools: 0, origin: "https://mcp.sentry.dev" },
       { name: "chart", status: "connected", source: "user", tools: tools.length, appTools: tools.filter((t) => t._meta?.ui?.resourceUri).length },
@@ -118,11 +134,13 @@ if (mode === "connectors") {
       }, 1000);
     } else if (msg.type === "auth" && msg.server === "plugin:engineering:sentry") {
       answer({ url: "https://sentry.example/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A39999%2Fcallback", paste: true });
+    } else if (msg.type === "auth" && added().some((a) => a.name === msg.server)) {
+      answer({ url: `https://auth.example.com/${msg.server}/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A39998%2Fcallback`, paste: true });
     } else if (msg.type === "auth") refuse(`Server type "stdio" does not support OAuth authentication`);
     else if (msg.type === "callback") {
       if (!String(msg.url).includes("code=")) refuse("Invalid callback URL: missing authorization code. Please paste the full redirect URL including the code parameter.");
       else {
-        mark("sentry");
+        mark(msg.server === "plugin:engineering:sentry" ? "sentry" : msg.server);
         answer({ done: true });
       }
     } else if (msg.type === "reconnect") answer({ done: true });

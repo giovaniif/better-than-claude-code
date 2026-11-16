@@ -145,6 +145,8 @@ export interface State {
   mcp: Record<string, McpStatus & { loading?: boolean }>;
   /** Sign-ins of MCP servers, by `mcpAuthKey(host, engine, account, server)`. */
   mcpAuth: Record<string, McpAuthState>;
+  /** Servers being added or removed, by `mcpAuthKey(host, engine, account, name)`. */
+  mcpChange: Record<string, { state: "adding" | "removing" | "done" | "failed"; error?: string }>;
   /** `host.install` progress by host id. */
   installs: Record<string, { lines: string[]; running: boolean; ok?: boolean }>;
   error: string | null;
@@ -192,6 +194,7 @@ export const initial: State = {
   automations: {},
   mcp: {},
   mcpAuth: {},
+  mcpChange: {},
   installs: {},
   error: null,
   errorCount: 0,
@@ -427,6 +430,12 @@ function reduceServer(state: State, msg: any): State {
       // The import dialog says why; no banner behind it.
       if (msg.for === "session.import") return { ...state, importError: msg.message };
       // The Connectors page shows it on the host's cards instead of waiting forever.
+      if (msg.for === "mcp.add" || msg.for === "mcp.remove") {
+        const host = msg.hostId ?? "local";
+        const mcpChange = { ...state.mcpChange };
+        for (const [key, ch] of Object.entries(mcpChange)) if (key.startsWith(`${host}\n`) && (ch.state === "adding" || ch.state === "removing")) mcpChange[key] = { state: "failed", error: msg.message };
+        return { ...state, mcpChange };
+      }
       if (typeof msg.for === "string" && msg.for.startsWith("mcp.")) {
         const host = msg.hostId ?? "local";
         const error = /unknown op/.test(msg.message ?? "") ? "This host's Switchyard is older and cannot list connectors. Update it from the Hosts page." : msg.message;
@@ -484,6 +493,14 @@ function reduceServer(state: State, msg: any): State {
       }
       const { op: _op, hostId: _h, host: _ho, engine: _e, account: _a, server: _s, ...auth } = msg;
       return { ...state, mcpAuth: { ...state.mcpAuth, [key]: auth as McpAuthState } };
+    }
+    case "mcp.change": {
+      const key = mcpAuthKey(msg.hostId ?? msg.host ?? "local", msg.engine, msg.account ?? "default", msg.name);
+      if (msg.state === null) {
+        const { [key]: _gone, ...rest } = state.mcpChange;
+        return { ...state, mcpChange: rest };
+      }
+      return { ...state, mcpChange: { ...state.mcpChange, [key]: { state: msg.state, ...(msg.error ? { error: msg.error } : {}) } } };
     }
     // Local: a new import (or a closed dialog) forgets the last refusal.
     case "import.started":
@@ -626,6 +643,11 @@ export interface Actions {
   /** The address the browser ended on after a sign-in, for a host it cannot reach. */
   mcpCallback(host: string, engine: Engine, account: string, server: string, url: string): void;
   mcpReconnect(host: string, engine: Engine, account: string, server: string): void;
+  /** Add a remote MCP server to an account's own config; progress as `mcp.change`. */
+  mcpAdd(host: string, engine: Engine, account: string, name: string, url: string): void;
+  /** Take a server out of an account's own config. */
+  mcpRemove(host: string, engine: Engine, account: string, server: string): void;
+  mcpChangeClear(host: string, engine: Engine, account: string, name: string): void;
   /** Forget a finished or abandoned sign-in on this page. */
   mcpAuthClear(host: string, engine: Engine, account: string, server: string): void;
   /** A tool call's widget: its HTML, CSP, input and result. */
@@ -872,6 +894,15 @@ export function useYard(): { state: State; actions: Actions } {
         dispatch({ t: "server", msg: { op: "mcp.loading", host, engine, account } });
         post(onHost(host, { op: "mcp.reconnect", engine, account, server }));
       },
+      mcpAdd: (host, engine, account, name, url) => {
+        dispatch({ t: "server", msg: { op: "mcp.change", host, engine, account, name, state: "adding" } });
+        post(onHost(host, { op: "mcp.add", engine, account, name, url }));
+      },
+      mcpRemove: (host, engine, account, server) => {
+        dispatch({ t: "server", msg: { op: "mcp.change", host, engine, account, name: server, state: "removing" } });
+        post(onHost(host, { op: "mcp.remove", engine, account, server }));
+      },
+      mcpChangeClear: (host, engine, account, name) => dispatch({ t: "server", msg: { op: "mcp.change", host, engine, account, name, state: null } }),
       mcpAuthClear: (host, engine, account, server) => dispatch({ t: "server", msg: { op: "mcp.auth", host, engine, account, server, state: null } }),
       widget: (sessionId, id) => {
         const key = `${sessionId}\n${id}`;

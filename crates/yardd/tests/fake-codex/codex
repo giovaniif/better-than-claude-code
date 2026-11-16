@@ -50,6 +50,18 @@ const log = (line) => {
 const home = process.env.CODEX_HOME || "";
 const state = home || dir;
 log(`start pid=${process.pid} args=${process.argv.slice(2).join(" ")} home=${home}`);
+// Servers written with `config/value/write` (`mcp_servers.<name>`): "name
+// url" lines in codex-mcp.txt in the state folder, listed like fake-oauth.
+const mcpFile = `${state || "/nonexistent"}/codex-mcp.txt`;
+const addedServers = () =>
+  (existsSync(mcpFile) ? readFileSync(mcpFile, "utf8") : "")
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => ({ name: l.split(" ")[0], url: l.split(" ")[1] }));
+const saveServers = (list) => {
+  if (home) mkdirSync(home, { recursive: true });
+  writeFileSync(mcpFile, list.map((a) => `${a.name} ${a.url}\n`).join(""));
+};
 if (process.argv[2] !== "app-server") {
   console.error("fake codex: only `app-server` is implemented");
   process.exit(2);
@@ -218,6 +230,7 @@ async function handle(msg) {
     case "mcpServerStatus/list": {
       const { tools } = await rpc("tools/list");
       const oauthOk = state && existsSync(`${state}/mcp-oauth-ok`);
+      const okFor = (name) => state && existsSync(`${state}/mcp-oauth-ok-${name}`);
       const data = [
         { name: "chart", runtimeStatus: null, pluginId: null, httpOrigin: null, tools: Object.fromEntries(tools.map((t) => [t.name, t])), toolsError: null, authStatus: "unsupported" },
         {
@@ -229,6 +242,15 @@ async function handle(msg) {
           toolsError: oauthOk ? null : "Auth required",
           authStatus: oauthOk ? "oAuth" : "notLoggedIn",
         },
+        ...addedServers().map((a) => ({
+          name: a.name,
+          runtimeStatus: null,
+          pluginId: null,
+          httpOrigin: new URL(a.url).origin,
+          tools: okFor(a.name) ? { search: { name: "search", inputSchema: { type: "object" } } } : {},
+          toolsError: okFor(a.name) ? null : "Auth required",
+          authStatus: okFor(a.name) ? "oAuth" : "notLoggedIn",
+        })),
       ].filter((s) => !p.serverName || s.name === p.serverName);
       return reply({ data, nextCursor: null });
     }
@@ -238,7 +260,7 @@ async function handle(msg) {
         nextCursor: null,
       });
     case "mcpServer/oauth/login": {
-      if (p.name !== "fake-oauth") return fail(`${p.name} does not use OAuth`);
+      if (p.name !== "fake-oauth" && !addedServers().some((a) => a.name === p.name)) return fail(`${p.name} does not use OAuth`);
       const loginId = newId("mcp-login");
       const server = Bun.serve({
         port: 0,
@@ -247,7 +269,7 @@ async function handle(msg) {
           const url = new URL(req.url);
           if (url.pathname !== "/callback" || !url.searchParams.get("code")) return new Response("bad", { status: 400 });
           log(`mcp oauth callback code=${url.searchParams.get("code")}`);
-          if (state) writeFileSync(`${state}/mcp-oauth-ok`, "");
+          if (state) writeFileSync(p.name === "fake-oauth" ? `${state}/mcp-oauth-ok` : `${state}/mcp-oauth-ok-${p.name}`, "");
           setTimeout(() => {
             server.stop();
             notify("mcpServer/oauthLogin/completed", { name: p.name, threadId: null, loginId, success: true });
@@ -260,6 +282,16 @@ async function handle(msg) {
     }
     case "config/mcpServer/reload":
       return reply({});
+    case "config/read":
+      return reply({ config: { mcp_servers: Object.fromEntries(addedServers().map((a) => [a.name, { url: a.url }])) }, origins: {}, layers: null });
+    case "config/value/write": {
+      const m = /^mcp_servers\.([A-Za-z0-9_-]+)$/.exec(p.keyPath ?? "");
+      if (!m) return fail(`fake codex: cannot write ${p.keyPath}`);
+      const rest = addedServers().filter((a) => a.name !== m[1]);
+      saveServers(p.value === null ? rest : [...rest, { name: m[1], url: p.value.url }]);
+      log(`config write ${p.keyPath} ${JSON.stringify(p.value)}`);
+      return reply({ status: "ok", version: "fake", filePath: mcpFile, overriddenMetadata: null });
+    }
     case "mcpServer/resource/read": {
       if (p.server !== "chart") return fail(`no server ${p.server}`);
       const read = await rpc("resources/read", { uri: p.uri });

@@ -4,10 +4,10 @@
 // for Claude that starts Claude Code with no prompt, so it spends no usage.
 import { useEffect, useState } from "react";
 import { accountChoices, DEFAULT_ACCOUNT } from "./accounts";
-import { actionFor, displayName, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
+import { actionFor, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
 import type { Engine, McpServer } from "./protocol";
 import { accountsOn, hostName, hostOnline, mcpAuthKey, mcpKey, type Actions, type State } from "./store";
-import { Cloud, ENGINE_NAME, Icon, MenuButton } from "./App";
+import { Cloud, ENGINE_NAME, Icon, MenuButton, PLUS } from "./App";
 
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
 const ENGINES: Engine[] = ["claude", "codex"];
@@ -79,7 +79,7 @@ function AccountCard(props: { state: State; actions: Actions; host: string; engi
       {status?.error && <div className="bad small connectors-note">{status.error}</div>}
       {added && engine === "claude" && (
         <div className="muted small connectors-note">
-          An added account has its own Claude Code folder: its claude.ai connectors come with its login, but plugins and servers from your Default setup are not shared.
+          An added account has its own Claude Code folder: its claude.ai connectors come with its login, but plugins and servers from your Default setup are not shared. Add the ones it needs here.
         </div>
       )}
       {status?.servers && servers.length === 0 && <div className="muted small connectors-note">No MCP servers for this account.</div>}
@@ -90,6 +90,7 @@ function AccountCard(props: { state: State; actions: Actions; host: string; engi
           ))}
         </ul>
       )}
+      {status?.servers && engineState?.loggedIn !== false && <AddConnector {...props} servers={servers} />}
     </div>
   );
 }
@@ -99,6 +100,8 @@ function ServerRow({ server: s, state, actions, host, engine, account }: { serve
   const auth = state.mcpAuth[mcpAuthKey(host, engine, account, s.name)];
   const action = actionFor(s);
   const signIn = () => actions.mcpAuth(host, engine, account, s.name);
+  const change = state.mcpChange[mcpAuthKey(host, engine, account, s.name)];
+  const [confirm, setConfirm] = useState(false);
   return (
     <li className="connector">
       <div className="connector-row">
@@ -130,8 +133,22 @@ function ServerRow({ server: s, state, actions, host, engine, account }: { serve
               Retry
             </button>
           )}
+          {removable(s) &&
+            (change?.state === "removing" ? (
+              <span className="muted small">Removing…</span>
+            ) : (
+              <button
+                className={`btn-text btn-small ${confirm ? "bad" : ""}`}
+                onClick={() => (confirm ? actions.mcpRemove(host, engine, account, s.name) : setConfirm(true))}
+                onBlur={() => setConfirm(false)}
+                aria-label={confirm ? `Confirm removing ${name}` : `Remove ${name}`}
+              >
+                {confirm ? "Confirm" : "Remove"}
+              </button>
+            ))}
         </span>
       </div>
+      {change?.state === "failed" && <div className="bad small connector-error">{change.error}</div>}
       {s.status === "failed" && s.error && <div className="muted small connector-error">{shortError(s.error)}</div>}
       {auth && <SignIn host={host} hostLabel={hostName(state, host)} auth={auth} onRetry={signIn} onPaste={(url) => actions.mcpCallback(host, engine, account, s.name, url)} onClose={() => actions.mcpAuthClear(host, engine, account, s.name)} />}
     </li>
@@ -205,6 +222,87 @@ function SignIn(props: {
         <span className="muted">Connect it on that page. This updates by itself once it is connected.</span>
       )}
       <button className="btn-text" onClick={props.onClose}>
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+/** "Add connector": a catalog server (Linear first) or any https address,
+ *  added to this account's own config; its sign-in opens right after. */
+function AddConnector(props: { state: State; actions: Actions; host: string; engine: Engine; account: string; servers: McpServer[] }) {
+  const { state, actions, host, engine, account } = props;
+  const [open, setOpen] = useState(false);
+  const [other, setOther] = useState(false);
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [pending, setPending] = useState<string | null>(null);
+  const change = pending ? state.mcpChange[mcpAuthKey(host, engine, account, pending)] : undefined;
+  const close = () => {
+    setOpen(false);
+    setOther(false);
+    setName("");
+    setUrl("");
+    if (pending) actions.mcpChangeClear(host, engine, account, pending);
+    setPending(null);
+  };
+  // Added: go straight to its sign-in, as Connect would.
+  useEffect(() => {
+    if (pending && change?.state === "done") {
+      actions.mcpAuth(host, engine, account, pending);
+      close();
+    }
+  }, [change?.state]);
+  const add = (n: string, u: string) => {
+    if (pending) actions.mcpChangeClear(host, engine, account, pending);
+    setPending(n);
+    actions.mcpAdd(host, engine, account, n, u);
+  };
+  const missing = missingFromCatalog(props.servers);
+  const problem = other && (name || url) ? newServerProblem(name.trim(), url.trim()) : null;
+  const busy = change?.state === "adding";
+  if (!open)
+    return (
+      <button className="btn-text btn-small connector-add" onClick={() => setOpen(true)}>
+        <Icon d={PLUS} size={12} />
+        Add connector
+      </button>
+    );
+  return (
+    <div className="connector-auth connector-add-panel small">
+      <span className="muted">Adds it to this account's own {engine === "claude" ? "Claude Code" : "Codex"} config, then opens its sign-in.</span>
+      <div className="connector-catalog">
+        {missing.map((c) => (
+          <button key={c.id} className="btn btn-small" disabled={busy} title={c.url} onClick={() => add(c.id, c.url)}>
+            {c.name}
+            {c.note && <span className="muted">&nbsp;· {c.note}</span>}
+          </button>
+        ))}
+        <button className="btn btn-small" disabled={busy} aria-expanded={other} onClick={() => setOther(!other)}>
+          Other address…
+        </button>
+      </div>
+      {other && (
+        <form
+          className="connector-paste"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newServerProblem(name.trim(), url.trim())) add(name.trim(), url.trim());
+          }}
+        >
+          <div className="row">
+            <input className="field connector-name-field" aria-label="Connector name" placeholder="metabase" value={name} onChange={(e) => setName(e.target.value)} />
+            <input className="field" aria-label="Connector address" placeholder="https://metabase.example.com/api/mcp" value={url} onChange={(e) => setUrl(e.target.value)} />
+            <button className="btn btn-small" disabled={busy || !name.trim() || !url.trim() || !!problem}>
+              Add
+            </button>
+          </div>
+          {problem && <span className="muted">{problem}</span>}
+        </form>
+      )}
+      {busy && <span className="muted">Adding {pending}…</span>}
+      {change?.state === "failed" && <span className="bad">{change.error}</span>}
+      <button className="btn-text" onClick={close}>
         Cancel
       </button>
     </div>
