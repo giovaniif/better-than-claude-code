@@ -39,6 +39,7 @@ recipe with its repro.
 | [logins](logins.md) | Engine login state and the Codex, Claude, Grok and OpenCode login flows |
 | [acp-engines](acp-engines.md) | OpenCode and Grok: listed where installed, sessions, approvals, hand-off rows |
 | [attachments](attachments.md) | Files with a prompt: upload, chips, thumbnails, size cap |
+| [voice](voice.md) | Dictation in the composer, hands-free voice mode (send after a pause, answers read aloud, approvals announced), the unavailable and blocked states |
 | [models](models.md) | Model and effort switches, permission modes, hand-off to another engine |
 | [worktrees](worktrees.md) | A worktree per session, in-place folders, removing a worktree |
 | [notifications](notifications.md) | OS notifications: the switch on the Settings page, when a session or the `notify` op shows one |

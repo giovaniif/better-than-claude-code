@@ -19,6 +19,8 @@ import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
 import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines } from "./engines";
 import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
+import { voiceCue, type Cue } from "./voice";
+import { useVoice } from "./useVoice";
 
 /** Permission modes, as Claude Code names them, and what each means per engine. */
 export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, string>)[] = [
@@ -91,6 +93,9 @@ const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a
 const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 const MENU = "M4 6h16M4 12h16M4 18h16";
+const MIC = "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v3";
+const STOP = "M7 7h10v10H7Z";
+const WAVES = "M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3";
 
 /** Marks something on a remote host. Labelled when it is the only sign of it. */
 export const Cloud = ({ size = 14, label }: { size?: number; label?: string }) =>
@@ -1155,6 +1160,8 @@ function Composer(props: {
   target: UploadTarget;
   upload(file: File, target: UploadTarget): Promise<Attachment>;
   onSubmit(text: string, attachments: Attachment[]): void;
+  /** Hands-free voice mode for a session: what it has to say, numbered. */
+  voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
   children: ReactNode;
 }) {
   const [text, setText] = useState("");
@@ -1273,6 +1280,7 @@ function Composer(props: {
         }),
       );
       props.onSubmit(value, attachments);
+      voice.sent();
       if (!props.keepText) {
         setText("");
         setQuotes([]);
@@ -1287,6 +1295,20 @@ function Composer(props: {
       setSending(false);
     }
   };
+  // Dictation writes into the box; voice mode also sends after a pause.
+  const textNow = useRef(text);
+  textNow.current = text;
+  const voice = useVoice({
+    text: () => textNow.current,
+    setText: (t) => {
+      textNow.current = t;
+      setText(t);
+    },
+    submit: () => void submit(),
+    cue: props.voice?.cue,
+    scope: props.voice?.scope,
+  });
+  const voiceOn = voice.mode.phase !== "off";
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "ArrowUp" && text === "" && props.onEditLastQueued?.()) {
       e.preventDefault();
@@ -1316,6 +1338,15 @@ function Composer(props: {
         addFiles(Array.from(e.dataTransfer.files));
       }}
     >
+      {voiceOn && (
+        <VoiceBar
+          state={voice.mode.phase === "waiting" && props.voice?.approval ? "Waiting for your approval" : VOICE_PHASE[voice.mode.phase]}
+          phase={voice.mode.phase}
+          canSpeak={voice.canSpeak}
+          onStop={voice.stopSpeaking}
+          onEnd={voice.toggleVoice}
+        />
+      )}
       {files.length > 0 && (
         <div className="attachments" aria-label="Attachments">
           {files.map((f) => (
@@ -1359,7 +1390,10 @@ function Composer(props: {
         rows={props.rows}
         placeholder={props.placeholder}
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          setText(e.target.value);
+          voice.typed(e.target.value);
+        }}
         onKeyDown={onKeyDown}
         onPaste={(e) => {
           const pasted = pastedFiles(e.clipboardData);
@@ -1373,6 +1407,29 @@ function Composer(props: {
         <button className="btn-icon attach-btn" aria-label="Attach files" title="Attach files" onClick={() => picker.current?.click()}>
           <Icon d={PAPERCLIP} size={16} />
         </button>
+        {!voiceOn && (
+          <button
+            className={`btn-icon attach-btn mic-btn${voice.dictating ? " listening" : ""}`}
+            aria-label={voice.unavailable ? "Dictate (not available here)" : voice.dictating ? "Stop dictation" : "Dictate"}
+            aria-pressed={voice.dictating}
+            aria-disabled={voice.unavailable ? true : undefined}
+            title={voice.unavailable ?? (voice.dictating ? "Stop dictation (Esc)" : "Dictate")}
+            onClick={voice.toggleDictation}
+          >
+            <Icon d={voice.dictating ? STOP : MIC} size={16} />
+          </button>
+        )}
+        {props.voice && !voice.unavailable && (
+          <button
+            className={`btn-icon attach-btn voice-btn${voiceOn ? " on" : ""}`}
+            aria-label="Voice mode"
+            aria-pressed={voiceOn}
+            title={voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud"}
+            onClick={voice.toggleVoice}
+          >
+            <Icon d={WAVES} size={16} />
+          </button>
+        )}
         <input
           ref={picker}
           type="file"
@@ -1397,6 +1454,39 @@ function Composer(props: {
           {sending ? <span className="send-wait" aria-label="Uploading" /> : <Icon d={ARROW_UP} width={2.5} />}
         </button>
       </div>
+      {voice.error && (
+        <div className="voice-error error-line small" role="alert">
+          {voice.error}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const VOICE_PHASE: Record<string, string> = {
+  listening: "Listening",
+  waiting: "Waiting for the agent",
+  speaking: "Reading aloud",
+};
+
+/** Voice mode's state over the reply box, with the ways out of it. */
+function VoiceBar({ state, phase, canSpeak, onStop, onEnd }: { state: string; phase: string; canSpeak: boolean; onStop(): void; onEnd(): void }) {
+  return (
+    <div className={`voice-bar voice-${phase}`}>
+      <span className="voice-dot" aria-hidden="true" />
+      <span className="voice-state" role="status">
+        Voice mode · {state}
+      </span>
+      {!canSpeak && <span className="muted small">Answers can't be read aloud in this browser</span>}
+      <span className="spacer" />
+      {phase === "speaking" && (
+        <button className="btn-text" aria-label="Stop reading aloud" onClick={onStop}>
+          Stop
+        </button>
+      )}
+      <button className="btn-text" aria-label="Turn off voice mode" onClick={onEnd}>
+        Turn off
+      </button>
     </div>
   );
 }
@@ -2016,6 +2106,18 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     if (last.current !== "idle" && meta.status === "idle") actions.loadChanges(meta.id);
     last.current = meta.status;
   }, [meta.status]);
+  // What voice mode says when the session reaches a new moment (voice.ts).
+  // What is already there when the session opens is not news.
+  const said = useMemo(() => voiceCue(items), [items]);
+  const saidKey = useRef(said?.key);
+  const [cue, setCue] = useState<{ n: number; cue: Cue } | null>(null);
+  useEffect(() => {
+    if (said?.key === saidKey.current) return;
+    saidKey.current = said?.key;
+    if (said) setCue((c) => ({ n: (c?.n ?? 0) + 1, cue: said.cue }));
+  }, [said?.key]);
+  const approval = meta.status === "needs_approval";
+  const voice = useMemo(() => ({ scope: meta.id, cue, approval }), [meta.id, cue, approval]);
 
   const running = meta.status === "running" || meta.status === "needs_approval";
   const rows = useMemo(() => layout(items, running), [items, running]);
@@ -2137,6 +2239,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             target={uploadTarget}
             upload={actions.upload}
             onSubmit={submit}
+            voice={voice}
           >
             <ModelPicker
               models={models}
