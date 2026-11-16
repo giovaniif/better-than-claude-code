@@ -149,6 +149,10 @@ describe("land gate scan", () => {
     // The module ends at its closing brace: code after it in the same hunk is real code.
     expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     fn t() {}\n }\n \n+pub fn wipe(p: &Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
     expect(codes([file("crates/yardd/src/git.rs", "@@ -1,3 +1,4 @@ pub async fn changes(cwd: &str) -> Result<Value> {\n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
+    // A hunk past the module's brace keeps the `mod tests {` header when only comments follow it.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -10,3 +10,4 @@ mod tests {\n // kept for later\n // more\n \n+pub fn wipe(p: &std::path::Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+    // A file module (`mod tests;`) opens no region.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -10,3 +10,4 @@ mod tests;\n \n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
   });
   test("security boundary, data loss and secrets", () => {
     expect(codes([file("crates/yardd/src/ws.rs", '@@\n-    if origin_ok(&o) {\n+    if true || origin_ok(&o) { // Origin')])).toContain("security-boundary");
