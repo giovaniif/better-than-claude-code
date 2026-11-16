@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "a434def722835ebc2d83a405a6c67ce29975e33a",
+    "short": "a434def",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:47:32.612Z"
+  },
+  "dir": ".verify/evidence/sidebar-dnd-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5192,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-dnd-head-mobile/drawer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-dnd-head-mobile/drawer-after-menu-remove-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelectorAll(\".session-item[draggable=true]\").length",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

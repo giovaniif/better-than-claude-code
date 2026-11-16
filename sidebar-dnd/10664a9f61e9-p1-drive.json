@@ -1,0 +1,56 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "df867e5171764145810fa7174f64f9b919b81e57",
+    "short": "df867e5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:47:16.476Z"
+  },
+  "dir": ".verify/evidence/sidebar-dnd-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5463,
+      "steps": 4,
+      "failed": {
+        "step": 3,
+        "action": {
+          "expect": {
+            "css": ".group-head",
+            "hasText": "Release"
+          },
+          "text": "2",
+          "timeout": 3000
+        },
+        "reason": "expected {\"css\":\".group-head\",\"hasText\":\"Release\"} to contain \"2\", got \"Release",
+        "screenshot": ".verify/evidence/sidebar-dnd-base/fail-desktop-step3.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Import\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Release 1\" [expanded]\n  - button \"Actions for group Release\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 14% · 51%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd-base/after-drop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 3 {\"expect\":{\"css\":\".group-head\",\"hasText\":\"Release\"},\"text\":\"2\",\"timeout\":3000}: expected {\"css\":\".group-head\",\"hasText\":\"Release\"} to contain \"2\", got \"Release",
+      "hint": "see .verify/evidence/sidebar-dnd-base/fail-desktop-step3.png and the aria snapshot"
+    }
+  ]
+}

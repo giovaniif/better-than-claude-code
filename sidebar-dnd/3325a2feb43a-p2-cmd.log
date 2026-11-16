@@ -1,0 +1,18 @@
+$ cd ui && bun test src/sidebarDrop.test.ts
+# exit 1 after 8 ms at df867e5171764145810fa7174f64f9b919b81e57
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/sidebarDrop.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './sidebarDrop' from '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a4b0d9978cb9498c3/ui/src/sidebarDrop.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [4.00ms]
