@@ -2256,7 +2256,7 @@ function ItemView(props: {
           <div className="approval-title">{item.approvalKind === "command" ? "Allow this command?" : "Allow this?"}</div>
           <code className="approval-what">{item.title}</code>
           {item.detail && <div className="muted small">{item.detail}</div>}
-          {item.decision === null ? (
+          {item.decision === null && !item.unanswered ? (
             <div className="row">
               <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
                 Allow once
@@ -2269,7 +2269,15 @@ function ItemView(props: {
               </button>
             </div>
           ) : (
-            <div className="muted small">{item.decision === "deny" ? "Denied" : item.decision === "allow_always" ? "Always allowed" : "Allowed"}</div>
+            <div className="muted small">
+              {item.decision === null
+                ? "Not answered before the turn ended"
+                : item.decision === "deny"
+                  ? "Denied"
+                  : item.decision === "allow_always"
+                    ? "Always allowed"
+                    : "Allowed"}
+            </div>
           )}
         </div>
       );
