@@ -588,4 +588,22 @@ mod tests {
         assert_eq!(usage_reason(&usage, "codex", Some(60.0), None, 3000), None);
         assert_eq!(usage_reason(&json!({}), "codex", Some(1.0), Some(1.0), 1000), None, "unknown usage does not skip");
     }
+
+    #[test]
+    fn claude_limits_read_the_sidecars_windows() {
+        // The shape the sidecar reports (src/usage.ts, mergeUsage): one entry per window.
+        let usage = json!({
+            "claude": { "status": "allowed", "windows": {
+                "five_hour": { "utilization": 0.47, "resetsAt": 2000 },
+                "seven_day": { "utilization": 0.81, "resetsAt": 9000 },
+            } },
+        });
+        assert!(usage_reason(&usage, "claude", Some(10.0), None, 1000).unwrap().contains("Claude 5-hour usage 47%"));
+        assert!(usage_reason(&usage, "claude", Some(50.0), Some(80.0), 1000).unwrap().contains("Claude weekly usage 81%"));
+        assert_eq!(usage_reason(&usage, "claude", Some(50.0), Some(90.0), 1000), None);
+        // Each window carries its own reset: past it, that figure is stale.
+        assert_eq!(usage_reason(&usage, "claude", Some(10.0), None, 3000), None);
+        assert_eq!(usage_reason(&usage, "claude", None, Some(80.0), 9500), None);
+        assert!(usage_reason(&usage, "claude", None, Some(80.0), 3000).is_some(), "the week has not reset yet");
+    }
 }
