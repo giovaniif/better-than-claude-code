@@ -408,6 +408,39 @@ mod tests {
         assert_eq!(last_lines("a\n\nb\nc\n", 2), "b\nc");
         assert_eq!(last_lines("", 3), "");
     }
+
+    #[tokio::test]
+    async fn non_ascii_paths_come_out_as_written() {
+        let dir = std::env::temp_dir().join(format!("yardd-quotepath-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let git = |args: &[&str]| {
+            let ok = std::process::Command::new("git")
+                .arg("-C")
+                .arg(&dir)
+                .args(["-c", "user.name=TEST", "-c", "user.email=test@example.invalid", "-c", "commit.gpgsign=false"])
+                .args(args)
+                .output()
+                .unwrap()
+                .status
+                .success();
+            assert!(ok, "git {args:?}");
+        };
+        std::fs::write(dir.join("ação.txt"), "a\n").unwrap();
+        git(&["init", "-q"]);
+        git(&["add", "."]);
+        git(&["commit", "-q", "-m", "first"]);
+        std::fs::write(dir.join("ação.txt"), "a\nb\n").unwrap();
+        std::fs::write(dir.join("café.txt"), "new\n").unwrap();
+
+        let changes = changes(dir.to_str().unwrap()).await.unwrap();
+        let _ = std::fs::remove_dir_all(&dir);
+
+        let paths: Vec<&str> = changes["files"].as_array().unwrap().iter().map(|f| f["path"].as_str().unwrap()).collect();
+        assert_eq!(paths, ["ação.txt", "café.txt"]);
+        let diff = changes["diff"].as_str().unwrap();
+        assert!(diff.contains("diff --git a/ação.txt b/ação.txt\n"), "{diff}");
+    }
 }
 
 /// The ref an automation's worktree is cut from, after fetching `origin`.
