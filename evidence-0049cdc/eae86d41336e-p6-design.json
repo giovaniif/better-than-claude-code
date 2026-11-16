@@ -1,0 +1,35 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "3c5cac0f928d9a236907ef11c61dc0145ccd02c5",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/markdown.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/markdown.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

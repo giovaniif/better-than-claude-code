@@ -1,0 +1,190 @@
+{
+  "v": 1,
+  "claim": "An agent's Markdown table showed as raw pipe text in the thread (header, |---| row and cells run together); it should render as a table that fits the viewport",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819",
+  "base": "3c5cac0f928d9a236907ef11c61dc0145ccd02c5",
+  "head": "0049cdc4120e60d06543108a99e73f66760e835d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/markdown.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/markdown.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T15:43:51.036Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "5531b7cd5c7e4a1014cb95d68b6b2df6198b8e4c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0e7cefbf9e1ab6d28e21effd607f442c1432adc9f792dc127a205143fa0ab099"
+        },
+        {
+          "path": "p1-table-mobile.png",
+          "sha256": "17680020485731335159414eec657934dd7d89a50b20e018b3b221b5b6213d1f"
+        },
+        {
+          "path": "p1-table-desktop.png",
+          "sha256": "ec888a2fc65a0583caa89cd76adf4c863190116d16d3a237421c305bb00331f2"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:00.493Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "5531b7cd5c7e4a1014cb95d68b6b2df6198b8e4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "4ccb362fe99a21959c4e98676f3924dd8564fddd9fdcea481e7bf334246b8647"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:00.542Z",
+      "cmd": "verify/yv map run thread --recipe markdown-table-renders",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0049cdc4120e60d06543108a99e73f66760e835d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "274ed60712fa3e58f959cb9132e73e2f9cf1fc899e2a9429b621d08c2d003617"
+        },
+        {
+          "path": "p3-table-mobile.png",
+          "sha256": "8550d851d0b793602edaec6bfd565ed8ac5cbff597ec00dfc5cc1fe0e4d20e93"
+        },
+        {
+          "path": "p3-table-desktop.png",
+          "sha256": "57ebc8fc43652beb826be3a08d38892cb9049e6234874368e301e9c64984e091"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:46.833Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "0049cdc4120e60d06543108a99e73f66760e835d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "72bd4ae176f788c2f66169ef03ecd3160a3cfe715b1869f45b1cab30b888cbe8"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:46.878Z",
+      "cmd": "verify/yv map run thread --recipe markdown-table-renders",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "0049cdc4120e60d06543108a99e73f66760e835d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "878c78bdd0f439ecce3396aefd577f4d516a8f82278567e23b935ad89060e5ba"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:53.505Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "0049cdc4120e60d06543108a99e73f66760e835d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "eae86d41336eefee4e8dc283b015b251fe3e7cac4497c754afa33c64c6cb1281"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:53.614Z",
+      "cmd": "verify/yv design-check --base 3c5cac0f928d",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "0049cdc4120e60d06543108a99e73f66760e835d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-thread.json",
+          "sha256": "56c5fa8c03f6597ca94cf50f076d016689f9ffca469e540e6122302a88bef5d0"
+        }
+      ],
+      "addedAt": "2026-11-16T15:44:53.698Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/subagent-nests-and-expands"
+      ]
+    }
+  ]
+}

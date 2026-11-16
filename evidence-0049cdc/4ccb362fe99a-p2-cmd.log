@@ -1,0 +1,45 @@
+$ verify/yv map run thread --recipe markdown-table-renders
+# exit 1 after 26668 ms at 5531b7cd5c7e4a1014cb95d68b6b2df6198b8e4c
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T15:44:27.206Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "markdown-table-renders",
+          "status": "fail",
+          "ms": 25816,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":{\"css\":\".prose table th\",\"hasText\":\"Result\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-44-01-689Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":{\"css\":\".prose table th\",\"hasText\":\"Result\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-44-01-689Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "ns for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 5% · 57%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-1b15\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: \\\"TEST-table | File | Result | Note | |---|:---:|---| | src/a.ts | pass | | | src/b.ts | `fail` | expected 3 tokens, got 2 in the long-running integration suite for the parser |\\\"\\n  - paragraph: \\\"Echo: TEST-table\\\"\\n  - paragraph:\\n    - text: \\\"| File | Result | Note | |---|:---:|---| | src/a.ts | pass | | | src/b.ts |\\\"\\n    - code: fail\\n    - text: \\\"| expected 3 tokens, got 2 in the long-running integration suite for the parser |\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose table th\\\",\\\"hasText\\\":\\\"Result\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-44-01-689Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose table th\\\",\\\"hasText\\\":\\\"Result\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-0819/.verify/drives/2026-11-16T15-44-01-689Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/markdown-table-renders",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

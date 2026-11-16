@@ -1,0 +1,26 @@
+$ verify/yv map run thread --recipe markdown-table-renders
+# exit 0 after 6583 ms at 0049cdc4120e60d06543108a99e73f66760e835d
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T15:44:53.457Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "markdown-table-renders",
+          "status": "pass",
+          "ms": 5729
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

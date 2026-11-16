@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "session:s1a1e502f7876",
+  "build": {
+    "sha": "0049cdc4120e60d06543108a99e73f66760e835d",
+    "short": "0049cdc",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T15:44:39.524Z"
+  },
+  "dir": ".verify/evidence/markdown-tables-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3385,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/markdown-tables-head/table-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3117,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/markdown-tables-head/table-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
