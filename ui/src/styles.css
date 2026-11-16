@@ -174,6 +174,8 @@ h1, h2, h3, p { margin: 0; }
 .note { align-self: center; font-size: 12px; color: var(--muted); text-align: center; }
 .note-link { height: 24px; margin-left: 4px; padding: 0 6px; font-size: 12px; color: var(--ink); text-decoration: underline; }
 .bubble-toggle { display: block; height: 24px; margin: 6px 0 0 -10px; font-size: 12px; }
+.bubble-parts { display: flex; flex-direction: column; gap: 8px; }
+.bubble-quote { margin: 0; padding-left: 10px; border-left: 2px solid var(--line-strong); color: var(--muted); font-size: 13px; line-height: 1.5; }
 .queued-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); overflow-wrap: anywhere; }
 .queued-line .btn { height: 28px; }
 
@@ -188,6 +190,15 @@ h1, h2, h3, p { margin: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .composer-drop { border-color: var(--ink); border-style: dashed; background: var(--side); }
 .attach-btn { width: 30px; height: 30px; margin-left: -6px; }
+
+/* quotes from the agent's answers, waiting in the reply box: two lines, More for the rest */
+.composer-quotes { display: flex; flex-direction: column; gap: 6px; }
+.quote-card { display: flex; align-items: flex-start; gap: 2px; padding: 4px 4px 4px 10px; border-left: 2px solid var(--line-strong); border-radius: 0 8px 8px 0; background: var(--side); }
+.quote-card-text { flex: 1 1 0; min-width: 0; padding: 3px 0; font-size: 12px; line-height: 1.5; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.quote-card.open .quote-card-text { display: block; max-height: 160px; overflow-y: auto; }
+.quote-card .btn-text, .quote-card .btn-icon { flex: none; height: 24px; border-radius: 6px; }
+.quote-card .btn-text { padding: 0 6px; font-size: 12px; }
+.quote-card .btn-icon { width: 24px; }
 
 /* attachments */
 .attachments { display: flex; flex-wrap: wrap; gap: 6px; }

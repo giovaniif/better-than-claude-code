@@ -9,7 +9,7 @@ import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from ".
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { ProcPane } from "./ProcPane";
-import { appendToComposer, onAppend, quoted } from "./compose";
+import { onAppend, quoteInComposer, quoteSegments, splitQuotes, withQuotes } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
@@ -1002,6 +1002,9 @@ function Composer(props: {
   children: ReactNode;
 }) {
   const [text, setText] = useState("");
+  // Parts of answers being replied to: cards above the text, sent as
+  // blockquotes before it (compose.ts).
+  const [quotes, setQuotes] = useState<{ key: string; text: string }[]>([]);
   const [files, setFiles] = useState<PendingFile[]>([]);
   const [sending, setSending] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -1014,7 +1017,10 @@ function Composer(props: {
   useEffect(() => {
     if (!props.appendFor) return;
     return onAppend(props.appendFor, (added) => {
-      setText((t) => (t && !t.endsWith("\n") ? t + "\n" : t) + added);
+      const more = added.quotes ?? [];
+      if (more.length) setQuotes((q) => [...q, ...more.map((text) => ({ key: `q${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`, text }))]);
+      const typed = added.text;
+      if (typed) setText((t) => (t && !t.endsWith("\n") ? t + "\n" : t) + typed);
       const el = area.current;
       if (!el) return;
       el.focus();
@@ -1088,9 +1094,13 @@ function Composer(props: {
   useEffect(() => () => live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
 
   const failed = files.some((f) => f.state === "error");
-  const canSend = (text.trim() !== "" || files.length > 0) && !failed && !props.busy && !sending;
+  // Quotes alone can go, like files alone: "this" with the part pointed at.
+  const canSend = (text.trim() !== "" || quotes.length > 0 || files.length > 0) && !failed && !props.busy && !sending;
   const submit = async () => {
-    const value = text.trim();
+    const value = withQuotes(
+      quotes.map((q) => q.text),
+      text.trim(),
+    );
     if (!canSend) return;
     setSending(true);
     try {
@@ -1103,6 +1113,7 @@ function Composer(props: {
       props.onSubmit(value, attachments);
       if (!props.keepText) {
         setText("");
+        setQuotes([]);
         files.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
         uploads.current.clear();
         setFiles([]);
@@ -1146,6 +1157,20 @@ function Composer(props: {
         <div className="attachments" aria-label="Attachments">
           {files.map((f) => (
             <PendingChip key={f.key} file={f} onRemove={() => removeFile(f.key)} />
+          ))}
+        </div>
+      )}
+      {quotes.length > 0 && (
+        <div className="composer-quotes" aria-label="Quoted">
+          {quotes.map((q) => (
+            <QuoteCard
+              key={q.key}
+              text={q.text}
+              onRemove={() => {
+                setQuotes((list) => list.filter((x) => x.key !== q.key));
+                area.current?.focus();
+              }}
+            />
           ))}
         </div>
       )}
@@ -1193,6 +1218,32 @@ function Composer(props: {
           {sending ? <span className="send-wait" aria-label="Uploading" /> : <Icon d={ARROW_UP} width={2.5} />}
         </button>
       </div>
+    </div>
+  );
+}
+
+/** A quote waiting in the reply box: two lines, More shows the rest. */
+function QuoteCard({ text, onRemove }: { text: string; onRemove(): void }) {
+  const [open, setOpen] = useState(false);
+  const [cut, setCut] = useState(false);
+  const body = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = body.current;
+    if (el && !open) setCut(el.scrollHeight > el.clientHeight + 1);
+  }, [text, open]);
+  return (
+    <div className={`quote-card${open ? " open" : ""}`}>
+      <div ref={body} className="quote-card-text">
+        {text}
+      </div>
+      {(cut || open) && (
+        <button className="btn-text" aria-expanded={open} onClick={() => setOpen(!open)}>
+          {open ? "Less" : "More"}
+        </button>
+      )}
+      <button className="btn-icon" aria-label="Remove quote" title="Remove quote" onClick={onRemove}>
+        <Icon d={CLOSE} size={12} />
+      </button>
     </div>
   );
 }
@@ -1956,7 +2007,7 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
 
 /**
  * Reply to part of an answer: selecting text inside one agent answer shows a
- * Reply button over the selection, which quotes it into the reply box.
+ * Reply button over the selection, which adds it to the reply box as a quote card.
  */
 function QuoteReply({ sessionId }: { sessionId: string }) {
   const [at, setAt] = useState<{ left: number; top: number; below: boolean; text: string } | null>(null);
@@ -1991,7 +2042,7 @@ function QuoteReply({ sessionId }: { sessionId: string }) {
       // Keep the selection: a mousedown on a button would clear it before the click.
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => {
-        appendToComposer(sessionId, quoted(at.text));
+        quoteInComposer(sessionId, at.text);
         document.getSelection()?.removeAllRanges();
         setAt(null);
       }}
@@ -2013,19 +2064,43 @@ function PendingList({ pending, busy, onEdit, onRemove }: { pending: PendingMess
   return (
     <section className="pending" aria-label="Waiting to send">
       <div className="muted small">{busy ? "Queued: the agent reads it after its current step" : "Not sent: the last turn did not finish. It goes with your next message."}</div>
-      {pending.map((p) => (
-        <div className="pending-row" key={p.id}>
-          <span className="pending-text">{p.text || p.attachments?.map((a) => a.name).join(", ")}</span>
-          {!!p.attachments?.length && <span className="muted small">{p.attachments.length === 1 ? "1 file" : `${p.attachments.length} files`}</span>}
-          <button className="btn-text pending-edit" aria-label="Edit" title="Back to the reply box (↑)" onClick={() => onEdit(p.id)}>
-            Edit
-          </button>
-          <button className="btn-icon" aria-label="Remove from queue" title="Remove" onClick={() => onRemove(p.id)}>
-            <Icon d={CLOSE} size={12} />
-          </button>
-        </div>
-      ))}
+      {pending.map((p) => {
+        const { quotes, text } = splitQuotes(p.text);
+        return (
+          <div className="pending-row" key={p.id}>
+            <span className="pending-text">{text || quotes.join(" ") || p.attachments?.map((a) => a.name).join(", ")}</span>
+            {quotes.length > 0 && <span className="muted small">{quotes.length === 1 ? "1 quote" : `${quotes.length} quotes`}</span>}
+            {!!p.attachments?.length && <span className="muted small">{p.attachments.length === 1 ? "1 file" : `${p.attachments.length} files`}</span>}
+            <button className="btn-text pending-edit" aria-label="Edit" title="Back to the reply box (↑)" onClick={() => onEdit(p.id)}>
+              Edit
+            </button>
+            <button className="btn-icon" aria-label="Remove from queue" title="Remove" onClick={() => onRemove(p.id)}>
+              <Icon d={CLOSE} size={12} />
+            </button>
+          </div>
+        );
+      })}
     </section>
+  );
+}
+
+/** `> ` lines in your own message show as quotes, not as `>` characters.
+ *  Your text stays text: only the quote lines are picked out. */
+function BubbleText({ text }: { text: string }) {
+  const parts = quoteSegments(text);
+  if (parts.length === 1 && !parts[0].quote) return <>{text}</>;
+  return (
+    <div className="bubble-parts">
+      {parts.map((part, i) =>
+        part.quote ? (
+          <blockquote key={i} className="bubble-quote">
+            {part.text}
+          </blockquote>
+        ) : (
+          <div key={i}>{part.text}</div>
+        ),
+      )}
+    </div>
   );
 }
 
@@ -2035,10 +2110,15 @@ const FOLD_LINES = 12;
 function UserBubble({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
   const lines = text.split("\n");
-  if (lines.length <= FOLD_LINES) return <div className="bubble">{text}</div>;
+  if (lines.length <= FOLD_LINES)
+    return (
+      <div className="bubble">
+        <BubbleText text={text} />
+      </div>
+    );
   return (
     <div className="bubble">
-      {expanded ? text : lines.slice(0, FOLD_LINES).join("\n")}
+      <BubbleText text={expanded ? text : lines.slice(0, FOLD_LINES).join("\n")} />
       <button className="btn-text bubble-toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
         {expanded ? "Show less" : `Show more (${lines.length - FOLD_LINES} lines)`}
       </button>
