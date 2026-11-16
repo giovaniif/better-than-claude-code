@@ -226,8 +226,12 @@ pub fn input(app: &Arc<App>, term_id: &str, data: &str) -> Result<()> {
 
 pub fn resize(app: &Arc<App>, term_id: &str, cols: u16, rows: u16) -> Result<()> {
     let inner = app.terms.inner.lock().unwrap();
-    let term = inner.map.get(term_id).filter(|t| !t.exited).context("terminal is closed")?;
-    term.master.resize(size(cols, rows))?;
+    let term = inner.map.get(term_id).context("terminal is closed")?;
+    // A client fits its view before the attach reply says the shell exited;
+    // with no shell there is nothing to resize, and nothing went wrong.
+    if !term.exited {
+        term.master.resize(size(cols, rows))?;
+    }
     Ok(())
 }
 
