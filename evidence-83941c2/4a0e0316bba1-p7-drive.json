@@ -1,0 +1,65 @@
+{
+  "ok": true,
+  "route": "session:TEST-p95 latency",
+  "build": {
+    "sha": "83941c29bf0afdcc8d181cb2c3436f38fca1a9d7",
+    "short": "83941c2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:22:16.304Z"
+  },
+  "dir": ".verify/evidence/connectors-widgets-head-chart",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3349,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/connectors-widgets-head-chart/chart-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [
+        "Refused to connect to 'https://example.com/' because it violates the following Content Security Policy directive: \"connect-src 'none'\".\n",
+        "Fetch API cannot load https://example.com/. Refused to connect because it violates the document's Content Security Policy."
+      ],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3316,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/connectors-widgets-head-chart/chart-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [
+        "Refused to connect to 'https://example.com/' because it violates the following Content Security Policy directive: \"connect-src 'none'\".\n",
+        "Fetch API cannot load https://example.com/. Refused to connect because it violates the document's Content Security Policy."
+      ],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "83941c29bf0afdcc8d181cb2c3436f38fca1a9d7",
+    "short": "83941c2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T20:22:16.304Z"
+  },
+  "dir": ".verify/evidence/connectors-widgets-head-add-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3849,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/connectors-widgets-head-add-m/catalog-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/connectors-widgets-head-add-m/linear-sign-in-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
