@@ -1801,3 +1801,37 @@ async fn accounts_are_per_host_through_the_hub() {
     c.send(json!({ "op": "account.remove", "id": id, "host": host })).await;
     c.wait_for("the remote's empty list", |m| m["op"] == "accounts" && m["hostId"] == host && m["accounts"] == json!([])).await;
 }
+
+fn alive(pid: &str) -> bool {
+    std::process::Command::new("kill").args(["-0", pid]).stderr(std::process::Stdio::null()).status().map(|s| s.success()).unwrap_or(false)
+}
+
+#[tokio::test]
+async fn removing_a_codex_account_stops_its_app_server() {
+    let sb = Sandbox::new("accounts-rm-codex");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let id = add_account(&mut c, "codex", "Work").await;
+    let dir = sb.data().join("accounts").join(&id);
+    // A session on the account starts its app-server.
+    let sid = c.create(&sb.folder("work"), "task", json!({ "account": id })).await;
+    c.wait_turn_done(&sid, 0).await;
+    let pid = sb
+        .codex_log()
+        .lines()
+        .find(|l| l.starts_with("start") && l.ends_with(&format!("home={}", dir.display())))
+        .and_then(|l| l.split_whitespace().find_map(|w| w.strip_prefix("pid=")))
+        .expect("the account's app-server started")
+        .to_string();
+    assert!(alive(&pid));
+
+    c.send(json!({ "op": "session.delete", "sessionId": sid })).await;
+    c.wait_for("the session gone", |m| m["op"] == "session.deleted").await;
+    c.send(json!({ "op": "account.remove", "id": id })).await;
+    c.wait_for("the empty accounts list", |m| m["op"] == "accounts" && m["accounts"] == json!([])).await;
+    let deadline = Instant::now() + WAIT;
+    while alive(&pid) {
+        assert!(Instant::now() < deadline, "the removed account's app-server (pid {pid}) is still running");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
