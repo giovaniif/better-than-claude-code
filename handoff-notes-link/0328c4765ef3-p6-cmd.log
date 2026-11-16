@@ -1,0 +1,10 @@
+$ cd ui && bun test
+# exit 0 after 61 ms at 08a3bffcac18365f2a00d50dfaec269ccc5d8ef7
+
+bun test v1.4.4 (38afee6c8)
+
+
+ 151 pass
+ 0 fail
+ 341 expect() calls
+Ran 151 tests across 11 files. [56.00ms]

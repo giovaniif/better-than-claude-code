@@ -1,0 +1,211 @@
+{
+  "v": 1,
+  "claim": "After a hand-off, both sessions have the same title and the notes 'Handed off to Claude.' / 'Handed off from Codex.' are plain text: from the source session there is no way to the new one but guessing sidebar rows by model.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329",
+  "base": "cdc7b63000c1dc3347bca12043ffcc78a6b7c7ff",
+  "head": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T17:44:36.945Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ea9affcfcf7fa5a0495343c4658ea8dd130282ee",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive-mobile.json",
+          "sha256": "3cc524c03626f785c9cff23dc02f289137fb3c736c58acb2a19f617c1042e3f5"
+        },
+        {
+          "path": "p1-new-session-mobile.png",
+          "sha256": "bf547b0ecdb528cdd2b8a81d676200e09f87d9933991afc548f5c1e0f0888283"
+        },
+        {
+          "path": "p1-source-mobile.png",
+          "sha256": "c9cc9df9bd9ec43b45301794eff7ad5da62336f221bf5d5eccff2d11576a6168"
+        },
+        {
+          "path": "p1-fail-mobile-step10.png",
+          "sha256": "4b1488268fafe153f746feac3e68d17c61ab12a9b77fbec885b01989347167ae"
+        }
+      ],
+      "addedAt": "2026-11-16T17:45:45.874Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "ea9affcfcf7fa5a0495343c4658ea8dd130282ee",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d11ea6f7ad9adcfe69d89e824c9989438174b10eef02d12ee7915180142d3322"
+        }
+      ],
+      "addedAt": "2026-11-16T17:45:45.926Z",
+      "cmd": "cd ui && bun test src/thread.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ea9affcfcf7fa5a0495343c4658ea8dd130282ee",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "15ffad974566a6607008e82a9ab59691c4ca376a768929a640a97ace5b0fd520"
+        }
+      ],
+      "addedAt": "2026-11-16T17:45:45.983Z",
+      "cmd": "verify/yv map run models --recipe hand-off-notes-link-both-sessions",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "08a7952f3d127e95deb7193d45f9d8c7dc71c6f67a54e41d16961c5e06be06b9"
+        },
+        {
+          "path": "p4-source-desktop.png",
+          "sha256": "154c6530b23a132608dd39a61942dee529242ec71b6b378735c33b39f282ffc9"
+        },
+        {
+          "path": "p4-new-session-desktop.png",
+          "sha256": "b48718f3f4ec8958dc30f1c2d958d9fe04b515c8ba8da56eb983d6b3da4ff719"
+        }
+      ],
+      "addedAt": "2026-11-16T17:46:33.767Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "c00df2617fdcbdea49ab3bec1b2311ab60802376ef72ed04578b8158ff6a8966"
+        },
+        {
+          "path": "p5-source-mobile.png",
+          "sha256": "e975431d8b7b5b5162c39e75aa5cd91591f988eff129c7bb21133d52c6b976a6"
+        },
+        {
+          "path": "p5-new-session-mobile.png",
+          "sha256": "460d7086de9d84437c08e58a378c7031ecaf4019c217e56e0f4ca7f92d162c50"
+        }
+      ],
+      "addedAt": "2026-11-16T17:46:33.816Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "0328c4765ef3a4328bc6d3f885cbbebd95f9ee24926c63a304d2aaddbe6ddb65"
+        }
+      ],
+      "addedAt": "2026-11-16T17:46:33.863Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "c354d2b5636e89f8ef36306a0a4f999f28c1b76b65ecfd5a47df7889c9841e7f"
+        }
+      ],
+      "addedAt": "2026-11-16T17:46:33.971Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "b19d7656cd89b4471f1fedaad843dfd383736a5c73c806b8063ae9b9c2ffbdeb"
+        }
+      ],
+      "addedAt": "2026-11-16T17:46:50.433Z",
+      "cmd": "verify/yv design-check --base cdc7b63000c1",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "note",
+      "at": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T17:46:50.528Z",
+      "text": "Daemon untouched: only ui/ and verify/features changed, so cargo test is not rerun here (CI runs it). The failing tests are proofs 2 and 3 (base, ea9affc)."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+$ cd ui && bun test src/thread.test.ts
+# exit 1 after 11 ms at ea9affcfcf7fa5a0495343c4658ea8dd130282ee
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'handoffLinks' not found in module '/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-d329/ui/src/thread.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

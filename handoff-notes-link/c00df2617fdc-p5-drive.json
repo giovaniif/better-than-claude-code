@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:TEST-hello from Claude",
+  "build": {
+    "sha": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+    "short": "08a3bff",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T17:46:08.513Z"
+  },
+  "dir": ".verify/evidence/handoff-notes-link-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4374,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/handoff-notes-link-head-mobile/source-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/handoff-notes-link-head-mobile/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

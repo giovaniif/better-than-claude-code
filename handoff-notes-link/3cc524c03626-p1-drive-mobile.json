@@ -1,0 +1,63 @@
+{
+  "ok": false,
+  "route": "session:TEST-hello from Claude",
+  "build": {
+    "sha": "ea9affcfcf7fa5a0495343c4658ea8dd130282ee",
+    "short": "ea9affc",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T17:44:39.164Z"
+  },
+  "dir": ".verify/evidence/handoff-notes-link-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 14595,
+      "steps": 11,
+      "failed": {
+        "step": 10,
+        "action": {
+          "expect": {
+            "role": "button",
+            "name": "Open session",
+            "exact": true
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/handoff-notes-link-base/fail-mobile-step10.png",
+        "aria": "- main:\n  - button \"Open sessions\"\n  - heading \"TEST-hello from Claude\" [level=1]\n  - code: yard/test-hello-from-claude-e239\n  - button \"Delete\"\n  - text: TEST-hello from Claude\n  - paragraph: \"Echo: TEST-hello from Claude\"\n  - text: Handed off to Codex.\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Haiku 5.5 Medium\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]"
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/handoff-notes-link-base/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/handoff-notes-link-base/source-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 10 {\"expect\":{\"role\":\"button\",\"name\":\"Open session\",\"exact\":true}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/handoff-notes-link-base/fail-mobile-step10.png and the aria snapshot"
+    }
+  ]
+}

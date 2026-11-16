@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:TEST-say hello",
+  "build": {
+    "sha": "08a3bffcac18365f2a00d50dfaec269ccc5d8ef7",
+    "short": "08a3bff",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T17:46:08.513Z"
+  },
+  "dir": ".verify/evidence/handoff-notes-link-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4093,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/handoff-notes-link-head-desktop/source-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/handoff-notes-link-head-desktop/new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
