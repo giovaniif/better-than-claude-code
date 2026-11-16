@@ -182,7 +182,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   if (route === "new") {
     await page.getByRole("button", { name: "New session" }).first().click();
   } else if (route === "hosts") {
-    await page.locator(".host-row").first().click();
+    // The notifications switch (#17) is a .host-row too, and comes first.
+    await page.locator(".host-row:not([role=switch])").first().click();
   } else if (route.startsWith("session:")) {
     const key = route.slice("session:".length);
     let title = key;
