@@ -49,8 +49,26 @@ struct Command {
     since: u64,
 }
 
+/// One process of a session, as of the last sample.
+#[derive(Clone)]
+struct ProcRow {
+    pid: u32,
+    ppid: u32,
+    name: String,
+    cmd: String,
+    /// Percent of one core.
+    cpu: f32,
+    mem: u64,
+    /// Seconds since the epoch.
+    start: u64,
+    /// `agent`: what the engine runs. `terminal`: the session's shells.
+    origin: &'static str,
+}
+
 #[derive(Default)]
 struct Inner {
+    /// Session -> its processes at the last sample, for `session.procs`.
+    procs: HashMap<String, Vec<ProcRow>>,
     /// Claude session -> its sidecar.
     sidecars: HashMap<String, u32>,
     /// Each account's `codex app-server`. It cannot be split by session, but
@@ -134,7 +152,33 @@ impl Guard {
         let mut inner = self.inner.lock().unwrap();
         inner.sidecars.remove(sid);
         inner.commands.remove(sid);
+        inner.procs.remove(sid);
         inner.queue.retain(|(id, _)| id != sid);
+    }
+
+    /// The session's process tree at the last sample (at most 3 s old), for
+    /// `session.procs`. The ages are worked out now.
+    pub fn procs(&self, sid: &str) -> Vec<Value> {
+        let now = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+        let inner = self.inner.lock().unwrap();
+        inner
+            .procs
+            .get(sid)
+            .into_iter()
+            .flatten()
+            .map(|p| {
+                json!({
+                    "pid": p.pid,
+                    "ppid": p.ppid,
+                    "name": p.name,
+                    "cmd": p.cmd,
+                    "cpu": p.cpu,
+                    "memBytes": p.mem,
+                    "ageSecs": now.saturating_sub(p.start),
+                    "origin": p.origin,
+                })
+            })
+            .collect()
     }
 
     fn pressure(&self, inner: &Inner) -> Option<String> {
@@ -235,27 +279,38 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
     }
 
     let mut usage: HashMap<String, SessionUse> = HashMap::new();
-    for (sid, pid) in &sidecars {
-        // The whole sidecar tree: the sidecar, the CLI and what it runs.
-        let root = Pid::from_u32(*pid);
-        let mut all = Vec::new();
-        tree(&children, root, &mut all, &mut HashSet::new());
-        let u = usage.entry(sid.clone()).or_default();
-        for p in all.iter().filter_map(|pid| procs.get(pid)) {
-            u.cpu += p.cpu_usage();
-            u.mem += p.memory();
-        }
-    }
-    let mut add = |sid: &str, root: u32| {
+    let mut listed: HashMap<String, Vec<ProcRow>> = HashMap::new();
+    let mut add = |sid: &str, root: u32, origin: &'static str| {
         let u = usage.entry(sid.to_string()).or_default();
+        let rows = listed.entry(sid.to_string()).or_default();
         let mut pids = Vec::new();
         tree(&children, Pid::from_u32(root), &mut pids, &mut HashSet::new());
+        // Children come first in `pids`; the list reads better parent first,
+        // and the UI orders it anyway.
         for pid in pids {
             let Some(p) = procs.get(&pid) else { continue };
             u.cpu += p.cpu_usage();
             u.mem += p.memory();
+            if rows.iter().any(|r| r.pid == pid.as_u32()) {
+                continue;
+            }
+            let cmd = p.cmd().join(" ");
+            rows.push(ProcRow {
+                pid: pid.as_u32(),
+                ppid: p.parent().map_or(0, |pp| pp.as_u32()),
+                name: p.name().to_string(),
+                cmd: if cmd.is_empty() { p.name().to_string() } else { cmd.chars().take(400).collect() },
+                cpu: p.cpu_usage(),
+                mem: p.memory(),
+                start: p.start_time(),
+                origin,
+            });
         }
     };
+    // The whole sidecar tree: the sidecar, the CLI and what it runs.
+    for (sid, pid) in &sidecars {
+        add(sid, *pid, "agent");
+    }
     // Codex reports an id of its own as `processId`, not an OS pid. So each
     // child of the app-server goes to the session with a running command in
     // that folder (or above it, for a shell that ran `cd`) that started no
@@ -274,13 +329,15 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
                 .max_by_key(|(_, c)| c.since)
                 .map(|(sid, _)| sid.clone());
             if let Some(sid) = owner {
-                add(&sid, child.as_u32());
+                add(&sid, child.as_u32(), "agent");
             }
         }
     }
     for (sid, pid) in pty::shell_pids(app) {
-        add(&sid, pid);
+        add(&sid, pid, "terminal");
     }
+    // The closure holds `usage` and `listed` until here.
+    guard.inner.lock().unwrap().procs = listed;
 
     // One per sample, so a burst of starts cannot push the host straight
     // back under pressure.

@@ -44,6 +44,7 @@ pub async fn run(app: Arc<App>) {
             ProcessRefreshKind::new()
                 .with_cpu()
                 .with_memory()
+                .with_cmd(UpdateKind::OnlyIfNotSet)
                 .with_cwd(UpdateKind::OnlyIfNotSet),
         );
 

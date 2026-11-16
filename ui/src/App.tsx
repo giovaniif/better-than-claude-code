@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, Usage } from "./protocol";
+import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { useNotifySetting } from "./notify";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { accountChoices, accountLabel, accountName, accountOf, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
@@ -8,6 +8,7 @@ import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, h
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
+import { ProcPane } from "./ProcPane";
 import { appendToComposer, onAppend, quoted } from "./compose";
 import { duration, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 
@@ -2054,6 +2055,7 @@ function WorkEntry({ entry }: { entry: WorkItem }) {
       </div>
     );
   }
+  if (entry.agent || entry.steps?.length) return <AgentEntry entry={entry} />;
   const expandable = !!entry.output;
   return (
     <div className="tool">
@@ -2068,6 +2070,46 @@ function WorkEntry({ entry }: { entry: WorkItem }) {
         {entry.state === "failed" && <span className="bad">· failed</span>}
       </button>
       {open && entry.output && <pre className="tool-output">{entry.output}</pre>}
+    </div>
+  );
+}
+
+/** A subagent: one line, collapsed. Open, the steps it took and its report. */
+function AgentEntry({ entry }: { entry: ToolItem }) {
+  const [open, setOpen] = useState(false);
+  const steps = entry.steps ?? [];
+  const expandable = steps.length > 0 || !!entry.output;
+  const latest = steps[steps.length - 1];
+  const parts = [
+    entry.state === "running" ? "running" : entry.state === "failed" ? "failed" : "done",
+    entry.state !== "running" && entry.ms != null ? duration(entry.ms) : null,
+    steps.length ? `${steps.length} ${steps.length === 1 ? "step" : "steps"}` : null,
+  ].filter(Boolean);
+  return (
+    <div className="tool agent">
+      <button className="tool-row" aria-expanded={open} disabled={!expandable} onClick={() => setOpen(!open)}>
+        <span className={`tool-chevron ${open ? "open" : ""} ${expandable ? "" : "hidden"}`}>
+          <Icon d={CHEVRON_RIGHT} size={12} />
+        </span>
+        <span>Agent</span>
+        {entry.detail && <span className="agent-what">{entry.detail}</span>}
+        {entry.agent && <span className="agent-type">{entry.agent}</span>}
+        {entry.state === "running" && <span className="pulse" aria-label="running" />}
+        <span className={entry.state === "failed" ? "bad small" : "muted small"}>{parts.join(" · ")}</span>
+        {entry.state === "running" && latest && !open && <code>{latest.detail}</code>}
+      </button>
+      {open && (
+        <div className="agent-body">
+          {steps.length > 0 && (
+            <div className="work-list">
+              {steps.map((s) => (
+                <WorkEntry key={s.key} entry={s} />
+              ))}
+            </div>
+          )}
+          {entry.output && <pre className="tool-output">{entry.output}</pre>}
+        </div>
+      )}
     </div>
   );
 }
@@ -2197,7 +2239,7 @@ function splitDiff(diff: string): { path: string; body: string }[] {
 function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State }) {
   const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
   const { sessionId, changes, connected, actions } = props;
-  const [tab, setTab] = useState<"changes" | "terminal" | "pr">("changes");
+  const [tab, setTab] = useState<"changes" | "terminal" | "pr" | "procs">("changes");
   const [prUsed, setPrUsed] = useState(false);
   // The shell starts the first time the tab is opened, then stays mounted.
   const [terminalUsed, setTerminalUsed] = useState(false);
@@ -2239,12 +2281,17 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         >
           Pull request
         </button>
+        <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>
+          Processes
+        </button>
         <span className="spacer" />
         {tab !== "terminal" && (
           <button
             className="btn-icon"
-            aria-label={tab === "pr" ? "Refresh pull request" : "Refresh changes"}
-            onClick={() => (tab === "pr" ? actions.loadPr(sessionId) : actions.loadChanges(sessionId))}
+            aria-label={tab === "pr" ? "Refresh pull request" : tab === "procs" ? "Refresh processes" : "Refresh changes"}
+            onClick={() =>
+              tab === "pr" ? actions.loadPr(sessionId) : tab === "procs" ? actions.loadProcs(sessionId) : actions.loadChanges(sessionId)
+            }
           >
             <Icon d={REFRESH} />
           </button>
@@ -2252,6 +2299,7 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
       </header>
       {terminalUsed && <TerminalPane sessionId={sessionId} connected={connected} visible={tab === "terminal"} actions={actions} />}
       {prUsed && <PrPane meta={props.meta} state={props.state} actions={actions} visible={tab === "pr"} />}
+      {tab === "procs" && <ProcPane meta={props.meta} state={props.state} actions={actions} visible />}
       <div className="scroll pane-body" style={{ display: tab === "changes" ? "flex" : "none" }}>
         {changes?.error && <div className="muted">{capitalize(changes.error)}.</div>}
         {changes && !changes.error && files.length === 0 && <div className="muted">No changes in this folder.</div>}

@@ -1835,3 +1835,91 @@ async fn removing_a_codex_account_stops_its_app_server() {
         std::thread::sleep(Duration::from_millis(50));
     }
 }
+
+/// Ask `session.procs` until the list has a process whose command line
+/// contains `needle`: the list comes from the host sampler, a few seconds
+/// behind.
+async fn procs_with(c: &mut Client, sid: &str, needle: &str) -> Vec<Value> {
+    for _ in 0..15 {
+        let from = c.mark();
+        c.send(json!({ "op": "session.procs", "sessionId": sid })).await;
+        let reply = c.wait_after(from, "a session.procs reply", |m| m["op"] == "session.procs" && m["sessionId"] == sid).await;
+        let procs = reply["procs"].as_array().expect("procs is a list").clone();
+        if procs.iter().any(|p| p["cmd"].as_str().is_some_and(|cmd| cmd.contains(needle))) {
+            return procs;
+        }
+        tokio::time::sleep(Duration::from_millis(1000)).await;
+    }
+    panic!("no process with `{needle}` in the list of {sid}");
+}
+
+#[tokio::test]
+async fn session_procs_lists_what_a_session_is_running() {
+    let sb = Sandbox::new("procs");
+    let sidecar = claude_sidecar();
+    let d = sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let mut c = d.client().await;
+    let extra = json!({ "engine": "claude", "model": "claude-haiku-5-5" });
+    // The scripted sidecar leaves a `sleep 30` running under itself.
+    let sid = c.create(&sb.folder("proj"), "[subagent] look around", extra).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+
+    let procs = procs_with(&mut c, &sid, "sleep 30").await;
+    let sleep = procs.iter().find(|p| p["cmd"].as_str().is_some_and(|c| c.contains("sleep 30"))).unwrap();
+    assert_eq!(sleep["name"], "sleep");
+    assert!(sleep["pid"].as_u64().unwrap() > 0);
+    assert!(sleep["cpu"].is_number() && sleep["memBytes"].as_u64().is_some() && sleep["ageSecs"].as_u64().is_some());
+    assert_eq!(sleep["origin"], "agent");
+    // A tree: the sleep's parent is in the list, and so is the sidecar's own process.
+    let parent = procs.iter().find(|p| p["pid"] == sleep["ppid"]).expect("the sleep's parent is listed");
+    assert!(parent["cmd"].as_str().unwrap().contains("yard-claude"), "{parent}");
+
+    // A terminal's shell is listed too, as the terminal's.
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    c.wait_for("the terminal", |m| m["op"] == "term.opened").await;
+    for _ in 0..15 {
+        let from = c.mark();
+        c.send(json!({ "op": "session.procs", "sessionId": sid })).await;
+        let reply = c.wait_after(from, "a session.procs reply", |m| m["op"] == "session.procs").await;
+        if reply["procs"].as_array().unwrap().iter().any(|p| p["origin"] == "terminal") {
+            return;
+        }
+        tokio::time::sleep(Duration::from_millis(1000)).await;
+    }
+    panic!("the terminal's shell never showed in the list");
+}
+
+#[tokio::test]
+async fn session_procs_for_an_unknown_session_is_an_error() {
+    let sb = Sandbox::new("procs-unknown");
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "session.procs", "sessionId": "nope" })).await;
+    let err = c.wait_for("an error", |m| m["op"] == "error" && m["for"] == "session.procs").await;
+    assert!(err["message"].as_str().unwrap().contains("no such session"), "{err}");
+}
+
+#[tokio::test]
+async fn session_procs_goes_through_the_hub() {
+    let sidecar = claude_sidecar();
+    let remote_sb = Sandbox::new("procs-remote");
+    let remote = remote_sb.start_with(&[("YARD_SIDECAR", &sidecar)]);
+    let hub_sb = Sandbox::new("procs-hub");
+    let hub = hub_sb.start();
+    let mut c = hub.client().await;
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "direct", "url": remote.url() })).await;
+    let hosts = c
+        .wait_for("the direct host to connect", |m| {
+            m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] == "connected"))
+        })
+        .await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+    c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+
+    let extra = json!({ "host": host, "engine": "claude", "model": "claude-haiku-5-5" });
+    let sid = c.create(&remote_sb.folder("proj"), "[subagent] look around", extra).await;
+    assert!(sid.starts_with(&format!("{host}~")));
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    // The reply carries the hub's id for the session, like every session op.
+    procs_with(&mut c, &sid, "sleep 30").await;
+}

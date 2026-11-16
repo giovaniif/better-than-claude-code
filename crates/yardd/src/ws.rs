@@ -515,6 +515,13 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             let _ = direct.send(json!({ "op": "changes", "sessionId": sid, "changes": changes }).to_string());
         }
+        // The session's processes as of the last host sample. Asked for, not
+        // broadcast: only the pane that shows them wants them.
+        "session.procs" => {
+            let sid = str_field(msg, "sessionId")?;
+            app.meta(sid).context("no such session")?;
+            let _ = direct.send(json!({ "op": "session.procs", "sessionId": sid, "procs": app.guard.procs(sid) }).to_string());
+        }
         "term.open" => {
             let sid = str_field(msg, "sessionId")?;
             let opened = pty::open(app, sid, dim(msg, "cols", 80), dim(msg, "rows", 24))?;

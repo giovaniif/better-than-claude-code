@@ -38,7 +38,7 @@ Both engines are normalized to one event list per session. The UI replays it on 
 | `turn_started`, `turn_completed` | Turn boundaries, with yardd's clock in `at` (ms) |
 | `assistant_delta`, `assistant_message` | Streamed text, then the final text |
 | `reasoning_delta`, `reasoning` | Thinking: Claude's summarized thinking (`--thinking-display summarized`), Codex's reasoning summary (parts become paragraphs) |
-| `tool_started`, `tool_completed` | A command, read, search or other tool call |
+| `tool_started`, `tool_completed` | A command, read, search or other tool call. Claude's Agent call carries `agent` (the subagent's type); a subagent's own steps carry `parent` (the Agent call's id); its `tool_completed` carries `ms` |
 | `file_change` | Edited files with diffs |
 | `approval_request`, `approval_resolved` | A command or edit waiting on me |
 | `error` | Engine error text |
@@ -50,6 +50,7 @@ Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is deriv
 **Stop** (`session.interrupt`) asks the engine to stop. If it cannot be asked, or the turn is still open 5 s later, yardd ends the turn itself (`turn_completed` `interrupted`, with a note): a Claude sidecar is killed, and its next message starts a new one that resumes the conversation; a Codex turn is closed on our side. A Claude sidecar that exits on its own is also dropped, so the next message starts a fresh one instead of writing into a dead pipe.
 
 - Item ids come from the engine (Codex item ids, Claude `tool_use` ids; the sidecar's own ids carry a per-process prefix). The UI matches an id only within the current turn, after the last user message, so a reused id can never pull new text up into an earlier turn. Order is the log's order.
+- **Subagents** (Claude's Agent tool, formerly Task). The SDK streams a subagent's messages with `parent_tool_use_id` set, plus system `task_started` and `task_notification`. `sidecar/yard-claude/src/subagents.ts` keeps the subagent's tool calls (`tool_started` with `parent`, `tool_completed`) and drops its thinking, text and diffs; the Agent call ends with its `task_notification` (`tool_completed` with the subagent's last words as `output`, its duration as `ms`), and its own `tool_result` is ignored. Checked on a real Haiku turn: an Agent call runs in the background by default, so its `tool_result` is only "launched" and the report arrives in the notification, even after the turn that started it has ended; a foreground one gets its notification before the `tool_result`. So a completed turn leaves a still-running Agent call (and its steps) running, Stop or a failure ends it, and `tool_completed` finds an Agent call in an earlier turn. `layout` nests each step under its call (`steps`, as deep as subagents nest); a still-running Agent call stays out of the turn's fold. The UI shows it as one collapsed line: its description, type, "running" or "done · 2s", its step count; open, the steps and the report. Codex has no subagents.
 - Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
 - The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
 
@@ -108,6 +109,7 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 - **No memory cap.** yardd never stops a running session for its size. A per-session cap (`YARD_SESSION_MEM_CAP_GB`) existed until 0.2.1 and was removed on 2026-11-15: a polling soft cap killed real work, and the queue below already keeps new sessions off a busy host.
 - Threads are not processes: on Linux `sysinfo` lists each thread with its process as parent and the process's memory as its own. They are skipped; counting them made a Claude CLI look 8.7 GB (2026-11-14).
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
+- **Processes tab:** `session.procs { sessionId }` answers `session.procs { sessionId, procs }`, the session's processes from the same sample (so up to 3 s old): `pid`, `ppid`, `name`, `cmd` (at most 400 characters), `cpu` (percent of one core), `memBytes`, `ageSecs` and `origin` (`agent` for the sidecar tree or a Codex command, `terminal` for a shell). It is asked for, not broadcast, and routes through the hub like any session op. The tab (`ProcPane`, next to Changes, Terminal and Pull request, so hidden below 1100 px) asks when opened and every 3 s while visible, and draws the tree with each command line shortened. An older remote yardd answers "unknown op": the tab stays on "Loading…".
 - Not built: worktree disk sizes with cleanup.
 
 ## Remote hosts
@@ -217,8 +219,8 @@ The right pane has a Terminal tab next to Changes.
 
 - `CARGO_BUILD_JOBS=2 cargo test -p yardd`: integration tests start the real yardd binary on a free port with a temp data dir and a fake `codex app-server` first on `PATH` (`crates/yardd/tests/fake-codex`). They spend no subscription usage and take a few seconds. The fake records each `turn/start` input in `turn-inputs.jsonl`, so the attachment tests check what reached the engine, locally and on a `direct` remote through a hub. A fake `ssh` (`YARD_SSH`) runs the remote installer locally against a `file://` release. Unit tests cover the hand-off brief, the hub's id rewriting, the `YARD_ALLOW_ORIGIN` list and attachment names.
 - `cd ui && bun test`: `applyEvent`, the store reducer, the attachment helpers and the notification rule.
-- `cd sidecar/yard-claude && bun test`: the Claude user message with attachments, without the SDK.
-- A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop; a `[stuck]` fake Codex turn covers the Codex side of Stop.
+- `cd sidecar/yard-claude && bun test`: the Claude user message with attachments and the subagent mapping, without the SDK.
+- A scripted Claude sidecar (`tests/fake-codex/yard-claude`, through `YARD_SIDECAR`) covers a sidecar that dies mid-session and one that ignores Stop, and a `[subagent]` turn (a nested subagent, and a `sleep 30` left running for the process list); a `[stuck]` fake Codex turn covers the Codex side of Stop.
 - `verify/yv` (docs/VERIFICATION.md) drives the built UI in headless Chromium against an isolated yardd with the same fakes plus a fake `gh` (one canned PR) and a fake `ssh`; the feature map `verify/features` covers the PR pane and the UI end to end. CI runs its selftest and two map areas.
 - Not covered: anything that needs the real Claude SDK, real SSH hosts.
 
