@@ -346,7 +346,9 @@ async fn git_err(cwd: &str, args: &[&str]) -> Result<()> {
 }
 
 async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
-    let out = Command::new("git").arg("-C").arg(cwd).args(args).output().await?;
+    // Paths as written: by default git prints a name with non-ASCII letters
+    // as quoted octal ("caf\303\251.txt"), and the pane would show that.
+    let out = Command::new("git").arg("-C").arg(cwd).args(["-c", "core.quotePath=false"]).args(args).output().await?;
     Ok((out.status.success(), String::from_utf8_lossy(&out.stdout).into_owned()))
 }
 
@@ -492,6 +494,29 @@ mod tests {
         assert!(diff.contains("diff --git a/blob.bin b/blob.bin\n"), "{diff}");
         assert!(!diff.contains("+x"), "{diff}");
         assert_eq!(changes["truncated"], false);
+    }
+
+    #[tokio::test]
+    async fn non_ascii_paths_come_out_as_written() {
+        let dir = std::env::temp_dir().join(format!("yardd-quotepath-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("ação.txt"), "a\n").unwrap();
+        run(&dir, &["init", "-q"]);
+        run(&dir, &["add", "."]);
+        run(&dir, &["commit", "-q", "-m", "first"]);
+        std::fs::write(dir.join("ação.txt"), "a\nb\n").unwrap();
+        std::fs::write(dir.join("café.txt"), "new\n").unwrap();
+
+        let changes = changes(dir.to_str().unwrap()).await.unwrap();
+        let _ = std::fs::remove_dir_all(&dir);
+
+        let paths: Vec<&str> = changes["files"].as_array().unwrap().iter().map(|f| f["path"].as_str().unwrap()).collect();
+        assert_eq!(paths, ["ação.txt", "café.txt"]);
+        let diff = changes["diff"].as_str().unwrap();
+        assert!(diff.contains("diff --git a/ação.txt b/ação.txt\n"), "{diff}");
+        // A new file is read through `ls-files`, which quotes too.
+        assert!(diff.contains("+++ b/café.txt\n@@ -0,0 +1,1 @@\n+new\n"), "{diff}");
     }
 }
 
