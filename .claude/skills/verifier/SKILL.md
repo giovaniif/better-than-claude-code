@@ -45,6 +45,12 @@ Look at the screenshots yourself (base repro and head fix, both viewports).
 Do they show what the claim says? A bundle that verifies but shows something
 else is a FAIL.
 
+If `api-failures` passes with "expected by a note", read each excused failure
+against its `expected-api: <op>: <why>` note. An `expected-api` note excuses
+every head-only failure of that op, so check each one is the refusal the claim
+is about. Any other failure listed there, or a note naming a generic op such as
+`error`, is a FAIL.
+
 ## 4. Reproduce independently
 
 Do not trust the author's steps alone. Bring up your own isolated app at the

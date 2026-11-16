@@ -243,8 +243,21 @@ export function verifyBundle(dir: string, b: Bundle, checkoutHead: string | null
   });
 
   const baseApi = new Set(b.proofs.filter((p) => p.ref === "base").flatMap((p) => p.failedApi ?? []));
-  const newApi = [...new Set(b.proofs.filter((p) => p.ref === "head").flatMap((p) => p.failedApi ?? []))].filter((f) => !baseApi.has(f));
-  checks.push({ rule: "api-failures", ok: newApi.length === 0, msg: newApi.length ? `failed API calls only on head: ${newApi.join(" | ")}` : "no failed API call that base does not also have" });
+  // Some fixes are a refusal: an op that now says no instead of doing the
+  // wrong thing, or an error reworded. Each such op is named, with a reason,
+  // in an `expected-api: <op>: <why>` note, so the verifier sees and judges it.
+  const expectedOps = new Set(
+    b.proofs
+      .filter((p) => p.kind === "note" && p.text?.toLowerCase().startsWith("expected-api:"))
+      .map((p) => p.text!.slice("expected-api:".length).split(":"))
+      .filter((parts) => parts.length > 1 && parts.slice(1).join(":").trim())
+      .map((parts) => parts[0].trim()),
+  );
+  const headApi = [...new Set(b.proofs.filter((p) => p.ref === "head").flatMap((p) => p.failedApi ?? []))].filter((f) => !baseApi.has(f));
+  const excused = headApi.filter((f) => expectedOps.has(f.split(":")[0]));
+  const newApi = headApi.filter((f) => !excused.includes(f));
+  const excusedMsg = excused.length ? ` (expected by a note: ${excused.join(" | ")})` : "";
+  checks.push({ rule: "api-failures", ok: newApi.length === 0, msg: newApi.length ? `failed API calls only on head: ${newApi.join(" | ")}` : `no failed API call that base does not also have${excusedMsg}` });
 
   const tests = P("head", "test");
   const passed = tests.filter((p) => p.exit === 0);
