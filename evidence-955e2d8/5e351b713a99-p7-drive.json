@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e1e9a7a8e",
+  "build": {
+    "sha": "955e2d8504c39b3233d736e65538f77473398664",
+    "short": "955e2d8",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:12:28.115Z"
+  },
+  "dir": ".verify/evidence/subagents-processes2-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2934,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/subagents-processes2-head-mobile/head-collapsed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/subagents-processes2-head-mobile/head-open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

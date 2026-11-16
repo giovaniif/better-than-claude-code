@@ -1,0 +1,32 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-16T01:14:38.029Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-diff",
+          "status": "pass",
+          "ms": 2716
+        },
+        {
+          "label": "empty-folder",
+          "status": "pass",
+          "ms": 2531
+        },
+        {
+          "label": "refresh-picks-up-new-file",
+          "status": "pass",
+          "ms": 4165
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,72 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T01:14:27.700Z",
+      "counts": {
+        "pass": 11
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 4762
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 4982
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 4627
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5077
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4255
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 4741
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "pass",
+          "ms": 6773
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 2969
+        },
+        {
+          "label": "queue-a-message-while-working",
+          "status": "pass",
+          "ms": 11577
+        },
+        {
+          "label": "stop-holds-the-queue",
+          "status": "pass",
+          "ms": 6759
+        },
+        {
+          "label": "subagent-nests-and-expands",
+          "status": "pass",
+          "ms": 7911
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

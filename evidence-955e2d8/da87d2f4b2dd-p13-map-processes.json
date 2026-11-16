@@ -1,0 +1,37 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-16T01:13:22.386Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "lists-the-process-tree",
+          "status": "pass",
+          "ms": 4622
+        },
+        {
+          "label": "nothing-running",
+          "status": "pass",
+          "ms": 3500
+        },
+        {
+          "label": "terminal-shell-is-listed",
+          "status": "pass",
+          "ms": 7624
+        },
+        {
+          "label": "hidden-on-mobile",
+          "status": "pass",
+          "ms": 2779
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
