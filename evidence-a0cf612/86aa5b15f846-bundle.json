@@ -1,0 +1,212 @@
+{
+  "v": 1,
+  "claim": "A changed tracked binary file is listed in the Changes pane (and the hand-off brief) as +0 −0, which reads as unchanged",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-60c7",
+  "base": "fa5ba2f5dca0af294d4520c572db71c7b5080302",
+  "head": "a0cf612bb4ff555562de559bc3692cad00cec678",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T18:48:26.638Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "9fc1a10bdbc833547ae8f1ac7d056363882ea07b",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c1710a08ad2f5df2eaba651fc9e50cac5a0bf3906cfc501d513e4e293878dbc7"
+        },
+        {
+          "path": "p1-pane-desktop.png",
+          "sha256": "13401509eb39b7508782f6e59cad998bb85680333821e20b838ef6c02c2134d0"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "73c523d253cfddf68986e0d45865203406e7f883bb2879287adde0b3df05d9e1"
+        },
+        {
+          "path": "p1-2-pane-desktop.png",
+          "sha256": "13401509eb39b7508782f6e59cad998bb85680333821e20b838ef6c02c2134d0"
+        }
+      ],
+      "addedAt": "2026-11-16T18:48:45.852Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "9fc1a10bdbc833547ae8f1ac7d056363882ea07b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "6d906a3730b2d753ccbf9b4e3ba14dd9e458682e85bf2346e5115973cbfb7aa1"
+        }
+      ],
+      "addedAt": "2026-11-16T18:48:45.898Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --bin yardd handoff",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "9fc1a10bdbc833547ae8f1ac7d056363882ea07b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "f7e57da707e98a8bef62d7585a6912f4f63d629b62f9ffc1a22bfd0e5f7c0e58"
+        }
+      ],
+      "addedAt": "2026-11-16T18:48:47.198Z",
+      "cmd": "verify/yv map run changes-pane --recipe changed-binary-says-binary",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "bbeceaf74bd9872a94c1efe544d2c8c0e93fb7f4bc772fd1045186ae2af76d2a"
+        },
+        {
+          "path": "p4-pane-desktop.png",
+          "sha256": "bcd7db732561b81947cfefea614afb462aa376ef9c40631b454c1112bde2292d"
+        },
+        {
+          "path": "p4-2-pane-desktop.png",
+          "sha256": "bcd7db732561b81947cfefea614afb462aa376ef9c40631b454c1112bde2292d"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:14.290Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-session_s1a1e5a786ab8.json",
+          "sha256": "f9753fbf72937759545ad515dc4fe5ed472d31b6d82d49def5ebbcfacab9e5fe"
+        },
+        {
+          "path": "p5-session_s1a1e5a786ab8-mobile.png",
+          "sha256": "70245501fe12bcd5d21aadceb583c7a0660be96e01b4994e58fb8623b47cff6c"
+        },
+        {
+          "path": "p5-2-session_s1a1e5a786ab8-mobile.png",
+          "sha256": "70245501fe12bcd5d21aadceb583c7a0660be96e01b4994e58fb8623b47cff6c"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:22.251Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "note",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T18:49:22.288Z",
+      "text": "Mobile: the workspace pane (Changes) is hidden below 1100 px (changes-pane Gotcha); the mobile shot shows the session screen is unaffected. The changed text is only in that pane."
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "1e2cba375b938083f2809f4e5e9c4e2af0c4005d842cde92509109d91b6497ee"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:22.320Z",
+      "cmd": "verify/yv design-check --base fa5ba2f5dca0",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "c190e6cd4363dbbb27ff373a4a072ad059ce43359e6b392c7b124c65688f4533"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:22.393Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a0cf612bb4ff555562de559bc3692cad00cec678",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-changes-pane.json",
+          "sha256": "3247b4fae13b6dc7a6d6a13044aa5a99dcdf6338742373bfd2d66b164aa38c95"
+        }
+      ],
+      "addedAt": "2026-11-16T18:49:36.219Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "changes-pane/shows-diff",
+        "changes-pane/empty-folder",
+        "changes-pane/changed-binary-says-binary",
+        "changes-pane/refresh-picks-up-new-file",
+        "changes-pane/new-file-shows-its-content",
+        "changes-pane/non-ascii-file-names"
+      ]
+    }
+  ]
+}

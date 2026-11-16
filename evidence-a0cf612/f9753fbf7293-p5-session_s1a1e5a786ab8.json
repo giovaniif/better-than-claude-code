@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5a786ab8",
+  "build": {
+    "sha": "a0cf612bb4ff555562de559bc3692cad00cec678",
+    "short": "a0cf612",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:49:09.202Z"
+  },
+  "dir": ".verify/evidence/binary-changes-count-head-mobile",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/evidence/binary-changes-count-head-mobile/session_s1a1e5a786ab8-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2741,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

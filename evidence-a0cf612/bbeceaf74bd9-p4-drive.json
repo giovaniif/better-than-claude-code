@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e5b1123e2",
+  "build": {
+    "sha": "a0cf612bb4ff555562de559bc3692cad00cec678",
+    "short": "a0cf612",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T18:49:09.202Z"
+  },
+  "dir": ".verify/evidence/binary-changes-count-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3845,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/binary-changes-count-head/pane-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
