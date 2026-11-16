@@ -54,6 +54,28 @@ new worktree, in a plain folder "Works in the folder itself".
 yv drive new --viewport desktop --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{plain}}"},{"press":"Enter"},{"expect":"text:Works in the folder itself"}]'
 ```
 
+### base-branch-picker
+Viewports: desktop
+In a repository the folder row gets a branch chip, labelled with the current
+branch. Its menu lists the branches with "current" beside the checked-out
+one and filters as you type; picking another branch cuts the new worktree from
+it. Read back: the session's worktree holds the file only that branch has.
+
+```sh
+R="$(v repo)"
+git -C "$R" branch -D TEST-base >/dev/null 2>&1 || true
+git -C "$R" worktree add -q -b TEST-base "$R-TEST-base-wt" >/dev/null
+echo base > "$R-TEST-base-wt/TEST-base-only.txt"
+git -C "$R-TEST-base-wt" add TEST-base-only.txt
+git -C "$R-TEST-base-wt" -c user.name=TEST -c user.email=test@example.com commit -q -m "TEST-base only"
+git -C "$R" worktree remove --force "$R-TEST-base-wt"
+CUR="$(git -C "$R" branch --show-current)"
+yv drive new --viewport desktop --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"'"$CUR"'"},{"click":"css:button[title=\"Branch the worktree starts from\"]"},{"expect":{"css":".menu-item","hasText":"'"$CUR"'"},"text":"current"},{"fill":"label:Base branch","value":"TEST-ba"},{"expect":"css:.menu-item","count":1},{"click":{"css":".menu-item","hasText":"TEST-base"}},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"TEST-base"},{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"fill":"label:Message","value":"TEST-from the base branch"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-from the base branch"}]'
+yv state --expect '{"sessions":[{"title":"TEST-from the base branch","status":"idle","branch":"~yard/"}]}'
+WT="$(yv state | jq -er '.sessions[] | select(.title=="TEST-from the base branch") | .cwd')"
+test -f "$WT/TEST-base-only.txt"
+```
+
 ### folder-picker-lists-folders (manual: the Finder dialog only exists in the desktop app)
 "Choose in Finder…" opens the macOS dialog through Tauri. The typed-path
 browsing is covered by worktree-note.

@@ -57,6 +57,17 @@ yv api '{"op":"host.add","name":"TEST-ssh","kind":"ssh","destination":"test@unre
 yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-ssh"}]'
 ```
 
+### remove-host
+Viewports: desktop
+"Remove host" asks for a second click ("Click again to remove", with "Its
+sessions keep running there."); the second click drops the card and its
+sidebar row. Read back: after a reload the card is still gone.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-gone","kind":"ssh","destination":"test@gone.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-gone"}]}'
+yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-gone"},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Remove host"}},{"expect":"role:region:TEST-gone","text":"Its sessions keep running there."},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Click again to remove"}},{"expect":"role:region:TEST-gone","count":0},{"expect":{"css":".host-row","hasText":"TEST-gone"},"count":0},{"reload":true},{"expect":"role:heading:Hosts"},{"expect":"role:region:TEST-gone","count":0}]'
+```
+
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
