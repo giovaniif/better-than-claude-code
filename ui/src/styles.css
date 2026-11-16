@@ -553,5 +553,5 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .automation-schedule input[type="number"] { width: 80px; }
 .automation-limits { gap: 16px; }
 .automation-limits label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
-.automation-limits .field { width: 90px; }
+.automation-limits .field { width: 120px; }
 .danger { color: var(--bad-ink); }

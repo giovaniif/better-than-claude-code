@@ -30,6 +30,8 @@ Switchyard drives the `claude` and `codex` CLIs you already have, with the login
 
 **Files and images.** Paste, drop or attach them to any prompt. They are stored on the machine the session runs on, so screenshots reach a remote agent too.
 
+**Automations.** Schedule a prompt (every N minutes or hours, daily, or weekly, in the machine's local time) and Switchyard starts a session for it in a fresh worktree cut from the freshly fetched default branch. Runs skip while the previous one is still going or when the engine's plan usage is above a limit you set, archive themselves when they end, and live on the Automations page instead of piling up in the sidebar. Pin a run to bring it back.
+
 **Guard rails for your machine.** CPU, memory and disk for every host are always on screen. New sessions wait while a machine is under pressure.
 
 <table>
