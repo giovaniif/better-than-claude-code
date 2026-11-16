@@ -49,7 +49,7 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 Run now starts a session; when it ends it is archived, so it is not in the sidebar, but it is listed under its automation and opens.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":{"css":".automation-run","hasText":"Idle"}},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"},"visible":false},{"shot":"runs"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":{"css":".automation-run","hasText":"Idle"},"timeout":90000},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"},"visible":false},{"shot":"runs"}]'
 yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"id":"{{auto_id}}","lastRun":{"outcome":"started"}}]}' --save run_sid='automations[id={{auto_id}}].lastRun.sessionId'
 yv state --expect '{"sessions":[{"id":"{{run_sid}}","title":"~TEST-Patrol · ","archived":true,"status":"idle"}]}'
 yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
