@@ -1,0 +1,242 @@
+{
+  "v": 1,
+  "claim": "Sessions move into a sidebar group only through the row's … menu (Move to group…, Remove from group); dragging a row onto a group header or out to the ungrouped rows does nothing. The owner asked for drag and drop.",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a4b0d9978cb9498c3",
+  "base": "82c7b7d9b1dc846ae72f534c08d86e2d59f8150c",
+  "head": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sidebarDrop.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sidebarDrop.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/api.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T19:52:16.900Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "da3b79ba3e6d3a2b7a47cbc2f76f1ed1d5b7a356",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "db400d08891df308566fabc9706744c88682f57e2084854e76610df9f00fa5e4"
+        },
+        {
+          "path": "p1-after-drop-desktop.png",
+          "sha256": "dc055aa59771781717e3cba18a09c68a00a5ea55062b74bb56d8b90f9cdf339f"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "e1f39041e042719eb2cb850bd221d1065dd6e8c570228fbfc7f4534399708e2b"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:25.573Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "da3b79ba3e6d3a2b7a47cbc2f76f1ed1d5b7a356",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "15a736f06a9a23c88398b90c92e1a1406e3fcd10336777f13eb2fa34baaba2f0"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:25.614Z",
+      "cmd": "cd ui && bun test src/sidebarDrop.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "d8b805ff566cb2189f6bdc33bfcea90000c7e38dd1d5ee558c763efd78e76caf"
+        },
+        {
+          "path": "p3-held-over-group-desktop.png",
+          "sha256": "4c8a5524e3fd94a680c4f30f56595b4cd7dabafa6a69f6a710d6722929faf06f"
+        },
+        {
+          "path": "p3-after-drop-into-group-desktop.png",
+          "sha256": "90136fc263be366def2f58232fd69479e42ea5fe4d83a0df0511ce3a03f94ca7"
+        },
+        {
+          "path": "p3-noop-own-group-desktop.png",
+          "sha256": "7b608a9498878a88a12be3c0f710547aa0e968d787ce6b75d863e4e21d00e267"
+        },
+        {
+          "path": "p3-held-over-sessions-desktop.png",
+          "sha256": "80c7b2691fc4ad87f61e685b80f4f7c79369427f8c6e3b44c5bad8602295f85e"
+        },
+        {
+          "path": "p3-collapsed-group-opens-desktop.png",
+          "sha256": "a09f9c3b750e600528dd74254846a35a45f714a228276d635784a2689777cf33"
+        },
+        {
+          "path": "p3-held-over-pinned-desktop.png",
+          "sha256": "889bda409a63b30a6e0455f6da5c614737b7df5f45c541fc286537082210a7fb"
+        },
+        {
+          "path": "p3-after-desktop.png",
+          "sha256": "749e40772834522031a4307059c2b9127a6e855133f712189d33cd4d5b49f1d6"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:44.451Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4fba0e2d99d874d9611c309079457926e9efb78f5ebc29da877a2164f0359686"
+        },
+        {
+          "path": "p4-drawer-mobile.png",
+          "sha256": "7cfaf0856b2d277418b89c72bfedc50ad313e250ff0cc526cd4ca5ef5a48166b"
+        },
+        {
+          "path": "p4-drawer-after-menu-move-mobile.png",
+          "sha256": "0a5bbc2e048168bd10ed7dc90d411ea578ccb73900d81ac29f2b47149a0dfec9"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:44.493Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "89c576811857fa9af6c2e25895b4f2c9a2c8ef77f485ea6423f432c499c76db1"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:44.541Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd verify && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "d72daf6485a2a4887132855289bf03e42b55891eb40bd1387462939d4af0e016"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:58.957Z",
+      "cmd": "verify/yv design-check --base 82c7b7d9b1dc",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-sidebar.json",
+          "sha256": "44dd05c5153c07bed64dd48f301b9dc78af27faee468aaf1ea23893635e62bd2"
+        }
+      ],
+      "addedAt": "2026-11-16T19:52:59.035Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    }
+  ]
+}

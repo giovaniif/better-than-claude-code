@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+    "short": "3c6b60f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:52:27.936Z"
+  },
+  "dir": ".verify/evidence/sidebar-dnd2-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4506,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-dnd2-head-mobile/drawer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sidebar-dnd2-head-mobile/drawer-after-menu-move-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelectorAll(\".session-item[draggable=true]\").length",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

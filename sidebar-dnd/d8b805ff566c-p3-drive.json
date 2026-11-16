@@ -1,0 +1,85 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "3c6b60f1cab9da53c5538cc6ed3af5bdf8a0841a",
+    "short": "3c6b60f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:52:27.936Z"
+  },
+  "dir": ".verify/evidence/sidebar-dnd2-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 10161,
+      "steps": 23,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/held-over-group-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/after-drop-into-group-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/noop-own-group-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/held-over-sessions-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/collapsed-group-opens-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/held-over-pinned-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sidebar-dnd2-head/after-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
