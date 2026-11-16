@@ -2600,7 +2600,9 @@ function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, S
         <div className="muted small">
           {limits.forced
             ? "New sessions are queued: pressure is forced on (YARD_FORCE_PRESSURE=1)."
-            : `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`}
+            : limits.minFreeBytes > 0
+              ? `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`
+              : `New sessions are queued while load is above ${host.cores}.`}
         </div>
       )}
     </section>
