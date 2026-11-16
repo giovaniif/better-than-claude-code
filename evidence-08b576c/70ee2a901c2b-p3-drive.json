@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+    "short": "08b576c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T19:31:19.802Z"
+  },
+  "dir": ".verify/evidence/row-marks-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4143,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/row-marks-head/marks-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/row-marks-head/opened-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "(()=>{const b=[...document.querySelectorAll('button[aria-label=\"Open sessions\"]')].find(b=>b.offsetParent);if(b)b.click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 5,
+          "eval": "(()=>{[...document.querySelectorAll('.session-row')].find(r=>r.textContent.includes('TEST-say hello')).click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 8,
+          "eval": "(()=>{const b=[...document.querySelectorAll('button[aria-label=\"Open sessions\"]')].find(b=>b.offsetParent);if(b)b.click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 10,
+          "eval": "[...document.querySelectorAll('.session-row')].find(r=>r.textContent.includes('TEST-say hello')).textContent.includes('Idle')",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4131,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/row-marks-head/marks-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/row-marks-head/opened-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "(()=>{const b=[...document.querySelectorAll('button[aria-label=\"Open sessions\"]')].find(b=>b.offsetParent);if(b)b.click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 5,
+          "eval": "(()=>{[...document.querySelectorAll('.session-row')].find(r=>r.textContent.includes('TEST-say hello')).click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 8,
+          "eval": "(()=>{const b=[...document.querySelectorAll('button[aria-label=\"Open sessions\"]')].find(b=>b.offsetParent);if(b)b.click();return 1})()",
+          "value": 1
+        },
+        {
+          "step": 10,
+          "eval": "[...document.querySelectorAll('.session-row')].find(r=>r.textContent.includes('TEST-say hello')).textContent.includes('Idle')",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

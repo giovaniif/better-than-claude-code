@@ -1,0 +1,173 @@
+{
+  "v": 1,
+  "claim": "Session rows only had a tiny dot: no way to see at a glance which sessions are working, need approval, or have an answer you have not read",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-unable-to-add-second-account-0a30",
+  "base": "3fb4af99f48ebb059290a631e0249ad5e21c1a19",
+  "head": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/rowState.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/rowState.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T19:31:17.363Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T19:31:17.399Z",
+      "text": "no-repro: new indicators; on base every row has the same 7px status dot (see the base shot in the sidebar area)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T19:31:17.437Z",
+      "text": "no-failing-test: the row-state module and the yardd turnEndedAt/lastTurn fields are new; their tests (ui/src/rowState.test.ts, daemon a_session_says_when_and_how_its_last_turn_ended) cannot exist on base"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "70ee2a901c2b3b79dddba7641928287abb49064ba2f3fdeba910d4c63997d3b9"
+        },
+        {
+          "path": "p3-marks-mobile.png",
+          "sha256": "23fd6c0e03a6dae42378185e0e34552a870c58340361c537f93ceb44cc91dc99"
+        },
+        {
+          "path": "p3-opened-mobile.png",
+          "sha256": "8f2903ff52861de1ddc15aa54b981c85f67f4eba2f784729e0c5c9e98a70c8d5"
+        },
+        {
+          "path": "p3-marks-desktop.png",
+          "sha256": "bcc36f5d713008ff33bcf7d5437348fa670f40bb65e6e3e4f8dba2f0733c1288"
+        },
+        {
+          "path": "p3-opened-desktop.png",
+          "sha256": "fafe0839b030fdd9d6a43eb976ae6e3d06d40ea551efb1c7a5afd21361f535bf"
+        }
+      ],
+      "addedAt": "2026-11-16T19:32:04.760Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "0ec66df56fb479a9126e9ab9578829b07238db7bf06aa39484364990b25cc970"
+        }
+      ],
+      "addedAt": "2026-11-16T19:32:04.813Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "862ad8f2715a44f3100563d6dd963c12ae5751ac456e87419d2c53b00f512627"
+        }
+      ],
+      "addedAt": "2026-11-16T19:32:24.056Z",
+      "cmd": "verify/yv design-check --base 3fb4af99f48e",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "08b576c85d4e91ad9101a44b24014df7d93c7679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-sidebar.json",
+          "sha256": "44c2c152c04cc1267219ae70bbb46c46a8f630090af7e978c4443414da9666e6"
+        }
+      ],
+      "addedAt": "2026-11-16T19:32:24.135Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-16T19:33:26.254Z",
+      "counts": {
+        "pass": 13
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 4457
+        },
+        {
+          "label": "rows-mark-what-needs-you",
+          "status": "pass",
+          "ms": 11847
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6510
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 6086
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 2892
+        },
+        {
+          "label": "group-new",
+          "status": "pass",
+          "ms": 3340
+        },
+        {
+          "label": "group-move-to-existing",
+          "status": "pass",
+          "ms": 3012
+        },
+        {
+          "label": "group-collapse-persists",
+          "status": "pass",
+          "ms": 2771
+        },
+        {
+          "label": "group-rename",
+          "status": "pass",
+          "ms": 3204
+        },
+        {
+          "label": "group-remove-from-group",
+          "status": "pass",
+          "ms": 3034
+        },
+        {
+          "label": "group-ungroup",
+          "status": "pass",
+          "ms": 3007
+        },
+        {
+          "label": "archived-header-stays-at-bottom",
+          "status": "pass",
+          "ms": 8807
+        },
+        {
+          "label": "hand-off-keeps-the-group",
+          "status": "pass",
+          "ms": 2296
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
