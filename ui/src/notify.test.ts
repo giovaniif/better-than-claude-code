@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { HINT, StatusWatcher, shouldNotify, statusNotice, noticeText, switchState } from "./notify";
+import { HINT, MIN_TURN_MS, StatusWatcher, plainLine, shouldNotify, statusNotice, noticeText, switchState } from "./notify";
 import type { SessionMeta } from "./protocol";
 
 const on = { enabled: true, focused: false, openSessionId: null as string | null };
@@ -90,6 +90,48 @@ describe("StatusWatcher", () => {
     w.turnEnded("a", "interrupted");
     expect(w.change(meta("a", "idle"))).toBeNull();
   });
+  test("a quick turn is not worth a banner; a long one is", () => {
+    let t = 0;
+    const w = new StatusWatcher(() => t);
+    w.seed([meta("a", "idle")]);
+    w.event("a", { type: "turn_started" });
+    w.change(meta("a", "running"));
+    t = MIN_TURN_MS - 1;
+    w.event("a", { type: "turn_completed", status: "completed" });
+    expect(w.change(meta("a", "idle"))).toBeNull();
+    w.event("a", { type: "turn_started" });
+    w.change(meta("a", "running"));
+    t += MIN_TURN_MS;
+    w.event("a", { type: "assistant_message", itemId: "m", text: "All **green**." });
+    w.event("a", { type: "turn_completed", status: "completed" });
+    expect(w.change(meta("a", "idle"))).toBe("finished");
+    expect(w.info("a")).toEqual({ startedAt: MIN_TURN_MS - 1, ms: MIN_TURN_MS, answer: "All **green**." });
+  });
+  test("approvals and failures are reported however quick", () => {
+    const w = new StatusWatcher(() => 0);
+    w.seed([meta("a", "idle")]);
+    w.event("a", { type: "turn_started" });
+    w.change(meta("a", "running"));
+    w.event("a", { type: "approval_request", requestId: "r", kind: "command", title: "Run a command", detail: "npm test" });
+    expect(w.change(meta("a", "needs_approval"))).toBe("approval");
+    expect(w.info("a").approval).toEqual({ title: "Run a command", detail: "npm test" });
+    w.change(meta("a", "running"));
+    w.event("a", { type: "error", message: "rate limited" });
+    w.event("a", { type: "turn_completed", status: "failed" });
+    expect(w.change(meta("a", "idle"))).toBe("failed");
+    expect(w.info("a").error).toBe("rate limited");
+  });
+  test("an automation's run reports a failure or an approval, not a finish", () => {
+    const run = (status: SessionMeta["status"]) => ({ ...meta("r", status), automation: "auto1" });
+    const w = new StatusWatcher(() => 0);
+    w.seed([run("running")]);
+    expect(w.change(run("idle"))).toBeNull();
+    w.change(run("running"));
+    expect(w.change(run("needs_approval"))).toBe("approval");
+    w.change(run("running"));
+    w.turnEnded("r", "failed");
+    expect(w.change(run("idle"))).toBe("failed");
+  });
   test("a deleted session is forgotten", () => {
     const w = new StatusWatcher();
     w.seed([meta("a", "running")]);
@@ -101,12 +143,32 @@ describe("StatusWatcher", () => {
 describe("noticeText", () => {
   test("names the session and what it needs", () => {
     expect(noticeText("approval", "Fix login").title).toBe("Fix login");
-    expect(noticeText("approval", "Fix login").body).toMatch(/approval/i);
-    expect(noticeText("finished", "Fix login").body).toMatch(/finished/i);
-    expect(noticeText("failed", "Fix login").body).toMatch(/failed/i);
+    expect(noticeText("approval", "Fix login").body).toBe("Needs your approval");
+    expect(noticeText("finished", "Fix login").body).toBe("Done");
+    expect(noticeText("failed", "Fix login").body).toBe("Failed");
+  });
+  test("says what the turn did", () => {
+    expect(noticeText("finished", "Fix login", { ms: 72_000, answer: "Fixed the **login**. Tests pass." }).body).toBe(
+      "Done in 1m 12s · Fixed the login. Tests pass.",
+    );
+    expect(noticeText("approval", "Fix login", { approval: { title: "Run a command", detail: "npm test" } }).body).toBe(
+      "Needs your approval · Run a command: npm test",
+    );
+    expect(noticeText("failed", "Fix login", { ms: 5_000, error: "rate limited" }).body).toBe("Failed after 5s · rate limited");
   });
   test("an untitled session still gets a title", () => {
     expect(noticeText("finished", "").title).toBe("Switchyard");
+  });
+});
+
+describe("plainLine", () => {
+  test("Markdown becomes one plain line", () => {
+    expect(plainLine("## Summary\n\n- one `x`\n- see [docs](https://x.y)\n```ts\nlet a\n```")).toBe("Summary one x see docs let a");
+  });
+  test("long text is cut with an ellipsis", () => {
+    const line = plainLine("word ".repeat(100), 20);
+    expect(line.length).toBe(20);
+    expect(line.endsWith("…")).toBe(true);
   });
 });
 
