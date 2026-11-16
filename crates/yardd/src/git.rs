@@ -397,10 +397,15 @@ async fn new_file_diff(cwd: &str, path: &str, room: usize) -> String {
 
 pub async fn changes(cwd: &str) -> Result<Value> {
     ensure_folder(cwd)?;
-    let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
+    let (is_repo, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
     if !is_repo {
         bail!("not a git repository");
     }
+    // A session can start in a subfolder (`apps/web/`), but `git diff` names
+    // files from the root and covers the whole repository. New files are
+    // listed and read from the root too, so the pane names every file one
+    // way and keeps the ones the agent made outside the subfolder.
+    let top = top.trim();
     // A repo with no commits has no HEAD to diff against.
     let (has_head, _) = git(cwd, &["rev-parse", "--verify", "HEAD"]).await?;
     let base: &[&str] = if has_head { &["HEAD"] } else { &[] };
@@ -421,7 +426,7 @@ pub async fn changes(cwd: &str) -> Result<Value> {
         })
         .collect();
 
-    let (_, untracked) = git(cwd, &["ls-files", "--others", "--exclude-standard"]).await?;
+    let (_, untracked) = git(top, &["ls-files", "--others", "--exclude-standard"]).await?;
     let untracked: Vec<&str> = untracked.lines().take(200).collect();
     for path in &untracked {
         files.push(json!({ "path": path, "added": null, "removed": null, "untracked": true }));
@@ -436,7 +441,7 @@ pub async fn changes(cwd: &str) -> Result<Value> {
             break;
         }
         let room = MAX_DIFF_BYTES + 1 - diff.len();
-        diff.push_str(&new_file_diff(cwd, path, room).await);
+        diff.push_str(&new_file_diff(top, path, room).await);
     }
     let truncated = diff.len() > MAX_DIFF_BYTES;
     if truncated {
