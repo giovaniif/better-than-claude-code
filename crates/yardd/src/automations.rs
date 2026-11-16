@@ -176,11 +176,19 @@ pub fn usage_reason(usage: &Value, engine: &str, five: Option<f64>, week: Option
         }
         _ => {
             let u = &usage["claude"];
-            (
-                "Claude",
-                u["fiveHour"].as_f64().map(|f| f * 100.0).filter(|_| live(&u["resetsAt"])),
-                u["sevenDay"].as_f64().map(|f| f * 100.0),
-            )
+            // The sidecar reports one entry per window (`windows.five_hour`, `windows.seven_day`),
+            // each a fraction with its own reset; `fiveHour`/`sevenDay` is the older flat shape.
+            // The flat shape's one `resetsAt` is the 5-hour window's.
+            let window = |name: &str, flat: Option<f64>| {
+                let w = &u["windows"][name];
+                match w["utilization"].as_f64() {
+                    Some(f) => Some(f).filter(|_| live(&w["resetsAt"])),
+                    None => flat,
+                }
+                .map(|f| f * 100.0)
+            };
+            let five = window("five_hour", u["fiveHour"].as_f64().filter(|_| live(&u["resetsAt"])));
+            ("Claude", five, window("seven_day", u["sevenDay"].as_f64()))
         }
     };
     if let (Some(used), Some(max)) = (five_used, five) {
