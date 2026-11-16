@@ -144,6 +144,9 @@ async fn opencode_edits_show_their_diff_and_follow_the_permission_mode() {
 
     // Plan only: OpenCode's plan mode, and an edit is refused unasked.
     c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "plan" })).await;
+    // yardd handles each message in its own task: wait for the mode to land
+    // before sending, or the send can overtake it.
+    c.wait_for("the new permission mode", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "plan").await;
     let next = c.next_seq(&sid);
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[edit] change it again" })).await;
     c.wait_turn_done(&sid, next).await;
@@ -153,6 +156,9 @@ async fn opencode_edits_show_their_diff_and_follow_the_permission_mode() {
 
     // Full access: commands run unasked.
     c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "full" })).await;
+    // yardd handles each message in its own task: wait for the mode to land
+    // before sending, or the send can overtake it.
+    c.wait_for("the new permission mode", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "full").await;
     let next = c.next_seq(&sid);
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[cmd] go" })).await;
     c.wait_turn_done(&sid, next).await;
@@ -171,6 +177,7 @@ async fn opencode_takes_the_model_and_effort_from_the_session() {
     assert_eq!(prompts(&sb)[0]["effort"], "high");
     // A model the agent does not know fails the turn with its reason.
     c.send(json!({ "op": "session.setModel", "sessionId": sid, "model": "nope/none", "effort": "high" })).await;
+    c.wait_for("the unknown model", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["model"] == "nope/none").await;
     let next = c.next_seq(&sid);
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "hi again" })).await;
     let err = c.wait_event(&sid, "error", next).await;
@@ -415,6 +422,11 @@ async fn grok_follows_the_permission_mode_with_its_own_modes() {
 
     c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "plan" })).await;
     c.send(json!({ "op": "session.setModel", "sessionId": sid, "model": "fake-large", "effort": "high" })).await;
+    // Each message is handled in its own task; let both changes land first.
+    c.wait_for("plan mode on the larger model", |m| {
+        m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "plan" && m["session"]["model"] == "fake-large"
+    })
+    .await;
     let next = c.next_seq(&sid);
     c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[cmd] look" })).await;
     let req = c.wait_event(&sid, "approval_request", next).await;
