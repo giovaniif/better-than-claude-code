@@ -18,6 +18,8 @@ const SETUP_TIMEOUT: Duration = Duration::from_secs(300);
 /// The tail of a setup script's output that is kept for the error message.
 const SETUP_OUTPUT_CAP: usize = 16_000;
 const SETUP_ERROR_LINES: usize = 20;
+/// An automation fetches before each run; a hung remote must not stall it.
+const FETCH_TIMEOUT: Duration = Duration::from_secs(60);
 
 pub struct NewWorktree {
     /// Where the session runs: the worktree, or the same subfolder inside it.
@@ -406,4 +408,59 @@ mod tests {
         assert_eq!(last_lines("a\n\nb\nc\n", 2), "b\nc");
         assert_eq!(last_lines("", 3), "");
     }
+}
+
+/// The ref an automation's worktree is cut from, after fetching `origin`.
+/// `base` is a branch the user picked; empty means the repository's default
+/// branch (`origin/HEAD`, else main or master). A branch that also exists on
+/// origin is taken from there, so a run starts from what was just fetched
+/// and not from a stale local copy. `None` outside a repository with commits
+/// (the session then runs in place) or when nothing better than HEAD exists.
+pub async fn fresh_base(folder: &str, base: &str) -> Result<Option<String>> {
+    if !can_branch(folder).await? {
+        return Ok(None);
+    }
+    let (_, top) = git(folder, &["rev-parse", "--show-toplevel"]).await?;
+    let top = top.trim().to_string();
+    // No credentials prompt: an unattended run must not hang on one. A failed
+    // fetch (offline, no origin) is not fatal; the run uses what is local.
+    let fetch = Command::new("git")
+        .arg("-C")
+        .arg(&top)
+        .args(["fetch", "--quiet", "origin"])
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .stdin(Stdio::null())
+        .kill_on_drop(true)
+        .output();
+    match tokio::time::timeout(FETCH_TIMEOUT, fetch).await {
+        Ok(Ok(out)) if !out.status.success() => {
+            eprintln!("yardd: git fetch in {top}: {}", String::from_utf8_lossy(&out.stderr).trim());
+        }
+        Ok(Err(e)) => eprintln!("yardd: git fetch in {top}: {e}"),
+        Err(_) => eprintln!("yardd: git fetch in {top} timed out"),
+        _ => {}
+    }
+    let exists = |name: String| {
+        let top = top.clone();
+        async move { matches!(git(&top, &["rev-parse", "--verify", "--quiet", &format!("{name}^{{commit}}")]).await, Ok((true, _))) }
+    };
+    let base = base.trim();
+    if !base.is_empty() {
+        if !base.starts_with("origin/") && exists(format!("origin/{base}")).await {
+            return Ok(Some(format!("origin/{base}")));
+        }
+        return Ok(Some(base.to_string()));
+    }
+    if let Ok((true, head)) = git(&top, &["symbolic-ref", "--short", "refs/remotes/origin/HEAD"]).await {
+        let head = head.trim();
+        if !head.is_empty() && exists(head.to_string()).await {
+            return Ok(Some(head.to_string()));
+        }
+    }
+    for name in ["origin/main", "origin/master", "main", "master"] {
+        if exists(name.to_string()).await {
+            return Ok(Some(name.to_string()));
+        }
+    }
+    Ok(None)
 }
