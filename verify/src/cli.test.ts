@@ -21,6 +21,10 @@ describe("args and json helpers", () => {
     expect(a.pos).toEqual(["run", "x", "--raw"]);
     expect(a.flags).toEqual({ iso: "n", all: true, k: "v" });
   });
+  test("a repeated --file keeps every file, as `[--file f]...` promises", () => {
+    const a = parseArgs(["add", "d", "--file", "a.json", "--file", "b.png", "--file=c.png"]);
+    expect(a.flags.file).toBe("a.json,b.png,c.png");
+  });
   test("pick walks paths and filters arrays", () => {
     const v = { sessions: [{ id: "a", title: "one" }, { id: "b", title: "TEST-two" }] };
     expect(pick(v, "sessions.1.id")).toBe("b");
@@ -144,6 +148,15 @@ describe("land gate scan", () => {
     expect(codes([file("crates/yardd/src/claude.rs", "@@\n+fn run() {}\n+#[cfg(test)]\n+mod tests {\n+    fn t() { let _ = std::fs::remove_dir_all(dir); }\n+}")])).toEqual([]);
     expect(codes([file("crates/yardd/tests/daemon.rs", "@@\n+    std::fs::remove_dir_all(&root).ok();")])).toEqual([]);
     expect(codes([file("crates/yardd/src/git.rs", "@@\n+    std::fs::remove_dir_all(&p)?;\n+#[cfg(test)]\n+mod tests {}")])).toContain("data-loss");
+    // A test added to an existing module: git names the module in the hunk header.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     }\n+    #[tokio::test]\n+    async fn t() { let _ = std::fs::remove_dir_all(&dir); }\n }")])).toEqual([]);
+    // The module ends at its closing brace: code after it in the same hunk is real code.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -408,6 +452,9 @@ mod tests {\n     fn t() {}\n }\n \n+pub fn wipe(p: &Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -1,3 +1,4 @@ pub async fn changes(cwd: &str) -> Result<Value> {\n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
+    // A hunk past the module's brace keeps the `mod tests {` header when only comments follow it.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -10,3 +10,4 @@ mod tests {\n // kept for later\n // more\n \n+pub fn wipe(p: &std::path::Path) { let _ = std::fs::remove_dir_all(p); }")])).toContain("data-loss");
+    // A file module (`mod tests;`) opens no region.
+    expect(codes([file("crates/yardd/src/git.rs", "@@ -10,3 +10,4 @@ mod tests;\n \n+    std::fs::remove_dir_all(&p)?;")])).toContain("data-loss");
   });
   test("security boundary, data loss and secrets", () => {
     expect(codes([file("crates/yardd/src/ws.rs", '@@\n-    if origin_ok(&o) {\n+    if true || origin_ok(&o) { // Origin')])).toContain("security-boundary");
@@ -268,6 +281,16 @@ describe("evidence proof bar", () => {
   test("new API failures on head fail; ones base shares do not", () => {
     const b = bundle(full.map((p) => (p.kind === "fix" ? { ...p, failedApi: ["pr: boom", "changes: new"] } : p)));
     expect(failed(b)).toEqual(["api-failures"]);
+  });
+  test("a head refusal named in an expected-api note passes; others still fail", () => {
+    const fix = full.map((p) => (p.kind === "fix" ? { ...p, failedApi: ["pr: boom", "term.open: folder gone: /tmp/x", "changes: new"] } : p));
+    const note = (text: string) => P({ kind: "note", text, artifacts: [] });
+    expect(failed(bundle([...fix, note("expected-api: term.open: the fix refuses instead of opening in ~")]))).toEqual(["api-failures"]);
+    expect(failed(bundle([...fix, note("expected-api: term.open: refuses"), note("expected-api: changes: clearer message")]))).toEqual([]);
+    // The op must match whole: a note for `term` does not excuse `term.open`.
+    expect(failed(bundle([...fix, note("expected-api: term: x"), note("expected-api: changes: y")]))).toEqual(["api-failures"]);
+    // A note without a reason excuses nothing.
+    expect(failed(bundle([...fix, note("expected-api: term.open"), note("expected-api: changes: y")]))).toEqual(["api-failures"]);
   });
   test("a test that passed on base proves nothing", () => {
     const b = bundle(full.map((p) => (p.ref === "base" && p.kind === "test" ? { ...p, exit: 0 } : p)));

@@ -145,6 +145,26 @@ pub struct App {
     next: AtomicU64,
 }
 
+/// Plan usage as last reported, kept in `usage.json` across restarts: Claude
+/// reports its limits only during a turn, so without it a restart blanks the
+/// meters and a usage-capped automation cannot skip. Each window carries its
+/// `resetsAt`, so a window that reset meanwhile reads as unknown, as before.
+fn load_usage(data: &std::path::Path) -> Value {
+    std::fs::read(data.join("usage.json"))
+        .ok()
+        .and_then(|bytes| serde_json::from_slice::<Value>(&bytes).ok())
+        .filter(Value::is_object)
+        .unwrap_or_else(|| json!({}))
+}
+
+fn save_usage(data: &std::path::Path, usage: &Value) {
+    // Written aside, then renamed, so a crash never leaves half a file.
+    let tmp = data.join("usage.json.tmp");
+    if std::fs::write(&tmp, usage.to_string()).is_ok() {
+        let _ = std::fs::rename(&tmp, data.join("usage.json"));
+    }
+}
+
 impl App {
     pub fn new(root: PathBuf, port: u16, store: crate::store::Store) -> Self {
         let (tx, _) = broadcast::channel(2048);
@@ -157,7 +177,7 @@ impl App {
             codex: Mutex::new(HashMap::new()),
             accounts: crate::accounts::Accounts::load(crate::store::data_dir()),
             models: Mutex::new(json!({ "claude": claude_models(), "codex": [] })),
-            usage: Mutex::new(json!({})),
+            usage: Mutex::new(load_usage(&crate::store::data_dir())),
             host: Mutex::new(Value::Null),
             cpu_history: Mutex::new(VecDeque::new()),
             terms: crate::pty::Terms::default(),
@@ -505,6 +525,7 @@ impl App {
             }
             usage.clone()
         };
+        save_usage(&crate::store::data_dir(), &all);
         self.broadcast(json!({ "op": "usage", "usage": all }));
     }
 

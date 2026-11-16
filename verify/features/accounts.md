@@ -86,6 +86,19 @@ Codex has only Default, so its group in the picker shows no account row.
 yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"expect":"role:button:Use account TEST-Work"},{"expect":"role:button:Use account Default","count":1},{"shot":"one-engine-with-a-choice"}]'
 ```
 
+### pick-other-engine-account-switches-engine
+Viewports: both
+With Claude picked, choosing a Codex account (under the Codex group) moves the
+choice to Codex: the trigger names a Codex model and the account, and the
+session starts on Codex under that account, not on Claude Default.
+
+```sh
+yv api '{"op":"account.add","engine":"codex","name":"TEST-Codex"}' --wait '{"op":"accounts"}'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"expect":"role:button:Use account TEST-Codex","text":"TEST-Codex"},{"shot":"codex-account-picked"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"shot":"trigger"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick codex"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick codex"},{"expect":{"css":".session-row","hasText":"TEST-account pick codex"},"text":"TEST-Codex"},{"shot":"session-on-codex-account"}]'
+yv state | jq -e '.sessions[] | select(.title == "TEST-account pick codex") | select(.engine == "codex")'
+```
+
 ### remove-refused-while-in-use
 Viewports: desktop
 An account with sessions cannot be removed: yardd says so and the row stays.
