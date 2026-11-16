@@ -132,7 +132,14 @@ export function App() {
         {route.page === "new" && <NewSession state={state} actions={actions} />}
         {route.page === "hosts" && <Hosts state={state} actions={actions} />}
         {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
-        {route.page === "automation" && <AutomationForm key={`${route.host}/${route.id}`} state={state} actions={actions} host={route.host} id={route.id} />}
+        {route.page === "automation" &&
+          // The form reads its automation once, on mount: after a reload it waits on the list
+          // until the host's snapshot has it, instead of opening blank and saving a copy.
+          (route.id === "new" || state.automations[route.host]?.some((a) => a.id === route.id) ? (
+            <AutomationForm key={`${route.host}/${route.id}`} state={state} actions={actions} host={route.host} id={route.id} />
+          ) : (
+            <AutomationsPage state={state} actions={actions} />
+          ))}
         {route.page === "session" && state.sessions[route.id] && (
           <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
         )}
