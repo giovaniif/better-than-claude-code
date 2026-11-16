@@ -110,10 +110,25 @@ export const HINT = {
   unsupported: "This browser cannot show notifications.",
 };
 
+/** What the switch shows for the stored choice and the browser's permission
+ *  (`null`: the desktop app, which can only answer asynchronously). A
+ *  permission revoked in the site's settings after the user turned them on
+ *  would otherwise leave the switch saying On while nothing can show. */
+export function switchState(stored: boolean, permission: NotificationPermission | "unsupported" | null): { on: boolean; hint: string | null } {
+  if (!stored || permission === null || permission === "granted") return { on: stored, hint: null };
+  if (permission === "denied") return { on: false, hint: HINT.blocked };
+  if (permission === "unsupported") return { on: false, hint: HINT.unsupported };
+  return { on: false, hint: null };
+}
+
+const permissionNow = (): NotificationPermission | "unsupported" | null =>
+  tauriInvoke() ? null : typeof Notification === "undefined" ? "unsupported" : Notification.permission;
+
 /** The sidebar switch: on or off, kept per browser. */
 export function useNotifySetting() {
-  const [on, setOn] = useState(isEnabled);
-  const [hint, setHint] = useState<string | null>(null);
+  const [initial] = useState(() => switchState(isEnabled(), permissionNow()));
+  const [on, setOn] = useState(initial.on);
+  const [hint, setHint] = useState<string | null>(initial.hint);
   const toggle = async () => {
     setHint(null);
     if (on) {
