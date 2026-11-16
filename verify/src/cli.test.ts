@@ -11,7 +11,7 @@ import { matches, parseArgs, pick, sha256File } from "./common";
 import { addedLines, lint } from "./design";
 import { type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
-import { recipesDeclaredRemoved, scanFiles, type PrFile } from "./land";
+import { recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
 import { _test as loopTest } from "./loop";
 
@@ -329,3 +329,13 @@ describe("loop budget", () => {
   });
 });
 
+
+describe("land watch", () => {
+  test("a job that never got a runner is not a regression; a failed one is", () => {
+    // GitHub marks the run failed and the job cancelled when no macOS runner is free (#67's merge).
+    expect(regressedJobs([{ name: "dmg", conclusion: "cancelled" }])).toEqual([]);
+    expect(regressedJobs([{ name: "dmg", conclusion: "cancelled" }, { name: "linux", conclusion: "success" }])).toEqual([]);
+    expect(regressedJobs([{ name: "dmg", conclusion: "failure" }, { name: "ui", conclusion: "cancelled" }])).toEqual(["dmg"]);
+    expect(regressedJobs([{ name: "yardd", conclusion: "timed_out" }])).toEqual(["yardd"]);
+  });
+});
