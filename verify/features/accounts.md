@@ -36,6 +36,16 @@ Hosts page does not fit: see layout/mobile-hosts-page.)
 yv drive hosts --viewport desktop --steps '[{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"TEST-Work"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-added"}]'
 ```
 
+### refused-add-account-keeps-the-form
+Viewports: desktop
+A name yardd refuses ("default", or one already in use) shows the error and
+keeps the form with the name typed; a free name then adds the account and
+closes the form.
+
+```sh
+yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"default"},{"press":"Enter"},{"expect":"css:.banner-error","text":"account named default already exists"},{"wait":500},{"expect":"label:Account name","value":"default"},{"shot":"refused"},{"fill":"label:Account name","value":"TEST-Second"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Second"},"text":"not logged in"},{"expect":"label:Account name","count":0},{"shot":"added"}]'
+```
+
 ### log-in-account
 Viewports: desktop
 Log in to the added account with its own dialog; the fake accepts `good-code`.

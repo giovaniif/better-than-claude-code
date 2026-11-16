@@ -2891,7 +2891,7 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
       {host && state.engines[id] ? (
-        <Engines engines={state.engines[id]} accounts={accountsOn(state, id)} accountActions={accountActions} errorCount={state.errorCount} onLogin={onLogin} />
+        <Engines engines={state.engines[id]} accounts={accountsOn(state, id)} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />
       ) : (
         install?.ok && !install.running && <EngineSummary install={install} machine={name} />
       )}
@@ -2953,9 +2953,10 @@ function Engines(props: {
   accounts: AccountEntry[];
   accountActions?: AccountActions;
   errorCount: number;
+  connected: boolean;
   onLogin?(engine: Engine): void;
 }) {
-  const { engines, accounts, accountActions, errorCount, onLogin } = props;
+  const { engines, accounts, accountActions, errorCount, connected, onLogin } = props;
   // The engine whose Add account form is open.
   const [adding, setAdding] = useState<Engine | null>(null);
   return (
@@ -2997,7 +2998,9 @@ function Engines(props: {
             {adding === engine && accountActions && (
               <AddAccount
                 engine={engine}
+                accountIds={accounts.map((a) => a.id)}
                 errorCount={errorCount}
+                connected={connected}
                 onAdd={(name) => accountActions.add(engine, name)}
                 onDone={() => setAdding(null)}
               />
@@ -3050,25 +3053,31 @@ function AccountRow({ account, state: st, onLogin, onRemove }: { account: Accoun
   );
 }
 
-function AddAccount({ engine, errorCount, onAdd, onDone }: { engine: Engine; errorCount: number; onAdd(name: string): void; onDone(): void }) {
+function AddAccount(props: { engine: Engine; accountIds: string[]; errorCount: number; connected: boolean; onAdd(name: string): void; onDone(): void }) {
+  const { accountIds, errorCount, connected, onAdd, onDone } = props;
   const [name, setName] = useState("");
-  const [sent, setSent] = useState(false);
-  // A refusal (a name already in use) keeps the form open; a new list closes it.
+  // The account ids known at the submit, until yardd answers. A refusal (a
+  // name already in use) keeps the form open with the name; the new account
+  // appearing closes it, and a dropped connection gives Add back. A timer used
+  // to close it whatever yardd said.
+  const [sent, setSent] = useState<string[] | null>(null);
   const errors = useRef(errorCount);
   useEffect(() => {
-    if (sent && errorCount !== errors.current) setSent(false);
+    if (sent && errorCount !== errors.current) setSent(null);
   }, [errorCount]);
+  useEffect(() => setSent(null), [connected]);
+  useEffect(() => {
+    if (sent && accountIds.some((id) => !sent.includes(id))) onDone();
+  }, [sent, accountIds]);
   return (
     <form
       className="account-add"
       onSubmit={(e) => {
         e.preventDefault();
-        if (!name.trim()) return;
+        if (!name.trim() || sent) return;
         errors.current = errorCount;
-        setSent(true);
+        setSent(accountIds);
         onAdd(name.trim());
-        // The list comes back from yardd; closing now loses nothing.
-        setTimeout(onDone, 150);
       }}
     >
       <input
@@ -3082,7 +3091,7 @@ function AddAccount({ engine, errorCount, onAdd, onDone }: { engine: Engine; err
         aria-label="Account name"
         onKeyDown={(e) => e.key === "Escape" && onDone()}
       />
-      <button className="btn-primary" type="submit" disabled={!name.trim() || sent}>
+      <button className="btn-primary" type="submit" disabled={!name.trim() || !!sent}>
         Add
       </button>
       <button className="btn-text" type="button" onClick={onDone}>
