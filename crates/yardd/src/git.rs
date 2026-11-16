@@ -346,7 +346,9 @@ async fn git_err(cwd: &str, args: &[&str]) -> Result<()> {
 }
 
 async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
-    let out = Command::new("git").arg("-C").arg(cwd).args(args).output().await?;
+    // Paths as written: by default git prints a name with non-ASCII letters
+    // as quoted octal ("caf\303\251.txt"), and the pane would show that.
+    let out = Command::new("git").arg("-C").arg(cwd).args(["-c", "core.quotePath=false"]).args(args).output().await?;
     Ok((out.status.success(), String::from_utf8_lossy(&out.stdout).into_owned()))
 }
 
