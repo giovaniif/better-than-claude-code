@@ -33,6 +33,19 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".session-row","hasTe
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"role":"navigation","name":"Sessions"},"text":"TEST-hello from Claude"},{"shot":"sidebar"}]'
 ```
 
+### rows-mark-what-needs-you
+Each row's mark and label say its state: a turning ring while running, an amber
+"!" while it waits for approval, a blue dot and "Answered" for a finished turn
+not opened yet (bold title), red "Failed". Opening an answered session clears
+it, and it stays cleared after a reload; the others stay answered. Which answers
+were seen is per browser; turns that ended before it first kept track count as
+seen, so the recipe moves that point back to the start.
+
+```sh
+yv drive new --viewport desktop --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()"},{"reload":true},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Answered"},{"expect":{"css":".session-row.unread .mark-answered"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"css":".mark-approval"}},{"expect":{"css":".session-row","hasText":"[fail] TEST-failing turn"},"text":"Failed"},{"shot":"marks"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"TEST-say hello"},{"wait":300},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"reload":true},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"expect":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"},"text":"Answered"}]'
+yv drive new --viewport mobile --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Answered"},{"expect":{"css":".session-row.unread .mark-answered"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"css":".mark-approval"}},{"expect":{"css":".session-row","hasText":"[fail] TEST-failing turn"},"text":"Failed"},{"shot":"marks"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"TEST-say hello"},{"wait":300},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"expect":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"},"text":"Answered"}]'
+```
+
 ### pin-and-unpin
 Pin moves the row under "Pinned"; the daemon stores it.
 

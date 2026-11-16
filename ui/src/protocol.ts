@@ -36,6 +36,9 @@ export interface SessionMeta {
   automation?: string | null;
   /** When a run's first turn ended; `updatedAt` moves on any later change. */
   finishedAt?: number;
+  /** When the latest turn ended (yardd's clock), and how. Missing before the first, and from an older yardd. */
+  turnEndedAt?: number | null;
+  lastTurn?: "completed" | "failed" | "interrupted" | null;
   /** Messages sent while a turn ran, oldest first. The next one starts when a turn completes; Stop or a failure holds them. */
   pending?: PendingMessage[];
   createdAt: number;
