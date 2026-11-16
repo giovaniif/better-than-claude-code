@@ -220,6 +220,9 @@ fn render_files(changes: Option<&Value>) -> String {
                 let path = cut(f["path"].as_str().unwrap_or("?"), 160);
                 if f["untracked"].as_bool().unwrap_or(false) {
                     out.push_str(&format!("- {path} (new)\n"));
+                } else if f["added"].is_null() && f["removed"].is_null() {
+                    // git counts no lines in a binary file.
+                    out.push_str(&format!("- {path} (binary)\n"));
                 } else {
                     out.push_str(&format!(
                         "- {path} (+{} -{})\n",
