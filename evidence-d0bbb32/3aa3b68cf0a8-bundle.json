@@ -1,0 +1,91 @@
+{
+  "v": 1,
+  "claim": "yv evidence: a fix whose point is a refusal (an op that now says no, or a reworded error) could never pass the api-failures rule, so its bundle always failed",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-3d97-cli",
+  "base": "3889164455f27f8b9f1e00216997af1bdeaa12b0",
+  "head": "d0bbb3224c1fe3357c1791e689179e6d591b2c8d",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verifier/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/evidence.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T08:53:15.122Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "e369223b426b101b93aaa2fe9a8fc83d847a78ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "ba70a469f316dd8f365d4d61230d896d5ede626d1409a4985c536d46e8501944"
+        }
+      ],
+      "addedAt": "2026-11-16T08:53:15.211Z",
+      "cmd": "cd verify && bun test src/cli.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "note",
+      "at": "1a3c070b12620044f7f5f9d506f7d431fd5d2960",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T08:53:25.906Z",
+      "text": "no-repro: CLI-only; the failing CLI test at e369223 is the repro, and PR #50's bundle shows it live (api-failures fails on refusals that are the fix)"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "d0bbb3224c1fe3357c1791e689179e6d591b2c8d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "c710abc1c2c1618273085f831299c324e4a8c1ff561e07955159ed69782a06f1"
+        }
+      ],
+      "addedAt": "2026-11-16T08:58:06.142Z",
+      "cmd": "cd verify && bun test src/cli.test.ts -t 'expected-api'",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "d0bbb3224c1fe3357c1791e689179e6d591b2c8d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "27e096303e839a09967847b0c407aca0fbce0cf47af62c0a856098aad257c8fb"
+        }
+      ],
+      "addedAt": "2026-11-16T08:58:06.564Z",
+      "cmd": "cd verify && bun test src && cd .. && verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}
