@@ -1,0 +1,94 @@
+{
+  "v": 1,
+  "claim": "yv annotate --out <path without .png> crashes with 'screenshot: path: unsupported mime type \"null\"' (exit 1, problem code crash) instead of a usage error naming the flag.",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-annotate-286f",
+  "base": "a0ba6ebdc7a436c5e6b0118a058b9c39b190f8c5",
+  "head": "ed2cf9859ee5aa6ea473f858683cb7b614714514",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/annotate.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T04:51:05.290Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a0ba6ebdc7a436c5e6b0118a058b9c39b190f8c5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-annot-base.json",
+          "sha256": "a2f894ab8d301c723e08ada6a1ea9db3b34b7937c61138a6985dac165ca3a19d"
+        }
+      ],
+      "addedAt": "2026-11-16T04:51:06.004Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "a0ba6ebdc7a436c5e6b0118a058b9c39b190f8c5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T04:51:06.051Z",
+      "text": "no-failing-test: the CLI's tests cover pure functions only; the repro command is the test, re-run on head below"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ed2cf9859ee5aa6ea473f858683cb7b614714514",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-annot-head.json",
+          "sha256": "e768bf7ce7f38c75c55efb48dfbf398b267251b58542b58c76cd0f98eaca441d"
+        }
+      ],
+      "addedAt": "2026-11-16T04:54:18.227Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "ed2cf9859ee5aa6ea473f858683cb7b614714514",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "170d36c8823c241e7de7c2ac142f737bf40d079db403da31d18695cdb896a85c"
+        }
+      ],
+      "addedAt": "2026-11-16T04:54:18.270Z",
+      "cmd": "bash /tmp/annot-table.sh",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "ed2cf9859ee5aa6ea473f858683cb7b614714514",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "7da96a65da1897c254ca72e54359ef7a048c4708e6b8a3ada50b0d84cf1dd7e9"
+        }
+      ],
+      "addedAt": "2026-11-16T04:54:22.740Z",
+      "cmd": "verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}
