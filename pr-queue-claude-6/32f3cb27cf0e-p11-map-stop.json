@@ -1,0 +1,32 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "stop",
+      "at": "2026-11-16T00:03:52.337Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-slow-turn",
+          "status": "pass",
+          "ms": 4545
+        },
+        {
+          "label": "stop-stuck-codex-turn",
+          "status": "pass",
+          "ms": 8078
+        },
+        {
+          "label": "stop-stuck-claude-turn",
+          "status": "pass",
+          "ms": 8814
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

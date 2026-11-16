@@ -1,0 +1,86 @@
+$ verify/yv map run thread
+# exit 0 after 75580 ms at 46957439e0535f299a94bc18be7eac0751a386f6
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-16T00:06:25.719Z",
+      "counts": {
+        "pass": 13
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "reply-renders",
+          "status": "pass",
+          "ms": 4702
+        },
+        {
+          "label": "thinking-folds",
+          "status": "pass",
+          "ms": 5028
+        },
+        {
+          "label": "edit-shows-diff",
+          "status": "pass",
+          "ms": 4576
+        },
+        {
+          "label": "failed-turn-shows-error",
+          "status": "pass",
+          "ms": 5118
+        },
+        {
+          "label": "follow-up-turn",
+          "status": "pass",
+          "ms": 4064
+        },
+        {
+          "label": "claude-session-renders",
+          "status": "pass",
+          "ms": 4953
+        },
+        {
+          "label": "reply-to-part-of-answer",
+          "status": "pass",
+          "ms": 6679
+        },
+        {
+          "label": "no-reply-on-own-message",
+          "status": "pass",
+          "ms": 2998
+        },
+        {
+          "label": "queue-a-message-while-working",
+          "status": "pass",
+          "ms": 11393
+        },
+        {
+          "label": "remove-a-queued-message",
+          "status": "pass",
+          "ms": 6793
+        },
+        {
+          "label": "steer-a-running-turn",
+          "status": "pass",
+          "ms": 6130
+        },
+        {
+          "label": "stop-returns-the-queue",
+          "status": "pass",
+          "ms": 4640
+        },
+        {
+          "label": "edit-a-queued-message",
+          "status": "pass",
+          "ms": 7645
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

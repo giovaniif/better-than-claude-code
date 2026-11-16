@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e0d0053614",
+  "build": {
+    "sha": "188919d0f5817f79421b6a9c5de4c04e33183371",
+    "short": "188919d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-15T20:04:40.709Z"
+  },
+  "dir": ".verify/evidence/head-stop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4826,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head-stop/queued-before-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/head-stop/returned-after-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,34 @@
+bun test v1.4.4 (38afee6c8)
+
+src/protocol.test.ts:
+15 |       { type: "user_message", text: "also this", steered: true, at: 1_500 },
+16 |       { type: "tool_completed", itemId: "c1", ok: true, output: "one" },
+17 |       { type: "turn_completed", status: "completed", at: 2_000 },
+18 |     ]);
+19 |     const tool = items.find((it) => it.kind === "tool");
+20 |     expect(tool).toMatchObject({ state: "ok", output: "one" });
+                      ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "output": "one",
+-   "state": "ok",
++   "detail": "step 1",
++   "itemId": "c1",
++   "key": "e2",
++   "kind": "tool",
++   "state": "failed",
++   "title": "Ran",
++   "toolKind": "command",
+  }
+
+- Expected  - 2
++ Received  + 7
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-babysit-12-2026-11-3e33/ui/src/protocol.test.ts:20:18)
+(fail) applyEvent > a command that started before a steered message still completes after it [1.31ms]
+
+ 13 pass
+ 1 fail
+ 27 expect() calls
+Ran 14 tests across 1 file. [8.00ms]
