@@ -23,7 +23,14 @@ mod ws;
 use std::{path::PathBuf, sync::Arc, time::Duration};
 
 use anyhow::Context;
-use axum::{routing::get, Router};
+use axum::{
+    extract::Request,
+    http::{header, HeaderValue, StatusCode},
+    middleware::{self, Next},
+    response::Response,
+    routing::get,
+    Router,
+};
 use tower_http::services::ServeDir;
 
 use state::App;
@@ -107,6 +114,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/ws", get(ws::handler))
         .route("/health", get(health))
         .fallback_service(ServeDir::new(root.join("ui/dist")))
+        .layer(middleware::from_fn(cache_headers))
         .with_state(app);
 
     if let Some(bind) = binds.iter().find(|b| !b.is_loopback()) {
@@ -152,9 +160,40 @@ fn parse_binds(list: &str) -> anyhow::Result<Vec<std::net::IpAddr>> {
     Ok(binds)
 }
 
+/// The app's web view (WKWebView) caches a page sent without Cache-Control by
+/// a guess based on its age, so after an update it kept showing the old
+/// index.html and its old bundle. The page must be re-checked on every load;
+/// Vite's hashed /assets/ files never change under one name.
+fn cache_control(path: &str, status: StatusCode) -> &'static str {
+    if path.starts_with("/assets/") && status.is_success() {
+        "public, max-age=31536000, immutable"
+    } else {
+        "no-cache"
+    }
+}
+
+async fn cache_headers(req: Request, next: Next) -> Response {
+    let path = req.uri().path().to_string();
+    let mut res = next.run(req).await;
+    let value = cache_control(&path, res.status());
+    res.headers_mut().insert(header::CACHE_CONTROL, HeaderValue::from_static(value));
+    res
+}
+
 #[cfg(test)]
 mod tests {
-    use super::parse_binds;
+    use super::{cache_control, parse_binds};
+    use axum::http::StatusCode;
+
+    #[test]
+    fn the_page_is_rechecked_and_hashed_assets_are_kept() {
+        assert_eq!(cache_control("/", StatusCode::OK), "no-cache");
+        assert_eq!(cache_control("/index.html", StatusCode::OK), "no-cache");
+        assert_eq!(cache_control("/favicon.svg", StatusCode::OK), "no-cache");
+        assert_eq!(cache_control("/assets/index-3rHqg71e.js", StatusCode::OK), "public, max-age=31536000, immutable");
+        // A missing asset must not be remembered as missing.
+        assert_eq!(cache_control("/assets/gone.js", StatusCode::NOT_FOUND), "no-cache");
+    }
 
     #[test]
     fn bind_list() {
