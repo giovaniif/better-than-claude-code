@@ -110,6 +110,8 @@ type Action =
   | { t: "socket"; connected: boolean }
   | { t: "route"; route: Route }
   | { t: "dismiss" }
+  /** A decision on an approval was sent; its card waits for `approval_resolved`. */
+  | { t: "deciding"; sessionId: string; requestId: string }
   | { t: "server"; msg: any };
 
 const emptyThread = (): Thread => ({ next: -1, items: [], early: [] });
@@ -151,9 +153,28 @@ export function reduce(state: State, action: Action): State {
       return go(state, action.route);
     case "dismiss":
       return { ...state, error: null, notice: null };
+    case "deciding": {
+      const thread = state.threads[action.sessionId];
+      if (!thread) return state;
+      const items = thread.items.map((it) =>
+        it.kind === "approval" && it.requestId === action.requestId ? { ...it, sending: true } : it,
+      );
+      return { ...state, threads: { ...state.threads, [action.sessionId]: { ...thread, items } } };
+    }
     case "server":
       return restored(reduceServer(state, action.msg));
   }
+}
+
+function releaseApprovals(threads: Record<string, Thread>): Record<string, Thread> {
+  const out: Record<string, Thread> = {};
+  for (const [id, thread] of Object.entries(threads)) {
+    const held = thread.items.some((it) => it.kind === "approval" && it.sending);
+    out[id] = held
+      ? { ...thread, items: thread.items.map((it) => (it.kind === "approval" && it.sending ? { ...it, sending: false } : it)) }
+      : thread;
+  }
+  return out;
 }
 
 /** Opens a route; a session not listed yet waits in `restore`. */
@@ -321,12 +342,15 @@ function reduceServer(state: State, msg: any): State {
       return { ...state, changes: { ...state.changes, [msg.sessionId]: msg.changes } };
     case "pr":
       return { ...state, pr: { ...state.pr, [msg.sessionId]: msg.pr } };
-    case "error":
+    case "error": {
       // A host on an older Switchyard has no engine status; its card offers Update.
       if (msg.for === "engines.status") return state;
       // The import dialog says why; no banner behind it.
       if (msg.for === "session.import") return { ...state, importError: msg.message };
-      return { ...state, error: msg.message, errorCount: state.errorCount + 1 };
+      // The refusal names no request, so every waiting card gets its buttons back.
+      const threads = msg.for === "session.approve" ? releaseApprovals(state.threads) : state.threads;
+      return { ...state, threads, error: msg.message, errorCount: state.errorCount + 1 };
+    }
     case "git.branches": {
       const reply = msg as BranchList;
       return { ...state, branches: { ...state.branches, [branchKey(reply.hostId ?? "local", reply.cwd)]: reply } };
@@ -632,7 +656,11 @@ export function useYard(): { state: State; actions: Actions } {
       setPermission: (sessionId, permission) => post({ op: "session.setPermission", sessionId, permission }),
       handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
-      approve: (sessionId, requestId, decision) => post({ op: "session.approve", sessionId, requestId, decision }),
+      approve: (sessionId, requestId, decision) => {
+        // Until yardd resolves it, a second click (a double click) would send a second decision.
+        dispatch({ t: "deciding", sessionId, requestId });
+        post({ op: "session.approve", sessionId, requestId, decision });
+      },
       loadChanges: (sessionId) => post({ op: "changes.get", sessionId }),
       startNow: (sessionId) => post({ op: "session.startNow", sessionId }),
       remove: (sessionId, removeWorktree) =>

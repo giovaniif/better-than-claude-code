@@ -2051,13 +2051,13 @@ function ItemView(props: {
           {item.detail && <div className="muted small">{item.detail}</div>}
           {item.decision === null ? (
             <div className="row">
-              <button className="btn-primary" onClick={() => onDecide(item.requestId, "allow")}>
+              <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
                 Allow once
               </button>
-              <button className="btn" onClick={() => onDecide(item.requestId, "allow_always")}>
+              <button className="btn" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow_always")}>
                 Always allow
               </button>
-              <button className="btn-text" onClick={() => onDecide(item.requestId, "deny")}>
+              <button className="btn-text" disabled={item.sending} onClick={() => onDecide(item.requestId, "deny")}>
                 Deny
               </button>
             </div>
