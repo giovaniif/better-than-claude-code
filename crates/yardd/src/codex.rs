@@ -27,6 +27,8 @@ use crate::{
 pub struct Client {
     /// The account this app-server runs for (`CODEX_HOME` is its folder).
     account: String,
+    /// Fires to stop the app-server: the reader ends and its child is killed.
+    stop: Mutex<Option<oneshot::Sender<()>>>,
     tx: mpsc::UnboundedSender<String>,
     pending: Mutex<HashMap<u64, oneshot::Sender<Result<Value, String>>>>,
     next: AtomicU64,
@@ -69,8 +71,10 @@ impl Client {
             }
         });
 
+        let (stop, stopped) = oneshot::channel::<()>();
         let client = Arc::new(Client {
             account,
+            stop: Mutex::new(Some(stop)),
             tx,
             pending: Mutex::new(HashMap::new()),
             next: AtomicU64::new(1),
@@ -80,10 +84,21 @@ impl Client {
 
         let reader = client.clone();
         tokio::spawn(async move {
-            let _child = child; // dropped (and killed) when the reader ends
+            let mut child = child; // killed when the reader ends (kill_on_drop)
+            let mut stopped = stopped;
             let mut lines = BufReader::new(stdout).lines();
-            while let Ok(Some(line)) = lines.next_line().await {
-                reader.on_line(&app, &line);
+            loop {
+                tokio::select! {
+                    line = lines.next_line() => match line {
+                        Ok(Some(line)) => reader.on_line(&app, &line),
+                        _ => break,
+                    },
+                    // The account was removed.
+                    _ = &mut stopped => {
+                        let _ = child.kill().await;
+                        break;
+                    }
+                }
             }
             eprintln!("yardd: codex app-server exited");
         });
@@ -100,6 +115,13 @@ impl Client {
             .await?;
         client.send(json!({ "method": "initialized" }));
         Ok(client)
+    }
+
+    /// Stop the app-server, for an account that was removed.
+    pub fn shutdown(&self) {
+        if let Some(stop) = self.stop.lock().unwrap().take() {
+            let _ = stop.send(());
+        }
     }
 
     fn send(&self, msg: Value) {

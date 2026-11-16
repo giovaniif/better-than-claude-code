@@ -98,6 +98,10 @@ impl Guard {
         self.inner.lock().unwrap().codex_servers.insert(account.to_string(), pid);
     }
 
+    pub fn clear_codex_server(&self, account: &str) {
+        self.inner.lock().unwrap().codex_servers.remove(account);
+    }
+
     pub fn command_started(&self, sid: &str, item: &str, cwd: &str) {
         let command = Command {
             cwd: std::fs::canonicalize(cwd).unwrap_or_else(|_| PathBuf::from(cwd)),

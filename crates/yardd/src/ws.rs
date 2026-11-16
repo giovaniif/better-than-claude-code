@@ -306,9 +306,16 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if used > 0 {
                 bail!("{used} session{} still use this account. Delete {} first.", if used == 1 { "" } else { "s" }, if used == 1 { "it" } else { "them" });
             }
+            let found = app.accounts.all().into_iter().find(|a| a.id == id).context("no such account")?;
+            // A login still waiting on the account would write into a deleted folder.
+            crate::login::cancel(app, &found.engine, id).await?;
             let removed = app.accounts.remove(id)?;
             // Its app-server (and the login it holds open) goes with it.
-            app.codex.lock().unwrap().remove(&removed.id);
+            let gone = app.codex.lock().unwrap().remove(&removed.id);
+            if let Some(client) = gone.and_then(|cell| cell.get().cloned()) {
+                client.shutdown();
+            }
+            app.guard.clear_codex_server(&removed.id);
             app.broadcast_accounts();
             let app = app.clone();
             tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });
