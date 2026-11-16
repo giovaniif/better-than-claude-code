@@ -84,11 +84,15 @@ yv drive 'session:{{sid_claude}}' --steps '[{"expect":"css:.thread","text":"Echo
 
 ### reply-to-part-of-answer
 Selecting part of an agent's answer shows a Reply button over the selection;
-pressing it puts the selection in the reply box as a quote, ready for a reply
-under it. Selecting your own message shows no button.
+pressing it puts the selection in a quote card above the reply box (not into
+the text) and leaves the caret in the empty box. A second Reply stacks a second
+card, × removes one. Sending puts each quote before the text as a Markdown
+blockquote (the wire format engines get: the fake echoes it back), and the
+sent bubble shows the quote as a quote, not as `>` characters. Selecting your
+own message shows no button.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"Echo: TEST-say hello"},{"expect":{"role":"button","name":"Reply","exact":true},"inViewport":true},{"shot":"reply-button"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":"label:Message","value":"> Echo: TEST-say hello\n\n"},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false},{"shot":"quoted"}]'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"Echo: TEST-say hello"},{"expect":{"role":"button","name":"Reply","exact":true},"inViewport":true},{"shot":"reply-button"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":{"css":".composer .quote-card"},"text":"Echo: TEST-say hello"},{"expect":"label:Message","value":""},{"eval":"document.activeElement === document.querySelector(\"textarea[aria-label=Message]\")","equals":true},{"expect":{"role":"button","name":"Reply","exact":true},"visible":false},{"eval":"(() => { const p = [...document.querySelectorAll(\".thread .prose p\")].find((e) => e.textContent === \"Echo: TEST-say hello\"); p.scrollIntoView({ block: \"center\" }); const t = document.createTreeWalker(p, NodeFilter.SHOW_TEXT).nextNode(); const r = document.createRange(); r.setStart(t, 11); r.setEnd(t, 20); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return s.toString(); })()","equals":"say hello"},{"click":{"role":"button","name":"Reply","exact":true}},{"expect":{"css":".composer .quote-card"},"count":2},{"shot":"two-quotes"},{"click":{"role":"button","name":"Remove quote","within":{"css":".quote-card","hasText":"Echo: TEST-say hello"}}},{"expect":{"css":".composer .quote-card"},"count":1},{"expect":{"css":".composer .quote-card"},"text":"say hello"},{"expect":{"css":".composer .quote-card","hasText":"Echo: TEST"},"visible":false},{"fill":"label:Message","value":"TEST-about that"},{"shot":"quoted"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":{"css":".prose p","hasText":"Echo: > say hello"}},{"expect":{"css":".bubble .bubble-quote","hasText":"say hello"}},{"expect":{"css":".bubble","hasText":"TEST-about that"}},{"expect":{"css":".bubble","hasText":"> say"},"visible":false},{"expect":{"css":".composer .quote-card"},"visible":false},{"expect":"label:Message","value":""},{"shot":"sent"}]'
 ```
 
 ### no-reply-on-own-message
@@ -156,6 +160,17 @@ an empty box.
 ```sh
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-another long turn"}' --wait '{"op":"created"}' --save editq_sid=sessionId
 yv drive 'session:{{editq_sid}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-first draft"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-first draft"},{"click":{"role":"button","name":"Edit","exact":true}},{"expect":"label:Message","value":"TEST-first draft"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"visible":false},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"TEST-first draft"},{"press":"ArrowUp","target":"label:Message"},{"expect":"label:Message","value":"TEST-first draft"},{"click":{"role":"button","name":"Stop","exact":true}}]'
+```
+
+### edit-a-queued-reply-keeps-its-quotes
+Viewports: desktop
+A queued message that starts with quotes (a Reply, or `> ` lines typed by
+hand) shows its text in the queue with a quote count, and Edit brings the
+quotes back as cards and the rest back as text, so nothing is lost.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-quote turn"}' --wait '{"op":"created"}' --save quoteq_sid=sessionId
+yv drive 'session:{{quoteq_sid}}' --viewport desktop --steps '[{"fill":"label:Message","value":"> TEST-quoted line\n\nTEST-my reply"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"] .pending-text"},"text":"TEST-my reply"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"1 quote"},{"click":{"role":"button","name":"Edit","exact":true}},{"expect":{"css":".composer .quote-card"},"text":"TEST-quoted line"},{"expect":"label:Message","value":"TEST-my reply"},{"shot":"edited"},{"click":{"role":"button","name":"Stop","exact":true}}]'
 ```
 
 ### subagent-nests-and-expands
