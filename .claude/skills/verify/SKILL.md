@@ -59,7 +59,7 @@ verify/yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"hi"}' --w
 verify/yv state --expect '{"sessions":[{"id":"{{sid_echo}}","status":"idle"}]}'
 ```
 
-- Routes: `new`, `hosts`, `session:<id or title text>`.
+- Routes: `new`, `hosts`, `settings`, `session:<id or title text>`.
 - At mobile (below 700 px) the sidebar is a closed drawer. Routes open it
   themselves; steps that click or read something in it open it first with
   `{"click":"role:button:Open sessions"}` (hidden on desktop, so a recipe

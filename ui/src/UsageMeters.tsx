@@ -1,8 +1,8 @@
 // Plan-usage meters: a full one for the model picker (bar, percent, when it
 // resets) and a compact strip for the sidebar. Both read the same Meter list.
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import type { Engine, Usage } from "./protocol";
-import { formatReset, metersFor, percentText, type Meter } from "./usage";
+import { formatReset, metersFor, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
 
 const ENGINES: { id: Engine; name: string }[] = [
   { id: "claude", name: "Claude" },
@@ -73,23 +73,37 @@ export function UsageMeters({ usage, first }: { usage: Usage; first?: Engine }) 
  *  plus any other window that is running high. */
 const forStrip = (meters: Meter[]) => meters.filter((m, i) => i < 2 || m.level !== "ok");
 
-/** Always visible: one line per window, no reset times (they are in the tooltip). */
-export function UsageStrip({ usage }: { usage: Usage }) {
+/** Always visible: one line per window, no reset times (they are in the
+ *  tooltip). Each engine and account once, from the hosts the sidebar shows;
+ *  an added account gets a line with its name above its meters. */
+export function UsageStrip({ sources }: { sources: UsageSource[] }) {
   const now = useNow();
-  const shown = ENGINES.map((e) => ({ ...e, meters: forStrip(metersFor(e.id, usage, now)) })).filter((e) => e.meters.length > 0);
+  const shown = stripGroups(sources, ENGINES.map((e) => e.id))
+    .map((g) => {
+      const engine = ENGINES.find((e) => e.id === g.engine)?.name ?? g.engine;
+      return { ...g, engine, name: g.account ? `${engine} (${g.account})` : engine, meters: forStrip(metersFor(g.engine, g.usage, now)) };
+    })
+    .filter((g) => g.meters.length > 0);
   if (shown.length === 0) return null;
   return (
     <div className="usage-strip" role="group" aria-label="Plan usage">
-      {shown.map((e) =>
-        e.meters.map((m, i) => (
-          <div key={`${e.id}-${m.key}`} className={`usage-line level-${m.level}`} title={describe(e.name, m, now)}>
-            <span className="usage-line-engine">{i === 0 ? e.name : ""}</span>
-            <span className="usage-label">{m.label}</span>
-            <Bar meter={m} />
-            <span className="usage-percent">{percentText(m.percent)}</span>
-          </div>
-        )),
-      )}
+      {shown.map((g) => (
+        <Fragment key={g.name}>
+          {g.account && (
+            <div className="usage-line-account">
+              {g.engine} · {g.account}
+            </div>
+          )}
+          {g.meters.map((m, i) => (
+            <div key={`${g.name}-${m.key}`} className={`usage-line level-${m.level}`} title={describe(g.name, m, now)}>
+              <span className="usage-line-engine">{i === 0 && !g.account ? g.engine : ""}</span>
+              <span className="usage-label">{m.label}</span>
+              <Bar meter={m} />
+              <span className="usage-percent">{percentText(m.percent)}</span>
+            </div>
+          ))}
+        </Fragment>
+      ))}
     </div>
   );
 }

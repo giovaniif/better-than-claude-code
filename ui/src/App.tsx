@@ -1,9 +1,10 @@
 import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
-import { useNotifySetting } from "./notify";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
+import { shownHosts, useHiddenHosts } from "./sidebarHosts";
+import { SettingsPage } from "./SettingsPage";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
@@ -61,7 +62,8 @@ const MORE = "M5 12h.01M12 12h.01M19 12h.01";
 const REPLY = "M9 17 4 12l5-5M20 18v-2a4 4 0 0 0-4-4H4";
 export const PIN = "M12 17v5M9 3h6l-1 6 4 4H6l4-4-1-6Z";
 const ARCHIVE = "M3 4h18v4H3ZM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4";
-const BELL = "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0";
+const GEAR =
+  "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z";
 const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM12 11v6M9 14h6";
 const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
@@ -175,6 +177,7 @@ export function App() {
             </>
           )}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
+          {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
           {route.page === "automation" &&
             // The form reads its automation once, on mount: after a reload it waits on the list
@@ -636,6 +639,8 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const groupNames = [...new Set(all.filter((s) => s.group && !s.archived).map((s) => s.group as string))].sort((a, b) => a.localeCompare(b));
   const [collapsed, toggleGroup] = useCollapsedGroups();
   const { route } = state;
+  // The hosts picked in Settings: their rows, and their plan usage in the strip.
+  const shown = shownHosts(["local", ...state.hosts.map((h) => h.id)], useHiddenHosts());
   // Runs of automations live on the Automations page, not in this list.
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
@@ -673,6 +678,10 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
           Import
         </button>
         {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
+        <button className={`nav-row ${route.page === "settings" ? "active" : ""}`} onClick={() => actions.go({ page: "settings" })}>
+          <Icon d={GEAR} />
+          Settings
+        </button>
       </div>
       <div className="session-list">
         {pinned.length > 0 && <div className="list-head">Pinned</div>}
@@ -706,43 +715,29 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
           {showArchived && <div className="archived-list">{archived.map(row)}</div>}
         </div>
       )}
-      <UsageStrip usage={usageOn(state, "local")} />
-      <div className="sidebar-bottom">
-        <NotifySwitch />
-        {["local", ...state.hosts.map((h) => h.id)].map((id) => {
-          const stats = state.host[id];
-          const status = hostState(state, id);
-          return (
-            <button key={id} className="host-row" onClick={() => actions.go({ page: "hosts" })} title={HOST_STATE_LABEL[status]}>
-              <span className={`dot host-dot-${status}`} aria-hidden="true" />
-              <span className="host-name">{hostName(state, id)}</span>
-              {id !== "local" && <Cloud size={12} />}
-              <span className="spacer" />
-              <span className="host-stat">
-                {(status === "ok" || status === "busy") && stats
-                  ? `${pct(stats.cpu)} · ${pct((stats.memUsed / stats.memTotal) * 100)}`
-                  : HOST_STATE_LABEL[status]}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      <UsageStrip sources={shown.map((host) => ({ host, usage: usageOn(state, host), accounts: accountsOn(state, host) }))} />
+      {shown.length > 0 && (
+        <div className="sidebar-bottom">
+          {shown.map((id) => {
+            const stats = state.host[id];
+            const status = hostState(state, id);
+            return (
+              <button key={id} className="host-row" onClick={() => actions.go({ page: "hosts" })} title={HOST_STATE_LABEL[status]}>
+                <span className={`dot host-dot-${status}`} aria-hidden="true" />
+                <span className="host-name">{hostName(state, id)}</span>
+                {id !== "local" && <Cloud size={12} />}
+                <span className="spacer" />
+                <span className="host-stat">
+                  {(status === "ok" || status === "busy") && stats
+                    ? `${pct(stats.cpu)} · ${pct((stats.memUsed / stats.memTotal) * 100)}`
+                    : HOST_STATE_LABEL[status]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </nav>
-  );
-}
-
-function NotifySwitch() {
-  const { on, hint, toggle } = useNotifySetting();
-  return (
-    <>
-      <button className="host-row" role="switch" aria-checked={on} onClick={toggle}>
-        <Icon d={BELL} size={12} />
-        <span className="host-name">Notifications</span>
-        <span className="spacer" />
-        <span className="host-stat">{on ? "On" : "Off"}</span>
-      </button>
-      {hint && <div className="notify-hint">{hint}</div>}
-    </>
   );
 }
 

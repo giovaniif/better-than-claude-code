@@ -193,8 +193,15 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   if (route === "new") {
     await page.getByRole("button", { name: "New session" }).first().click();
   } else if (route === "hosts") {
-    // The notifications switch (#17) is a .host-row too, and comes first.
-    await page.locator(".host-row:not([role=switch])").first().click();
+    // Every host row can be hidden in Settings; Settings links to Hosts too.
+    const row = page.locator(".host-row").first();
+    if (await row.count()) await row.click();
+    else {
+      await page.getByRole("button", { name: "Settings", exact: true }).first().click();
+      await page.getByRole("button", { name: "Manage hosts" }).click();
+    }
+  } else if (route === "settings") {
+    await page.getByRole("button", { name: "Settings", exact: true }).first().click();
   } else if (route.startsWith("session:")) {
     const key = route.slice("session:".length);
     let title = key;
@@ -212,7 +219,7 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
     if ((await row.count()) === 0) fail("no-session", `no sidebar row for ${title}`, "verify/yv state");
     await row.first().click();
   } else if (route !== "") {
-    throw new Usage(`unknown route ${route}: new | hosts | session:<id or title>`);
+    throw new Usage(`unknown route ${route}: new | hosts | settings | session:<id or title>`);
   }
   // Picking a row closes the drawer; a shot taken mid-slide would show it half open.
   if (drawer) await page.locator(".sidebar").waitFor({ state: "hidden", timeout: 5000 });

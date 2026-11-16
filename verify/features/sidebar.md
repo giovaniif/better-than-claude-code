@@ -123,7 +123,7 @@ yv state --expect '{"sessions":[{"id":"{{sid_echo}}","group":null}]}'
 ```
 
 ### archived-header-stays-at-bottom
-With many sessions the list scrolls, but the Archived header stays at the bottom of the session list, just above the sidebar's footer (usage meters, Notifications, host rows), and opening it expands upward with its own scroll.
+With many sessions the list scrolls, but the Archived header stays at the bottom of the session list, just above the sidebar's footer (usage meters, host rows), and opening it expands upward with its own scroll.
 
 ```sh
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14; do yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-many '$i'"}' > /dev/null; done
