@@ -133,3 +133,4 @@ yv api '{"op":"automation.run","id":"{{claude_capped}}","force":false}' --wait '
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
+- `disable-stops-the-schedule` expects no card to read "Next run off" once TEST-Patrol is back on, so a recipe before it must leave its own automations enabled (a daily slot will not fire during a run); recipes after it may add disabled ones.
