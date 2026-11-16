@@ -157,7 +157,14 @@ describe("route in the URL", () => {
   const snapshot = (...ids: string[]) => ({ op: "snapshot", sessions: ids.map((id) => meta(id)), hosts: [] });
 
   test("hash round trip", () => {
-    for (const route of [{ page: "new" }, { page: "hosts" }, { page: "session", id: "s1a1e19674866" }] as const)
+    for (const route of [
+      { page: "new" },
+      { page: "hosts" },
+      { page: "session", id: "s1a1e19674866" },
+      { page: "automations" },
+      { page: "automation", host: "local", id: "new" },
+      { page: "automation", host: "h1", id: "a/7 b" },
+    ] as const)
       expect(parseHash(routeHash(route))).toEqual(route);
     expect(parseHash("")).toEqual({ page: "new" });
     expect(parseHash("#/s/%E0%A4%A")).toEqual({ page: "new" });

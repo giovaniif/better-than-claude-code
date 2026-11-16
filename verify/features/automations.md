@@ -82,6 +82,14 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:switch:Enabled: TEST-Patrol"},{"expect":{"css":".automation","hasText":"Next run off"},"visible":false}]'
 ```
 
+### reload-and-back-keep-the-page
+A reload keeps the Automations page, and the Edit form with its saved values (not a blank "New automation" that would save a copy); Back from a run opened there returns to the page.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"reload":true},{"expect":"role:heading:Automations"},{"click":"role:button:Edit: TEST-Patrol"},{"reload":true},{"expect":"role:heading:Edit automation"},{"expect":{"css":"input","value":"TEST-Patrol"}},{"click":"role:button:Cancel"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"Idle"},"timeout":90000},{"click":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"history.back()"},{"expect":"role:heading:Automations"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Automations"},{"reload":true},{"expect":{"css":".automation","hasText":"TEST-Patrol"}},{"click":"role:button:Edit: TEST-Patrol"},{"reload":true},{"expect":{"css":"input","value":"TEST-Patrol"}},{"shot":"edit-after-reload"}]'
+```
+
 ### delete-removes-the-automation-and-frees-its-runs
 Deleting asks once; the automation goes and its runs become ordinary (archived) sessions.
 
