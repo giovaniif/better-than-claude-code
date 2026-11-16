@@ -350,6 +350,39 @@ async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
     Ok((out.status.success(), String::from_utf8_lossy(&out.stdout).into_owned()))
 }
 
+/// An untracked file as `git diff` would show it once added: every line a
+/// `+`. Read here rather than one `git diff --no-index` process per file. At
+/// most `room` bytes are read, so the caller's cap still cuts a big file. A
+/// binary file (a NUL byte), an empty one, or anything that is not a regular
+/// file (a symlink may point outside the folder) gets the header alone, which
+/// the pane shows as "No text diff".
+async fn new_file_diff(cwd: &str, path: &str, room: usize) -> String {
+    let mut out = format!("diff --git a/{path} b/{path}\nnew file mode 100644\n");
+    let full = Path::new(cwd).join(path);
+    if !matches!(tokio::fs::symlink_metadata(&full).await, Ok(m) if m.is_file()) {
+        return out;
+    }
+    let mut bytes = Vec::new();
+    let Ok(file) = tokio::fs::File::open(&full).await else {
+        return out;
+    };
+    if file.take(room as u64).read_to_end(&mut bytes).await.is_err() || bytes.is_empty() || bytes.contains(&0) {
+        return out;
+    }
+    let text = String::from_utf8_lossy(&bytes);
+    let lines: Vec<&str> = text.split_terminator('\n').collect();
+    out.push_str(&format!("--- /dev/null\n+++ b/{path}\n@@ -0,0 +1,{} @@\n", lines.len()));
+    for line in lines {
+        out.push('+');
+        out.push_str(line);
+        out.push('\n');
+    }
+    if !text.ends_with('\n') {
+        out.push_str("\\ No newline at end of file\n");
+    }
+    out
+}
+
 pub async fn changes(cwd: &str) -> Result<Value> {
     let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
     if !is_repo {
@@ -376,11 +409,22 @@ pub async fn changes(cwd: &str) -> Result<Value> {
         .collect();
 
     let (_, untracked) = git(cwd, &["ls-files", "--others", "--exclude-standard"]).await?;
-    for path in untracked.lines().take(200) {
+    let untracked: Vec<&str> = untracked.lines().take(200).collect();
+    for path in &untracked {
         files.push(json!({ "path": path, "added": null, "removed": null, "untracked": true }));
     }
 
     let (_, mut diff) = git(cwd, &[&["diff"], base].concat()).await?;
+    // `git diff` leaves untracked files out, and a file the agent created is
+    // the change the user most wants to read. Each joins the diff as a new
+    // file, until the cap below cuts it off.
+    for path in &untracked {
+        if diff.len() > MAX_DIFF_BYTES {
+            break;
+        }
+        let room = MAX_DIFF_BYTES + 1 - diff.len();
+        diff.push_str(&new_file_diff(cwd, path, room).await);
+    }
     let truncated = diff.len() > MAX_DIFF_BYTES;
     if truncated {
         let mut cut = MAX_DIFF_BYTES;
