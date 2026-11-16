@@ -141,15 +141,6 @@ your after-shots; cover empty, loading, error and long-text states at both
 viewports. `verify/yv annotate --before a.png --after b.png --box x,y,w,h`
 makes before/after crops for the PR body.
 
-## Previews for the owner
-
-When the owner wants to try a PR (or `main`) on their own devices, run
-`verify/yv preview <pr> --notify`. It prints a tailnet URL and sends it to
-their Switchyard windows. It is the checkout's own isolated app on scripted
-engines, so it shows the UI, not real agent output. Stop it with
-`verify/yv preview down <pr>` when they are done. A preview is not proof for
-the evidence bundle, and a loop must not leave one running.
-
 ## Cleanup
 
 `verify/yv iso down --all`. Isolated daemons live in `/tmp/yv-*`; evidence and
