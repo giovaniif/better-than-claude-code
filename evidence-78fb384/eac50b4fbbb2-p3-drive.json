@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "78fb3840d163e43ffebc23dd578a4ea892c3febc",
+    "short": "78fb384",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:23:44.566Z"
+  },
+  "dir": ".verify/evidence/accounts-head-hosts",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2893,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/accounts-head-hosts/hosts-accounts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,52 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-16T01:24:41.714Z",
+      "counts": {
+        "pass": 7
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "add-account",
+          "status": "pass",
+          "ms": 4297
+        },
+        {
+          "label": "log-in-account",
+          "status": "pass",
+          "ms": 3958
+        },
+        {
+          "label": "pick-account-desktop",
+          "status": "pass",
+          "ms": 5418
+        },
+        {
+          "label": "pick-account-mobile",
+          "status": "pass",
+          "ms": 4982
+        },
+        {
+          "label": "default-has-no-account-row-without-a-choice",
+          "status": "pass",
+          "ms": 2046
+        },
+        {
+          "label": "remove-refused-while-in-use",
+          "status": "pass",
+          "ms": 2716
+        },
+        {
+          "label": "remove-account",
+          "status": "pass",
+          "ms": 4506
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
