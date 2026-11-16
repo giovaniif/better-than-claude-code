@@ -1,0 +1,7 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test acp
+# exit 101 after 207 ms at 3762c36dd60d03adc609b7a715ce3395a03f5f4d
+
+
+error: no test target named `acp` in `yardd` package
+help: available test targets:
+    daemon

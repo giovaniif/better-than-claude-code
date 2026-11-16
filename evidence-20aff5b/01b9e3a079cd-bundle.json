@@ -1,0 +1,344 @@
+{
+  "v": 1,
+  "claim": "Switchyard drives only Claude Code and Codex: OpenCode and xAI's Grok CLI cannot be picked, logged in to or run as sessions",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a5abdd6b310e62a99",
+  "base": "3762c36dd60d03adc609b7a715ce3395a03f5f4d",
+  "head": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+  "changed": [
+    {
+      "status": "M",
+      "path": "CLAUDE.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/accounts.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/engines.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/grok.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/guard.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/opencode.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/acp-agent.mjs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/grok"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/opencode"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "scripts/remote-install.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/accounts.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/acp-engines.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T20:13:13.822Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3762c36dd60d03adc609b7a715ce3395a03f5f4d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "158fac5489f3e7b629d0bc57cf69127c8df2e169ed238b8bf2d24253dbe3343f"
+        },
+        {
+          "path": "p1-base-picker-mobile.png",
+          "sha256": "67b0e756eb3ae71a05296b0f95f2f4a113d43e1475a76cd0abae9e0b145cd80b"
+        },
+        {
+          "path": "p1-base-picker-desktop.png",
+          "sha256": "c5e57d973becfc7db17e39dec8b7311e1a09199ceb0dca667299d455185a0c3b"
+        }
+      ],
+      "addedAt": "2026-11-16T20:13:29.244Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "3762c36dd60d03adc609b7a715ce3395a03f5f4d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d7774080ef45532d312d9b95f8ec6f81d48a1361200725fb31d55aca609870a3"
+        }
+      ],
+      "addedAt": "2026-11-16T20:13:29.291Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test acp",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "2bb026adde163b198eaf372191e873d65d99ecf096facc2acfe0a3084587f149"
+        },
+        {
+          "path": "p3-picker-mobile.png",
+          "sha256": "f2b5456d41529fa9c8825a38bbf99f7e1ff7026f484abf596467b2bdd8ab064f"
+        },
+        {
+          "path": "p3-grok-approval-mobile.png",
+          "sha256": "5e6f5b7be85b890d9fa9b9b2a4a012643c6f40d3f1040801ca5d183bed8180b4"
+        },
+        {
+          "path": "p3-opencode-session-mobile.png",
+          "sha256": "417fe5166c1837dae33aa1861ea311300d34a4a43043a82ed761e2ad2e0624ca"
+        },
+        {
+          "path": "p3-opencode-providers-mobile.png",
+          "sha256": "c86268277d65308cb6fd7d0e5f4b433ede374ce305d08e4a932cc66eccc09ad5"
+        },
+        {
+          "path": "p3-picker-desktop.png",
+          "sha256": "61dc9f092552d9ea315013856630a6f57dfee51bfe9f70a630b0bdeae7424a20"
+        },
+        {
+          "path": "p3-grok-approval-desktop.png",
+          "sha256": "bdb58b465fa9db2c2ae6615fb04465372544c25ae16400c65a0c89c3a448c374"
+        },
+        {
+          "path": "p3-opencode-session-desktop.png",
+          "sha256": "f7f2b506df16a58fe3db00fc980f654cee6fff63c322c0e629b2aa0cadc243b1"
+        },
+        {
+          "path": "p3-opencode-providers-desktop.png",
+          "sha256": "94f50f027afa6cff0bf7825c48e588a8c2905857bbc824b94d3998cfa16a9db0"
+        }
+      ],
+      "addedAt": "2026-11-16T20:14:39.634Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "b84eb328e07d7cd82bf026df548f56ce812469a69cf0d3b72e9c7755c20f648c"
+        }
+      ],
+      "addedAt": "2026-11-16T20:14:39.686Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "9050f91279cdcdd77ce5229ea425b796c077d758e6021e0ae61b4c065ef756a0"
+        }
+      ],
+      "addedAt": "2026-11-16T20:15:00.137Z",
+      "cmd": "verify/yv design-check --base 3762c36dd60d",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-acp-engines.json",
+          "sha256": "89b39507acbd106c968ac5c20c87d386ea79b84a2a12791997530de233cff801"
+        }
+      ],
+      "addedAt": "2026-11-16T20:15:03.957Z",
+      "cmd": "verify/yv map run acp-engines",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "20aff5b569ee7a43de74e965e72ca9b7a84736b0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-logins.json",
+          "sha256": "905d67886b80ac446a71b030f9f3def0d324a6c7c97a598226ff0666cdee68b4"
+        }
+      ],
+      "addedAt": "2026-11-16T20:15:26.522Z",
+      "cmd": "verify/yv map run logins",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "logins/hosts-page-shows-logged-out",
+        "logins/codex-device-login",
+        "logins/claude-code-login",
+        "logins/grok-device-login",
+        "logins/opencode-api-key",
+        "logins/opencode-device-sign-in"
+      ]
+    }
+  ]
+}

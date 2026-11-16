@@ -1,0 +1,86 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "3762c36dd60d03adc609b7a715ce3395a03f5f4d",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/AutomationsPage.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/PrPane.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/UsageMeters.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/accounts.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/engines.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/engines.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/protocol.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/store.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/usage.ts"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule": "raw-button",
+      "severity": "warn",
+      "file": "ui/src/App.tsx",
+      "line": 1032,
+      "text": "<button className=\"picker-fold\" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>",
+      "hint": "give it a design-system button class: btn, btn-text, btn-icon, btn-primary, btn-quiet"
+    }
+  ],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}
