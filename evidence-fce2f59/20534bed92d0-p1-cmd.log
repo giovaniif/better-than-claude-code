@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_new_client_gets_its_snapshot_before_any_broadcast
+# exit 101 after 2530 ms at b5ac0d2f2b580da980d960a1c1ee54177689b679
+
+
+running 1 test
+test a_new_client_gets_its_snapshot_before_any_broadcast ... FAILED
+
+failures:
+
+---- a_new_client_gets_its_snapshot_before_any_broadcast stdout ----
+
+thread 'a_new_client_gets_its_snapshot_before_any_broadcast' (211656) panicked at crates/yardd/tests/daemon.rs:69:9:
+assertion `left == right` failed: client 3 got "session" first
+  left: String("session")
+ right: "snapshot"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-211655-snapshot-first-0 for inspection
+
+
+failures:
+    a_new_client_gets_its_snapshot_before_any_broadcast
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 65 filtered out; finished in 0.22s
+
+
+   Compiling yardd v0.4.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.25s
+     Running tests/daemon.rs (target/debug/build/yardd/7bf3bc1ebbbe5c02/out/daemon-7bf3bc1ebbbe5c02)
+error: test failed, to rerun pass `-p yardd --test daemon`

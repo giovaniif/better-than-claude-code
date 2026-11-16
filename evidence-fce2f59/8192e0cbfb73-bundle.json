@@ -1,0 +1,124 @@
+{
+  "v": 1,
+  "claim": "A client that connects while yardd is broadcasting can get a broadcast before its snapshot (tokio::select! picks at random between the queued snapshot and the broadcast); the UI replaces its state with the snapshot, so a session update or usage change that overtook it is lost, and snapshot_has_its_shape_and_the_fake_models flakes in CI",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-94c1",
+  "base": "0d3b8e8386764915f7f9bcbd650ec939e74c4885",
+  "head": "fce2f59f7479c0878af20a60b97322766b797d87",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T12:54:12.993Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b5ac0d2f2b580da980d960a1c1ee54177689b679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "20534bed92d01bc02bb689896ebe66a72b6c6fcf4d5e3e08975793c9e8d80b66"
+        }
+      ],
+      "addedAt": "2026-11-16T12:54:13.043Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_new_client_gets_its_snapshot_before_any_broadcast",
+      "exit": 101
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b5ac0d2f2b580da980d960a1c1ee54177689b679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "3b2d47b49e15f32f446135a8ee192181eb638a8be9a2d49fd3956d06417969ac"
+        }
+      ],
+      "addedAt": "2026-11-16T12:54:15.622Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_new_client_gets_its_snapshot_before_any_broadcast",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "note",
+      "at": "b5ac0d2f2b580da980d960a1c1ee54177689b679",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-16T12:54:16.085Z",
+      "text": "CI flake from the same race: https://github.com/giovaniif/switchyard/actions/runs/43869525415/job/133306684899 (snapshot_has_its_shape_and_the_fake_models: a usage message came before snapshot)"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fce2f59f7479c0878af20a60b97322766b797d87",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "9295a52502d6e1dae94a3081eeec48b3b578ebb0233a6923ae3f9f27e4f26df4"
+        }
+      ],
+      "addedAt": "2026-11-16T12:54:16.142Z",
+      "cmd": "for i in 1 2 3 4 5 6 7 8 9 10; do CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_new_client_gets_its_snapshot_before_any_broadcast -q || exit 1; done",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "fce2f59f7479c0878af20a60b97322766b797d87",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "703c5ccaa07c6c9cf4b2e84d52ece8c66d75471c10378b3ea6ca4a4cc930d29c"
+        }
+      ],
+      "addedAt": "2026-11-16T12:54:26.704Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fce2f59f7479c0878af20a60b97322766b797d87",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-persistence.json",
+          "sha256": "96e9fabfc52593ae2c6bf7934264a71730e1f60e947212b6a572b98afa25b117"
+        }
+      ],
+      "addedAt": "2026-11-16T12:54:42.731Z",
+      "cmd": "verify/yv map run persistence",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "persistence/survives-restart",
+        "persistence/mid-turn-restart",
+        "persistence/resume-after-restart",
+        "persistence/reload-keeps-open-session"
+      ]
+    }
+  ]
+}
