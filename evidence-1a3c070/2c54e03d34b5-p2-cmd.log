@@ -1,0 +1,11 @@
+$ cd verify && bun test src/cli.test.ts -t 'expected-api'
+# exit 0 after 375 ms at 1a3c070b12620044f7f5f9d506f7d431fd5d2960
+
+bun test v1.4.4 (38afee6c8)
+
+
+ 1 pass
+ 36 filtered out
+ 0 fail
+ 4 expect() calls
+Ran 1 test across 1 file. [355.00ms]

@@ -1,0 +1,31 @@
+$ cd verify && bun test src/cli.test.ts
+# exit 1 after 441 ms at e369223b426b101b93aaa2fe9a8fc83d847a78ac
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/cli.test.ts:
+271 |   });
+272 |   test("a head refusal named in an expected-api note passes; others still fail", () => {
+273 |     const fix = full.map((p) => (p.kind === "fix" ? { ...p, failedApi: ["pr: boom", "term.open: folder gone: /tmp/x", "changes: new"] } : p));
+274 |     const note = (text: string) => P({ kind: "note", text, artifacts: [] });
+275 |     expect(failed(bundle([...fix, note("expected-api: term.open: the fix refuses instead of opening in ~")]))).toEqual(["api-failures"]);
+276 |     expect(failed(bundle([...fix, note("expected-api: term.open: refuses"), note("expected-api: changes: clearer message")]))).toEqual([]);
+                                                                                                                                     ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "api-failures",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/patrol-3d97-cli/verify/src/cli.test.ts:276:128)
+(fail) evidence proof bar > a head refusal named in an expected-api note passes; others still fail [1.12ms]
+
+ 36 pass
+ 1 fail
+ 80 expect() calls
+Ran 37 tests across 1 file. [432.00ms]

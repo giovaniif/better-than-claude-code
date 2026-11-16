@@ -1,0 +1,76 @@
+{
+  "v": 1,
+  "claim": "yv evidence: a fix whose point is a refusal (an op that now says no, or a reworded error) could never pass the api-failures rule, so its bundle always failed",
+  "repo": "/home/giovani/.yard/wt/switchyard/patrol-3d97-cli",
+  "base": "3889164455f27f8b9f1e00216997af1bdeaa12b0",
+  "head": "1a3c070b12620044f7f5f9d506f7d431fd5d2960",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/evidence.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-16T08:53:15.122Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "e369223b426b101b93aaa2fe9a8fc83d847a78ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "ba70a469f316dd8f365d4d61230d896d5ede626d1409a4985c536d46e8501944"
+        }
+      ],
+      "addedAt": "2026-11-16T08:53:15.211Z",
+      "cmd": "cd verify && bun test src/cli.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1a3c070b12620044f7f5f9d506f7d431fd5d2960",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "2c54e03d34b5f0ff8820cb8d540aa33e917398c78894a02d53629a78e8c8886e"
+        }
+      ],
+      "addedAt": "2026-11-16T08:53:15.754Z",
+      "cmd": "cd verify && bun test src/cli.test.ts -t 'expected-api'",
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "1a3c070b12620044f7f5f9d506f7d431fd5d2960",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "04e7460dc9c117dd2b1e6f7d7e441ec40aeabc51b2814b653edf1abdec2c5872"
+        }
+      ],
+      "addedAt": "2026-11-16T08:53:16.166Z",
+      "cmd": "cd verify && bun test src && cd .. && verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}
