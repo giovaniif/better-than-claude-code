@@ -1,0 +1,39 @@
+$ verify/yv map run approvals --recipe double-click-allow-once
+# exit 1 after 5121 ms at d6726d5ac77d8660e62a9a46922fc0cfb2452f59
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-16T01:44:41.186Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "double-click-allow-once",
+          "status": "fail",
+          "ms": 4258,
+          "problems": [
+            {
+              "code": "errors",
+              "msg": "desktop: 0 console, 0 page, 1 API, 0 HTTP errors"
+            }
+          ],
+          "tail": "{\n  \"command\": \"api\",\n  \"ok\": true,\n  \"sent\": {\n    \"op\": \"session.create\",\n    \"engine\": \"codex\",\n    \"model\": \"fake-fast\",\n    \"effort\": \"low\",\n    \"cwd\": \"/tmp/yv-map-approvals-2381877-mwilp1d3/work/TEST-demo-app\",\n    \"worktree\": true,\n    \"permission\": \"ask\",\n    \"text\": \"[cmd] TEST-double click\"\n  },\n  \"reply\": {\n    \"op\": \"created\",\n    \"sessionId\": \"s1a1e2071303e\"\n  },\n  \"saved\": {\n    \"dbl_sid\": \"s1a1e2071303e\"\n  },\n  \"received\": 8,\n  \"problems\": []\n}\n{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1e2071303e\",\n  \"build\": {\n    \"sha\": \"d6726d5ac77d8660e62a9a46922fc0cfb2452f59\",\n    \"short\": \"d6726d5\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-16T01:44:31.611Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357/.verify/drives/2026-11-16T01-44-37-301Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 3560,\n      \"steps\": 4,\n      \"failed\": null,\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(async () => { const b = [...document.querySelectorAll(\\\".approval button\\\")].find((x) => x.textContent.trim() === \\\"Allow once\\\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \\\"clicked twice\\\"; })()\",\n          \"value\": \"clicked twice\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"error\",\n          \"for\": \"session.approve\",\n          \"message\": \"approval is no longer pending\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"errors\",\n      \"msg\": \"desktop: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "approvals/double-click-allow-once",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

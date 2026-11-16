@@ -1,0 +1,195 @@
+{
+  "v": 1,
+  "claim": "A double click on Allow once (or Always allow / Deny) shows the error banner 'approval is no longer pending': the card's buttons stay live until yardd resolves the approval, so the second click sends a second decision.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-c357",
+  "base": "db032d55310fd9fd058927e0160b1954d8f9cea4",
+  "head": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approvals.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T01:44:28.804Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d6726d5ac77d8660e62a9a46922fc0cfb2452f59",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "3d85d010fc7cbc1f283f8bded37d4f355893d1bd9c7c4e790c2c86f5af7f056a"
+        },
+        {
+          "path": "p1-after-double-click-desktop.png",
+          "sha256": "0b87d35a3d66b47b9bd279518a5bcde5a63a8b5e7f252c138bba803a20eeda0f"
+        }
+      ],
+      "addedAt": "2026-11-16T01:44:35.967Z",
+      "failedApi": [
+        "session.approve: approval is no longer pending"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "d6726d5ac77d8660e62a9a46922fc0cfb2452f59",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "5a3502d44e29cb786a22216ec08eaad557d613630643b1d61d72eb690ae4b378"
+        }
+      ],
+      "addedAt": "2026-11-16T01:44:36.009Z",
+      "cmd": "cd ui && bun test src/store.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "d6726d5ac77d8660e62a9a46922fc0cfb2452f59",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "67bc55642438fe8ff4d790adc86c8ba763b2e9a276f7a7e49d8d709d1cf9f22d"
+        }
+      ],
+      "addedAt": "2026-11-16T01:44:36.067Z",
+      "cmd": "verify/yv map run approvals --recipe double-click-allow-once",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "d97b5a337540140d3c24abfe4bfe66336eea1561d493ca48a04d23d2d6772404"
+        },
+        {
+          "path": "p4-after-double-click-desktop.png",
+          "sha256": "4393b43d48e96116d80195e2a11ce901b0d679c410e1fc740bdf4e8bbc611297"
+        }
+      ],
+      "addedAt": "2026-11-16T01:44:54.243Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "43adc18d3bf4ec47e2e1b48bb4b51218ec12b6669afe2a87ab9fb4c75b8c6d2a"
+        },
+        {
+          "path": "p5-after-double-click-mobile.png",
+          "sha256": "2e200d1d04c6486bef83ed8a571ef8b9a10c64d0964ebca9754c05bc42ab0b5d"
+        }
+      ],
+      "addedAt": "2026-11-16T01:44:58.256Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "06508dcd10cf56e574f3aa2b5853ba6f2d31c19f2031ddbf12929a70b763d12c"
+        }
+      ],
+      "addedAt": "2026-11-16T01:45:07.981Z",
+      "cmd": "(cd ui && bun test) && (cd sidecar/yard-claude && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "6762b517ae774222ba932e5e0bd978e9e797afcf3c8f6ab8a45fbb8b3b02d15a"
+        }
+      ],
+      "addedAt": "2026-11-16T01:45:22.144Z",
+      "cmd": "verify/yv design-check --base db032d55310f",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "78f266c1a7491ef05782e65a1e8a01654c88179a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-approvals.json",
+          "sha256": "4cf6971aa323deafc47665b822f82ded128812356b5344383c7b37eba8538478"
+        }
+      ],
+      "addedAt": "2026-11-16T01:45:22.221Z",
+      "cmd": "verify/yv map run approvals",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/allow-then-follow-up",
+        "approvals/deny",
+        "approvals/always-allow",
+        "approvals/double-click-allow-once"
+      ]
+    }
+  ]
+}
