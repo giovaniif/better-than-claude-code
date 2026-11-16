@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { StatusWatcher, shouldNotify, statusNotice, noticeText } from "./notify";
+import { HINT, StatusWatcher, shouldNotify, statusNotice, noticeText, switchState } from "./notify";
 import type { SessionMeta } from "./protocol";
 
 const on = { enabled: true, focused: false, openSessionId: null as string | null };
@@ -107,5 +107,26 @@ describe("noticeText", () => {
   });
   test("an untitled session still gets a title", () => {
     expect(noticeText("finished", "").title).toBe("Switchyard");
+  });
+});
+
+describe("switchState", () => {
+  test("off when the user turned them off", () => {
+    expect(switchState(false, "granted")).toEqual({ on: false, hint: null });
+  });
+  test("on when turned on and the browser allows them", () => {
+    expect(switchState(true, "granted")).toEqual({ on: true, hint: null });
+  });
+  test("the desktop app answers asynchronously: trust the stored choice", () => {
+    expect(switchState(true, null)).toEqual({ on: true, hint: null });
+  });
+  test("permission revoked in the browser after turning them on: off, and says why", () => {
+    expect(switchState(true, "denied")).toEqual({ on: false, hint: HINT.blocked });
+  });
+  test("permission reset to ask: off, so a click asks again", () => {
+    expect(switchState(true, "default")).toEqual({ on: false, hint: null });
+  });
+  test("a browser without notifications cannot be on", () => {
+    expect(switchState(true, "unsupported")).toEqual({ on: false, hint: HINT.unsupported });
   });
 });
