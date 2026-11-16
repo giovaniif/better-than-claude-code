@@ -106,7 +106,9 @@ verify/yv evidence verify $D
 
 `evidence verify` passes only with: a base repro (or a `no-repro: <why>`
 note), a head fix (both viewports when `ui/` changed), no failed API call only
-on head, a passing head test run, a test that failed on base (or a
+on head (unless the fix is that refusal: one `--kind note --text "expected-api:
+<op>: <why>"` per op, e.g. `term.open`, which the verifier judges), a passing
+head test run, a test that failed on base (or a
 `no-failing-test: <why>` note), a design check for UI changes (deletions and
 renames count), no recipe failing only on head, unchanged artifact hashes, and
 the checkout still at the recorded head. `--cmd` commands are run by yv, so
