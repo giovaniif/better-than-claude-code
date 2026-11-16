@@ -199,9 +199,10 @@ function requiredChecks(base: string): { names: string[] | null; source: string 
   return { names: null, source: "none: every check is required" };
 }
 
-/** The merge the spacing guard counts from. */
+/** The merge the spacing guard counts from. `gh pr list` sorts by creation,
+ *  so a PR opened earlier but merged last is not first: take the latest merge. */
 export function lastMerge(merged: { number: number; mergedAt: string }[]): { number: number; mergedAt: string } | undefined {
-  return merged[0];
+  return merged.reduce<{ number: number; mergedAt: string } | undefined>((a, m) => (!a || Date.parse(m.mergedAt) > Date.parse(a.mergedAt) ? m : a), undefined);
 }
 
 function guards(): Blocker[] {
@@ -215,7 +216,7 @@ function guards(): Blocker[] {
     if (last && last.conclusion !== "success") out.push({ code: "last-deploy-failed", msg: `the last ${wf} run failed (${last.url})` });
   }
   if (cfg.minMinutesSinceLastMerge) {
-    const merged = ghJson(["pr", "list", "--repo", REPO, "--state", "merged", "--limit", "1", "--json", "mergedAt,number"]) as any[];
+    const merged = ghJson(["pr", "list", "--repo", REPO, "--state", "merged", "--limit", "30", "--json", "mergedAt,number"]) as any[];
     const latest = lastMerge(merged);
     if (latest) {
       const mins = (Date.now() - Date.parse(latest.mergedAt)) / 60000;
