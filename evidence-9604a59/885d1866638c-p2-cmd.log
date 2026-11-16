@@ -1,0 +1,45 @@
+$ verify/yv map run stop --recipe stop-while-asking-says-not-answered
+# exit 1 after 34089 ms at 4bcd6684dc01d720c91fa19bb973b468af820ad9
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "stop",
+      "at": "2026-11-16T13:52:53.741Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-while-asking-says-not-answered",
+          "status": "fail",
+          "ms": 33235,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"expect\":\"css:.approval\",\"text\":\"Not answered before the turn ended\"}: expected \"css:.approval\" to contain \"Not answered before the turn ended\", got \"Allow this command?",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d/.verify/drives/2026-11-16T13-52-28-392Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":\"css:.approval\",\"text\":\"Not answered before the turn ended\"}: expected \"css:.approval\" to contain \"Not answered before the turn ended\", got \"Allow this command?",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d/.verify/drives/2026-11-16T13-52-28-392Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "T-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 4% · 49%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[cmd] TEST-stop unanswered\\\" [level=1]\\n  - code: yard/cmd-test-stop-unanswered-3d0d\\n  - button \\\"Delete\\\"\\n  - text: \\\"[cmd] TEST-stop unanswered\\\"\\n  - button \\\"Stopped after 7s · Ran 1 command · 1 failed\\\" [expanded]\\n  - button \\\"Ran echo approved · failed\\\" [disabled]:\\n    - text: Ran\\n    - code: echo approved\\n    - text: · failed\\n  - text: Allow this command?\\n  - code: echo approved\\n  - text: needs to run a command Denied Codex did not stop the turn, so it was ended here.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"expect\\\":\\\"css:.approval\\\",\\\"text\\\":\\\"Not answered before the turn ended\\\"}: expected \\\"css:.approval\\\" to contain \\\"Not answered before the turn ended\\\", got \\\"Allow this command?\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d/.verify/drives/2026-11-16T13-52-28-392Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":\\\"css:.approval\\\",\\\"text\\\":\\\"Not answered before the turn ended\\\"}: expected \\\"css:.approval\\\" to contain \\\"Not answered before the turn ended\\\", got \\\"Allow this command?\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-525d/.verify/drives/2026-11-16T13-52-28-392Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "stop/stop-while-asking-says-not-answered",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

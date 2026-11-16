@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e4a1eda02",
+  "build": {
+    "sha": "9604a59886f7a929477a521847c4d07bf98d929e",
+    "short": "9604a59",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T13:52:59.602Z"
+  },
+  "dir": ".verify/evidence/approval-not-answered-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2802,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/approval-not-answered-head/card-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2932,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/approval-not-answered-head/card-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
