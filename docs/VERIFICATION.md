@@ -59,7 +59,7 @@ real model.
    the last merge, landing hours 08:00-22:00 São Paulo).
 6. The verifier runs `verify/yv land merge`: a landable PR is squash-merged,
    pinned to its head. `land watch` checks the workflows on the merge commit
-   and opens a revert PR on a regression. You can still reply `no …` on any
+   and opens a revert PR on a regression (a job that failed or timed out; a run whose jobs never got a runner is re-run instead). You can still reply `no …` on any
    PR (closed, never re-proposed) or `merge` on one the gate blocked. Pings
    reach you as Switchyard notifications (`verify/yv notify`), because GitHub does not notify you of comments
    from your own account, which the agents post as.

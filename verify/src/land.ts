@@ -365,6 +365,16 @@ function merge(n: number, a: Args): Result {
   return { ok: true, ...c, action: "merged", merge: JSON.parse(r.out) };
 }
 
+/**
+ * Whether a failed workflow run says anything about the code. GitHub fails a
+ * run whose job never got a runner (macOS capacity: "not acquired by Runner"),
+ * and that job ends cancelled with nothing run. Only a job that failed or timed
+ * out is a regression; a run with none is re-run instead of reverted.
+ */
+export function regressedJobs(jobs: { name: string; conclusion: string | null }[]): string[] {
+  return jobs.filter((j) => j.conclusion === "failure" || j.conclusion === "timed_out").map((j) => j.name);
+}
+
 async function watch(n: number, a: Args): Promise<Result> {
   const cfg = landConfig();
   const pr = prView(n);
@@ -372,11 +382,14 @@ async function watch(n: number, a: Args): Promise<Result> {
   const sha = pr.mergeCommit?.oid;
   const runs = (ghJson(["api", `repos/${REPO}/actions/runs?head_sha=${sha}&per_page=50`]).workflow_runs ?? []) as any[];
   const watched = runs.filter((r) => (cfg.guards?.watchWorkflows ?? []).includes(r.name));
-  const failed = watched.filter((r) => r.status === "completed" && !["success", "skipped", "neutral", "cancelled"].includes(r.conclusion));
-  const pending = watched.filter((r) => r.status !== "completed");
-  const summary = watched.map((r) => ({ name: r.name, status: r.status, conclusion: r.conclusion, url: r.html_url }));
+  const bad = watched.filter((r) => r.status === "completed" && !["success", "skipped", "neutral", "cancelled"].includes(r.conclusion));
+  const failed = bad.filter((r) => regressedJobs(ghJson(["api", `repos/${REPO}/actions/runs/${r.id}/jobs?per_page=100`]).jobs ?? []).length > 0);
+  const rerun = bad.filter((r) => !failed.includes(r));
+  if (!a.flags["dry-run"]) for (const r of rerun) run(["gh", "run", "rerun", String(r.id), "--failed", "--repo", REPO]);
+  const pending = [...watched.filter((r) => r.status !== "completed"), ...rerun];
+  const summary = watched.map((r) => ({ name: r.name, status: r.status, conclusion: r.conclusion, url: r.html_url, rerun: rerun.includes(r) || undefined }));
   if (!failed.length) {
-    ledger({ kind: "watch", pr: n, sha, result: pending.length ? "pending" : "green" });
+    ledger({ kind: "watch", pr: n, sha, result: pending.length ? "pending" : "green", rerun: rerun.map((r) => r.name) });
     return { ok: true, pr: n, sha, result: pending.length ? "pending" : "green", runs: summary };
   }
   // A regression: revert through a PR (never through the gate), and ping the human.
