@@ -30,7 +30,7 @@ recipe with its repro.
 | [stop](stop.md) | Stopping a running turn, including one the engine ignores |
 | [changes-pane](changes-pane.md) | The Changes tab: the session folder's git diff |
 | [processes](processes.md) | The Processes tab: the session's process tree, refreshed while visible |
-| [terminal](terminal.md) | The Terminal tab: shells per session, tabs, closing a tab, scrollback, Add to message |
+| [terminal](terminal.md) | The Terminal tab: shells per session, tabs, closing a tab, scrollback, attaching output to a reply |
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |

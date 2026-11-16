@@ -202,6 +202,7 @@ h1, h2, h3, p { margin: 0; }
 .bubble-toggle { display: block; height: 24px; margin: 6px 0 0 -10px; font-size: 12px; }
 .bubble-parts { display: flex; flex-direction: column; gap: 8px; }
 .bubble-quote { margin: 0; padding-left: 10px; border-left: 2px solid var(--line-strong); color: var(--muted); font-size: 13px; line-height: 1.5; }
+.bubble-code { margin: 0; max-height: 240px; overflow: auto; padding: 8px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); font-family: var(--mono); font-size: 11px; line-height: 1.5; white-space: pre; }
 .queued-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); overflow-wrap: anywhere; }
 .queued-line .btn { height: 28px; }
 
@@ -225,6 +226,14 @@ h1, h2, h3, p { margin: 0; }
 .quote-card .btn-text, .quote-card .btn-icon { flex: none; height: 24px; border-radius: 6px; }
 .quote-card .btn-text { padding: 0 6px; font-size: 12px; }
 .quote-card .btn-icon { width: 24px; }
+/* Terminal rows: a header line (where from, how many lines, More, ×) over
+   monospace text that keeps its columns. */
+.quote-card.snippet { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
+.quote-card-label { grid-row: 1; grid-column: 1; font-size: 12px; font-weight: 500; color: var(--muted); }
+.quote-card.snippet .btn-text { grid-row: 1; grid-column: 2; }
+.quote-card.snippet .btn-icon { grid-row: 1; grid-column: 3; }
+.quote-card.snippet .quote-card-text { grid-row: 2; grid-column: 1 / -1; font-family: var(--mono); font-size: 11px; white-space: pre; overflow-wrap: normal; -webkit-line-clamp: 3; }
+.quote-card.snippet.open .quote-card-text { overflow: auto; }
 
 /* attachments */
 .attachments { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -322,6 +331,9 @@ h1, h2, h3, p { margin: 0; }
 .term-x:hover { background: var(--line-strong); color: var(--ink); }
 .term-strip .btn-icon { width: 22px; height: 22px; border-radius: 6px; }
 .term-strip .btn-text { height: 22px; padding: 0 8px; border-radius: 6px; font-size: 12px; }
+.term-attach { position: relative; }
+.term-attach .btn-text { display: inline-flex; align-items: center; gap: 4px; }
+.row-menu.term-attach-menu { position: absolute; top: calc(100% + 4px); right: 0; width: 180px; }
 .term { flex: 1 1 0; min-height: 0; padding: 12px 4px 8px 14px; overflow: hidden; }
 .term-host { flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden; }
 .term .xterm { height: 100%; }
