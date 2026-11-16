@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "889d0b954af7c50cee93d953c805259baa5de8bd",
+    "short": "889d0b9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T16:46:41.222Z"
+  },
+  "dir": ".verify/evidence/run-now-reason-once-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3425,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/run-now-reason-once-head/once-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

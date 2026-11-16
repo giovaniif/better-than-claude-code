@@ -1,0 +1,26 @@
+$ verify/yv map run automations --recipe run-now-failure-says-why-once
+# exit 0 after 10337 ms at 889d0b954af7c50cee93d953c805259baa5de8bd
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T16:47:01.036Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "run-now-failure-says-why-once",
+          "status": "pass",
+          "ms": 9372
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

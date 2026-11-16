@@ -1,0 +1,186 @@
+{
+  "v": 1,
+  "claim": "On the Automations page, Run now on an automation that cannot start (its folder is gone) shows the failure reason twice: under 'Last run failed' and again as 'Failed: <reason>'. It should show it once.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023",
+  "base": "b8af818dc9e4755f3991d8a6a95764d601af246e",
+  "head": "889d0b954af7c50cee93d953c805259baa5de8bd",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T16:45:58.666Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e461764b72518b5a0c8dced0c3819c682be86ef0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "1eb86e91ddf21f33d17706884668f129b43b7dde5b3e746a50b57bcaf6985125"
+        },
+        {
+          "path": "p1-twice-desktop.png",
+          "sha256": "aa6eac5062cb03ef119636aad9a1fb17cea0621aefc8874a2053e56617c59b0e"
+        }
+      ],
+      "addedAt": "2026-11-16T16:46:18.399Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e461764b72518b5a0c8dced0c3819c682be86ef0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "92b9d1b2596dac59cb5a5fb012e6eee3e94d19c3f954e4635b0ec57d9ecf0554"
+        }
+      ],
+      "addedAt": "2026-11-16T16:46:18.440Z",
+      "cmd": "verify/yv map run automations --recipe run-now-failure-says-why-once",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "e98a314b1590c77a9c29ffb3eb72510144f2ddaa5ba283720fc42baf798cc667"
+        },
+        {
+          "path": "p3-once-desktop.png",
+          "sha256": "9b977d0f6bb42e76f087b4f5a89ea95de14086bf5d1b8917ac9786168c7fed43"
+        }
+      ],
+      "addedAt": "2026-11-16T16:46:50.623Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "666d3811a30a355a1ba35e776b36e7372bbc7b1d66d10809aef34abef16e68a9"
+        },
+        {
+          "path": "p4-once-mobile.png",
+          "sha256": "20c3f011d6ba7de6f07f6a4b2800ca6de37f99a42d062fb80810873721027587"
+        }
+      ],
+      "addedAt": "2026-11-16T16:46:50.663Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "810c04056ba174a9934b929aeb68233186635559b303db33d2f4d327a07b1589"
+        }
+      ],
+      "addedAt": "2026-11-16T16:46:50.702Z",
+      "cmd": "verify/yv map run automations --recipe run-now-failure-says-why-once",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "fd7aa9590e76bf1d48a32866a291a2417847af1690ed865f07df9d3234c172ef"
+        }
+      ],
+      "addedAt": "2026-11-16T16:47:01.079Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "343f333510b4d2a87f988604b5ba9be5d7b689380b0d339a98c8df6e63c612e5"
+        }
+      ],
+      "addedAt": "2026-11-16T16:47:01.177Z",
+      "cmd": "verify/yv design-check --base b8af818dc9e4",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "889d0b954af7c50cee93d953c805259baa5de8bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-automations.json",
+          "sha256": "2bdb1b52cf4bab5ba9f30574163d16c5dbf42de94bc1d943e706f66c2919fa86"
+        }
+      ],
+      "addedAt": "2026-11-16T16:47:01.281Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/edit-changes-the-schedule",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once"
+      ]
+    }
+  ]
+}

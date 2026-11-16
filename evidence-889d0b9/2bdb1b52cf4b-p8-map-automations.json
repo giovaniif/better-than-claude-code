@@ -1,0 +1,72 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T16:48:20.566Z",
+      "counts": {
+        "pass": 11
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "list-shows-schedule-next-and-last",
+          "status": "pass",
+          "ms": 4601
+        },
+        {
+          "label": "create-from-the-form",
+          "status": "pass",
+          "ms": 11849
+        },
+        {
+          "label": "run-now-archives-and-lists-the-run",
+          "status": "pass",
+          "ms": 9079
+        },
+        {
+          "label": "pinning-a-run-brings-it-back",
+          "status": "pass",
+          "ms": 2124
+        },
+        {
+          "label": "run-time-is-how-long-it-ran",
+          "status": "pass",
+          "ms": 10442
+        },
+        {
+          "label": "edit-changes-the-schedule",
+          "status": "pass",
+          "ms": 7710
+        },
+        {
+          "label": "disable-stops-the-schedule",
+          "status": "pass",
+          "ms": 5916
+        },
+        {
+          "label": "reload-and-back-keep-the-page",
+          "status": "pass",
+          "ms": 13249
+        },
+        {
+          "label": "delete-removes-the-automation-and-frees-its-runs",
+          "status": "pass",
+          "ms": 3658
+        },
+        {
+          "label": "claude-usage-limit-skips",
+          "status": "pass",
+          "ms": 232
+        },
+        {
+          "label": "run-now-failure-says-why-once",
+          "status": "pass",
+          "ms": 9466
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

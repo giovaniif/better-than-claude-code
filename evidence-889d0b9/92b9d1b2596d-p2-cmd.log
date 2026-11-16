@@ -1,0 +1,40 @@
+$ verify/yv map run automations --recipe run-now-failure-says-why-once
+# exit 1 after 5466 ms at e461764b72518b5a0c8dced0c3819c682be86ef0
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T16:46:23.902Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "run-now-failure-says-why-once",
+          "status": "fail",
+          "ms": 4492,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"expect\":{\"css\":\".automation-reason\",\"hasText\":\"TEST-moved is not a folder\"},\"count\":1}: expected 1 visible {\"css\":\".automation-reason\",\"hasText\":\"TEST-moved is not a folder\"}, found 2",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023/.verify/drives/2026-11-16T16-46-19-797Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "-797Z/fail-desktop-step4.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications Off\\\"\\n  - button \\\"iso-host 5% · 58%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Automations\\\" [level=1]\\n  - button \\\"New automation\\\"\\n- region \\\"TEST-Patrol\\\":\\n  - strong: TEST-Patrol\\n  - 'switch \\\"Enabled: TEST-Patrol\\\" [checked]'\\n  - text: Daily at 09:30 Next run tomorrow 09:30 Last run never\\n  - 'button \\\"Run now: TEST-Patrol\\\"': Run now\\n  - 'button \\\"Edit: TEST-Patrol\\\"': Edit\\n  - text: No runs yet.\\n- region \\\"TEST-Moved\\\":\\n  - strong: TEST-Moved\\n  - 'switch \\\"Enabled: TEST-Moved\\\"'\\n  - text: Daily at 09:30 Next run off Last run failed just now /tmp/yv-map-automations-1287287-mwjhwn0r/work/TEST-moved is not a folder\\n  - status: \\\"Failed: /tmp/yv-map-automations-1287287-mwjhwn0r/work/TEST-moved is not a folder\\\"\\n  - 'button \\\"Run now: TEST-Moved\\\"': Run now\\n  - 'button \\\"Edit: TEST-Moved\\\"': Edit\\n  - text: No runs yet.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"expect\\\":{\\\"css\\\":\\\".automation-reason\\\",\\\"hasText\\\":\\\"TEST-moved is not a folder\\\"},\\\"count\\\":1}: expected 1 visible {\\\"css\\\":\\\".automation-reason\\\",\\\"hasText\\\":\\\"TEST-moved is not a folder\\\"}, found 2\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023/.verify/drives/2026-11-16T16-46-19-797Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "automations/run-now-failure-says-why-once",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
