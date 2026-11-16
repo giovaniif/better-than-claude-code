@@ -1,0 +1,195 @@
+$ cd ui && bun test
+# exit 1 after 53 ms at 5a0087b5b26befd3ace49349bc8a3053967ad7cc
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+ 99 |     return row.entries[i] as ToolItem;
+100 |   };
+101 | 
+102 |   test("a subagent's steps nest under its Agent call, not in the work list", () => {
+103 |     const rows = layout(fold(agentTurn), true);
+104 |     expect(shape(rows)).toEqual(["user", "work(1,live)"]);
+                              ^
+error: expect(received).toEqual(expected)
+
+@@ -2,3 +2,3 @@
+    "user",
+-   "work(1,live)",
++   "work(3,live)",
+  ]
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/thread.test.ts:104:25)
+(fail) subagents > a subagent's steps nest under its Agent call, not in the work list [2.38ms]
+119 |         { type: "tool_started", itemId: "deep", parent: "inner", kind: "search", title: "Searched", detail: "TODO" },
+120 |       ]),
+121 |       true,
+122 |     );
+123 |     const inner = tool(rows).steps?.find((s) => s.itemId === "inner");
+124 |     expect(inner?.steps?.map((s) => s.detail)).toEqual(["TODO"]);
+                                                     ^
+error: expect(received).toEqual(expected)
+
+- [
+-   "TODO",
+- ]
++ undefined
+
+- Expected  - 3
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/thread.test.ts:124:48)
+(fail) subagents > steps nest as deep as the subagents do [0.35ms]
+131 |   });
+132 | 
+133 |   test("steps do not count as work in the summary", () => {
+134 |     const rows = layout(fold([...agentTurn, { type: "tool_completed", itemId: AGENT, ok: true, output: "done", ms: 2_000 }, { type: "turn_completed", status: "completed", at: 5_000 }]), false);
+135 |     const row = rows.find((r) => r.type === "fold");
+136 |     expect(row?.type === "fold" && row.summary).toBe("1 other step");
+                                                      ^
+error: expect(received).toBe(expected)
+
+Expected: "1 other step"
+Received: "1 other step, read 1 file · 1 failed"
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/thread.test.ts:136:49)
+(fail) subagents > steps do not count as work in the summary [0.78ms]
+141 |       ...agentTurn.slice(0, 5),
+142 |       { type: "assistant_message", itemId: "m", text: "Launched it." },
+143 |       { type: "turn_completed", status: "completed", at: 5_000 },
+144 |     ]);
+145 |     const rows = layout(items, false);
+146 |     expect(shape(rows)).toEqual(["user", "work(1)", "assistant"]);
+                              ^
+error: expect(received).toEqual(expected)
+
+@@ -2,3 +2,3 @@
+    "user",
+-   "work(1)",
++   "fold(1 other step, read 1 file · 1 failed)",
+    "assistant",
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/thread.test.ts:146:25)
+(fail) subagents > an agent still running when the turn ends stays out of the fold, running [0.26ms]
+
+src/procs.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './procs' from '/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/procs.test.ts'
+-------------------------------
+
+
+src/protocol.test.ts:
+186 |       { type: "tool_started", itemId: "a", kind: "other", title: "Agent", detail: "d", agent: "Explore" },
+187 |       { type: "tool_started", itemId: "c", parent: "a", kind: "read", title: "Read", detail: "x" },
+188 |       { type: "tool_completed", itemId: "c", ok: true },
+189 |       { type: "tool_completed", itemId: "a", ok: true, output: "report", ms: 3568 },
+190 |     ]);
+191 |     expect(items.filter((i) => i.kind === "tool").map((i) => (i.kind === "tool" ? [i.itemId, i.agent, i.parent, i.ms, i.state] : []))).toEqual([
+                                                                                                                                             ^
+error: expect(received).toEqual(expected)
+
+@@ -3,5 +3,5 @@
+      "a",
+-     "Explore",
+      undefined,
+-     3568,
++     undefined,
++     undefined,
+      "ok",
+@@ -11,3 +11,3 @@
+      undefined,
+-     "a",
++     undefined,
+      undefined,
+
+- Expected  - 3
++ Received  + 3
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/protocol.test.ts:191:136)
+(fail) applyEvent > a subagent's tool call carries its Agent call's id; its end carries a duration [3.35ms]
+200 |       { type: "tool_started", itemId: "a", kind: "other", title: "Agent", detail: "d", agent: "Explore" },
+201 |       { type: "tool_started", itemId: "c", parent: "a", kind: "command", title: "Ran", detail: "ls" },
+202 |       { type: "tool_started", itemId: "other", kind: "command", title: "Ran", detail: "ls" },
+203 |     ];
+204 |     const states = (events: AgentEvent[]) => fold(events).flatMap((i) => (i.kind === "tool" ? [`${i.itemId}:${i.state}`] : []));
+205 |     expect(states([...run, { type: "turn_completed", status: "completed" }])).toEqual(["a:running", "c:running", "other:failed"]);
+                                                                                    ^
+error: expect(received).toEqual(expected)
+
+@@ -1,4 +1,4 @@
+  [
+-   "a:running",
+-   "c:running",
++   "a:failed",
++   "c:failed",
+    "other:failed",
+
+- Expected  - 2
++ Received  + 2
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/protocol.test.ts:205:79)
+(fail) applyEvent > a background subagent outlives a completed turn; Stop or a failure ends it [0.48ms]
+214 |       { type: "turn_completed", status: "completed" },
+215 |       { type: "user_message", text: "and meanwhile?" },
+216 |       { type: "tool_completed", itemId: "a", ok: true, output: "found it", ms: 9000 },
+217 |     ]);
+218 |     const agent = items.find((i) => i.kind === "tool");
+219 |     expect(agent).toMatchObject({ state: "ok", output: "found it", ms: 9000 });
+                        ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "ms": 9000,
+-   "output": "found it",
+-   "state": "ok",
++   "detail": "d",
++   "itemId": "a",
++   "key": "e1",
++   "kind": "tool",
++   "state": "failed",
++   "title": "Agent",
++   "toolKind": "other",
+  }
+
+- Expected  - 3
++ Received  + 7
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/protocol.test.ts:219:19)
+(fail) applyEvent > an agent's end is matched after a later prompt too: its notification can come late [0.24ms]
+
+src/store.test.ts:
+241 | 
+242 | describe("session.procs", () => {
+243 |   test("the latest list replaces the last, per session; the reply for an unknown op is no toast", () => {
+244 |     const rows = [{ pid: 1, ppid: 0, name: "bun", cmd: "bun main.ts", cpu: 1, memBytes: 2, ageSecs: 3, origin: "agent" }];
+245 |     let s = server(initial, { op: "session.procs", sessionId: "s1", procs: rows });
+246 |     expect(s.procs.s1).toEqual(rows);
+                   ^
+TypeError: undefined is not an object (evaluating 's.procs.s1')
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/store.test.ts:246:14)
+(fail) session.procs > the latest list replaces the last, per session; the reply for an unknown op is no toast [0.19ms]
+252 |   });
+253 | 
+254 |   test("deleting a session forgets its list", () => {
+255 |     let s = server(initial, { op: "session.procs", sessionId: "s1", procs: [] });
+256 |     s = server(s, { op: "session.deleted", sessionId: "s1" });
+257 |     expect(s.procs.s1).toBeUndefined();
+                   ^
+TypeError: undefined is not an object (evaluating 's.procs.s1')
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/feat-subagents-processes/ui/src/store.test.ts:257:14)
+(fail) session.procs > deleting a session forgets its list [0.13ms]
+
+ 85 pass
+ 10 fail
+ 1 error
+ 207 expect() calls
+Ran 95 tests across 8 files. [48.00ms]
