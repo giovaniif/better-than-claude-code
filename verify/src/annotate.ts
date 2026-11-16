@@ -22,6 +22,8 @@ export async function annotate(a: Args): Promise<Result> {
   const caption = str(a, "caption", "");
   const labels = [str(a, "before-label", "Before")!, str(a, "after-label", "After")!];
   const out = str(a, "out") ?? join(ensureDir(join(STATE, "annotate")), `annotated-${Date.now()}.png`);
+  // Playwright picks the format from the extension and crashes on anything else.
+  if (!/\.png$/i.test(out)) throw new Usage("--out is the image file to write and must end in .png");
 
   const panel = (file: string, label: string) => {
     const { width, height } = pngSize(file);
