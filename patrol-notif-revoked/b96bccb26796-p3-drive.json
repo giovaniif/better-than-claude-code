@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "d9e6e10c2f8a791d194fc9b91eb59b5fd79c08ac",
+    "short": "d9e6e10",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T09:57:30.295Z"
+  },
+  "dir": ".verify/evidence/notif-revoked-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2115,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/notif-revoked-head/revoked-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.notifications\",\"on\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "Notification.permission",
+          "value": "denied"
+        },
+        {
+          "step": 4,
+          "eval": "document.querySelector(\"[role=switch]\").getAttribute(\"aria-checked\")",
+          "value": "false"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2436,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/notif-revoked-head/revoked-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.notifications\",\"on\");return 1})()",
+          "value": 1
+        },
+        {
+          "step": 2,
+          "eval": "Notification.permission",
+          "value": "denied"
+        },
+        {
+          "step": 4,
+          "eval": "document.querySelector(\"[role=switch]\").getAttribute(\"aria-checked\")",
+          "value": "false"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

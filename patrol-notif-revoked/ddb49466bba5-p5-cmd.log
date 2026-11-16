@@ -1,0 +1,32 @@
+$ cd ui && bun test && cd .. && verify/yv map run notifications --recipe notifications-permission-revoked
+# exit 0 after 6797 ms at d9e6e10c2f8a791d194fc9b91eb59b5fd79c08ac
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "notifications",
+      "at": "2026-11-16T09:57:54.236Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "notifications-permission-revoked",
+          "status": "pass",
+          "ms": 5848
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 132 pass
+ 0 fail
+ 315 expect() calls
+Ran 132 tests across 10 files. [68.00ms]

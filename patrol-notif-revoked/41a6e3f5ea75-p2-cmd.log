@@ -1,0 +1,18 @@
+$ cd ui && bun test src/notify.test.ts && cd .. && verify/yv map run notifications --recipe notifications-permission-revoked
+# exit 1 after 15 ms at f1c5eef1a092226520535aa01b425b30147fc964
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/notify.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'switchState' not found in module '/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/ui/src/notify.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [10.00ms]

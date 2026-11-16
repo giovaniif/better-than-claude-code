@@ -1,0 +1,45 @@
+$ verify/yv map run notifications --recipe notifications-permission-revoked
+# exit 1 after 8893 ms at f1c5eef1a092226520535aa01b425b30147fc964
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "notifications",
+      "at": "2026-11-16T09:59:02.183Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "notifications-permission-revoked",
+          "status": "fail",
+          "ms": 4585,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"document.querySelector(\\\"[role=switch]\\\").getAttribute(\\\"aria-checked\\\")\",\"equals\":\"false\"}: eval returned \"true\", expected \"false\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/.verify/drives/2026-11-16T09-58-57-956Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"document.querySelector(\\\"[role=switch]\\\").getAttribute(\\\"aria-checked\\\")\",\"equals\":\"false\"}: eval returned \"true\", expected \"false\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/.verify/drives/2026-11-16T09-58-57-956Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": " button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - switch \\\"Notifications On\\\" [checked]\\n  - button \\\"iso-host 17% · 91%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Opus 5.5 High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"(()=>{localStorage.setItem(\\\"yard.notifications\\\",\\\"on\\\");return 1})()\",\n          \"value\": 1\n        },\n        {\n          \"step\": 2,\n          \"eval\": \"Notification.permission\",\n          \"value\": \"denied\"\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"document.querySelector(\\\"[role=switch]\\\").getAttribute(\\\"aria-checked\\\")\",\n          \"value\": \"true\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"document.querySelector(\\\\\\\"[role=switch]\\\\\\\").getAttribute(\\\\\\\"aria-checked\\\\\\\")\\\",\\\"equals\\\":\\\"false\\\"}: eval returned \\\"true\\\", expected \\\"false\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/.verify/drives/2026-11-16T09-58-57-956Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"document.querySelector(\\\\\\\"[role=switch]\\\\\\\").getAttribute(\\\\\\\"aria-checked\\\\\\\")\\\",\\\"equals\\\":\\\"false\\\"}: eval returned \\\"true\\\", expected \\\"false\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-51a5/.verify/drives/2026-11-16T09-58-57-956Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "notifications/notifications-permission-revoked",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
