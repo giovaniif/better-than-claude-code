@@ -85,6 +85,20 @@ yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"b
 yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 1'
 ```
 
+### folder-gone
+Viewports: desktop
+When the session's folder was removed outside Switchyard, the Changes pane and
+the terminal say the folder no longer exists. Before, the pane said "Not a git
+repository." and the terminal quietly opened a shell in the home folder. The
+refused terminal is an API error, hence `--allow-errors`.
+
+```sh
+yv state --save cmd_cwd='sessions[id={{sid_cmd}}].cwd'
+rm -rf "$(v cmd_cwd)"
+yv drive 'session:{{sid_cmd}}' --viewport desktop --allow-errors --steps '[{"expect":{"role":"region","name":"Workspace"},"text":"no longer exists"},{"expect":"text:Not a git repository.","count":0},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.banner-error","text":"no longer exists"},{"expect":{"role":"tab","name":"1"},"count":0},{"shot":"folder-gone"}]'
+yv api '{"op":"term.list","sessionId":"{{sid_cmd}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 0'
+```
+
 ### add-to-message (manual: needs a mouse selection inside xterm)
 Select text in the terminal, press "Add to message": the reply box gets a
 fenced block. Selecting through xterm's renderer is not scripted yet.

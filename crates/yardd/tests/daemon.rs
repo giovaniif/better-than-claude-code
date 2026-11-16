@@ -2236,6 +2236,30 @@ async fn session_procs_goes_through_the_hub() {
 }
 
 #[tokio::test]
+async fn a_session_whose_folder_is_gone_says_so() {
+    let sb = Sandbox::new("gone");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let folder = sb.folder("proj");
+    let sid = c.create(&folder, "hi", json!({})).await;
+    c.wait_event(&sid, "turn_completed", 0).await;
+    fs::remove_dir_all(&folder).unwrap();
+
+    // Not "not a git repository": that sends the user looking for a git problem.
+    c.send(json!({ "op": "changes.get", "sessionId": sid })).await;
+    let changes = c.wait_for("changes", |m| m["op"] == "changes").await;
+    let error = changes["changes"]["error"].as_str().unwrap_or_default();
+    assert!(error.contains("no longer exists") && error.contains(&folder), "{changes}");
+
+    // A shell there would silently start in the home folder instead.
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    let refused = c.wait_after(from, "term.open refused", |m| m["op"] == "error" || m["op"] == "term.opened").await;
+    assert_eq!(refused["op"], "error", "{refused}");
+    assert!(refused["message"].as_str().unwrap_or_default().contains("no longer exists"), "{refused}");
+}
+
+#[tokio::test]
 async fn claude_usage_survives_a_restart() {
     // Claude reports its limits only during a turn, so without saving them a
     // restart blanks the meters and lets a usage-capped automation run.

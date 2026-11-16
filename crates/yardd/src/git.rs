@@ -352,6 +352,16 @@ async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
     Ok((out.status.success(), String::from_utf8_lossy(&out.stdout).into_owned()))
 }
 
+/// A session's folder can go away outside Switchyard (a worktree pruned, a
+/// folder moved). Git would call that "not a git repository" and a shell
+/// would quietly start in the home folder, so say what happened.
+pub fn ensure_folder(cwd: &str) -> Result<()> {
+    if !Path::new(cwd).is_dir() {
+        bail!("this session's folder no longer exists: {cwd}");
+    }
+    Ok(())
+}
+
 /// An untracked file as `git diff` would show it once added: every line a
 /// `+`. Read here rather than one `git diff --no-index` process per file. At
 /// most `room` bytes are read, so the caller's cap still cuts a big file. A
@@ -386,6 +396,7 @@ async fn new_file_diff(cwd: &str, path: &str, room: usize) -> String {
 }
 
 pub async fn changes(cwd: &str) -> Result<Value> {
+    ensure_folder(cwd)?;
     let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
     if !is_repo {
         bail!("not a git repository");
