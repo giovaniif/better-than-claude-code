@@ -545,16 +545,10 @@ fn thread_of(app: &Arc<App>, sid: &str) -> Result<(String, Option<String>)> {
     }
 }
 
-pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
-    if let Some(thread_id) = app.resumable(sid) {
-        resume(app, sid, thread_id).await?;
-    }
-    let meta = app.meta(sid).context("no such session")?;
-    let (thread_id, _) = thread_of(app, sid)?;
-    let c = client(app).await?;
-    // Every attachment is named by path in the text; images also go as
-    // `localImage` items (codex-cli 0.164 `UserInput`), which the app-server
-    // reads from disk itself.
+/// Every attachment is named by path in the text; images also go as
+/// `localImage` items (codex-cli 0.164 `UserInput`), which the app-server
+/// reads from disk itself.
+fn user_input(text: &str, attachments: &[Value]) -> Vec<Value> {
     let mut input = vec![json!({ "type": "text", "text": attachments::prompt_text(text, attachments) })];
     input.extend(
         attachments
@@ -562,6 +556,31 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
             .filter(|a| attachments::is_inline_image(a))
             .map(|a| json!({ "type": "localImage", "path": a["path"] })),
     );
+    input
+}
+
+/// Give the running turn more input: the model reads it at its next step.
+/// Fails when no turn runs or it already ended (`expectedTurnId`).
+pub async fn steer(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
+    let (thread_id, turn_id) = thread_of(app, sid)?;
+    let turn_id = turn_id.context("no turn is running")?;
+    let c = client(app).await?;
+    c.request(
+        "turn/steer",
+        json!({ "threadId": thread_id, "expectedTurnId": turn_id, "input": user_input(text, attachments) }),
+    )
+    .await?;
+    Ok(())
+}
+
+pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) -> Result<()> {
+    if let Some(thread_id) = app.resumable(sid) {
+        resume(app, sid, thread_id).await?;
+    }
+    let meta = app.meta(sid).context("no such session")?;
+    let (thread_id, _) = thread_of(app, sid)?;
+    let c = client(app).await?;
+    let input = user_input(text, attachments);
     // Model, effort and permission mode ride on every turn, so switching
     // needs no extra call.
     let (approval, sandbox) = turn_policy(&meta.permission);

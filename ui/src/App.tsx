@@ -663,8 +663,10 @@ function Composer(props: {
   rows: number;
   large?: boolean;
   busy?: boolean;
-  /** A turn is running: sending queues the message behind it instead. */
+  /** A turn is running: sending queues the message for the agent's next step. */
   queueing?: boolean;
+  /** Up arrow in an empty box: take the last queued message back to edit. True when it did. */
+  onEditLastQueued?(): boolean;
   /** Keep the text and files after sending, for a submit that can still fail. */
   keepText?: boolean;
   /** Session whose terminal can add text here (see compose.ts). */
@@ -788,6 +790,10 @@ function Composer(props: {
     }
   };
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "ArrowUp" && text === "" && props.onEditLastQueued?.()) {
+      e.preventDefault();
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       submit();
@@ -856,7 +862,7 @@ function Composer(props: {
         <button
           className="send"
           aria-label={props.queueing ? "Add to queue" : "Send"}
-          title={props.queueing ? "Sends when the current turn finishes" : undefined}
+          title={props.queueing ? "The agent reads it after its current step" : undefined}
           disabled={!canSend}
           onClick={submit}
         >
@@ -1500,12 +1506,20 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           {!online && <div className="muted small offline-note">{hostName(state, host)} is offline. This session comes back when it reconnects.</div>}
           {online && <EngineNotice state={state} host={host} engine={meta.engine} onLogin={() => setLoggingIn(true)} />}
           {loggingIn && <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} onClose={() => setLoggingIn(false)} />}
-          {online && <PendingList pending={meta.pending ?? []} held={!busy} onRemove={(id) => actions.unqueue(meta.id, id)} />}
+          {online && (
+            <PendingList pending={meta.pending ?? []} busy={busy} onEdit={(id) => actions.unqueue(meta.id, id)} onRemove={(id) => actions.unqueue(meta.id, id, true)} />
+          )}
           <Composer
-            placeholder={!online ? "Offline" : busy ? "Queue a message for when this turn ends" : "Reply"}
+            placeholder={!online ? "Offline" : busy ? "Queue a message for the agent" : "Reply"}
             rows={1}
             busy={meta.status === "queued" || !online}
             queueing={busy}
+            onEditLastQueued={() => {
+              const last = meta.pending?.[meta.pending.length - 1];
+              if (!last) return false;
+              actions.unqueue(meta.id, last.id);
+              return true;
+            }}
             appendFor={meta.id}
             target={uploadTarget}
             upload={actions.upload}
@@ -1606,19 +1620,22 @@ function QuoteReply({ sessionId }: { sessionId: string }) {
 }
 
 /**
- * Messages sent while a turn ran. They go one by one as turns complete; after
- * Stop or a failed turn they wait ("held") until the next turn completes, or
- * are removed.
+ * Messages sent while a turn runs, as in Claude Code: the agent reads them at
+ * its next step, in the same turn. Edit takes one back into the reply box;
+ * Stop gives them all back. After a failed turn they go with the next message.
  */
-function PendingList({ pending, held, onRemove }: { pending: PendingMessage[]; held: boolean; onRemove(id: string): void }) {
+function PendingList({ pending, busy, onEdit, onRemove }: { pending: PendingMessage[]; busy: boolean; onEdit(id: string): void; onRemove(id: string): void }) {
   if (pending.length === 0) return null;
   return (
     <section className="pending" aria-label="Waiting to send">
-      <div className="muted small">{held ? "Queued, waiting: they go after your next message's turn completes" : `Queued: sent when this turn finishes`}</div>
+      <div className="muted small">{busy ? "Queued: the agent reads it after its current step" : "Not sent: the last turn did not finish. It goes with your next message."}</div>
       {pending.map((p) => (
         <div className="pending-row" key={p.id}>
           <span className="pending-text">{p.text || p.attachments?.map((a) => a.name).join(", ")}</span>
           {!!p.attachments?.length && <span className="muted small">{p.attachments.length === 1 ? "1 file" : `${p.attachments.length} files`}</span>}
+          <button className="btn-text pending-edit" aria-label="Edit" title="Back to the reply box (↑)" onClick={() => onEdit(p.id)}>
+            Edit
+          </button>
           <button className="btn-icon" aria-label="Remove from queue" title="Remove" onClick={() => onRemove(p.id)}>
             <Icon d={CLOSE} size={12} />
           </button>

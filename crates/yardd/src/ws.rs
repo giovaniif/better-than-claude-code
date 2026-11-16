@@ -319,7 +319,8 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
                 bail!("the message is empty");
             }
             let meta = app.meta(sid).context("no such session")?;
-            // A message sent during a turn waits for it (see Meta::pending).
+            // A message sent during a turn is queued for the agent's next step
+            // (see Meta::pending).
             if meta.status == "running" || meta.status == "needs_approval" {
                 app.queue_message(sid, text, &files);
                 return Ok(());
@@ -327,9 +328,23 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             if meta.status == "queued" {
                 bail!("this session is queued; start it first");
             }
-            sessions::send_turn(app, sid, text, &files).await;
+            // Anything still queued (the last turn failed) goes along, first.
+            let mut items = app.take_all_queued(sid, |_| true);
+            items.push(json!({ "text": text, "attachments": files }));
+            let (text, files) = sessions::combine(&items);
+            sessions::send_turn(app, sid, &text, &files).await;
         }
-        "session.unqueue" => app.unqueue_message(str_field(msg, "sessionId")?, str_field(msg, "id")?),
+        // Taken back to edit (or dropped): the asking window gets it, if it
+        // had not reached the agent yet.
+        "session.unqueue" => {
+            let sid = str_field(msg, "sessionId")?;
+            let item = app.take_queued(sid, str_field(msg, "id")?);
+            if let Some(item) = item.filter(|_| msg["drop"] != true) {
+                let _ = direct.send(
+                    json!({ "op": "queue.returned", "sessionId": sid, "id": item["id"], "text": item["text"], "attachments": item["attachments"] }).to_string(),
+                );
+            }
+        }
         "session.setModel" => {
             let sid = str_field(msg, "sessionId")?;
             let model = str_field(msg, "model")?;
@@ -379,6 +394,13 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         }
         "session.interrupt" => {
             let sid = str_field(msg, "sessionId")?;
+            // Like Esc in Claude Code: what was queued comes back to the
+            // reply box of the window that stopped the turn, unsent.
+            let items = app.take_all_queued(sid, |_| true);
+            if !items.is_empty() {
+                let (text, files) = sessions::combine(&items);
+                let _ = direct.send(json!({ "op": "queue.returned", "sessionId": sid, "text": text, "attachments": files }).to_string());
+            }
             sessions::interrupt(app, sid).await?;
         }
         "session.approve" => {
