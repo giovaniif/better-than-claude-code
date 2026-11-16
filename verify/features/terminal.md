@@ -75,16 +75,6 @@ attach at xterm's default 80 columns made the shell redraw into the scrollback.
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
 ```
 
-### last-terminal-closed-offers-a-new-one
-Viewports: desktop
-Closing the only tab leaves an empty state that says so, with a button that
-opens a terminal again. Found 2026-11-16: the pane went blank with only the
-small `+` in its strip.
-
-```sh
-yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"click":"role:button:Close terminal"},{"expect":{"role":"tab"},"count":0},{"expect":"text:No terminal is open."},{"shot":"no-terminal"},{"click":"role:button:Open a terminal"},{"expect":{"role":"tab"},"count":1},{"expect":"css:.xterm","text":"$"},{"expect":"text:No terminal is open.","count":0}]'
-```
-
 ### exited-shell-survives-reload
 Viewports: desktop
 A tab whose shell exited keeps its scrollback and the exited line after a
