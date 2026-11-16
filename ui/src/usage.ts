@@ -1,7 +1,7 @@
 // Plan usage, as meters. Each engine reports its limits in its own shape
 // (see Usage in protocol.ts); this turns them into one list of meters so the
 // picker and the sidebar strip draw them the same way.
-import type { Engine, Usage } from "./protocol";
+import type { AccountEntry, Engine, Usage } from "./protocol";
 
 export type Level = "ok" | "warn" | "high";
 
@@ -97,4 +97,80 @@ export function metersFor(engine: Engine, usage: Usage, now?: number): Meter[] {
     if (m && !NOT_A_LIMIT.has(key)) add(key, `Week · ${capitalize(m[1])}`);
   }
   return out;
+}
+
+/** One row group of the sidebar strip: an engine under one account, as one host reported it. */
+export interface StripGroup {
+  engine: Engine;
+  /** The account's name; null for Default. */
+  account: string | null;
+  host: string;
+  /** In the shape `metersFor(engine, usage)` reads. */
+  usage: Usage;
+}
+
+/** A host the sidebar shows, with what it knows about the plan limits. */
+export interface UsageSource {
+  host: string;
+  usage: Usage;
+  accounts: AccountEntry[];
+}
+
+/** How recent a report is: its windows' reset times, shortest window first,
+ *  then how much is used. */
+function freshness(engine: Engine, usage: Usage): { resets: (number | null)[]; used: number } {
+  if (engine === "codex") {
+    const c = usage.codex;
+    return { resets: [toMs(c?.primary?.resetsAt), toMs(c?.secondary?.resetsAt)], used: (c?.primary?.usedPercent ?? 0) + (c?.secondary?.usedPercent ?? 0) };
+  }
+  const w = usage.claude?.windows ?? {};
+  return {
+    resets: [toMs(w.five_hour?.resetsAt), toMs(w.seven_day?.resetsAt)],
+    used: (w.five_hour?.utilization ?? 0) + (w.seven_day?.utilization ?? 0),
+  };
+}
+
+/** Whether report `a` came after `b`, as far as the reports tell: the same
+ *  subscription's next window resets later, and inside one window use only
+ *  grows. With no reset times to compare it cannot tell, and says no. */
+function newer(engine: Engine, a: Usage, b: Usage): boolean {
+  const fa = freshness(engine, a);
+  const fb = freshness(engine, b);
+  let known = false;
+  for (let i = 0; i < fa.resets.length; i++) {
+    const x = fa.resets[i];
+    const y = fb.resets[i];
+    if (x == null || y == null) continue;
+    known = true;
+    if (x !== y) return x > y;
+  }
+  return known && fa.used > fb.used;
+}
+
+/** What the sidebar strip shows: each engine and account once (an account is
+ *  matched across hosts by name, since each host gives it its own id), from
+ *  the shown host that reported it last, else the first one listed. A login
+ *  is the same subscription on every machine, so one host's figures stand for
+ *  all. Engines in the order given, Default first, then accounts as they appear. */
+export function stripGroups(sources: UsageSource[], engines: Engine[]): StripGroup[] {
+  const found = new Map<string, StripGroup>();
+  const offer = (key: string, group: StripGroup) => {
+    if (metersFor(group.engine, group.usage).length === 0) return;
+    const had = found.get(key);
+    if (!had || newer(group.engine, group.usage, had.usage)) found.set(key, group);
+  };
+  for (const { host, usage, accounts } of sources) {
+    for (const engine of engines) {
+      offer(`${engine}\0`, { engine, account: null, host, usage: { [engine]: (usage as Record<string, unknown>)[engine] } as Usage });
+      for (const a of accounts) {
+        if (a.engine !== engine) continue;
+        offer(`${engine}\0${a.name.toLowerCase()}`, { engine, account: a.name, host, usage: { [engine]: usage.accounts?.[a.id] } as Usage });
+      }
+    }
+  }
+  const all = [...found.values()];
+  return engines.flatMap((engine) => {
+    const mine = all.filter((g) => g.engine === engine);
+    return [...mine.filter((g) => g.account === null), ...mine.filter((g) => g.account !== null)];
+  });
 }

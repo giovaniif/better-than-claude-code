@@ -40,6 +40,7 @@ const thumbs = new Map<string, Promise<string>>();
 export type Route =
   | { page: "new" }
   | { page: "hosts" }
+  | { page: "settings" }
   | { page: "session"; id: string }
   | { page: "automations" }
   /** The create/edit form; `id` is `new` for a new automation. */
@@ -52,6 +53,8 @@ export function routeHash(route: Route): string {
       return `#/s/${encodeURIComponent(route.id)}`;
     case "hosts":
       return "#/hosts";
+    case "settings":
+      return "#/settings";
     case "automations":
       return "#/automations";
     case "automation":
@@ -71,6 +74,7 @@ export function parseHash(hash: string): Route {
     return { page: "new" };
   }
   if (hash === "#/automations") return { page: "automations" };
+  if (hash === "#/settings") return { page: "settings" };
   return hash === "#/hosts" ? { page: "hosts" } : { page: "new" };
 }
 
