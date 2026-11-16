@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Engine, PrCheck, PrResult, PrThread, PullRequest, SessionMeta } from "./protocol";
 import { hostOf, hostOnline, modelsOn, type Actions, type State } from "./store";
 
@@ -74,6 +74,12 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   const busy = meta.status === "running" || meta.status === "needs_approval";
   const connected = hostOnline(state, hostOf(meta));
 
+  // A request is out: hold the buttons until yardd answers, or a double click
+  // sends the thread twice. Any update to this session (it starts running, or
+  // the new review session opens) or a refusal is the answer.
+  const [sent, setSent] = useState(false);
+  useEffect(() => setSent(false), [meta, connected, state.errorCount]);
+
   // First time the tab is shown for this session.
   useEffect(() => {
     if (visible && connected && !state.pr[meta.id]) actions.loadPr(meta.id);
@@ -97,7 +103,8 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   const models = modelsOn(state, hostOf(meta));
   const reviewModel = models[other].find((m) => m.isDefault) ?? models[other][0];
   const review = () => {
-    if (!reviewModel) return;
+    if (!reviewModel || sent) return;
+    setSent(true);
     actions.create({
       engine: other,
       model: reviewModel.id,
@@ -111,7 +118,7 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   };
   const reviewButton = (
     <div className="pr-foot">
-      <button className="btn" disabled={!connected || !reviewModel} onClick={review}>
+      <button className="btn" disabled={!connected || !reviewModel || sent} onClick={review}>
         Review with {ENGINE_NAME[other]}
       </button>
       <span className="muted small">Starts a new {ENGINE_NAME[other]} session in this folder. It reports and changes nothing.</span>
@@ -130,7 +137,17 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
           {reviewButton}
         </>
       )}
-      {isPr(pr) && <PrView pr={pr} busy={busy || !connected} onSend={(t) => actions.send(meta.id, threadPrompt(t))} />}
+      {isPr(pr) && (
+        <PrView
+          pr={pr}
+          busy={busy || !connected || sent}
+          onSend={(t) => {
+            if (sent) return;
+            setSent(true);
+            actions.send(meta.id, threadPrompt(t));
+          }}
+        />
+      )}
       {isPr(pr) && reviewButton}
     </div>
   );
