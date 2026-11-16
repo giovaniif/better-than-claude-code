@@ -296,6 +296,12 @@ pub fn remove(app: &Arc<App>, host_id: &str) -> Result<()> {
 /// The installer the app runs on a host that has SSH but no yardd yet.
 const REMOTE_INSTALL: &str = include_str!("../../../scripts/remote-install.sh");
 
+/// A `RemoteCommand` (a tmux attach, say) or `RequestTTY` in the user's ssh
+/// config is for their own logins. ssh refuses a command line next to the
+/// first ("Cannot execute command-line and remote command"), and a forced tty
+/// would mangle the script piped in, so yardd's own connections turn both off.
+const OVERRIDE_SESSION: [&str; 4] = ["-o", "RemoteCommand=none", "-o", "RequestTTY=no"];
+
 /// `ssh`, or `YARD_SSH` so the tests can stand in a fake one.
 fn ssh_program() -> String {
     std::env::var("YARD_SSH").ok().filter(|s| !s.is_empty()).unwrap_or_else(|| "ssh".to_string())
@@ -329,7 +335,9 @@ pub fn install(app: &Arc<App>, host_id: &str) -> Result<()> {
         remote = format!("SWITCHYARD_RELEASE_URL={url} {remote}");
     }
     let spawned = Command::new(ssh_program())
-        .args(["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "--", &destination, &remote])
+        .args(["-o", "BatchMode=yes", "-o", "ConnectTimeout=10"])
+        .args(OVERRIDE_SESSION)
+        .args(["--", &destination, &remote])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
@@ -514,9 +522,9 @@ async fn run_ssh(app: &App, conn: &watch::Sender<Conn>, destination: &str, remot
             "ConnectTimeout=10",
             "-L",
             &forward,
-            "--",
-            destination,
         ])
+        .args(OVERRIDE_SESSION)
+        .args(["--", destination])
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::piped())
