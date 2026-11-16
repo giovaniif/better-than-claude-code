@@ -11,7 +11,7 @@ import { matches, parseArgs, pick, sha256File } from "./common";
 import { addedLines, lint } from "./design";
 import { type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
-import { scanFiles, type PrFile } from "./land";
+import { recipesDeclaredRemoved, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
 import { _test as loopTest } from "./loop";
 
@@ -130,6 +130,11 @@ describe("land gate scan", () => {
   test("a file without a patch fails closed", () => {
     expect(codes([{ filename: "ui/public/x.png", status: "added", additions: 0, deletions: 0 }])).toContain("unscanned-file");
     expect(codes([{ filename: "ui/src/old.ts", status: "removed", additions: 0, deletions: 3 }])).toEqual([]);
+  });
+  test("a PR can declare the recipes it removes", () => {
+    const body = "## What changed\nx\n\n## Recipes removed\n\n- `stop-holds-the-queue`: Stop now returns the queue (replaced by stop-returns-the-queue).\n\n## Test plan\n- `not-this`";
+    expect(recipesDeclaredRemoved(body)).toEqual(["stop-holds-the-queue"]);
+    expect(recipesDeclaredRemoved("## What changed\n- `x`")).toEqual([]);
   });
   test("removing a recipe is a blocker", () => {
     expect(codes([file("verify/features/thread.md", "@@\n-### reply-renders\n-x")])).toContain("recipe-removed");
