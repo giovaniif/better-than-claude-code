@@ -173,6 +173,17 @@ yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"lo
 yv drive 'session:{{quoteq_sid}}' --viewport desktop --steps '[{"fill":"label:Message","value":"> TEST-quoted line\n\nTEST-my reply"},{"click":{"role":"button","name":"Add to queue","exact":true}},{"expect":{"css":"[aria-label=\"Waiting to send\"] .pending-text"},"text":"TEST-my reply"},{"expect":{"css":"[aria-label=\"Waiting to send\"]"},"text":"1 quote"},{"click":{"role":"button","name":"Edit","exact":true}},{"expect":{"css":".composer .quote-card"},"text":"TEST-quoted line"},{"expect":"label:Message","value":"TEST-my reply"},{"shot":"edited"},{"click":{"role":"button","name":"Stop","exact":true}}]'
 ```
 
+### draft-survives-switching-sessions
+Text typed in a session's reply box and files attached to it stay there while
+you look at another session and come back. Each session keeps its own draft,
+and a sent draft does not come back.
+
+```sh
+printf 'TEST note\n' > "$(v work)/TEST-draft-note.txt"
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-half a reply"},{"upload":"input","files":["{{work}}/TEST-draft-note.txt"]},{"expect":"css:.composer .attachments","text":"TEST-draft-note.txt"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"expect":"label:Message","value":""},{"expect":{"css":".composer .attachments"},"visible":false},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":"TEST-half a reply"},{"expect":"css:.composer .attachments","text":"TEST-draft-note.txt"},{"shot":"draft-kept"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":"css:.thread","text":"Echo: TEST-half a reply"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":""},{"expect":{"css":".composer .attachments"},"visible":false}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-typed on the phone"},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"expect":"label:Message","value":""},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":"TEST-typed on the phone"},{"shot":"draft-kept-mobile"}]'
+```
+
 ### subagent-nests-and-expands
 A Claude subagent (the Agent tool) shows as one entry in the work log: its
 description, its type and how long it took; collapsed, its steps stay out of
