@@ -1,0 +1,32 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-16T01:47:14.969Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page-shows-logged-out",
+          "status": "pass",
+          "ms": 5312
+        },
+        {
+          "label": "codex-device-login",
+          "status": "pass",
+          "ms": 2782
+        },
+        {
+          "label": "claude-code-login",
+          "status": "pass",
+          "ms": 5625
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

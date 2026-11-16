@@ -1,0 +1,43 @@
+{
+  "ok": false,
+  "route": "hosts",
+  "build": {
+    "sha": "0d7b815d2f733f37a7b5f34e184c145826fb5fac",
+    "short": "0d7b815",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-16T01:44:55.453Z"
+  },
+  "dir": ".verify/evidence/accounts-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4453,
+      "steps": 1,
+      "failed": {
+        "step": 0,
+        "action": {
+          "click": "role:button:Add Claude Code account",
+          "timeout": 3000
+        },
+        "reason": "click: Timeout 3000ms exceeded.",
+        "screenshot": ".verify/evidence/accounts-base/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Import\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - switch \"Notifications Off\"\n  - button \"iso-host 21% · 87%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iso-host\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy CPU 21% load 11.5 of 28 Memory 20.4 GB of 23.4 GB Disk 68.9 GB of 97.9 GB Collecting CPU history.\n  - region \"Sessions\":\n    - heading \"Sessions\" [level=2]\n    - table:\n      - rowgroup:\n        - row \"Session CPU Memory\":\n          - cell \"Session\"\n          - cell \"CPU\"\n          - cell \"Memory\"\n      - rowgroup:\n        - row \"TEST-hello from Claude 0.0 cores 24 MB\":\n          - cell \"TEST-hello from Claude\"\n          - cell \"0.0 cores\"\n          - cell \"24 MB\"\n    - text: New sessions are queued while load is above 28 or less than 0 GB of memory is free.\n  - text: Claude Code logged in as me@example.com Codex logged in as me@example.com\n- button \"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\":\n  - strong: Run sessions on another machine\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's."
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"click\":\"role:button:Add Claude Code account\",\"timeout\":3000}: click: Timeout 3000ms exceeded.",
+      "hint": "see .verify/evidence/accounts-base/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}

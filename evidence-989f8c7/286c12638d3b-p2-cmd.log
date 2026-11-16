@@ -1,0 +1,69 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon account && (cd ui && bun test src/accounts.test.ts)
+# exit 101 after 22099 ms at 0d7b815d2f733f37a7b5f34e184c145826fb5fac
+
+
+running 4 tests
+test an_account_is_added_logged_in_and_removed_without_touching_default ... FAILED
+test a_codex_session_runs_on_its_accounts_own_app_server ... FAILED
+test a_claude_session_runs_under_its_accounts_config_dir ... FAILED
+test accounts_are_per_host_through_the_hub ... FAILED
+
+failures:
+
+---- an_account_is_added_logged_in_and_removed_without_touching_default stdout ----
+
+thread 'an_account_is_added_logged_in_and_removed_without_touching_default' (2387654) panicked at crates/yardd/tests/daemon.rs:1587:5:
+assertion `left == right` failed: the snapshot lists the added accounts
+  left: Null
+ right: Array []
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2387650-accounts-3 for inspection
+
+---- a_codex_session_runs_on_its_accounts_own_app_server stdout ----
+
+thread 'a_codex_session_runs_on_its_accounts_own_app_server' (2387652) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the accounts list with the new account; last messages:
+{"home":"/tmp/yardd-test-2387650-accounts-codex-0/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-
+{"for":"account.add","message":"unknown op `account.add`","op":"error"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794801333,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795067133,"usedPercent":34,"windowDurationMins":10080}}}}
+kept /tmp/yardd-test-2387650-accounts-codex-0 for inspection
+
+---- a_claude_session_runs_under_its_accounts_config_dir stdout ----
+
+thread 'a_claude_session_runs_under_its_accounts_config_dir' (2387651) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the accounts list with the new account; last messages:
+{"home":"/tmp/yardd-test-2387650-accounts-claude-1/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude
+{"for":"account.add","message":"unknown op `account.add`","op":"error"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794801333,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795067133,"usedPercent":34,"windowDurationMins":10080}}}}
+kept /tmp/yardd-test-2387650-accounts-claude-1 for inspection
+
+---- accounts_are_per_host_through_the_hub stdout ----
+
+thread 'accounts_are_per_host_through_the_hub' (2387653) panicked at crates/yardd/tests/common/mod.rs:330:27:
+timed out after 20s waiting for the remote's accounts; last messages:
+{"home":"/tmp/yardd-test-2387650-accounts-hub-4/home","host":null,"hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-so
+{"hosts":[{"id":"h1a1e20779831","kind":"direct","name":"box","status":"connecting","url":"ws://127.0.0.1:40791/ws"}],"op":"hosts"}
+{"hosts":[{"id":"h1a1e20779831","kind":"direct","name":"box","status":"connected","url":"ws://127.0.0.1:40791/ws"}],"op":"hosts"}
+{"home":"/tmp/yardd-test-2387650-accounts-remote-2/home","host":null,"hostId":"h1a1e20779831","models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794801333,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795067133,"usedPercent":34,"windowDurationMins":10080}}}}
+{"for":"account.add","message":"unknown op `account.add`","op":"error"}
+kept /tmp/yardd-test-2387650-accounts-hub-4 for inspection
+kept /tmp/yardd-test-2387650-accounts-remote-2 for inspection
+
+
+failures:
+    a_claude_session_runs_under_its_accounts_config_dir
+    a_codex_session_runs_on_its_accounts_own_app_server
+    accounts_are_per_host_through_the_hub
+    an_account_is_added_logged_in_and_removed_without_touching_default
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 48 filtered out; finished in 20.25s
+
+
+   Compiling yardd v0.3.0 (/home/giovani/.yard/wt/better-than-claude-code/feat-accounts/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.80s
+     Running tests/daemon.rs (target/debug/build/yardd/1a13ebffc0c5028a/out/daemon-1a13ebffc0c5028a)
+error: test failed, to rerun pass `-p yardd --test daemon`
