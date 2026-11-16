@@ -1,0 +1,186 @@
+{
+  "v": 1,
+  "claim": "Editing an automation whose saved model the host no longer lists (e.g. a retired Codex model) shows the new-session default (Opus 5.5, Claude) instead, and saving any change switches the automation to Claude.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-b023",
+  "base": "0889acbb25ced1f5acbbc853c00960834aefa7e3",
+  "head": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-16T16:55:00.132Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "540a73ef854395ece8d2bef75764a633c385e33e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "aaa85d5d5263b531a0a01d56674a26c5b1b027dabd6374aeb00aab2c0b0fdf02"
+        },
+        {
+          "path": "p1-edit-desktop.png",
+          "sha256": "52be6909c253a5fc3ae3f6bab5ac7da74ed362746a8632d5320c51c835e37338"
+        }
+      ],
+      "addedAt": "2026-11-16T16:55:07.623Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "540a73ef854395ece8d2bef75764a633c385e33e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "bd4512faa0ab23a6d963dfdfc0cad36b801a860ce90763dd683e16dbd749f4fe"
+        }
+      ],
+      "addedAt": "2026-11-16T16:55:07.665Z",
+      "cmd": "verify/yv map run automations --recipe edit-keeps-an-unlisted-model",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-2-drive.json",
+          "sha256": "408cc035bf4752cd0391edcde6bd7819abacef82fe263c5e207e0bd1878dc2c1"
+        },
+        {
+          "path": "p3-2-edit-desktop.png",
+          "sha256": "d67966f8278af74aef3e45771850c7bf1237b39612bfa8613bf9bd5a4513932e"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:39.809Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-2-drive.json",
+          "sha256": "15cdfe286ba03e277841db8a550b0561d5f3c184a6969addba3ece36deabfb28"
+        },
+        {
+          "path": "p4-2-edit-mobile.png",
+          "sha256": "325951f8a93cbf4011ea94c49b423fb51ab2899e2fe2fdd82f6e3eca3e6caf3d"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:39.851Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "68d8669769dff09440b6b4d3301f1bf60831577b4e3757268e85ef77415c0c1f"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:39.892Z",
+      "cmd": "verify/yv map run automations --recipe edit-keeps-an-unlisted-model",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "02108001331c78dbbcdeddf809582ede9f2cc01dd7a2b225d5a3b6f53d5a227a"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:52.215Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "d834290f8623afd57dc389aec207449c9b45d11a4c6cb0f966d17e2b613874c2"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:52.317Z",
+      "cmd": "verify/yv design-check --base 0889acbb25ce",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e84d918ef465d87e583ff921fbd38ccebdc248f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-automations.json",
+          "sha256": "91c4cc5191629b2ed75cde667fa6f879f342d6c47c6d4cff87ea0b9546a9328f"
+        }
+      ],
+      "addedAt": "2026-11-16T16:58:52.389Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips"
+      ]
+    }
+  ]
+}

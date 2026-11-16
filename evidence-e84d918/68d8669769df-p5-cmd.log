@@ -1,0 +1,26 @@
+$ verify/yv map run automations --recipe edit-keeps-an-unlisted-model
+# exit 0 after 12282 ms at e84d918ef465d87e583ff921fbd38ccebdc248f7
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "automations",
+      "at": "2026-11-16T16:58:52.170Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "edit-keeps-an-unlisted-model",
+          "status": "pass",
+          "ms": 11287
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
