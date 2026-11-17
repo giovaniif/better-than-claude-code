@@ -68,6 +68,19 @@ export function reviewPrompt(pr: PrResult | undefined): string {
   ].join("\n");
 }
 
+const live = (s: SessionMeta) => s.status === "running" || s.status === "needs_approval" || s.status === "queued";
+const folderKey = (cwd: string) => cwd.replace(/\/+$/, "");
+
+/**
+ * The session working in this session's folder (it may be this one). yardd
+ * lets one session work in a folder at a time, so a review started in it now
+ * would only be refused.
+ */
+export function folderBusy(sessions: Record<string, SessionMeta>, meta: SessionMeta): SessionMeta | undefined {
+  const here = folderKey(meta.cwd);
+  return Object.values(sessions).find((s) => live(s) && hostOf(s) === hostOf(meta) && folderKey(s.cwd) === here);
+}
+
 const safeUrl = (url: string | null | undefined) => (url && /^https:\/\//.test(url) ? url : undefined);
 
 /** The PR tab: the pull request for the session folder's branch. */
@@ -106,7 +119,7 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   const other: Engine = reviewEngine(meta.engine, models) ?? (meta.engine === "claude" ? "codex" : "claude");
   const reviewModel = models[other]?.find((m) => m.isDefault) ?? models[other]?.[0];
   const review = () => {
-    if (!reviewModel || sent) return;
+    if (!reviewModel || sent || folderBusy(state.sessions, meta)) return;
     setSent(true);
     actions.create({
       engine: other,
@@ -119,12 +132,17 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
       host: hostOf(meta) === "local" ? undefined : hostOf(meta),
     });
   };
+  const inTheWay = folderBusy(state.sessions, meta);
   const reviewButton = (
     <div className="pr-foot">
-      <button className="btn" disabled={!connected || !reviewModel || sent} onClick={review}>
+      <button className="btn" disabled={!connected || !reviewModel || sent || !!inTheWay} onClick={review}>
         Review with {ENGINE_NAME[other]}
       </button>
-      <span className="muted small">Starts a new {ENGINE_NAME[other]} session in this folder. It reports and changes nothing.</span>
+      <span className="muted small">
+        {inTheWay
+          ? `${inTheWay.title.trim() ? `"${inTheWay.title.trim()}"` : "Another session"} is working in this folder. Review once it finishes.`
+          : `Starts a new ${ENGINE_NAME[other]} session in this folder. It reports and changes nothing.`}
+      </span>
     </div>
   );
 
