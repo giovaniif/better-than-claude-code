@@ -51,7 +51,7 @@ prompt).
 | [settings](settings.md) | The Settings page: notifications, which hosts the sidebar shows, the usage strip from the shown hosts |
 | [security](security.md) | Origin checks on the WebSocket, loopback binding |
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
-| [automations](automations.md) | Scheduled runs: the Automations page, create, Run now, auto-archive, pin, edit, disable, delete |
+| [automations](automations.md) | Scheduled runs: the Automations page, create (daily, interval, weekly), Run now, auto-archive, pin, edit, disable, delete, the working-run dot |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
 | [usage](usage.md) | Plan usage meters in the sidebar and the model picker, the picker's engine sections |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
