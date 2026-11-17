@@ -68,6 +68,18 @@ yv drive new --viewport desktop --steps '[{"click":"role:button:Archived"},{"cli
 yv state --expect '{"sessions":[{"id":"{{sid_think}}","archived":false}]}'
 ```
 
+### archiving-the-open-session-keeps-the-list-closed
+Viewports: desktop
+Archiving the session you are looking at moves its row into Archived and
+leaves that list collapsed; it used to spring open on every archive. Going to
+an archived session (here by its URL) still opens the list, so its row is in
+view. Restore brings it back.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Archive"},{"expect":"role:button:Archived"},{"wait":600},{"expect":{"css":"button.list-toggle[aria-expanded=\"false\"]","hasText":"Archived"}},{"expect":"css:.archived-list","count":0},{"shot":"archived-open-session"},{"eval":"(location.hash = \"#/\", true)","equals":true},{"eval":"(location.hash = \"#/s/{{sid_echo}}\", true)","equals":true},{"expect":{"css":"button.list-toggle[aria-expanded=\"true\"]","hasText":"Archived"}},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Restore"},{"expect":"role:button:Archived","visible":false}]'
+yv state --expect '{"sessions":[{"id":"{{sid_echo}}","archived":false}]}'
+```
+
 ### delete-keeps-worktree
 "Delete…" then "Delete, keep the worktree" removes the session and leaves its folder.
 
