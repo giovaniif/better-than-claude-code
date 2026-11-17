@@ -85,6 +85,17 @@ yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":{"role":"bu
 yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
 ```
 
+### send-stays-at-the-right
+At 390 px the reply box's tools (attach, dictate, voice mode, model, permission)
+fill the row, so Send moves to a second line. It stays at the right edge of
+the box there, where it sits on one line and on the New session box.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"expect":"label:Message"},{"eval":"(() => { const row = document.querySelector(\".composer-row\").getBoundingClientRect(); const send = document.querySelector(\".composer-row .send\").getBoundingClientRect(); return Math.round(row.right - send.right); })()","equals":0},{"shot":"reply-send"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"label:Message"},{"eval":"(() => { const row = document.querySelector(\".composer-row\").getBoundingClientRect(); const send = document.querySelector(\".composer-row .send\").getBoundingClientRect(); return Math.round(row.right - send.right); })()","equals":0}]'
+yv drive new --steps '[{"expect":"label:Message"},{"eval":"(() => { const row = document.querySelector(\".composer-row\").getBoundingClientRect(); const send = document.querySelector(\".composer-row .send\").getBoundingClientRect(); return Math.round(row.right - send.right); })()","equals":0}]'
+```
+
 ### desktop-sidebar-is-a-column
 Viewports: desktop
 At 1440 px nothing changes: no menu button, and the sidebar is a 248 px column
