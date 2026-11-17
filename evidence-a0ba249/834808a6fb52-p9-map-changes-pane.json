@@ -1,0 +1,57 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-17T01:03:32.099Z",
+      "counts": {
+        "pass": 8
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-diff",
+          "status": "pass",
+          "ms": 2837
+        },
+        {
+          "label": "empty-folder",
+          "status": "pass",
+          "ms": 2457
+        },
+        {
+          "label": "changed-binary-says-binary",
+          "status": "pass",
+          "ms": 4412
+        },
+        {
+          "label": "renamed-file-shows-old-and-new-name",
+          "status": "pass",
+          "ms": 4864
+        },
+        {
+          "label": "refresh-picks-up-new-file",
+          "status": "pass",
+          "ms": 3852
+        },
+        {
+          "label": "new-file-shows-its-content",
+          "status": "pass",
+          "ms": 5334
+        },
+        {
+          "label": "non-ascii-file-names",
+          "status": "pass",
+          "ms": 4167
+        },
+        {
+          "label": "subfolder-session-names-files-from-the-root",
+          "status": "pass",
+          "ms": 4908
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

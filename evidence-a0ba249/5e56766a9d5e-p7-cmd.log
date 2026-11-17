@@ -1,0 +1,26 @@
+$ verify/yv map run changes-pane --recipe renamed-file-shows-old-and-new-name
+# exit 0 after 5454 ms at a0ba2492dec4d778c2cc462e95299565616c7fd0
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-17T01:02:58.292Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "renamed-file-shows-old-and-new-name",
+          "status": "pass",
+          "ms": 4598
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

@@ -1,0 +1,202 @@
+{
+  "v": 1,
+  "claim": "A renamed file in the Changes pane is listed in git's compact brace form 'TEST-src/{greet.txt => hello.txt}' (the font draws => as an arrow), instead of old and new names; finding #114.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629",
+  "base": "e3d1dce2c1bbe5d6ff0289d8873a08ac2d70e416",
+  "head": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T01:01:42.777Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "26ce7156988cf20031b233a73a760a5b215f21ef",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "09d5fe2b12367237aa9b7318f4b8d167d675169b267d4348e3d38ad70587fbe0"
+        },
+        {
+          "path": "p1-rename-desktop.png",
+          "sha256": "2efcec94da2a1afdd3e8998fc5c704b7bf5ce161b5c3c29f14ef588cf2de75db"
+        }
+      ],
+      "addedAt": "2026-11-17T01:01:50.500Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "26ce7156988cf20031b233a73a760a5b215f21ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "27ad84cc0d30b7ffb0e97734d822cfda51b54a63057e7c4d74b3bd0491239479"
+        }
+      ],
+      "addedAt": "2026-11-17T01:01:50.542Z",
+      "cmd": "verify/yv map run changes-pane --recipe renamed-file-shows-old-and-new-name",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "67e661e10d8a29a8a650507808fb125f2b949fd0f0f4000525b9e6d252251c84"
+        },
+        {
+          "path": "p3-rename-desktop.png",
+          "sha256": "ccf3719132152df0828a7baf9e0a7591d4a9ff921619a15eb19ce7a678096aa2"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:33.031Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "85c6c8e8b9856fcf0729e1ab0d4ed7df7ead6bddc0e886e08ee728ac7eb3a9c1"
+        },
+        {
+          "path": "p4-no-pane-mobile.png",
+          "sha256": "5bf3bc8e16577aa522d8d0c21e87dcb33b4ea9ed0f2ccf92dd88814e2f072850"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:33.073Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T01:02:33.113Z",
+      "text": "mobile: the workspace pane (Changes) is hidden below 1100 px (layout/narrow-hides-pane), so the mobile proof shows it absent; the row change is desktop-only by design"
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "4fbc163fac96bb9f30ce54baa1e4958774f2cb76cf31ec2a6c04dba4ba1fd9b6"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:33.151Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "5e56766a9d5ea4fa6d104facefdee34bc9da48da6276f534b9685b0632695d47"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:52.842Z",
+      "cmd": "verify/yv map run changes-pane --recipe renamed-file-shows-old-and-new-name",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "04a1835a08ca76e97ad7719e3f3fb587a5f67a64a8064882f6174829fae45bb2"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:58.339Z",
+      "cmd": "verify/yv design-check --base e3d1dce2c1bb",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a0ba2492dec4d778c2cc462e95299565616c7fd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-changes-pane.json",
+          "sha256": "834808a6fb52ab6b613f32b515b0c83ac086e2072b912cbbb4a8eacdeea6f616"
+        }
+      ],
+      "addedAt": "2026-11-17T01:02:58.417Z",
+      "cmd": "verify/yv map run changes-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "changes-pane/shows-diff",
+        "changes-pane/empty-folder",
+        "changes-pane/changed-binary-says-binary",
+        "changes-pane/renamed-file-shows-old-and-new-name",
+        "changes-pane/refresh-picks-up-new-file",
+        "changes-pane/new-file-shows-its-content",
+        "changes-pane/non-ascii-file-names",
+        "changes-pane/subfolder-session-names-files-from-the-root"
+      ]
+    }
+  ]
+}

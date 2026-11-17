@@ -1,0 +1,40 @@
+$ verify/yv map run changes-pane --recipe renamed-file-shows-old-and-new-name
+# exit 1 after 15459 ms at 26ce7156988cf20031b233a73a760a5b215f21ef
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-17T01:02:05.998Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "renamed-file-shows-old-and-new-name",
+          "status": "fail",
+          "ms": 14597,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":{\"css\":\".file-row\",\"hasText\":\"TEST-src/greet.txt → TEST-src/hello.txt\"},\"text\":\"+1 −1\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T01-01-52-305Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "/drives/2026-11-17T01-01-52-305Z/fail-desktop-step1.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - button \\\"TEST-rename Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-rename\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 8% · 56%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-rename\\\" [level=1]\\n  - code: yard/test-rename-95bd\\n  - button \\\"Delete\\\"\\n  - text: TEST-rename\\n  - paragraph: \\\"Echo: TEST-rename\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: \\\"TEST-src/{greet.txt => hello.txt}\\\"\\n  - code: +1 −1\\n  - code: TEST-src/hello.txt\\n  - text: \\\"@@ -1,4 +1,4 @@ one two three -four +five\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":{\\\"css\\\":\\\".file-row\\\",\\\"hasText\\\":\\\"TEST-src/greet.txt → TEST-src/hello.txt\\\"},\\\"text\\\":\\\"+1 −1\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T01-01-52-305Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "changes-pane/renamed-file-shows-old-and-new-name",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

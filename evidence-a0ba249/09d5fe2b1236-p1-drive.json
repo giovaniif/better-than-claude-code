@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e70634fc2",
+  "build": {
+    "sha": "26ce7156988cf20031b233a73a760a5b215f21ef",
+    "short": "26ce715",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T01:01:45.902Z"
+  },
+  "dir": ".verify/x/ren-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3423,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/x/ren-base-desktop/rename-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
