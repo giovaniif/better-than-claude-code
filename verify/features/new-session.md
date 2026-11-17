@@ -86,6 +86,17 @@ Enter does not take it: the chip keeps the folder it had.
 yv drive new --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{work}}/TEST-no-such-folder"},{"expect":"css:.picker-empty","text":"No folder in"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"shot":"no-match"},{"press":"Enter"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"press":"Escape"},{"expect":{"role":"button","name":"work","exact":true}}]'
 ```
 
+### remembered-folder-that-is-gone-says-so
+Viewports: both
+The page reopens on the folder last used. When that folder was deleted since,
+the note under the chips says it no longer exists (not "Works in the folder
+itself") and Send stays disabled with a task typed, instead of failing only
+after Send. Found as patrol finding #171.
+
+```sh
+yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.cwd\",\"{{work}}/TEST-gone-later\");return 1})()","equals":1},{"reload":true},{"goto":"new"},{"expect":"css:.new-chips .bad","text":"no longer exists"},{"expect":"text:Works in the folder itself","visible":false},{"fill":"label:Message","value":"TEST-into a gone folder"},{"expect":{"role":"button","name":"Send","exact":true},"enabled":false},{"shot":"gone-folder"}]'
+```
+
 ### refused-send-names-the-session-in-the-way
 Viewports: both
 A folder that cannot get a worktree (here a plain folder) takes one working
