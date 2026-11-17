@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "claim": "On the Hosts page at 390 px, OpenCode's Add account wraps to the left edge of its row while every other engine's sits at the right.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33",
+  "base": "a5ee090f39111246657f6fec8c9dc6af311b7967",
+  "head": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T02:01:52.871Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a5ee090f39111246657f6fec8c9dc6af311b7967",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "b42d4ff76abbf6e1151e12abca87f1df4c3b413e737837bf219224f43dd7006c"
+        },
+        {
+          "path": "p1-hosts-mobile.png",
+          "sha256": "9f375e0ecaac1c0faed6d502003ca9d1dcc39b943770795b3b40d34979f519c4"
+        }
+      ],
+      "addedAt": "2026-11-17T02:01:59.554Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1dcf5262f42106beda6eb6eb40810cfc5fc07ea5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "bc9ad4de29fe10393a4e9798584bf4021dab9be86933e6bdd39f9cc7ca340a60"
+        }
+      ],
+      "addedAt": "2026-11-17T02:01:59.601Z",
+      "cmd": "verify/yv map run accounts --recipe add-account-stays-at-the-right",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "2a2d417c5b49f1f3fef11790f9d4670e0dc051752c2598729a63963e9eb47fa0"
+        },
+        {
+          "path": "p3-hosts-mobile.png",
+          "sha256": "b7e07e9e8af222d3f6316c8f5036a7613d920306737a27b4b7fb327440fc1164"
+        },
+        {
+          "path": "p3-hosts-desktop.png",
+          "sha256": "3c58406a1fef3716542c3893bf360568921d7a7168bcbe688ecede8a76c84864"
+        }
+      ],
+      "addedAt": "2026-11-17T02:02:15.155Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "19a9805be72e7116d11c415ceaec577ed6222e7b9b5b68759f56d7c4d2f6ab8e"
+        }
+      ],
+      "addedAt": "2026-11-17T02:02:15.195Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "a3539d4cb61bd8023ff17eb92df06e9d02d369dfa58d877c73a7765836c074a7"
+        }
+      ],
+      "addedAt": "2026-11-17T02:02:15.310Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "7e4955f130ec88d495cb837c07a5b171ada8da174e3c8fa361c3b031852010da"
+        }
+      ],
+      "addedAt": "2026-11-17T02:03:02.539Z",
+      "cmd": "verify/yv design-check --base a5ee090f3911",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-hosts.json",
+          "sha256": "69be389541b969e425d7d965be92fb11bd866ad255dcba7496df4edd76425455"
+        }
+      ],
+      "addedAt": "2026-11-17T02:03:02.610Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "a5ee090f39111246657f6fec8c9dc6af311b7967",
+    "short": "a5ee090",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T02:01:55.397Z"
+  },
+  "dir": ".verify/evidence/hosts-add-account-right-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3463,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-add-account-right-base/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

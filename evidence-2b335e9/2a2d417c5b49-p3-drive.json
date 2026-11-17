@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "2b335e9840629184ec5f864894e5e27abde9e7f3",
+    "short": "2b335e9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T02:02:09.626Z"
+  },
+  "dir": ".verify/evidence/hosts-add-account-right-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3482,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-add-account-right-head/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1371,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-add-account-right-head/hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

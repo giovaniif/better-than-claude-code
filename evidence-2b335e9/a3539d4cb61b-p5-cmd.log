@@ -1,0 +1,71 @@
+$ verify/yv map run accounts
+# exit 0 after 47192 ms at 2b335e9840629184ec5f864894e5e27abde9e7f3
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-17T02:03:02.498Z",
+      "counts": {
+        "pass": 10
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "add-account",
+          "status": "pass",
+          "ms": 4538
+        },
+        {
+          "label": "refused-add-account-keeps-the-form",
+          "status": "pass",
+          "ms": 5120
+        },
+        {
+          "label": "log-in-account",
+          "status": "pass",
+          "ms": 3650
+        },
+        {
+          "label": "pick-account-desktop",
+          "status": "pass",
+          "ms": 5631
+        },
+        {
+          "label": "pick-account-mobile",
+          "status": "pass",
+          "ms": 5881
+        },
+        {
+          "label": "default-has-no-account-row-without-a-choice",
+          "status": "pass",
+          "ms": 2163
+        },
+        {
+          "label": "pick-other-engine-account-switches-engine",
+          "status": "pass",
+          "ms": 8434
+        },
+        {
+          "label": "remove-refused-while-in-use",
+          "status": "pass",
+          "ms": 2774
+        },
+        {
+          "label": "remove-account",
+          "status": "pass",
+          "ms": 4060
+        },
+        {
+          "label": "add-account-stays-at-the-right",
+          "status": "pass",
+          "ms": 4087
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
