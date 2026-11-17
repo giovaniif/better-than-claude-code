@@ -769,13 +769,16 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
   const seenAt = useSeen(state.sessions, route.page === "session" ? route.id : null);
-  // Opening an archived session shows the section, so its row stays in view.
-  const openArchived = route.page === "session" && !!state.sessions[route.id]?.archived;
+  // Going to an archived session shows the section, so its row stays in
+  // view. Only on going there: archiving the session already open leaves the
+  // section as it was (it used to spring open on every archive).
+  const openId = route.page === "session" ? route.id : null;
+  const openArchived = !!openId && !!state.sessions[openId]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
   const [importing, setImporting] = useState(false);
   useEffect(() => {
     if (openArchived) setShowArchived(true);
-  }, [openArchived]);
+  }, [openId]);
   // Opened as a drawer, focus moves into it, so the keyboard is where the eyes are.
   const nav = useRef<HTMLElement>(null);
   useEffect(() => {
