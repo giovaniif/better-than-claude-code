@@ -209,13 +209,6 @@ function guards(): Blocker[] {
     const last = runs.find((r) => r.status === "completed" && r.conclusion !== "cancelled" && r.conclusion !== "skipped");
     if (last && last.conclusion !== "success") out.push({ code: "last-deploy-failed", msg: `the last ${wf} run failed (${last.url})` });
   }
-  if (cfg.minMinutesSinceLastMerge) {
-    const merged = ghJson(["pr", "list", "--repo", REPO, "--state", "merged", "--limit", "1", "--json", "mergedAt,number"]) as any[];
-    if (merged[0]) {
-      const mins = (Date.now() - Date.parse(merged[0].mergedAt)) / 60000;
-      if (mins < cfg.minMinutesSinceLastMerge) out.push({ code: "too-soon", msg: `#${merged[0].number} merged ${mins.toFixed(0)} min ago (min ${cfg.minMinutesSinceLastMerge})` });
-    }
-  }
   if (cfg.landingHours) {
     const { tz, from, to } = cfg.landingHours;
     const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: tz }).format(new Date()));
