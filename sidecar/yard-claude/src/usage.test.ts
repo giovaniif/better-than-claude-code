@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { mergeUsage } from "./usage";
+import { fromUsageReport, mergeUsage } from "./usage";
 
 test("one rate_limit_event carries one window; later events add to it", () => {
   let u = mergeUsage(null, { status: "allowed", rateLimitType: "five_hour", utilization: 0.47, resetsAt: 1_800_010_000 });
@@ -45,4 +45,27 @@ test("an event with no utilization updates the status and keeps what was known",
 test("an empty or odd event does not throw", () => {
   expect(mergeUsage(null, undefined)).toEqual({ windows: {} });
   expect(mergeUsage(null, { rateLimitType: 5, utilization: "x" })).toEqual({ windows: {} });
+});
+
+test("the usage report's limits become the same windows as rate_limit_event", () => {
+  const report = {
+    rate_limits: {
+      limits: [
+        { kind: "session", percent: 92, resets_at: "2026-11-17T17:00:01.002829+00:00" },
+        { kind: "weekly_all", percent: 64, resets_at: "2026-11-20T04:00:01+00:00" },
+        { kind: "weekly_scoped", percent: 7, resets_at: "2026-11-20T04:00:00+00:00", scope: { model: { id: null, display_name: "Opus 5.5" } } },
+        { kind: "something_new", percent: 50 },
+        { kind: "session", percent: "x" },
+      ],
+    },
+  };
+  expect(fromUsageReport(report)).toEqual({
+    windows: {
+      five_hour: { utilization: 0.92, resetsAt: Date.parse("2026-11-17T17:00:01.002829+00:00") / 1000 },
+      seven_day: { utilization: 0.64, resetsAt: Date.parse("2026-11-20T04:00:01+00:00") / 1000 },
+      seven_day_opus_5_5: { utilization: 0.07, resetsAt: Date.parse("2026-11-20T04:00:00+00:00") / 1000 },
+    },
+  });
+  expect(fromUsageReport({ rate_limits: { limits: [] } })).toBeNull();
+  expect(fromUsageReport({})).toBeNull();
 });

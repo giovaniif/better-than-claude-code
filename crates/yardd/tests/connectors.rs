@@ -265,3 +265,45 @@ async fn linear_is_added_to_each_engine_signed_in_and_removed() {
     c.send(json!({ "op": "mcp.add", "engine": "codex", "name": "x", "url": "http://plain.example/mcp" })).await;
     assert!(c.wait_error(from, "mcp.add").await.contains("https://"));
 }
+
+#[tokio::test]
+async fn every_claude_account_has_its_limits_without_running_a_turn() {
+    let sb = Sandbox::new("claude-usage");
+    let sidecar = fake_bin().join("yard-claude");
+    let d = sb.start_with(&[("YARD_SIDECAR", sidecar.to_str().unwrap()), ("YARD_CLAUDE_USAGE_EVERY_MS", "600000")]);
+    let mut c = d.client().await;
+    let from = c.mark();
+    c.send(json!({ "op": "account.add", "engine": "claude", "name": "Work" })).await;
+    let accounts = c.wait_after(from, "the accounts list", |m| m["op"] == "accounts" && m["accounts"].as_array().is_some_and(|l| !l.is_empty())).await;
+    let id = accounts["accounts"][0]["id"].as_str().unwrap().to_string();
+
+    // No session exists: both limits come from the usage report alone.
+    let got = c
+        .wait_for("both accounts' limits", |m| {
+            m["op"] == "usage" && m["usage"]["claude"]["windows"]["five_hour"]["utilization"] == 0.47 && m["usage"]["accounts"][id.as_str()]["windows"]["five_hour"]["utilization"] == 0.91
+        })
+        .await;
+    assert_eq!(got["usage"]["accounts"][id.as_str()]["windows"]["seven_day"]["utilization"], 0.4);
+    assert!(c.log.iter().all(|m| m["op"] != "event"), "no turn ran");
+    let log = fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap();
+    assert!(log.contains(&format!("usage config={}", sb.data().join("accounts").join(&id).display())), "{log}");
+
+    // A login reads the account's limits again, and still reports the login:
+    // the login runs on a plain thread, and starting the read from there once
+    // killed it before it said so.
+    let reads = |sb: &Sandbox| fs::read_to_string(sb.fake_state().join("sidecar.log")).unwrap().matches(&format!("usage config={}", sb.data().join("accounts").join(&id).display())).count();
+    let before = reads(&sb);
+    let from = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "claude", "account": id })).await;
+    c.wait_after(from, "the sign-in link", |m| m["op"] == "login" && m["account"] == id.as_str() && m["state"] == "url").await;
+    c.send(json!({ "op": "login.code", "engine": "claude", "account": id, "code": "good-code" })).await;
+    c.wait_after(from, "the login done", |m| m["op"] == "login" && m["account"] == id.as_str() && m["state"] == "done").await;
+    c.wait_after(from, "the account logged in", |m| m["op"] == "engines" && m["accounts"][id.as_str()]["loggedIn"] == true).await;
+    for _ in 0..50 {
+        if reads(&sb) > before {
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    }
+    assert!(reads(&sb) > before, "the login read the account's limits again");
+}
