@@ -52,6 +52,15 @@ yv api '{"op":"host.remove","hostId":"{{scope_host}}"}'
 yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"eval":"document.querySelector(\".assistant-scope select\").value","equals":"all"},{"fill":"label:Ask Switchy","value":"TEST-after the host went away"},{"click":"role:button:Send question"},{"expect":{"css":".assistant-answer","hasText":"TEST-after the host went away"},"text":"This is a scripted Switchy answer."},{"expect":"css:.assistant-notice","count":0},{"shot":"scope-after-removal"}]'
 ```
 
+### shared-composer
+Viewports: both
+Switchy uses the session composer: one-line auto-growing input, the same
+icon send button, dictation control and model picker.
+
+```sh
+yv drive switchy --steps '[{"expect":"css:.composer-row .send svg"},{"expect":"css:.composer-row .mic-btn"},{"expect":"css:.composer-row .model-popover","count":0},{"eval":"document.querySelector(\".composer textarea\").rows","equals":1},{"fill":"css:.composer textarea","value":"TEST-one\nTEST-two\nTEST-three\nTEST-four"},{"eval":"document.querySelector(\".composer textarea\").clientHeight > 60","equals":true},{"shot":"shared-composer"}]'
+```
+
 ## Gotchas
 
 - Model inference is scripted in this map. Live Claude/Codex output is not proven
