@@ -306,3 +306,30 @@ async fn claude_uses_a_restricted_sidecar_and_handles_engine_failure() {
     assert_eq!(failed["state"]["turns"][1]["status"], "failed");
     assert!(failed["state"]["turns"][1]["error"].is_string());
 }
+
+#[tokio::test]
+async fn codex_nullable_config_does_not_prevent_switchy_answers() {
+    let sb = Sandbox::new("switchy-null-config");
+    let config = json!({"mcp_servers": {"linear": {
+        "url": "https://example.invalid/mcp", "enabled": true,
+        "tool_timeout_sec": null, "startup_timeout_sec": null,
+        "bearer_token_env_var": null, "http_headers": null
+    }}});
+    std::fs::write(sb.fake_state().join("config-read.json"), config.to_string()).unwrap();
+    let daemon = sb.start();
+    let mut c = daemon.client().await;
+    ready(&mut c).await;
+    c.send(json!({"op":"switchy.send", "text":"What is happening on my server?", "engine":"codex", "model":MODEL, "scope":"local"})).await;
+    let done = c.wait_for("completed question", |m| m["op"] == "switchy.state"
+        && m["state"]["status"] == "idle"
+        && m["state"]["turns"].as_array().is_some_and(|t| !t.is_empty())).await;
+    assert!(done["state"]["turns"][0]["error"].is_null(), "{done}");
+    assert!(done["state"]["turns"][0]["answer"].as_str().is_some_and(|s| !s.is_empty()));
+    let starts = std::fs::read_to_string(sb.fake_state().join("thread-starts.jsonl")).unwrap();
+    let start: serde_json::Value = serde_json::from_str(starts.lines().next().unwrap()).unwrap();
+    let server = &start["config"]["mcp_servers"]["linear"];
+    assert_eq!(server["enabled"], false);
+    assert_eq!(server["url"], config["mcp_servers"]["linear"]["url"]);
+    assert!(!server.as_object().unwrap().contains_key("tool_timeout_sec"));
+    assert_eq!(serde_json::from_str::<serde_json::Value>(&std::fs::read_to_string(sb.fake_state().join("config-read.json")).unwrap()).unwrap(), config);
+}
