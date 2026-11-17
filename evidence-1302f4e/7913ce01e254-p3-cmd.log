@@ -1,0 +1,32 @@
+$ (cd ui && bun test src) && verify/yv map run sidebar --recipe archiving-the-open-session-keeps-the-list-closed
+# exit 0 after 10160 ms at 1302f4e981ada94370b270010c9a6424d4c275e6
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-17T13:41:26.726Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "archiving-the-open-session-keeps-the-list-closed",
+          "status": "pass",
+          "ms": 6711
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 341 pass
+ 0 fail
+ 799 expect() calls
+Ran 341 tests across 22 files. [95.00ms]

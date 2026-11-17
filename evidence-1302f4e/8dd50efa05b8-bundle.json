@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "claim": "Archiving the session you are looking at opened the sidebar's Archived list every time. Now the list stays as it was; going to an archived session still opens it so its row is in view.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-when-i-connect-my-work-8617",
+  "base": "3616ed0edb499b1cc4ee2064b90072bae51364f6",
+  "head": "1302f4e981ada94370b270010c9a6424d4c275e6",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T13:40:40.898Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "056028aa18853236b91919f7f2c3192017aafc5f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "80b0880c9ebce3a374bbfb40862dff25b374d4e180ad0a408d9b7ec57a90d24d"
+        }
+      ],
+      "addedAt": "2026-11-17T13:40:40.946Z",
+      "cmd": "verify/yv map run sidebar --recipe archiving-the-open-session-keeps-the-list-closed",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "056028aa18853236b91919f7f2c3192017aafc5f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "4a40b9da03b4cc5d90614c5b20a082d9a2d43138d23c0d85751567b1ef69a6d4"
+        },
+        {
+          "path": "p2-fail-desktop-step4.png",
+          "sha256": "318770f6351401e86e80ef8c89520d3e86fafabf1b39d70bc3aeccde82f1b9b9"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:16.381Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "1302f4e981ada94370b270010c9a6424d4c275e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "7913ce01e254e0ca8f9fa6542ab9875cdade51cd22a6650fd27734abb9b45eba"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:16.574Z",
+      "cmd": "(cd ui && bun test src) && verify/yv map run sidebar --recipe archiving-the-open-session-keeps-the-list-closed",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1302f4e981ada94370b270010c9a6424d4c275e6",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "6a82a708574a4125bf04d9339fc99b767ea6a02a7cb07cd387dc50831d240f6b"
+        },
+        {
+          "path": "p4-archived-open-session-desktop.png",
+          "sha256": "7fe3507ff7dcb40a4f51787ef0f01920ddcbb65653dc6f9160b01c40b56fe569"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:33.796Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1302f4e981ada94370b270010c9a6424d4c275e6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "0a5b3830279c9eb5e27cade20cdeb3c038de1da4e9eb58c8fdb027d89eb0b0cf"
+        },
+        {
+          "path": "p5-archived-open-session-mobile.png",
+          "sha256": "485efecf63c1566b0d8fb268c3feaafa73caf0af688502257d3e9462edde9c6b"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:39.935Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "1302f4e981ada94370b270010c9a6424d4c275e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "b9bce0f6dc8f1d0d16f39c53922de7e8133266248af95add7348522c5af0f5e9"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:39.974Z",
+      "cmd": "verify/yv design-check --base 3616ed0edb49",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "1302f4e981ada94370b270010c9a6424d4c275e6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-sidebar.json",
+          "sha256": "7fdca5d09950b0abc6a8a37ba4b2fc5d0f84be32bb0c26c514b0f55c7c582d22"
+        }
+      ],
+      "addedAt": "2026-11-17T13:41:40.059Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/archiving-the-open-session-keeps-the-list-closed",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    }
+  ]
+}
