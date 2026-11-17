@@ -127,7 +127,12 @@ export function PrPane(props: { meta: SessionMeta; state: State; actions: Action
   return (
     <div className="scroll pane-body" style={{ display: visible ? "flex" : "none" }}>
       {!pr && <div className="muted">Loading pull request.</div>}
-      {pr && "error" in pr && <div className="muted">Cannot read the pull request: {pr.error}.</div>}
+      {pr && "error" in pr && (
+        <>
+          <div className="muted">Cannot read the pull request: {pr.error}.</div>
+          {pr.repo && reviewButton}
+        </>
+      )}
       {pr && "none" in pr && (
         <>
           <div className="muted">
