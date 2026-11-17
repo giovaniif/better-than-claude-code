@@ -22,7 +22,7 @@ use std::{
 };
 
 use tauri::{
-    menu::{Menu, MenuItem},
+    menu::{Menu, MenuItem, PredefinedMenuItem},
     webview::{NewWindowResponse, PermissionKind, PermissionResponse},
     AppHandle, Manager, Url, WebviewUrl, WebviewWindowBuilder,
 };
@@ -42,6 +42,9 @@ const OLDER_DAEMON: &str = "an older daemon is running, quit it to update";
 const UPDATE_EVERY: Duration = Duration::from_secs(6 * 60 * 60);
 
 const CHECK_UPDATES: &str = "check-updates";
+const OPEN_SETTINGS: &str = "open-settings";
+const IMPORT_SESSIONS: &str = "import-sessions";
+const OPEN_NAVIGATION: &str = "open-navigation";
 
 /// One update check at a time: the timer's and the menu's would otherwise
 /// download the same release twice.
@@ -298,12 +301,19 @@ fn open_outside(url: &Url) {
     }
 }
 
-/// The standard menu, with Check for Updates… under About in the app menu.
+/// Keep infrequent navigation in the Mac app menu, beside the standard items.
 fn app_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     let menu = Menu::default(app)?;
     let check = MenuItem::with_id(app, CHECK_UPDATES, "Check for Updates…", true, None::<&str>)?;
     if let Some(first) = menu.items()?.first().and_then(|item| item.as_submenu()) {
         first.insert(&check, 1)?;
+        if cfg!(target_os = "macos") {
+            let settings = MenuItem::with_id(app, OPEN_SETTINGS, "Settings…", true, Some("Cmd+,"))?;
+            let import = MenuItem::with_id(app, IMPORT_SESSIONS, "Import Sessions…", true, None::<&str>)?;
+            let navigation = MenuItem::with_id(app, OPEN_NAVIGATION, "Go to…", true, Some("Cmd+K"))?;
+            let separator = PredefinedMenuItem::separator(app)?;
+            first.insert_items(&[&settings, &import, &navigation, &separator], 3)?;
+        }
     }
     Ok(menu)
 }
@@ -315,6 +325,26 @@ fn main() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .menu(app_menu)
         .on_menu_event(|app, event| {
+            let destination = match event.id().0.as_str() {
+                OPEN_SETTINGS => Some("settings"),
+                IMPORT_SESSIONS => Some("import"),
+                OPEN_NAVIGATION => Some("navigation"),
+                _ => None,
+            };
+            if let Some(destination) = destination {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                    // Fixed menu destinations, never agent or session text.
+                    let destination = serde_json::to_string(destination).expect("static destination");
+                    let script = format!("window.dispatchEvent(new CustomEvent('switchyard:navigate', {{ detail: {destination} }}))");
+                    if let Err(e) = window.eval(&script) {
+                        eprintln!("switchyard: could not open menu destination: {e}");
+                    }
+                }
+                return;
+            }
             if event.id() != CHECK_UPDATES {
                 return;
             }
@@ -344,6 +374,12 @@ fn main() {
                 None => "Switchyard".to_string(),
             };
             WebviewWindowBuilder::new(app, "main", WebviewUrl::External(url))
+                // A newer UI must keep its sidebar entry points in older shells.
+                .initialization_script(if cfg!(target_os = "macos") {
+                    "window.__SWITCHYARD_APP_MENU__ = true;"
+                } else {
+                    ""
+                })
                 .title(title)
                 .inner_size(1440.0, 900.0)
                 .min_inner_size(900.0, 600.0)

@@ -55,6 +55,16 @@ Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is deriv
 - Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
 - The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
 
+**Chat diagrams.** Markdown fences labelled `mermaid` automatically show a
+diagram once the fence closes, with a Show source / Show diagram toggle.
+`ui/src/markdown.ts` recognises backtick and tilde fences, including open
+fences during streaming; `MermaidDiagram.tsx` lazy-loads the bundled Mermaid
+renderer. Invalid, empty and incomplete diagrams keep their source visible.
+Rendering uses strict security, disabled HTML labels and protected security
+and CSS settings. The result is a blob-backed SVG image, never inline HTML or
+SVG in the chat DOM; object URLs are revoked on changes and unmount. Diagrams
+fit the thread width on mobile. No service or engine-specific event is needed.
+
 ## Persistence
 
 yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard` when that is unset.
@@ -173,6 +183,22 @@ Scheduled work, built into yardd (`crates/yardd/src/automations.rs`, UI in `ui/s
 - Not built: a machine-load skip, a per-automation retention count, run history for skipped runs beyond the last one.
 
 ## Sidebar
+
+- **Go to** (`ui/src/NavigationPalette.tsx`, search in `navigation.ts`): Cmd-K
+  opens a session and page palette from anywhere, including the composer and
+  terminal (Ctrl-K on non-Mac platforms). The Switchyard heading opens it too.
+  Search matches title, engine, host, folder, branch and group, including
+  archived sessions and automation runs; an empty search shows the eight most
+  recent sessions the sidebar lists (no archived sessions or runs) and the
+  pages. Arrow keys select, Enter opens, Escape closes and
+  returns focus. Pages include New session, Automations, Connectors, Settings,
+  Hosts and Import; Import opens the existing dialog.
+- **Mac app menu:** Settings… (Cmd-,), Import Sessions… and Go to… (Cmd-K)
+  live under Switchyard. The shell dispatches fixed `switchyard:navigate`
+  DOM events and advertises `__SWITCHYARD_APP_MENU__` during webview setup.
+  Only shells advertising that capability hide Settings and Import in the
+  sidebar, so browsers and older shells keep working. No extra IPC permission
+  is granted to the loopback page.
 
 - Each session row has a menu (the … button, or right-click): Pin, Move to group…, Remove from group, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived?, group? }` stores the flags and the group name in the session's metadata, so every window and the web version agree, and they survive restarts; remote sessions route through the hub like every session op. Archiving unpins. `group` is a trimmed name (max 60 characters); null or blank clears it, and leaving the field out leaves it alone.
 - **Drag and drop** (native HTML5, no library): a row dragged onto a group (its header or rows) moves into it, onto the ungrouped Sessions rows leaves its group, onto Pinned pins it. A group or Sessions drop also unpins, since those sections only show unpinned sessions. `dropUpdate` in `ui/src/sidebarDrop.ts` turns a drop into one `session.update { pinned?, group? }`, or nothing when the session is already there; such a section refuses the drop, so the cursor says no and nothing lights up. The dragged row dims; the section under the pointer is highlighted; a collapsed group opens after 600 ms over it; with no ungrouped rows a "Drop here to remove from group" slot appears while dragging; Escape cancels (the browser's own). The drag carries the session id as `application/x-yard-session`. Archived rows and rows on an unreachable host are not draggable, like the menu. No reordering: order comes from creation and activity and is not stored. Touch has no HTML5 drag, so in the phone drawer (below 700 px) rows are not draggable and the … menu is the way; it is also the keyboard path. The Mac app turns off Tauri's own drop handler (`disable_drag_drop_handler`), which is what lets drags inside the page work.
