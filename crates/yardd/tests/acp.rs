@@ -226,6 +226,29 @@ async fn stop_ends_an_opencode_turn_even_when_it_does_not_listen() {
 }
 
 #[tokio::test]
+async fn text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer() {
+    let sb = Sandbox::new("oc-stuck-text");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[stuck] forever", opencode()).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    c.wait_event(&sid, "note", 0).await;
+    c.wait_turn_done(&sid, 0).await;
+    // The ended turn's text is closed as its own message.
+    let first = c.events(&sid).into_iter().find(|e| e["type"] == "assistant_message").expect("the stuck turn's text, closed");
+    assert_eq!(first["text"], "Working");
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "fresh" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let replies: Vec<_> = c.events(&sid).into_iter().filter(|e| e["type"] == "assistant_message").collect();
+    let last = replies.last().unwrap();
+    assert_eq!(last["text"], "Echo: fresh", "{replies:?}");
+    assert_ne!(last["itemId"], first["itemId"]);
+}
+
+#[tokio::test]
 async fn an_opencode_agent_that_dies_fails_the_turn_and_the_next_one_resumes() {
     let sb = Sandbox::new("oc-exit");
     let d = sb.start();
