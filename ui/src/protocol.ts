@@ -359,6 +359,29 @@ export interface ProcRow {
   ageSecs: number;
   /** `agent`: what the engine runs. `terminal`: the session's shells. */
   origin: "agent" | "terminal";
+  /** Start time, seconds since the epoch. `session.kill` sends it back so a
+   *  reused pid is refused. Missing from an older yardd. */
+  start?: number;
+  /** The engine's own process (a Claude sidecar or its CLI): `session.kill`
+   *  refuses it, so the tab offers no Stop. Missing from an older yardd. */
+  engine?: boolean;
+}
+
+/** Reply to `session.kill { sessionId, pid, start?, signal, tree? }`, which
+ *  signals one of the session's processes (with `tree`, it and everything
+ *  below it, children first). yardd checks the pid against the session's
+ *  tree read at that moment. `running`: still alive a few seconds later (the
+ *  next step is `signal: "kill"`). `refused` comes with a `reason`. */
+export interface KillReply {
+  op: "session.killed";
+  sessionId: string;
+  pid: number;
+  signal: "term" | "kill";
+  tree: boolean;
+  result: "killed" | "running" | "refused";
+  reason?: string;
+  /** Pids still alive when yardd answered. */
+  running: number[];
 }
 
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */

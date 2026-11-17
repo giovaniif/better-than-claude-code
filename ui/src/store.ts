@@ -18,6 +18,7 @@ import {
   type Models,
   type PrResult,
   type ProcRow,
+  type KillReply,
   type SessionMeta,
   type Permission,
   type Usage,
@@ -278,6 +279,12 @@ export const homeOn = (state: State, host: string): string => state.home[host] ?
  *  The snapshot's `hostName` covers the seconds before the first `host` stats sample. */
 export const hostName = (state: State, host: string): string =>
   host === "local" ? state.host.local?.name || state.localName || "This Mac" : state.hosts.find((h) => h.id === host)?.name ?? host;
+/** An op's error as shown. A host's yardd that predates a feature this window
+ *  offers answers "unknown op", which does not say what to do about it. */
+export const hostErrorText = (state: State, host: string | undefined, message: string): string =>
+  host && host !== "local" && message.startsWith("unknown op")
+    ? `${hostName(state, host)} runs an older Switchyard. Use Update Switchyard on its card in Hosts, then try again.`
+    : message;
 /** A remote host's sessions are offline while the hub cannot reach it. */
 export const hostOnline = (state: State, host: string): boolean =>
   host === "local"
@@ -402,12 +409,7 @@ function reduceServer(state: State, msg: any): State {
       if (msg.for === "session.import") return { ...state, importError: msg.message };
       // The refusal names no request, so every waiting card gets its buttons back.
       const threads = msg.for === "session.approve" ? releaseApprovals(state.threads) : state.threads;
-      // A host's yardd predates a feature this window offers; the raw
-      // "unknown op" does not say what to do about it.
-      const error =
-        msg.hostId && msg.hostId !== "local" && msg.message.startsWith("unknown op")
-          ? `${hostName(state, msg.hostId)} runs an older Switchyard. Use Update Switchyard on its card in Hosts, then try again.`
-          : msg.message;
+      const error = hostErrorText(state, msg.hostId, msg.message);
       return { ...state, threads, error, errorCount: state.errorCount + 1 };
     }
     case "git.branches": {
@@ -556,6 +558,10 @@ export interface Actions {
   removeAccount(host: string, id: string): void;
   loadPr(sessionId: string): void;
   loadProcs(sessionId: string): void;
+  /** Signal one of the session's processes (`session.kill`); with `tree`, it
+   *  and everything below it. Resolves with yardd's verdict, or `error` (with
+   *  the `hostId` of a remote that refused the op) for `hostErrorText`. */
+  killProc(sessionId: string, pid: number, start: number | undefined, signal: "term" | "kill", tree: boolean): Promise<KillReply | { error: string; hostId?: string }>;
   addHost(input: { name: string; kind: "ssh" | "direct"; destination?: string; remotePort?: number; url?: string }): void;
   removeHost(hostId: string): void;
   /** Install or update yardd on an SSH host from the release, over SSH. */
@@ -723,6 +729,11 @@ export function useYard(): { state: State; actions: Actions } {
     const reply = await ask(onHost(host, { op: "automation.save", automation }), 30_000);
     return reply.error || !reply.automation ? { error: reply.error ?? "The automation was not saved." } : { automation: reply.automation as Automation };
   };
+  const killProc = async (sessionId: string, pid: number, start: number | undefined, signal: "term" | "kill", tree: boolean) => {
+    // yardd waits up to 3 s to see whether the process ended.
+    const reply = await ask({ op: "session.kill", sessionId, pid, start, signal, tree }, 30_000);
+    return reply.error ? { error: reply.error as string, hostId: reply.hostId as string | undefined } : (reply as KillReply);
+  };
   const runAutomation = async (host: string, id: string) => {
     // A run cuts a worktree and may run its setup first.
     const reply = await ask(onHost(host, { op: "automation.run", id, force: true }), 5 * 60_000);
@@ -761,6 +772,7 @@ export function useYard(): { state: State; actions: Actions } {
       listDirs: (path, host) => post(host === "local" ? { op: "fs.dirs", path } : { op: "fs.dirs", path, host }),
       loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
       loadProcs: (sessionId) => post({ op: "session.procs", sessionId }),
+      killProc,
       addHost: (input) => post({ op: "host.add", ...input }),
       removeHost: (hostId) => post({ op: "host.remove", hostId }),
       installHost: (hostId) => post({ op: "host.install", hostId }),

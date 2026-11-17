@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    attachments, claude, codex, git, handoff, pr, pty, remote, sessions,
+    attachments, claude, codex, git, guard, handoff, pr, pty, remote, sessions,
     state::{App, Worktree, PERMISSIONS},
 };
 
@@ -564,6 +564,23 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let sid = str_field(msg, "sessionId")?;
             app.meta(sid).context("no such session")?;
             let _ = direct.send(json!({ "op": "session.procs", "sessionId": sid, "procs": app.guard.procs(sid) }).to_string());
+        }
+        // Stop one of the session's processes from the Processes tab. The
+        // pid is checked against the session's tree read now, not trusted
+        // from the client (see `guard::kill`).
+        "session.kill" => {
+            let sid = str_field(msg, "sessionId")?;
+            app.meta(sid).context("no such session")?;
+            let pid = msg["pid"].as_u64().and_then(|p| u32::try_from(p).ok()).context("missing `pid`")?;
+            let signal = str_field(msg, "signal")?;
+            let sig = guard::Sig::parse(signal).with_context(|| format!("unknown signal `{signal}`: term or kill"))?;
+            let tree = msg["tree"].as_bool().unwrap_or(false);
+            let mut reply = guard::kill(app, sid, pid, msg["start"].as_u64(), sig, tree).await;
+            // The tab waits on this one request.
+            if !msg["ref"].is_null() {
+                reply["ref"] = msg["ref"].clone();
+            }
+            let _ = direct.send(reply.to_string());
         }
         "term.open" => {
             let sid = str_field(msg, "sessionId")?;

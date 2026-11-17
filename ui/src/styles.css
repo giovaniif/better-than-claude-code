@@ -180,6 +180,13 @@ h1, h2, h3, p { margin: 0; }
 .proc-cmd { max-width: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .proc-cmd code { font-size: 12px; }
 .proc-tag { margin-right: 6px; padding: 0 6px; border: 1px solid var(--line); border-radius: 8px; font-size: 11px; color: var(--muted); }
+.proc-table td.proc-act { padding: 2px 0 2px 8px; white-space: nowrap; text-align: right; vertical-align: middle; }
+.proc-act .btn-text { height: 20px; padding: 0 6px; border-radius: 6px; font-size: 12px; }
+.proc-kill { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--muted); opacity: 0; }
+.proc-row:hover .proc-kill, .proc-kill:focus-visible { opacity: 1; }
+.proc-kill:hover { background: var(--fill); color: var(--bad-ink); }
+@media (hover: none) { .proc-kill { opacity: 1; } }
+.proc-table .proc-note td { padding-top: 0; border-top: 0; overflow-wrap: anywhere; }
 
 .pulse, .working::before { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: pulse 1.1s ease-in-out infinite; }
 .working { display: flex; align-items: center; gap: 8px; color: var(--muted); }
