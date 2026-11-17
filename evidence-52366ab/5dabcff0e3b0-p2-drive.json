@@ -1,0 +1,74 @@
+{
+  "ok": false,
+  "route": "session:s1a1e9ab62426",
+  "build": {
+    "sha": "d57b1dabca53bd12dc1195fab0730dd2800c4ebf",
+    "short": "d57b1da",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:21:25.204Z"
+  },
+  "dir": ".verify/evidence/ph2-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 12923,
+      "steps": 15,
+      "failed": {
+        "step": 0,
+        "action": {
+          "expect": {
+            "css": ".prose a.pr-link",
+            "hasText": "test-owner/test-demo-app#4242"
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/ph2-base/fail-mobile-step0.png",
+        "aria": "- main:\n  - button \"Open sessions\"\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-2295\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - text: \"TEST-pr links Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code.\"\n  - paragraph: \"Echo: TEST-pr links\"\n  - paragraph:\n    - text: Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on\n    - code: the greeting module\n    - text: ; see also\n    - code: \"#4243\"\n    - text: and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local\n    - code: src/greet.ts\n    - text: stays code.\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]"
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 12261,
+      "steps": 15,
+      "failed": {
+        "step": 0,
+        "action": {
+          "expect": {
+            "css": ".prose a.pr-link",
+            "hasText": "test-owner/test-demo-app#4242"
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/ph2-base/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 6% · 66%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-2295\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - text: \"TEST-pr links Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code.\"\n  - paragraph: \"Echo: TEST-pr links\"\n  - paragraph:\n    - text: Opened https://github.com/test-owner/test-demo-app/pull/4242. It builds on\n    - code: the greeting module\n    - text: ; see also\n    - code: \"#4243\"\n    - text: and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local\n    - code: src/greet.ts\n    - text: stays code.\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - text: No changes in this folder."
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 0 {\"expect\":{\"css\":\".prose a.pr-link\",\"hasText\":\"test-owner/test-demo-app#4242\"}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/ph2-base/fail-mobile-step0.png and the aria snapshot"
+    },
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"expect\":{\"css\":\".prose a.pr-link\",\"hasText\":\"test-owner/test-demo-app#4242\"}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/ph2-base/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test pr_peek
+# exit 101 after 24059 ms at d57b1dabca53bd12dc1195fab0730dd2800c4ebf
+
+
+running 2 tests
+test a_remote_session_peeks_with_its_own_hosts_gh ... FAILED
+test a_pr_link_peeks_once_per_url_and_refuses_anything_else ... FAILED
+
+failures:
+
+---- a_remote_session_peeks_with_its_own_hosts_gh stdout ----
+
+thread 'a_remote_session_peeks_with_its_own_hosts_gh' (2803561) panicked at crates/yardd/tests/pr_peek.rs:114:5:
+assertion `left == right` failed
+  left: String("error")
+ right: "pr.peek"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2803558-peek-hub-2 for inspection
+kept /tmp/yardd-test-2803558-peek-remote-0 for inspection
+
+---- a_pr_link_peeks_once_per_url_and_refuses_anything_else stdout ----
+
+thread 'a_pr_link_peeks_once_per_url_and_refuses_anything_else' (2803559) panicked at crates/yardd/tests/common/mod.rs:355:27:
+timed out after 20s waiting for a pr.peek reply; last messages:
+{"event":{"at":1794921663907,"type":"turn_started"},"op":"event","seq":1,"sessionId":"s1a1e9ab0d8e1"}
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794929493,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795195293,"usedPercent":34,"windowDurationMins":10080}}}}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"event":{"itemId":"msg-2803624-3","text":"Ech","type":"assistant_delta"},"op":"event","seq":2,"sessionId":"s1a1e9ab0d8e1"}
+{"event":{"itemId":"msg-2803624-3","text":"o: ","type":"assistant_delta"},"op":"event","seq":3,"sessionId":"s1a1e9ab0d8e1"}
+{"event":{"itemId":"msg-2803624-3","text":"hi","type":"assistant_delta"},"op":"event","seq":4,"sessionId":"s1a1e9ab0d8e1"}
+{"event":{"itemId":"msg-2803624-3","text":"Echo: hi","type":"assistant_message"},"op":"event","seq":5,"sessionId":"s1a1e9ab0d8e1"}
+{"event":{"at":1794921663911,"status":"completed","type":"turn_completed"},"op":"event","seq":6,"sessionId":"s1a1e9ab0d8e1"}
+{"op":"session","session":{"account":"default","archived":false,"automation":null,"branch":null,"createdAt":1794921663886,"cwd":"/tmp/yardd-test-2803558-peek-1/work/proj","effort":"low","engine":"codex","host":"local","id":"s1a1e9ab0d8e1","lastTurn":"completed","model":"fake-fast","parent":null,"pen
+{"for":"pr.peek","message":"unknown op `pr.peek`","op":"error","ref":"a"}
+{"for":"pr.peek","message":"unknown op `pr.peek`","op":"error","ref":"c"}
+{"for":"pr.peek","message":"unknown op `pr.peek`","op":"error","ref":"b"}
+kept /tmp/yardd-test-2803558-peek-1 for inspection
+
+
+failures:
+    a_pr_link_peeks_once_per_url_and_refuses_anything_else
+    a_remote_session_peeks_with_its_own_hosts_gh
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.15s
+
+
+   Compiling yardd v0.7.0 (/home/giovani/www/better-than-claude-code/.claude/worktrees/pr-hover-cards/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 3.86s
+     Running tests/pr_peek.rs (target/debug/build/yardd/f139c506db225f59/out/pr_peek-f139c506db225f59)
+error: test failed, to rerun pass `-p yardd --test pr_peek`

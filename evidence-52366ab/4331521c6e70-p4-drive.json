@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9ac722b6",
+  "build": {
+    "sha": "52366ab8677ee13d75dd28311bc228d5e0c3cae3",
+    "short": "52366ab",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:22:34.809Z"
+  },
+  "dir": ".verify/evidence/ph2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4081,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/ph2-head/pr-card-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".prose a.pr-link\")].slice(-4).map((a) => a.getAttribute(\"href\") + \" \" + a.target).join(\"|\")",
+          "value": "https://github.com/test-owner/test-demo-app/pull/4242 _blank|https://github.com/test-owner/test-demo-app/pull/4100 _blank|https://github.com/test-owner/test-demo-app/pull/4243/files _blank|https://github.com/test-owner/test-demo-app/pull/9999 _blank"
+        },
+        {
+          "step": 11,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4219,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/ph2-head/pr-card-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".prose a.pr-link\")].slice(-4).map((a) => a.getAttribute(\"href\") + \" \" + a.target).join(\"|\")",
+          "value": "https://github.com/test-owner/test-demo-app/pull/4242 _blank|https://github.com/test-owner/test-demo-app/pull/4100 _blank|https://github.com/test-owner/test-demo-app/pull/4243/files _blank|https://github.com/test-owner/test-demo-app/pull/9999 _blank"
+        },
+        {
+          "step": 11,
+          "eval": "document.documentElement.scrollWidth <= window.innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

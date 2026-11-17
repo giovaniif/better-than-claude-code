@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-17T13:26:37.072Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-pr",
+          "status": "pass",
+          "ms": 3858
+        },
+        {
+          "label": "title-and-number-open-github",
+          "status": "pass",
+          "ms": 3847
+        },
+        {
+          "label": "no-pr",
+          "status": "pass",
+          "ms": 3390
+        },
+        {
+          "label": "send-thread-to-session",
+          "status": "pass",
+          "ms": 4341
+        },
+        {
+          "label": "review-with-other-engine",
+          "status": "pass",
+          "ms": 6679
+        },
+        {
+          "label": "double-click-send-to-session",
+          "status": "pass",
+          "ms": 6427
+        },
+        {
+          "label": "double-click-review-with-other-engine",
+          "status": "pass",
+          "ms": 5496
+        },
+        {
+          "label": "review-offered-when-the-pr-cannot-be-read",
+          "status": "pass",
+          "ms": 9505
+        },
+        {
+          "label": "review-without-a-remote-names-a-local-base",
+          "status": "pass",
+          "ms": 5743
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,53 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "e9066aa7a66191e0f2bea07c82eb5eaf000b1016",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/PrHoverCard.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/prPeek.test.ts"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/prPeek.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/protocol.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/store.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}
