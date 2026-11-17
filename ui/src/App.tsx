@@ -3619,17 +3619,20 @@ function Engines(props: {
               <span>{ENGINE_LABEL[engine]}</span>
               <span className="muted small">{engineStateText(st)}</span>
               {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
-              {st.installed && (st.loggedIn !== true || addsProviders(engine)) && onLogin && (
-                <button className="btn engine-login" onClick={() => onLogin(engine)}>
-                  {addsProviders(engine) && st.loggedIn === true ? "Add provider" : "Log in"}
-                </button>
-              )}
-              {st.installed && accountActions && adding !== engine && (
-                <button className="btn-text engine-add" aria-label={`Add ${ENGINE_LABEL[engine]} account`} onClick={() => setAdding(engine)}>
-                  <Icon d={PLUS} size={12} />
-                  Add account
-                </button>
-              )}
+              {/* One group at the right, so a narrow row wraps it whole instead of leaving Add account at the left. */}
+              <span className="engine-actions">
+                {st.installed && (st.loggedIn !== true || addsProviders(engine)) && onLogin && (
+                  <button className="btn engine-login" onClick={() => onLogin(engine)}>
+                    {addsProviders(engine) && st.loggedIn === true ? "Add provider" : "Log in"}
+                  </button>
+                )}
+                {st.installed && accountActions && adding !== engine && (
+                  <button className="btn-text engine-add" aria-label={`Add ${ENGINE_LABEL[engine]} account`} onClick={() => setAdding(engine)}>
+                    <Icon d={PLUS} size={12} />
+                    Add account
+                  </button>
+                )}
+              </span>
             </div>
             {accounts
               .filter((a) => a.engine === engine)
