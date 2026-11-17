@@ -109,6 +109,9 @@ export interface StripGroup {
   host: string;
   /** In the shape `metersFor(engine, usage)` reads. */
   usage: Usage;
+  /** False for an added account no host has reported limits for yet: it is
+   *  listed anyway, so every account is in the strip. */
+  reported: boolean;
 }
 
 /** A host the sidebar shows, with what it knows about the plan limits. */
@@ -158,16 +161,24 @@ export function stripGroups(sources: UsageSource[], engines: Engine[]): StripGro
   const found = new Map<string, StripGroup>();
   const offer = (key: string, group: StripGroup) => {
     if (metersFor(group.engine, group.usage).length === 0) return;
+    group.reported = true;
     const had = found.get(key);
     if (!had || newer(group.engine, group.usage, had.usage)) found.set(key, group);
   };
   for (const { host, usage, accounts } of sources) {
     for (const engine of engines) {
-      offer(`${engine}\0`, { engine, account: null, host, usage: { [engine]: (usage as Record<string, unknown>)[engine] } as Usage });
+      offer(`${engine}\0`, { engine, account: null, host, usage: { [engine]: (usage as Record<string, unknown>)[engine] } as Usage, reported: false });
       for (const a of accounts) {
         if (a.engine !== engine) continue;
-        offer(`${engine}\0${a.name.toLowerCase()}`, { engine, account: a.name, host, usage: { [engine]: usage.accounts?.[a.id] } as Usage });
+        offer(`${engine}\0${a.name.toLowerCase()}`, { engine, account: a.name, host, usage: { [engine]: usage.accounts?.[a.id] } as Usage, reported: false });
       }
+    }
+  }
+  // Every added account is listed, reported or not.
+  for (const { host, accounts } of sources) {
+    for (const a of accounts) {
+      const key = `${a.engine}\0${a.name.toLowerCase()}`;
+      if (engines.includes(a.engine) && !found.has(key)) found.set(key, { engine: a.engine, account: a.name, host, usage: {} as Usage, reported: false });
     }
   }
   const all = [...found.values()];

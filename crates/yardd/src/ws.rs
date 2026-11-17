@@ -339,7 +339,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?, account_field(msg)).await?,
         "account.add" => {
             let engine = str_field(msg, "engine")?;
-            app.accounts.add(app.id("a"), engine, str_field(msg, "name")?)?;
+            let added = app.accounts.add(app.id("a"), engine, str_field(msg, "name")?)?;
+            if engine == "claude" {
+                claude::refresh_usage_soon(app, &added.id);
+            }
             app.broadcast_accounts();
             // The new account's login state, for the Hosts page.
             let app = app.clone();

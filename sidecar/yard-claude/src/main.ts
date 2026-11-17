@@ -33,7 +33,7 @@ const out = (msg: unknown) => process.stdout.write(JSON.stringify(msg) + "\n");
 
 // `sessions` and `messages <id>`: answer once and exit (see oneshot.ts).
 const mode = process.argv[2];
-if (mode === "sessions" || mode === "messages") {
+if (mode === "sessions" || mode === "messages" || mode === "usage") {
   // A long history is megabytes: exit only once the pipe has taken all of
   // it, or yardd reads a cut-off line.
   const done = (msg: unknown, code: number) =>

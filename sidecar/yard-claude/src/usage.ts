@@ -53,3 +53,26 @@ export function mergeUsage(prev: ClaudeUsage | null, info: any): ClaudeUsage {
   const status = typeof info?.status === "string" ? info.status : prev?.status;
   return status === undefined ? { windows } : { status, windows };
 }
+
+/** The plan limits from the SDK's usage report (`rate_limits.limits`, what
+ *  `/usage` shows), in the same shape as the rate_limit_event picture: the
+ *  session window is `five_hour`, the overall week `seven_day`, a per-model
+ *  week `seven_day_<model>`. The report needs no turn, so an account that has
+ *  not run anything yet still has its limits. Null when it has none. */
+export function fromUsageReport(report: any): ClaudeUsage | null {
+  const limits = report?.rate_limits?.limits;
+  if (!Array.isArray(limits)) return null;
+  const windows: Record<string, UsageWindow> = {};
+  for (const l of limits) {
+    if (typeof l?.percent !== "number" || !Number.isFinite(l.percent)) continue;
+    let key: string | null = null;
+    if (l.kind === "session") key = "five_hour";
+    else if (l.kind === "weekly_all") key = "seven_day";
+    else if (l.kind === "weekly_scoped") {
+      const name = l.scope?.model?.display_name ?? l.scope?.model?.id;
+      if (typeof name === "string" && name.trim()) key = `seven_day_${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_")}`;
+    }
+    if (key && !windows[key]) windows[key] = { utilization: l.percent / 100, resetsAt: seconds(l.resets_at) };
+  }
+  return Object.keys(windows).length ? { windows } : null;
+}
