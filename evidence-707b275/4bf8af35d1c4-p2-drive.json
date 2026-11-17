@@ -1,0 +1,45 @@
+{
+  "ok": false,
+  "route": "session:s1a1e9b5928e6",
+  "build": {
+    "sha": "e3af0c1d864a49fe65f8bea20ade9b838d99fe42",
+    "short": "e3af0c1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:32:17.661Z"
+  },
+  "dir": ".verify/evidence/ac-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 13856,
+      "steps": 13,
+      "failed": {
+        "step": 4,
+        "action": {
+          "expect": {
+            "css": "button.list-toggle[aria-expanded=\"false\"]",
+            "hasText": "Archived"
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/ac-base/fail-desktop-step4.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Archived 1\" [expanded]\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 9% · 66%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-27b5\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - text: No changes in this folder."
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 4 {\"expect\":{\"css\":\"button.list-toggle[aria-expanded=\\\"false\\\"]\",\"hasText\":\"Archived\"}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/ac-base/fail-desktop-step4.png and the aria snapshot"
+    }
+  ]
+}

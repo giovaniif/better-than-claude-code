@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9b5f5aa6",
+  "build": {
+    "sha": "707b2750f9e112917739a62ac6099318943d2dcd",
+    "short": "707b275",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:32:50.761Z"
+  },
+  "dir": ".verify/evidence/ac-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5883,
+      "steps": 13,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/ac-head-desktop/archived-open-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 7,
+          "eval": "(location.hash = \"#/\", true)",
+          "value": true
+        },
+        {
+          "step": 8,
+          "eval": "(location.hash = \"#/s/s1a1e9b5f5aa6\", true)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
