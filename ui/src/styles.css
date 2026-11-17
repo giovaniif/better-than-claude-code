@@ -830,7 +830,7 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .assistant-suggestions { display: flex; flex-direction: column; margin: 32px 0 20px; }
 .assistant-suggestions button { height: auto; border-radius: 0; color: var(--ink); display: flex; gap: 16px; align-items: center; text-align: left; padding: 16px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; }
 .assistant-suggestions button:hover { background: var(--side); }
-.assistant-suggestions button span:nth-child(2) { flex: 1; }
+.assistant-suggestions button span:first-child { flex: 1; }
 .assistant-reach { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
 .assistant-compose-wrap { padding: 20px 40px; width: 100%; max-width: 760px; margin: 0 auto; }
 .assistant-compose { border: 1px solid var(--line-strong); border-radius: 14px; padding: 16px; }
@@ -871,7 +871,8 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .assistant-sources .selected { background: var(--fill); }
 .assistant-evidence { padding: 16px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 20px; }
 .assistant-evidence pre { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; margin-bottom: 0; }
-@media (min-width: 1101px) { .assistant-page > .bar > .btn-text { display: none; } }
+.assistant-context { display: none; }
+.assistant-context.is-open { display: block; }
 @media (max-width: 1100px) {
   .assistant-context { display: none; }
   .assistant-context.is-open { display: block; width: 280px; }
@@ -891,3 +892,17 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
   .assistant-layout:has(.assistant-context.is-open) .assistant-conversation { display: none; }
   .assistant-question { margin-bottom: 28px; }
 }
+
+.assistant-model select { max-width: 210px; }
+@media (max-width: 700px) {
+  .assistant-model { order: -1; flex-basis: 100%; padding-bottom: 8px; }
+  .assistant-model select { max-width: 100%; }
+}
+
+/* Keep the landing view focused; host detail is available on demand. */
+.assistant-welcome { padding-top: 80px; }
+.assistant-welcome h2 { font-size: 24px; }
+.assistant-suggestions { margin-top: 28px; }
+.assistant-suggestions button { color: var(--muted); }
+.assistant-suggestions button:hover { color: var(--ink); }
+@media (max-width: 700px) { .assistant-welcome { padding-top: 32px; } }

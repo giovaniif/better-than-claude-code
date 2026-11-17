@@ -382,7 +382,7 @@ Next:
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
 
-## Assistant design preview
+## Switchy design preview
 
 The `#/assistant` tab is an interactive UI study, not a connected agent. It
 uses explicitly labelled sample hosts and three example answers with expandable
@@ -390,8 +390,11 @@ source evidence. Free-form questions show a preview notice and never start an
 engine or inspect a host. The host selector is illustrative, not a data filter.
 
 The intended scope includes server context outside Switchyard sessions:
-services, containers, repositories/files and terminal activity. A conversation
-area sits beside a host context rail; on mobile, Server context toggles that
-rail into view. Retrieval, host collectors, permissions, conversation persistence
+services, containers, repositories/files and terminal activity. The conversation is the primary view; Context toggles the host detail rail
+into view on desktop and mobile. Retrieval, host collectors, permissions, conversation persistence
 and model execution remain unimplemented. No real host state is implied by the
 sample metrics or freshness labels.
+
+Switchy’s composer includes a model picker populated from the local host’s
+engine model catalog. The choice is preview-only and does not start a turn.
+Host scope selects the intended context sources, independently of the model.

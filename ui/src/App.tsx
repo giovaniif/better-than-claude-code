@@ -212,7 +212,7 @@ export function App() {
               <NewSession state={state} actions={actions} />
             </>
           )}
-          {route.page === "assistant" && <AssistantPage />}
+          {route.page === "assistant" && <AssistantPage models={state.models.local ?? {}} />}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
@@ -811,7 +811,7 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
         </button>
         <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
           <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
-          Assistant
+          Switchy
         </button>
         <button className={`nav-row ${route.page === "automations" || route.page === "automation" || inRun ? "active" : ""}`} onClick={() => actions.go({ page: "automations" })}>
           <Icon d={CLOCK} />

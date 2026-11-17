@@ -1,3 +1,5 @@
+import { ENGINES, ENGINE_NAME } from "./engines";
+import type { Models } from "./protocol";
 import { useState } from "react";
 import { Icon, MenuButton } from "./App";
 
@@ -56,7 +58,10 @@ const examples = [
 ];
 
 /** An interactive design study. No host inspection or model requests are made. */
-export function AssistantPage() {
+export function AssistantPage({ models }: { models: Models }) {
+  const [model, setModel] = useState("");
+  const choices = ENGINES.flatMap(engine => (models[engine] ?? []).map(m => ({ value: `${engine}:${m.id}`, label: `${ENGINE_NAME[engine]} · ${m.name || m.id}` })));
+  const currentModel = choices.some(c => c.value === model) ? model : choices[0]?.value ?? "";
   const [question, setQuestion] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [asked, setAsked] = useState("");
@@ -84,7 +89,7 @@ export function AssistantPage() {
       <header className="bar">
         <MenuButton />
         <Icon d={SPARK} />
-        <h1>Assistant</h1>
+        <h1>Switchy</h1>
         <span className="assistant-preview">Design preview</span>
         <span className="spacer" />
         <button
@@ -92,7 +97,7 @@ export function AssistantPage() {
           onClick={() => setContextOpen(!contextOpen)}
           aria-expanded={contextOpen}
         >
-          Server context
+          Context
         </button>
       </header>
       <div className="assistant-layout">
@@ -101,37 +106,24 @@ export function AssistantPage() {
             <div className="assistant-content">
               {!example ? (
                 <div className="assistant-welcome">
-                  <div className="assistant-emblem">
-                    <Icon d={SPARK} size={24} width={1.5} />
-                  </div>
-                  <span className="assistant-eyebrow">
-                    YOUR WORK. YOUR MACHINES.
-                  </span>
-                  <h2>Ask across your hosts.</h2>
-                  <p>
-                    From a running service to something you worked on yesterday.
-                    <br />{" "}A quick answer, with the context already in reach.
-                  </p>
+                  <h2>What would you like to know?</h2>
+                  <p>Ask Switchy about your servers and your work.</p>
                   <div className="assistant-suggestions">
-                    {questions.map((q, i) => (
+                    {questions.map((q) => (
                       <button className="btn-text" key={q} onClick={() => ask(q)}>
-                        <span className="muted small">0{i + 1}</span>
                         <span>{q}</span>
                         <span aria-hidden="true">↗</span>
                       </button>
                     ))}
                   </div>
-                  <div className="assistant-reach">
-                    <Icon d={SERVER} /> Services, containers, repositories &
-                    sessions
-                  </div>
+
                 </div>
               ) : (
                 <div className="assistant-answer">
                   <div className="assistant-question">{asked}</div>
                   <div className="assistant-answer-label">
                     <Icon d={SPARK} />
-                    <strong>Assistant</strong>
+                    <strong>Switchy</strong>
                     <span className="muted small">Example answer</span>
                   </div>
                   <p className="assistant-checked">
@@ -183,7 +175,7 @@ export function AssistantPage() {
               }}
             >
               <textarea
-                aria-label="Ask Assistant"
+                aria-label="Ask Switchy"
                 placeholder="Ask about your servers or your work…"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -215,6 +207,16 @@ export function AssistantPage() {
                     <option>All hosts</option>
                     <option>dev-server</option>
                     <option>MacBook Pro</option>
+                  </select>
+                </label>
+                <label className="assistant-scope assistant-model">
+                  <Icon d={SPARK} />
+                  <select aria-label="Switchy model" value={currentModel} disabled={!choices.length} onChange={e => {
+                    setModel(e.target.value);
+                    setNotice("Model selected for this preview. Example answers are scripted; no model call is made.");
+                  }}>
+                    {!choices.length && <option value="">No models available</option>}
+                    {choices.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                   </select>
                 </label>
                 <span className="muted small">Read only</span>
