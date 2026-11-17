@@ -1,0 +1,56 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/AutomationsPage.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/UsageMeters.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/usage.test.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/usage.ts"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "rule": "raw-button",
+      "severity": "warn",
+      "file": "ui/src/App.tsx",
+      "line": 983,
+      "text": "<button",
+      "hint": "give it a design-system button class: btn, btn-text, btn-icon, btn-primary, btn-quiet"
+    }
+  ],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}

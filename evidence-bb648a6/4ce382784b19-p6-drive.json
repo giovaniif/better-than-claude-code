@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "bb648a6aabc612cfd704f648a962599712ffd75e",
+    "short": "bb648a6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:35:07.735Z"
+  },
+  "dir": ".verify/evidence/al-strip-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2420,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/al-strip-m/strip-accounts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

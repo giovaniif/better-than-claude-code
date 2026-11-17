@@ -1,0 +1,66 @@
+{
+  "ok": false,
+  "route": "session:s1a1eaca97c66",
+  "build": {
+    "sha": "bb648a6aabc612cfd704f648a962599712ffd75e",
+    "short": "bb648a6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:35:07.735Z"
+  },
+  "dir": ".verify/evidence/al-nometers",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 13047,
+      "steps": 8,
+      "failed": {
+        "step": 5,
+        "action": {
+          "expect": {
+            "css": ".usage-line[title*=\"Codex 5-hour: 12% used, resets in 2 h\"]"
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/al-nometers/fail-mobile-step5.png",
+        "aria": "- main:\n  - button \"Open sessions\"\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-7ac5\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\": Fake Fast\n  - button \"Effort Low\": Low\n  - button \"Ask first\"\n  - button \"Send\" [disabled]"
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2267,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/al-nometers/picker-and-strip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 5 {\"expect\":{\"css\":\".usage-line[title*=\\\"Codex 5-hour: 12% used, resets in 2 h\\\"]\"}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/al-nometers/fail-mobile-step5.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:TEST-effort chip",
+  "build": {
+    "sha": "bb648a6aabc612cfd704f648a962599712ffd75e",
+    "short": "bb648a6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:35:07.735Z"
+  },
+  "dir": ".verify/evidence/al-effort",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5574,
+      "steps": 17,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/al-effort/effort-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 5086,
+      "steps": 17,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/al-effort/effort-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

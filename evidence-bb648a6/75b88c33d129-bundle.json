@@ -1,0 +1,422 @@
+{
+  "v": 1,
+  "claim": "Each connected Claude account's limits were hard to see: an added account showed none until it ran a session, Default was not named, the limits sat in the model picker, and the picker did not say which account it was on. Effort was inside the model menu. Now yardd reads every Claude account's limits without a turn and the sidebar names each account over its meters; the picker shows models only and names the account; effort is its own chip.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-when-i-connect-my-work-8617",
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "head": "bb648a6aabc612cfd704f648a962599712ffd75e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/common/mod.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/connectors.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/yard-claude"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/oneshot.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T18:33:43.185Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "head",
+      "kind": "note",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T18:33:43.222Z",
+      "text": "expected-console: none expected; drives run without --allow-errors"
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "test",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f6d2524f8d49ff7cd987087d508c3b64611dc38c302eb1d3b69c410fb34fe283"
+        }
+      ],
+      "addedAt": "2026-11-17T18:33:43.260Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test src) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "4000a101b8f6eaef3f285a60a05830e89938188a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "8c6e3dd54f292f1c562eb2e68555ddd40a66bc8b427c2f79cd887a651e46c6b8"
+        }
+      ],
+      "addedAt": "2026-11-17T18:34:23.311Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test connectors every_claude && (cd sidecar/yard-claude && bun test src/usage.test.ts)",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4000a101b8f6eaef3f285a60a05830e89938188a",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "dadc7b3ce6bf7a495423b628d3eac5c0e68ca80d45a01643079b74dcf36d1633"
+        },
+        {
+          "path": "p4-fail-desktop-step0.png",
+          "sha256": "5b86657460870068f5e6482339a3da215e7282c46f0fba0a5a9f58ffe97e6e71"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:02.813Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "a903e66d91f0ad0e1fa4d0bcd40e9bc50c2f8c35144a77f184b93423b98262e4"
+        },
+        {
+          "path": "p5-strip-accounts-desktop.png",
+          "sha256": "f50de2667c98737d5718a849a6c3c466abf5b264cb3b8bf4f99643d6a7ce8e6c"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:42.868Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "4ce382784b19d154c186440ea081c6d1aa0d2f112d2991de1ca63dd8c5ee022e"
+        },
+        {
+          "path": "p6-strip-accounts-mobile.png",
+          "sha256": "8aaa563dbf6c01126109c105e3a6ed7ba996d65b12805831f81686b43011c7ba"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:42.908Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "c9aa00ececb2a96b0d97d082b4dae050b704ecc6706f4a38486793d66252cd13"
+        },
+        {
+          "path": "p7-picker-account-desktop.png",
+          "sha256": "a2b6237e494808ddf2d841b955e121d255df22a84ebf748e4d53031763816c8f"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:42.947Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "6417b50205387da0a06b724addc4c13f433e17596f71a4f87904208ad838b26d"
+        },
+        {
+          "path": "p8-fail-mobile-step5.png",
+          "sha256": "dca562eab08ff5d772766c08f203d3ebfc23f23fe4a6b6a27026ac1231bd5216"
+        },
+        {
+          "path": "p8-picker-and-strip-desktop.png",
+          "sha256": "f93f397c30026da96c753373da50f079081bb93998a2e54789fd6587c68d86d0"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:42.986Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "51e54a02403c1b100b459a8330d810768a4dc6be48833a2fdc87e12b5e1b9f54"
+        },
+        {
+          "path": "p9-effort-menu-mobile.png",
+          "sha256": "b1187594cb38df608b0564af1e144fd58bd13811d1ba33838f7f2036314f76bd"
+        },
+        {
+          "path": "p9-effort-menu-desktop.png",
+          "sha256": "5ca62b16ad62bc6f3242c5468fbd8652cd8b844dd54287f0f54edf514ba6bb61"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:43.025Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "c3662a8c2a873dcc27781bd2b3de3efa6c4ff946f78d161b2bcbf3b3a78ff6a8"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:43.205Z",
+      "cmd": "verify/yv design-check --base 9b5e35f8af1a",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-usage.json",
+          "sha256": "5af8ce76bdddd39c2098b69049d5424ae86092b1a78b517cb321a69ab846fb00"
+        }
+      ],
+      "addedAt": "2026-11-17T18:35:43.292Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart",
+        "usage/strip-names-every-account",
+        "usage/picker-names-the-account"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-models.json",
+          "sha256": "1c302d2d31d66ba72b24c8ef2a1820942701eb7ebd5c30915b0d6a3db121f463"
+        }
+      ],
+      "addedAt": "2026-11-17T18:38:00.727Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/effort-is-its-own-chip",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling"
+      ]
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-map-accounts.json",
+          "sha256": "e735db5c075f70936c38f6caa4eeeaa472e011254abcd6b6573dc27e93e3e315"
+        }
+      ],
+      "addedAt": "2026-11-17T18:38:33.936Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right"
+      ]
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bb648a6aabc612cfd704f648a962599712ffd75e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-map-settings.json",
+          "sha256": "db677d2fdb7816e2fc9fc9704b73f1277684fe674bfb4d2eb029e5b68e6037f2"
+        }
+      ],
+      "addedAt": "2026-11-17T18:39:34.565Z",
+      "cmd": "verify/yv map run settings",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "settings/settings-page",
+        "settings/hide-this-mac",
+        "settings/strip-from-shown-hosts"
+      ]
+    }
+  ]
+}
