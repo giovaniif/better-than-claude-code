@@ -22,6 +22,8 @@ mod pty;
 mod remote;
 mod sessions;
 mod state;
+mod switchy;
+mod switchy_context;
 mod store;
 mod widgets;
 mod ws;

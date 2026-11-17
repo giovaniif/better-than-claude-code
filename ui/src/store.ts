@@ -1,3 +1,4 @@
+import type { SwitchyConversation } from "./protocol";
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { returnToComposer } from "./compose";
 import { peekKey, peekResult, prPeeks, type PeekResult } from "./prPeek";
@@ -47,6 +48,7 @@ const widgets = new Map<string, Promise<{ widget?: WidgetRecord; error?: string 
 export type Route =
   | { page: "new" }
   | { page: "hosts" }
+  | { page: "assistant" }
   | { page: "settings" }
   | { page: "session"; id: string }
   | { page: "automations" }
@@ -60,6 +62,8 @@ export function routeHash(route: Route): string {
   switch (route.page) {
     case "session":
       return `#/s/${encodeURIComponent(route.id)}`;
+    case "assistant":
+      return "#/assistant";
     case "hosts":
       return "#/hosts";
     case "settings":
@@ -84,6 +88,7 @@ export function parseHash(hash: string): Route {
   } catch {
     return { page: "new" };
   }
+  if (hash === "#/assistant") return { page: "assistant" };
   if (hash === "#/automations") return { page: "automations" };
   if (hash === "#/settings") return { page: "settings" };
   if (hash === "#/connectors") return { page: "connectors" };
@@ -99,6 +104,8 @@ interface Thread {
 }
 
 export interface State {
+  switchy: SwitchyConversation | null;
+  switchyTotal: number;
   connected: boolean;
   route: Route;
   /** A session the URL named before it was listed (sessions arrive with the
@@ -168,6 +175,8 @@ type Action =
 const emptyThread = (): Thread => ({ next: -1, items: [], early: [] });
 
 export const initial: State = {
+  switchy: null,
+  switchyTotal: 0,
   connected: false,
   route: { page: "new" },
   restore: null,
@@ -333,6 +342,9 @@ function replaceHostSessions(state: State, host: string, list: SessionMeta[]): S
 
 function reduceServer(state: State, msg: any): State {
   switch (msg.op) {
+    case "switchy.state":
+      if (msg.hostId || (state.switchy && msg.state.revision < state.switchy.revision)) return state;
+      return { ...state, switchy: msg.state, switchyTotal: msg.total ?? msg.state.turns.length };
     case "snapshot": {
       const hosts = (msg.hosts ?? []) as HostEntry[];
       const known = new Set(hosts.map((h) => h.id));
@@ -347,6 +359,8 @@ function reduceServer(state: State, msg: any): State {
         next.route.page === "session" && !sessions[next.route.id] ? ({ page: "new" } as Route) : next.route;
       return {
         ...next,
+        switchy: null,
+        switchyTotal: 0,
         sessions,
         route,
         linkDown: {},
@@ -549,6 +563,8 @@ function reduceServer(state: State, msg: any): State {
 }
 
 export interface Actions {
+  switchySend(text: string, engine: string, model: string, scope: string): Promise<{ error?: string }>;
+
   go(route: Route): void;
   dismissError(): void;
   create(input: {
@@ -827,6 +843,10 @@ export function useYard(): { state: State; actions: Actions } {
 
   const actions = useMemo<Actions>(
     () => ({
+      switchySend: async (text, engine, model, scope) => {
+        const reply = await ask({ op: "switchy.send", text, engine, model, scope }, 30_000);
+        return reply.error ? { error: reply.error } : {};
+      },
       go: (route) => dispatch({ t: "route", route }),
       dismissError: () => dispatch({ t: "dismiss" }),
       create: (input) => post({ op: "session.create", ...input }),

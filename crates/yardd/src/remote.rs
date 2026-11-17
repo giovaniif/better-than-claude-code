@@ -749,7 +749,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             });
         }
         // A remote's own remotes are not ours to show.
-        "hosts" | "host.snapshot" | "host.down" => return None,
+        "hosts" | "host.snapshot" | "host.down" | "switchy.state" => return None,
         "session" => rewrite_session(host, &mut msg["session"]),
         "host" => {
             rewrite_stats(host, name, &mut msg["host"]);
@@ -865,4 +865,29 @@ mod tests {
         assert!(check_destination("devbox -v").is_err());
         assert!(check_destination("user@100.64.0.1").is_ok());
     }
+}
+
+/// A daemon-owned read request, independent of any browser connection. Switchy
+/// must keep collecting if the user closes its tab. Never accepts arbitrary URLs.
+pub async fn request(app: &Arc<App>, host: &str, mut msg: Value) -> Result<Value> {
+    let (conn, _) = app.remotes.lookup(host).context("unknown host")?;
+    let connection = conn.borrow().clone();
+    anyhow::ensure!(connection.status == "connected", "host is offline");
+    let url = connection.url.context("host has no connection")?;
+    let reference = app.id("switchy-read-");
+    msg["ref"] = json!(reference);
+    tokio::time::timeout(Duration::from_secs(20), async {
+        let (mut socket, _) = tokio_tungstenite::connect_async(url).await?;
+        socket.send(Message::Text(msg.to_string())).await?;
+        while let Some(frame) = socket.next().await {
+            if let Message::Text(text) = frame? {
+                let reply: Value = serde_json::from_str(&text)?;
+                if reply["ref"] == reference {
+                    if reply["op"] == "error" { bail!("{}", reply["message"].as_str().unwrap_or("host request failed")); }
+                    return Ok(reply);
+                }
+            }
+        }
+        bail!("host disconnected during context collection")
+    }).await.context("host context request timed out")?
 }

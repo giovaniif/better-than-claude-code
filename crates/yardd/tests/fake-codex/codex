@@ -187,6 +187,7 @@ async function handle(msg) {
       return;
     }
     case "thread/start": {
+      if (dir) appendFileSync(`${dir}/thread-starts.jsonl`, `${JSON.stringify(p)}\n`);
       const tid = newId("thread");
       threads.set(tid, { cwd: p.cwd ?? "" });
       saveThreads();
@@ -308,6 +309,9 @@ async function handle(msg) {
 }
 
 async function runTurn(threadId, cwd, turn, text) {
+  // Retrieved records may contain markers from other sessions. Only this
+  // question controls the scripted engine's behavior.
+  const behaviorText = text.startsWith("You are Switchy,") ? text.slice(text.lastIndexOf("\nQuestion: ") + 11) : text;
   const turnId = turn.id;
   const item = (method, it) => notify(method, { threadId, turnId, item: it, startedAtMs: 0, completedAtMs: 0 });
   const finish = (status, error = null) => {
@@ -322,12 +326,12 @@ async function runTurn(threadId, cwd, turn, text) {
 
   notify("turn/started", { threadId, turn });
 
-  if (text.includes("[stuck]")) {
+  if (behaviorText.includes("[stuck]")) {
     notify("item/agentMessage/delta", { threadId, turnId, itemId: newId("msg"), delta: "Stuck" });
     return;
   }
 
-  if (text.includes("[slow]")) {
+  if (behaviorText.includes("[slow]")) {
     const itemId = newId("msg");
     const ctl = running.get(turnId);
     notify("item/agentMessage/delta", { threadId, turnId, itemId, delta: "Working" });
@@ -335,7 +339,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("interrupted");
   }
 
-  if (text.includes("[tail]")) {
+  if (behaviorText.includes("[tail]")) {
     const ctl = running.get(turnId);
     const itemId = newId("cmd");
     const base = { type: "commandExecution", id: itemId, command: "/bin/bash -lc 'echo tail'", cwd, commandActions: [] };
@@ -348,7 +352,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  if (text.includes("[steps]")) {
+  if (behaviorText.includes("[steps]")) {
     const ctl = running.get(turnId);
     for (let i = 1; i <= 3; i++) {
       const itemId = newId("cmd");
@@ -365,7 +369,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  if (text.includes("[chart]")) {
+  if (behaviorText.includes("[chart]")) {
     const itemId = newId("mcp");
     const args = { metric: "p95 latency", points: 8 };
     const base = { type: "mcpToolCall", id: itemId, server: "chart", tool: "show_chart", arguments: args, appContext: null, mcpAppUi: { resourceUri: CHART_URI, preferredModelDisplayMode: "inline" }, pluginId: null, readOnlyHint: true };
@@ -376,11 +380,11 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  if (text.includes("[fail]")) {
+  if (behaviorText.includes("[fail]")) {
     return finish("failed", { message: "fake failure: the model is unavailable", codexErrorInfo: null, additionalDetails: null });
   }
 
-  if (text.includes("[think]")) {
+  if (behaviorText.includes("[think]")) {
     const itemId = newId("reasoning");
     item("item/started", { type: "reasoning", id: itemId, summary: [], content: [] });
     notify("item/reasoning/summaryPartAdded", { threadId, turnId, itemId, summaryIndex: 0 });
@@ -393,7 +397,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  if (text.includes("[cmd]")) {
+  if (behaviorText.includes("[cmd]")) {
     const itemId = newId("cmd");
     const command = "/bin/bash -lc 'echo approved'";
     const base = { type: "commandExecution", id: itemId, command, cwd, commandActions: [] };
@@ -423,7 +427,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  if (text.includes("[edit]")) {
+  if (behaviorText.includes("[edit]")) {
     const itemId = newId("edit");
     const changes = [
       {
@@ -442,7 +446,7 @@ async function runTurn(threadId, cwd, turn, text) {
     return finish("completed");
   }
 
-  const answer = `Echo: ${text}`;
+  const answer = text.startsWith("You are Switchy,") ? "The host snapshot is available [local:1]. This is a scripted Switchy answer." : `Echo: ${text}`;
   const third = Math.ceil(answer.length / 3);
   say(answer, [answer.slice(0, third), answer.slice(third, 2 * third), answer.slice(2 * third)]);
   finish("completed");

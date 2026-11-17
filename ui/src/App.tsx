@@ -6,6 +6,7 @@ import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
+import { AssistantPage } from "./AssistantPage";
 import { SettingsPage } from "./SettingsPage";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
@@ -267,6 +268,7 @@ export function App() {
               <NewSession state={state} actions={actions} />
             </>
           )}
+          {route.page === "assistant" && <AssistantPage state={state} actions={actions} />}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
@@ -865,6 +867,10 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
           <Icon d={PLUS} />
           New session
+        </button>
+        <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
+          <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
+          Switchy
         </button>
         <button className={`nav-row ${route.page === "automations" || route.page === "automation" || inRun ? "active" : ""}`} onClick={() => actions.go({ page: "automations" })}>
           <Icon d={CLOCK} />
@@ -3051,7 +3057,7 @@ function MdTableView({ table }: { table: MdTable }) {
   );
 }
 
-function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
+export function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
   const blocks = fencedBlocks(text);
   return (
     <div className="prose" data-quotable={quotable ? "" : undefined}>

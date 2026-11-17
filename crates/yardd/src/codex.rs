@@ -197,6 +197,10 @@ impl Client {
             self.send(json!({ "id": id, "result": { "decision": "decline" } }));
             return;
         };
+        if crate::switchy::internal(&sid) {
+            self.send(json!({"id":id, "result":{"decision":"decline"}}));
+            return;
+        }
         let request_id = format!("codex-{id}");
         self.approvals.lock().unwrap().insert(request_id.clone(), id.clone());
         app.emit(
@@ -520,22 +524,50 @@ fn turn_policy(permission: &str) -> (Value, Value) {
     }
 }
 
+/// Thread-local overrides only; never change the user's coding-agent config.
+fn switchy_config(config: &Value) -> Value {
+    let mut overrides = json!({
+        "web_search":"disabled", "notify":[], "project_doc_max_bytes":0,
+        "features.shell_tool":false, "features.unified_exec":false,
+        "features.multi_agent":false, "features.apps":false,
+        "features.js_repl":false, "features.code_mode":false,
+        "features.browser_use":false, "features.computer_use":false,
+        "features.hooks":false, "features.codex_hooks":false,
+        "features.image_generation":false, "features.memories":false,
+        "plugins._default.enabled":false,
+    });
+    for section in ["mcp_servers", "plugins", "apps"] {
+        let mut disabled = serde_json::Map::new();
+        if let Some(entries) = config[section].as_object() {
+            for (name, value) in entries {
+                let mut entry = value.clone();
+                if !entry.is_object() { entry = json!({}); }
+                entry["enabled"] = json!(false);
+                disabled.insert(name.clone(), entry);
+            }
+        }
+        if section != "mcp_servers" { disabled.insert("_default".into(), json!({"enabled":false})); }
+        overrides[section] = Value::Object(disabled);
+    }
+    overrides
+}
+
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
     let c = client(app, &meta.account).await?;
-    let res = c
-        .request(
-            "thread/start",
-            json!({
-                "cwd": meta.cwd,
-                "model": meta.model,
-                "sandbox": sandbox_mode(),
-                // Sandboxed to the workspace; Codex asks when it needs more.
-                // "untrusted" asked before every `cat`, which was unusable.
-                "approvalPolicy": "on-request",
-            }),
-        )
-        .await?;
+    let mut params = json!({
+        "cwd": meta.cwd, "model": meta.model,
+        "sandbox": sandbox_mode(), "approvalPolicy": "on-request",
+    });
+    if crate::switchy::internal(sid) {
+        let config = c.request("config/read", json!({"includeLayers":false, "cwd":meta.cwd})).await?;
+        params["config"] = switchy_config(&config["config"]);
+        params["sandbox"] = json!("read-only");
+        params["approvalPolicy"] = json!("never");
+        params["ephemeral"] = json!(true);
+        params["baseInstructions"] = json!("You are Switchy. Answer from supplied evidence, cite source IDs, and do not execute tools.");
+    }
+    let res = c.request("thread/start", params).await?;
     let thread_id = res["thread"]["id"]
         .as_str()
         .context("thread/start returned no thread id")?
@@ -642,7 +674,7 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
     let input = user_input(text, attachments);
     // Model, effort and permission mode ride on every turn, so switching
     // needs no extra call.
-    let (approval, sandbox) = turn_policy(&meta.permission);
+    let (approval, sandbox) = if crate::switchy::internal(sid) { (json!("never"), json!({"type":"readOnly", "networkAccess":false})) } else { turn_policy(&meta.permission) };
     let res = c
         .request(
             "turn/start",

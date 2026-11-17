@@ -179,6 +179,7 @@ export async function isoUp(a: Args): Promise<Result> {
     env.YARD_SIDECAR = join(TEST_FAKES, "yard-claude");
     env.YARD_SSH = join(OUR_FAKES, "ssh");
     env.YARD_WORKSPACE = dirs.work;
+    env.YARD_CONTEXT_COMMAND_DIR = join(TEST_FAKES, "host-context");
     env.GH_CONFIG_DIR = join(dirs.home, ".config/gh");
     if (!a.flags["logged-out"]) {
       writeFileSync(join(dirs.fake, "codex-logged-in"), "");

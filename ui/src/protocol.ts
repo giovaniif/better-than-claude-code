@@ -785,3 +785,15 @@ export interface Automation {
   nextRun: number | null;
   lastRun?: LastRun | null;
 }
+
+/** Switchy's own conversation; engine threads never appear in the session list. */
+export interface SwitchySource {
+  id: string; host: string; title: string; at: number; text: string; unavailable: boolean;
+}
+export interface SwitchyTurn {
+  id: string; question: string; answer: string; engine: string; model: string;
+  at: number; status: string; sources: SwitchySource[]; coverage: string[]; error: string | null;
+}
+export interface SwitchyConversation {
+  status: string; turns: SwitchyTurn[]; engine: string; model: string; scope: string; revision: number;
+}

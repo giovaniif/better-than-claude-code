@@ -407,3 +407,70 @@ Next:
 - ACP's `session/resume` and `configOptions` are recent; Grok's ACP has `x.ai/` extensions and changes with its near-daily releases.
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
+
+## Switchy
+
+`#/assistant` is Switchy, a persistent quick-question conversation separate from
+coding sessions. Its composer shares the session `.composer` styling. Context
+opens the host rail. Model and host scope are independent: inference runs on the
+hub's default Claude or Codex account; evidence comes from Local, a selected
+remote, or All hosts. Other engines are omitted until a supported tool restriction
+path is implemented. No worktree, sidebar session or engine resume is created.
+
+- `switchy.get` returns `switchy.state`; `switchy.send { text, engine, model,
+  scope, ref }` acknowledges `switchy.accepted` and broadcasts versioned state as
+  the answer arrives. `switchy.stop` cancels the current question. One question
+  runs at a time across windows; concurrent submissions are refused. The UI keeps
+  a rejected question in the composer. Reload/reconnect fetches the conversation.
+- `crates/yardd/src/switchy.rs` owns `switchy.json` in the data directory. Atomic
+  writes persist the question before inference, its evidence, and the completed
+  answer/error. A restart marks unfinished work interrupted. The UI receives the
+  latest 50 exchanges; older exchanges remain available for query-based retrieval.
+- Every question builds a fresh input capped at 32,000 UTF-8 bytes: recent
+  exchanges and matching older exchanges, at most 16,000 bytes of selected
+  evidence, coverage notes and the question. There is no growing engine context
+  or background model summarization. Answers are capped at 32,000 bytes and the
+  complete operation times out after three minutes. Sources are untrusted records,
+  with host, stable per-snapshot ID, timestamp, text and availability, displayed
+  in expandable disclosures. No source is interpreted as HTML.
+- `switchy_context.rs` collects read-only host resources, CPU-sorted process
+  names (not arguments/environment), services, Docker container status/ports,
+  listening TCP ports, recent saved bash/zsh history and relevant session
+  passages. It discovers repositories from session folders, the workspace,
+  common home work folders, and optional `YARD_CONTEXT_ROOTS` (OS path-list
+  syntax). Up to four relevant repos supply status, recent commits and matching
+  tracked source/documentation lines. Commands use fixed programs/arguments,
+  never a shell or model-provided command. Each command has a three-second
+  timeout and an 8 KB output cap; evidence passages are capped further. Obvious
+  credential-bearing lines are omitted. This is not guaranteed secret detection.
+- `switchy.context { query, ref }` collects only the receiving host. The hub uses
+  daemon-owned WebSockets through configured remote connections, independently
+  of the browser, with a 20-second deadline and up to 16 remote hosts. Sources
+  are merged round-robin under a global byte budget. Offline hosts, old daemons,
+  denied reads and omitted evidence are explicitly reported. A remote hub's own
+  Switchy broadcasts are never substituted for this hub's conversation.
+- Each host keeps up to 2,000 distinct observations in `switchy-context.db`
+  (SQLite FTS5), searches earlier observations by question, and records new
+  observations on demand. This cache is not continuous monitoring. Session
+  history is searched from its canonical event log, not duplicated in the index.
+  Open-shell activity and arbitrary external agent transcripts are not captured.
+  Repositories outside the discovery roots need `YARD_CONTEXT_ROOTS`; this is
+  not a full filesystem crawl. Saved conversation evidence remains a historical
+  snapshot even if its original file or session is later changed/deleted.
+- Engine sessions use private `switchy-` IDs in memory only. They are excluded
+  from snapshots, normal session operations and the session event store, then
+  removed after each answer. Codex receives an ephemeral, read-only thread with
+  approvals disabled, shell/exec, apps, browser, computer, JS/code-mode, hooks,
+  multi-agent and configured MCP/plugin tools disabled by thread-local overrides.
+  Claude receives a fresh sidecar with no tools, strict empty MCP configuration,
+  no setting sources/plugins/hooks, no persisted engine session, and a denying
+  permission callback. Coding-session settings are untouched. Grok/OpenCode,
+  account selection and running the inference engine on a remote host are not
+  implemented for Switchy.
+- Tests use scripted engines and isolated host command fixtures via
+  `YARD_CONTEXT_COMMAND_DIR`, which overrides only collector executables. The
+  integration suite proves persistence, scoped remote evidence, offline coverage,
+  cancellation, concurrent-send refusal, fresh restricted threads, history
+  budgets, external repository discovery and prior observation retrieval. The
+  `switchy` feature map drives send/source disclosure/reload/context at both
+  viewports. These do not prove a live Claude/Codex turn or model answer quality.
