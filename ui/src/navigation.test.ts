@@ -25,17 +25,6 @@ describe("navigationEntries", () => {
     expect(entries[1].route).toEqual({ page: "session", id: "Settings work" });
     expect(navigationEntries([], context, "import")[0].action).toBe("import");
   });
-  test("the recent list leaves out archived sessions and runs, as the sidebar does, but search finds them", () => {
-    const runs = Array.from({ length: 9 }, (_, i) => session(`Loop patrol · ${i}`, { automation: "patrol", archived: true, updatedAt: 100 + i }));
-    const live = session("Loop patrol · live", { automation: "patrol", updatedAt: 200 });
-    const pinned = session("pinned run", { automation: "patrol", pinned: true, updatedAt: 50 });
-    const archived = session("put away", { archived: true, updatedAt: 300 });
-    const work = [session("fix login", { updatedAt: 2 }), session("plan refactor", { updatedAt: 1 })];
-    const recent = navigationEntries([...runs, live, pinned, archived, ...work], context, "").filter((e) => e.group === "Sessions");
-    expect(recent.map((e) => e.title)).toEqual(["pinned run", "fix login", "plan refactor"]);
-    expect(navigationEntries([...runs, archived, ...work], context, "loop patrol 3")[0]?.title).toBe("Loop patrol · 3");
-    expect(navigationEntries([...runs, archived, ...work], context, "put away")[0]?.title).toBe("put away");
-  });
   test("the recent list is bounded, but search finds older sessions", () => {
     const sessions = Array.from({ length: 20 }, (_, i) => session(`session-${i}`, { updatedAt: i }));
     expect(navigationEntries(sessions, context, "").filter((e) => e.group === "Sessions")).toHaveLength(8);

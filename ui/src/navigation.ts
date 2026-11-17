@@ -1,7 +1,6 @@
 import type { HostEntry, SessionMeta } from "./protocol";
 import type { Route } from "./store";
 import { ENGINE_NAME } from "./engines";
-import { hiddenFromSidebar } from "./automations";
 
 export interface NavigationEntry {
   id: string;
@@ -22,13 +21,11 @@ const PAGES: NavigationEntry[] = [
 ];
 
 /** Search the whole session catalog, including archived conversations and runs.
- *  The empty query lists recent sessions the sidebar shows: an hourly
- *  automation's archived runs would otherwise be all of them. */
+ *  Only the empty query is restricted to recent sessions. */
 export function navigationEntries(sessions: SessionMeta[], context: { localName: string; hosts: Pick<HostEntry, "id" | "name">[] }, query: string): NavigationEntry[] {
   const words = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const matches = (e: NavigationEntry) => words.every((word) => `${e.title} ${e.detail}`.toLowerCase().includes(word));
-  const listed = words.length ? sessions : sessions.filter((s) => !s.archived && !hiddenFromSidebar(s));
-  const recent = [...listed].sort((a, b) => b.updatedAt - a.updatedAt || a.id.localeCompare(b.id));
+  const recent = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt || a.id.localeCompare(b.id));
   const rows = recent.map((s): NavigationEntry => {
     const host = s.host === "local" ? context.localName : context.hosts.find((h) => h.id === s.host)?.name ?? s.host;
     return {
