@@ -1,0 +1,62 @@
+$ verify/yv map run new-session
+# exit 0 after 43641 ms at 6074b724ff297d66cbb6e8d2363d212a30d076a9
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-17T01:49:29.421Z",
+      "counts": {
+        "pass": 7,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 4021
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 5704
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 3956
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 3380
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 6124
+        },
+        {
+          "label": "typed-path-with-no-match-says-so",
+          "status": "pass",
+          "ms": 7365
+        },
+        {
+          "label": "task-draft-survives-opening-a-session",
+          "status": "pass",
+          "ms": 12239
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

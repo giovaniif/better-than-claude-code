@@ -1,0 +1,231 @@
+{
+  "v": 1,
+  "claim": "On New session, a half-typed task is lost when you open a session from the sidebar and come back through New session: the box is empty.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33",
+  "base": "2358f5c4d33756de6352f3729de5b4ae56bd5a01",
+  "head": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T01:47:58.034Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2358f5c4d33756de6352f3729de5b4ae56bd5a01",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "41619f4f151892a3d7df510a1c86ef353bccd7401aa1c853949b4bdc8417a197"
+        },
+        {
+          "path": "p1-typed-desktop.png",
+          "sha256": "b3af202a1151e5059936f281956fbdd2386d2aeeca46adcdd1d61f08af29ec3d"
+        },
+        {
+          "path": "p1-task-lost-desktop.png",
+          "sha256": "f53dfa209968eca52a317e99e9cfee16441f987fca97d80793d02ed0ed3b3c56"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:09.819Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2358f5c4d33756de6352f3729de5b4ae56bd5a01",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "200b95278ae55b83c127e4729d7a9234bc04d955e55cac247ac39d8f16010c58"
+        },
+        {
+          "path": "p2-task-lost-mobile-mobile.png",
+          "sha256": "41639d5a856fc2d3d3b39f4f3a206f94f7a4e693abf800e77515207c4268268a"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:09.863Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "487c6fb1c34ef168ee8dfd143d85d4609708f775",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "13f21e506efa36bf81970cf46bcac8968a79c22b8c3e464b51e5df1542bcdc2a"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:09.911Z",
+      "cmd": "verify/yv map run new-session --recipe task-draft-survives-opening-a-session",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "74d3bbf5f905661b991cf87604a8f86791afe09fce8c9022dab9de17b1e963ef"
+        },
+        {
+          "path": "p4-typed-desktop.png",
+          "sha256": "41c50cdb10963cc48f68cc00b75f410a56f6021f337cc860d0b7ddcc939c222f"
+        },
+        {
+          "path": "p4-task-kept-desktop.png",
+          "sha256": "b91002a44a0b408d443b87da55046004c2df17e8d5c16154aec34becd02e9dc6"
+        },
+        {
+          "path": "p4-empty-after-send-desktop.png",
+          "sha256": "b508853d8ff18afa565f0185e291764c753d9a7a71e33c768108fd5c4b918f98"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:45.585Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "0772d534d0a4ee1c87d9d88cdadaa247dfffb94a4b45ee7e69053ff1bc2a256a"
+        },
+        {
+          "path": "p5-task-kept-mobile-mobile.png",
+          "sha256": "e8100b21423103d6fd93fde09bf4352ef2134286f4f826b9296bc64269947b6c"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:45.625Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "e75d8621ac79c11a71fd0833d5c97231868cbfd121acf2820bec9f40d97d8612"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:45.662Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "ce22bb4c03b286af2e8b03b38fcde3ef43240c13011694a5985649d543ce2b69"
+        }
+      ],
+      "addedAt": "2026-11-17T01:48:45.782Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "6fd0d0fac6a8da81a258828b7d414cc64b4fbd201fa96898407de170041b1c3b"
+        }
+      ],
+      "addedAt": "2026-11-17T01:49:29.462Z",
+      "cmd": "verify/yv design-check --base 2358f5c4d337",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "6074b724ff297d66cbb6e8d2363d212a30d076a9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-thread.json",
+          "sha256": "af052ff08e528b3ba2a5b657718f0d2693ebe4274726ffc1f74007a0dee6b00e"
+        }
+      ],
+      "addedAt": "2026-11-17T01:49:29.541Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/subagent-nests-and-expands"
+      ]
+    }
+  ]
+}
