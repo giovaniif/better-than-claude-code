@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon pr_get_names_a_local_base
+# exit 101 after 1116 ms at c3964c518287002870a301663412d5399e358392
+
+
+running 1 test
+test pr_get_names_a_local_base_for_a_review_in_a_repo_without_a_remote ... FAILED
+
+failures:
+
+---- pr_get_names_a_local_base_for_a_review_in_a_repo_without_a_remote stdout ----
+
+thread 'pr_get_names_a_local_base_for_a_review_in_a_repo_without_a_remote' (1175149) panicked at crates/yardd/tests/daemon.rs:2421:5:
+assertion `left == right` failed: {"op":"pr","pr":{"error":"gh is not logged in","repo":true},"sessionId":"s1a1e87662f41"}
+  left: Null
+ right: "main"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-1175148-pr-no-remote-0 for inspection
+
+
+failures:
+    pr_get_names_a_local_base_for_a_review_in_a_repo_without_a_remote
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.22s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7657/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.85s
+     Running tests/daemon.rs (target/debug/build/yardd/07b0c2b9089c5228/out/daemon-07b0c2b9089c5228)
+error: test failed, to rerun pass `-p yardd --test daemon`

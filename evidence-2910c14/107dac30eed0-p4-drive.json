@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e876d2ec1",
+  "build": {
+    "sha": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+    "short": "2910c14",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T07:44:23.569Z"
+  },
+  "dir": ".verify/evidence/review-base-no-remote-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4401,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/review-base-no-remote-head-desktop/review-prompt-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

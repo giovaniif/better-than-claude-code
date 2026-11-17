@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "claim": "In a repo with no remote, the PR pane's Review with <engine> starts a review whose prompt reads git diff origin/HEAD...HEAD, a ref the repo cannot have, so the reviewer starts on a failing command",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7657",
+  "base": "09c5481b6221f5594aaacd74283c6ff781d507f2",
+  "head": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/git.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/prPane.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T07:43:24.994Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c3964c518287002870a301663412d5399e358392",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "c165baa1f15ee1b733270442ded4b8ca2dba9a1cdf526df2d7877b25550c6205"
+        }
+      ],
+      "addedAt": "2026-11-17T07:43:54.132Z",
+      "text": "base c3964c5: the review session's prompt reads git diff origin/HEAD...HEAD in a repo with no remote (recipe review-without-a-remote-names-a-local-base fails at step 4)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "c3964c518287002870a301663412d5399e358392",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "b8e2fa2b1e191f5431db5b2d4562f17ff1e3901bef4dcecef410faec8e737f07"
+        }
+      ],
+      "addedAt": "2026-11-17T07:43:54.182Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon pr_get_names_a_local_base",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "c3964c518287002870a301663412d5399e358392",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "c90d314a6a78db47e07ed2c4547281f696a704652cc174420fcf6ed3b42a6dda"
+        }
+      ],
+      "addedAt": "2026-11-17T07:43:58.393Z",
+      "cmd": "verify/yv map run pr-pane --recipe review-without-a-remote-names-a-local-base",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "107dac30eed042617a0201d150769058dea99fc5319d23b8cc2a88c409185ca7"
+        },
+        {
+          "path": "p4-review-prompt-desktop.png",
+          "sha256": "dcc692494bd162fbc9534293c62468b565ee9eaa3e28a7e796b33aad512020ef"
+        }
+      ],
+      "addedAt": "2026-11-17T12:08:07.530Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "c58442020509e2554366d7a3eaf749d0b5654d22ab7babb4c5149ba474abfe5a"
+        },
+        {
+          "path": "p5-review-prompt-mobile-mobile.png",
+          "sha256": "426e1ad47ae58e0677847cb948bc7339bcd4403ec421063efd19e1a4fb03b1a3"
+        }
+      ],
+      "addedAt": "2026-11-17T12:08:07.587Z",
+      "text": "The PR pane is desktop only; at 390 px the review session it started reads git diff main...HEAD and no origin/HEAD",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "273f9be7280a5af65b02ebfbbb5f93f75d3f73f202a133bc51b4ea5736b7b911"
+        }
+      ],
+      "addedAt": "2026-11-17T12:08:07.631Z",
+      "cmd": "verify/yv design-check --base 09c5481b6221",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "2910c1488fd7fcafe76892cb062caaef0588d9b3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "683d2cb4164945ba5c57e97c9e96300bd16dd35125099f4794d9e2940ea3c493"
+        }
+      ],
+      "addedAt": "2026-11-17T12:08:33.453Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && verify/yv map run pr-pane",
+      "exit": 0
+    }
+  ]
+}
