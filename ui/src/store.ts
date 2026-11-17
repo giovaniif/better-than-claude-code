@@ -32,6 +32,7 @@ import {
 } from "./protocol";
 import type { WidgetRecord } from "./widget";
 import { createNotifier } from "./notify";
+import { inMobileApp, type MobileStatus } from "./mobile";
 import { base64ToBlob, fileToBase64, Replies, tooLarge } from "./attach";
 
 /** Where an upload goes: a host from the new-session page, or the host of a
@@ -99,6 +100,7 @@ interface Thread {
 }
 
 export interface State {
+  mobile: MobileStatus;
   connected: boolean;
   route: Route;
   /** A session the URL named before it was listed (sessions arrive with the
@@ -168,6 +170,7 @@ type Action =
 const emptyThread = (): Thread => ({ next: -1, items: [], early: [] });
 
 export const initial: State = {
+  mobile: { configured: false },
   connected: false,
   route: { page: "new" },
   restore: null,
@@ -333,6 +336,8 @@ function replaceHostSessions(state: State, host: string, list: SessionMeta[]): S
 
 function reduceServer(state: State, msg: any): State {
   switch (msg.op) {
+    case "mobile.status":
+      return msg.hostId ? state : { ...state, mobile: msg.mobile };
     case "snapshot": {
       const hosts = (msg.hosts ?? []) as HostEntry[];
       const known = new Set(hosts.map((h) => h.id));
@@ -347,6 +352,7 @@ function reduceServer(state: State, msg: any): State {
         next.route.page === "session" && !sessions[next.route.id] ? ({ page: "new" } as Route) : next.route;
       return {
         ...next,
+        mobile: msg.mobile ?? { configured: false },
         sessions,
         route,
         linkDown: {},
@@ -705,6 +711,10 @@ export function useYard(): { state: State; actions: Actions } {
           return; // ignore malformed frames
         }
         // Upload and thumbnail replies go to whoever asked, not the reducer.
+        if (msg.op === "snapshot" && inMobileApp()) {
+          if (msg.mobile) ws.send(JSON.stringify({ op: "mobile.connected" }));
+          (window as any).SwitchyardMobile.connected();
+        }
         if (replies.current.take(msg)) return;
         notifier.current!(msg);
         if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
@@ -724,8 +734,22 @@ export function useYard(): { state: State; actions: Actions } {
       };
     };
     connect();
+    // iOS can suspend a socket without delivering Close until much later.
+    const resume = () => {
+      clearTimeout(retry);
+      const ws = socket.current;
+      if (ws) {
+        ws.onclose = null;
+        ws.close();
+      }
+      replies.current.failAll("Reconnecting to yardd.");
+      dispatch({ t: "socket", connected: false });
+      connect();
+    };
+    window.addEventListener("yard:resume", resume);
     return () => {
       stopped = true;
+      window.removeEventListener("yard:resume", resume);
       clearTimeout(retry);
       socket.current?.close();
     };

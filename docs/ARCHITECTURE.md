@@ -31,6 +31,25 @@ The WebSocket is on a localhost TCP port because a webview cannot open a unix so
 
 ## Events
 
+### iOS / TestFlight
+
+`mobile/` is a SwiftUI + WKWebView iPhone/iPad shell loading the same privately
+reachable HTTPS yardd UI. It never starts a local daemon. `project.yml` generates
+the Xcode project; `.github/workflows/ios-app.yml` builds/tests on a simulator,
+and its explicit TestFlight dispatch archives and uploads with iOS distribution
+credentials. See [mobile/README.md](../mobile/README.md).
+
+The host page always offers phone setup; new-session and session headers show
+a small phone icon until a phone has received a hub snapshot and reported
+`mobile.connected`. yardd saves `mobile.json`, includes `mobile` in snapshots,
+and broadcasts `mobile.status`; remotes' setup state does not replace the hub's.
+`YARD_TESTFLIGHT_URL` supplies the real beta invitation once available.
+The narrow workspace is reachable with Workspace, including all four tabs.
+The native main-frame bridge adapts Apple's speech APIs to the shared voice
+hook and local notifications to the shared notification rules. Backgrounding
+stops speech; foregrounding reconnects the WebSocket. There is no APNs service.
+
+
 Every engine is normalized to one event list per session. The UI replays it on open.
 
 | Event | Meaning |

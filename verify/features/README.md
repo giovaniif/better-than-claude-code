@@ -29,6 +29,7 @@ prompt).
 
 | Area | What it covers |
 |---|---|
+| [mobile](mobile.md) | iOS setup discovery, successful connection status and phone workspace navigation |
 | [new-session](new-session.md) | The new-session page: prompt, model, effort, permission, folder, host, base branch, worktree note |
 | [thread](thread.md) | How a session's turns render: replies, thinking, edits, failures, the work-log fold |
 | [approvals](approvals.md) | Command approvals: allow once, always, deny, and the sidebar status |

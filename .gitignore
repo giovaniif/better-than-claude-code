@@ -7,3 +7,7 @@ app/src-tauri/gen/
 .claude/worktrees/
 *.bun-build
 .verify/
+mobile/build/
+mobile/*.xcodeproj/
+mobile/Switchyard/Info.plist
+mobile/Switchyard/Assets.xcassets/AppIcon.appiconset/AppIcon.png
