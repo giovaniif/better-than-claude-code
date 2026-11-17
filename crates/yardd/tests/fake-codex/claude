@@ -37,5 +37,24 @@ if [ "$1 $2" = "auth login" ]; then
     printf 'Invalid code. Please make sure the full code was copied.\r\n'
   done
 fi
+# `mcp add --transport http --scope user <name> <url>` and `mcp remove --scope
+# user <name>` keep "name url" lines in claude-mcp.txt (in the account's
+# folder, else FAKE_CODEX_DIR); the fake sidecar's `connectors` lists them.
+mcpfile="${cfg:-${FAKE_CODEX_DIR:-/nonexistent}}/claude-mcp.txt"
+if [ "$1 $2" = "mcp add" ]; then
+  name="$7"; url="$8"
+  if [ "$3 $4 $5 $6" != "--transport http --scope user" ] || [ -z "$url" ]; then echo "fake claude: unexpected mcp add $*" >&2; exit 2; fi
+  if [ -f "$mcpfile" ] && grep -q "^$name " "$mcpfile"; then echo "MCP server $name already exists in user config" >&2; exit 1; fi
+  mkdir -p "$(dirname "$mcpfile")" && echo "$name $url" >> "$mcpfile"
+  echo "Added HTTP MCP server $name with URL: $url to user config"
+  exit 0
+fi
+if [ "$1 $2" = "mcp remove" ]; then
+  name="$5"
+  if [ ! -f "$mcpfile" ] || ! grep -q "^$name " "$mcpfile"; then echo "No user-scoped MCP server found with name: $name" >&2; exit 1; fi
+  grep -v "^$name " "$mcpfile" > "$mcpfile.tmp"; mv "$mcpfile.tmp" "$mcpfile"
+  echo "Removed MCP server $name from user config"
+  exit 0
+fi
 echo "fake claude: Claude turns are not allowed in tests" >&2
 exit 1

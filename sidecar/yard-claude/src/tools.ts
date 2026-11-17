@@ -38,8 +38,12 @@ export function describe(name: string, toolInput: any, cwd: string): { kind: str
       return { kind: "other", title: "Agent", detail: String(toolInput?.description ?? "") };
     case "TodoWrite":
       return { kind: "other", title: "Updated tasks", detail: "" };
-    default:
+    default: {
+      // An MCP tool: `mcp__<server>__<tool>` reads better as the tool, then its server.
+      const mcp = /^mcp__(.+?)__(.+)$/.exec(name);
+      if (mcp) return { kind: "other", title: mcp[2], detail: `${mcp[1]} · ${short(toolInput, 100)}` };
       return { kind: "other", title: name, detail: short(toolInput, 120) };
+    }
   }
 }
 

@@ -43,7 +43,7 @@ Prompt markers for the fake Codex: `[cmd]` approval, `[edit]` file change,
 reasoning; anything else echoes `Echo: <prompt>`. The fake Claude sidecar
 knows `[die]`, `[stuck]`, `[steps]` and `[subagent]` (a Task call with a nested
 subagent, and a `sleep 30` left running under the sidecar). `iso up --logged-out` starts both engines logged
-out; `--pressure` makes the queue hold new sessions.
+out; `--pressure` makes the queue hold new sessions. `[chart]` on either engine calls the `chart` MCP server (`verify/fakes/mcp-chart`) and shows its widget; the Connectors page (route `connectors`) lists the fakes' MCP servers (see `verify/features/connectors.md`).
 
 A dev server that does not watch files serves stale code: after changing
 `crates/` or `ui/`, `verify/yv iso restart` (rebuilds when stale). Every shot
@@ -59,7 +59,7 @@ verify/yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"hi"}' --w
 verify/yv state --expect '{"sessions":[{"id":"{{sid_echo}}","status":"idle"}]}'
 ```
 
-- Routes: `new`, `hosts`, `settings`, `session:<id or title text>`.
+- Routes: `new`, `hosts`, `settings`, `connectors`, `session:<id or title text>`.
 - At mobile (below 700 px) the sidebar is a closed drawer. Routes open it
   themselves; steps that click or read something in it open it first with
   `{"click":"role:button:Open sessions"}` (hidden on desktop, so a recipe

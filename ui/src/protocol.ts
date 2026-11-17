@@ -412,8 +412,9 @@ export type AgentEvent =
    *  itemId of the Agent call a subagent's own step runs under. */
   | { type: "tool_started"; itemId: string; kind: string; title: string; detail: string; agent?: string; parent?: string }
   /** `ms`: how long a subagent ran. An Agent call ends with its task, which
-   *  can be after the turn that started it. */
-  | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null; ms?: number | null }
+   *  can be after the turn that started it. `app`: the MCP tool's widget
+   *  (a chart), fetched with `widget.get`. */
+  | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null; ms?: number | null; app?: WidgetRef }
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
   | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string; /** The call it asks about. */ itemId?: string | null }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
@@ -444,6 +445,51 @@ export interface ToolItem {
   /** How long the subagent ran. */
   ms?: number;
   steps?: ToolItem[];
+  /** An MCP Apps widget the call returned (a chart, a table). */
+  app?: WidgetRef;
+}
+
+/** A widget yardd stored for a tool call; `widget.get { sessionId, id }` has the rest. */
+export interface WidgetRef {
+  id: string;
+  server: string;
+  tool: string;
+}
+
+/** One MCP server (or ChatGPT app) of an engine account, from `mcp.status`. */
+export interface McpServer {
+  name: string;
+  status: "connected" | "needs-auth" | "failed" | "pending" | "disabled" | string;
+  /** claudeai, plugin, user, project, local, dynamic, managed, config, chatgpt, ... */
+  source: string;
+  tools: number;
+  /** Tools that come with a widget the thread can show. */
+  appTools: number;
+  error?: string;
+  /** Scheme and host of an HTTP server. */
+  origin?: string;
+  /** A ChatGPT app (Codex): connected on chatgpt.com, at `installUrl`. */
+  app?: boolean;
+  installUrl?: string;
+}
+
+/** `mcp` broadcast: the servers of an engine account on a host. */
+export interface McpStatus {
+  engine: Engine;
+  account: string;
+  servers?: McpServer[];
+  error?: string;
+  at?: number;
+}
+
+/** `mcp.auth` broadcast: a sign-in of one server. `open` gives a page to
+ *  visit; `paste` asks for the address the browser ends on, for a host the
+ *  browser cannot reach. */
+export interface McpAuthState {
+  state: "starting" | "open" | "sending" | "done" | "failed";
+  url?: string;
+  paste?: boolean;
+  error?: string;
 }
 
 /** What the thread renders. Built from events by `applyEvent`. */
@@ -574,7 +620,7 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       // An Agent call can end after a later prompt: its notification comes when its task does.
       return items.map((it, i) =>
         (i >= from || (it.kind === "tool" && it.agent)) && it.kind === "tool" && it.itemId === ev.itemId
-          ? { ...it, state: ev.ok ? "ok" : "failed", output: ev.output ?? null, ...(ev.ms != null ? { ms: ev.ms } : {}) }
+          ? { ...it, state: ev.ok ? "ok" : "failed", output: ev.output ?? null, ...(ev.ms != null ? { ms: ev.ms } : {}), ...(ev.app ? { app: ev.app } : {}) }
           : it,
       );
     }

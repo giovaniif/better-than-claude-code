@@ -43,6 +43,22 @@ pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     spawn(app, sid, None)
 }
 
+/// A sidecar for a session that has none (restored after a restart, or
+/// dropped after a login), resuming its conversation. It runs no turn until
+/// a message comes; a widget's tool call needs only the process.
+pub fn ensure(app: &Arc<App>, sid: &str) -> Result<()> {
+    let pending = {
+        let map = app.sessions.lock().unwrap();
+        map.get(sid)
+            .filter(|s| matches!(s.backend, Backend::Pending))
+            .map(|s| s.engine_ref.clone())
+    };
+    match pending {
+        Some(resume) => spawn(app, sid, resume),
+        None => Ok(()),
+    }
+}
+
 /// Start the sidecar. `resume` is a Claude Code session id to continue.
 fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     let meta = app.meta(sid).context("no such session")?;
@@ -111,6 +127,7 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
                         reader_app.set_usage("claude", &account, msg["usage"].clone());
                     }
                 }
+                Some("reply") => reader_app.mcp.reply(&msg),
                 Some("session") => {
                     if let Some(id) = msg["claudeSessionId"].as_str() {
                         reader_app.set_engine_ref(&reader_sid, id);

@@ -304,6 +304,8 @@ fn cancel_claude(app: &Arc<App>, account: &str) {
 /// A sidecar started while logged out keeps failing, so idle Claude sessions
 /// get a fresh one with their next message.
 fn restart_idle_claude(app: &Arc<App>, account: &str) {
+    // The connectors process too: it holds the old login's connector list.
+    crate::mcp::forget(app, account);
     let mut map = app.sessions.lock().unwrap();
     for s in map.values_mut() {
         if matches!(s.backend, Backend::Claude { .. }) && s.meta.status == "idle" && s.meta.account == account {
@@ -312,7 +314,7 @@ fn restart_idle_claude(app: &Arc<App>, account: &str) {
     }
 }
 
-fn strip_claude_env_tokio(cmd: &mut Command) {
+pub fn strip_claude_env_tokio(cmd: &mut Command) {
     for (key, _) in std::env::vars() {
         if key == "CLAUDECODE" || key.starts_with("CLAUDE_CODE_") || key.starts_with("CLAUDE_AGENT_SDK") {
             cmd.env_remove(key);

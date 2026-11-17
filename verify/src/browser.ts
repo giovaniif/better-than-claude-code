@@ -181,7 +181,7 @@ async function openDrawer(page: Page): Promise<boolean> {
   return true;
 }
 
-/** Opens a route: new, hosts, or session:<id | title text>. */
+/** Opens a route: new, hosts, settings, connectors, or session:<id | title text>. */
 async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
   if (!page.url().startsWith(iso.url)) {
     await page.goto(iso.url, { waitUntil: "domcontentloaded" });
@@ -202,6 +202,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
     }
   } else if (route === "settings") {
     await page.getByRole("button", { name: "Settings", exact: true }).first().click();
+  } else if (route === "connectors") {
+    await page.getByRole("button", { name: "Connectors" }).first().click();
   } else if (route.startsWith("session:")) {
     const key = route.slice("session:".length);
     let title = key;
@@ -219,7 +221,7 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
     if ((await row.count()) === 0) fail("no-session", `no sidebar row for ${title}`, "verify/yv state");
     await row.first().click();
   } else if (route !== "") {
-    throw new Usage(`unknown route ${route}: new | hosts | settings | session:<id or title>`);
+    throw new Usage(`unknown route ${route}: new | hosts | settings | connectors | session:<id or title>`);
   }
   // Picking a row closes the drawer; a shot taken mid-slide would show it half open.
   if (drawer) await page.locator(".sidebar").waitFor({ state: "hidden", timeout: 5000 });

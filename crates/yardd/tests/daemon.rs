@@ -1394,6 +1394,9 @@ async fn sessions_are_pinned_and_archived_across_restarts() {
     c.wait_for("a pinned", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["pinned"] == true).await;
     // Archiving a pinned session unpins it.
     c.send(json!({ "op": "session.update", "sessionId": b, "pinned": true })).await;
+    // Ops run in their own tasks: a pin applied after the archive would
+    // unarchive it again, so the archive goes once the pin has landed.
+    c.wait_for("b pinned", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["pinned"] == true).await;
     c.send(json!({ "op": "session.update", "sessionId": b, "archived": true })).await;
     let archived = c
         .wait_for("b archived", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["archived"] == true)
@@ -2131,8 +2134,9 @@ async fn an_account_is_added_logged_in_and_removed_without_touching_default() {
     log_in_claude_account(&mut c, &id).await;
     let from = c.mark();
     c.send(json!({ "op": "engines.status" })).await;
-    let after = c.wait_after(from, "engine status", |m| m["op"] == "engines").await;
-    assert_eq!(after["accounts"][&id]["loggedIn"], true, "{after}");
+    // Adding the account and logging in also broadcast a status; on a loaded
+    // machine one computed before the login can land after `from`.
+    let after = c.wait_after(from, "engine status after the login", |m| m["op"] == "engines" && m["accounts"][&id]["loggedIn"] == true).await;
     assert_eq!(after["accounts"][&id]["account"], format!("{id}@example.com"), "{after}");
     assert_eq!(after["engines"]["claude"]["loggedIn"], false, "the Default login is untouched: {after}");
     assert!(dir.join("claude-logged-in").exists(), "the login landed in the account's folder");
