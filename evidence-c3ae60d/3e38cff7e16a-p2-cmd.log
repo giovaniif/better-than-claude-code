@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test acp text_of_a_turn_ended
+# exit 101 after 5744 ms at dc3d0a37cd6751e2c88c318a0099aca689a6639d
+
+
+running 1 test
+test text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer ... FAILED
+
+failures:
+
+---- text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer stdout ----
+
+thread 'text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer' (3412818) panicked at crates/yardd/tests/acp.rs:239:87:
+the stuck turn's text, closed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-3412817-oc-stuck-text-0 for inspection
+
+
+failures:
+    text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 16 filtered out; finished in 5.15s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.55s
+     Running tests/acp.rs (target/debug/build/yardd/0b0866475f883849/out/acp-0b0866475f883849)
+error: test failed, to rerun pass `-p yardd --test acp`

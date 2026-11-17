@@ -1,0 +1,26 @@
+$ verify/yv map run stop --recipe stop-stuck-opencode-turn
+# exit 0 after 10449 ms at c3ae60d326fd985740d9b81c26407b5ffde0a235
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "stop",
+      "at": "2026-11-17T00:53:37.484Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-stuck-opencode-turn",
+          "status": "pass",
+          "ms": 9597
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
