@@ -107,8 +107,6 @@ async fn opencode_asks_before_a_command_and_takes_the_answer() {
     let req = c.wait_event(&sid, "approval_request", 0).await;
     assert_eq!(req["kind"], "command");
     assert_eq!(req["title"], "echo hi");
-    // Names the call it asks about, so the thread can say that call is waiting.
-    assert_eq!(req["itemId"], started["itemId"]);
     c.wait_status(&sid, "needs_approval").await;
     c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
     let done = c.wait_event(&sid, "tool_completed", 0).await;

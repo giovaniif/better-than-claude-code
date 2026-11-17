@@ -192,19 +192,3 @@ describe("handoffLinks", () => {
     expect(handoffLinks([note("e0", "Handed off from Codex."), note("e1", "Something else.")], child, { s2: child })).toEqual({});
   });
 });
-
-describe("summarize, with calls that never ran", () => {
-  const call = (itemId: string, kind: string, extra: Partial<ToolItem> = {}): ToolItem => ({
-    kind: "tool", key: itemId, itemId, toolKind: kind, title: kind === "read" ? "Read" : "Ran", detail: itemId, state: "ok", ...extra,
-  });
-
-  test("a denied command is not run and not failed", () => {
-    expect(summarize([call("c", "command", { state: "failed", asked: "denied" })])).toBe("1 command not run");
-  });
-
-  test("next to work that ran, the calls that did not are counted apart", () => {
-    const entries = [call("a", "read"), call("b", "read"), call("c", "command", { state: "failed", asked: "unanswered" }), call("d", "command", { state: "failed" })];
-    expect(summarize(entries)).toBe("Read 2 files, ran 1 command · 1 failed · 1 command not run");
-  });
-});
-

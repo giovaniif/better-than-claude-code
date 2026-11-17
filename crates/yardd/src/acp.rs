@@ -402,7 +402,7 @@ impl Client {
         };
         app.emit(
             &sid,
-            json!({ "type": "approval_request", "requestId": request_id, "kind": approval_kind, "title": title, "detail": detail, "itemId": call["toolCallId"] }),
+            json!({ "type": "approval_request", "requestId": request_id, "kind": approval_kind, "title": title, "detail": detail }),
         );
     }
 
