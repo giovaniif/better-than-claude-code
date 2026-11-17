@@ -9,6 +9,8 @@
 //   [think]  two thought chunks, then a reply
 //   [slow]   one chunk, then waits for session/cancel (stopReason cancelled)
 //   [stuck]  one chunk, then never ends, whatever it is asked
+//   [late]   like [stuck], but 6 s after session/cancel (past Stop's grace)
+//            it streams a thought and "Late words", then still never ends
 //   [fail]   the prompt fails with an error
 //   [exit]   the agent process exits mid-turn
 //   other    "Echo: <prompt>" in three chunks
@@ -141,8 +143,15 @@ export function runAgent({ engine, state, account, loggedIn }) {
       }
       return write({ id, result: { stopReason: "end_turn" } });
     }
-    if (text.includes("[slow]") || text.includes("[stuck]")) {
+    if (text.includes("[slow]") || text.includes("[stuck]") || text.includes("[late]")) {
       update(sid, { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "Working" } });
+      if (text.includes("[late]")) {
+        while (!cancelled.get(sid)) await sleep(20);
+        await sleep(6000);
+        update(sid, { sessionUpdate: "agent_thought_chunk", content: { type: "text", text: "Late thought" } });
+        update(sid, { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "Late words" } });
+        return;
+      }
       if (text.includes("[stuck]")) return;
       while (!cancelled.get(sid)) await sleep(20);
       return write({ id, result: { stopReason: "cancelled" } });
