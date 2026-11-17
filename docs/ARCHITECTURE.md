@@ -249,6 +249,8 @@ More than one login per engine on a host, for example a personal and a company C
 
 Every new session in a git repository with at least one commit gets its own branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default); there is no switch for it. A folder outside a repository, or in one with no commits, runs in place, and the session says so in a note. Both engines share this layout.
 
+- **Host-card alignment:** closed cards stretch to the same height within a row and keep their footers at the bottom. Engine marks have two fixed columns with truncating login notes. Opening Details lets cards grow independently.
+
 - **New-session defaults:** the last used host, source project, model and effort are kept per browser (`ui/src/sessionDefaults.ts`). New sessions and reloads restore them, including remote hosts. Projects and model choices are kept per host; replies and model/effort changes in existing sessions update the defaults too. Model catalogs validate saved models and efforts once loaded. A configured host that is temporarily offline stays selected with Send disabled; a removed host falls back to local.
 
 - **Folder picker:** a button under the prompt box, next to the host and base branch buttons. It lists recent folders (recent picks, then sessions' repositories), browses the chosen host's folders as a path is typed (`fs.dirs`, routed through the hub like `git.branches`), and in the desktop app opens the Finder dialog (Tauri dialog plugin; the capability lets only the loopback page call `dialog:allow-open`).

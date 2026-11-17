@@ -48,6 +48,17 @@ yv drive new --viewport desktop --steps '[{"eval":"(()=>{localStorage.setItem(\"
 yv drive new --viewport mobile --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Answered"},{"expect":{"css":".session-row.unread .mark-answered"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"css":".mark-approval"}},{"expect":{"css":".session-row","hasText":"[fail] TEST-failing turn"},"text":"Failed"},{"shot":"marks"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"TEST-say hello"},{"wait":300},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"expect":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"},"text":"Answered"}]'
 ```
 
+### mark-chat-unread
+Marking a chat unread persists across reloads, including the open chat. Opening
+it deliberately or choosing Mark as read clears it.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
+```
+
+
+
 ### pin-and-unpin
 Pin moves the row under "Pinned"; the daemon stores it.
 
@@ -187,16 +198,6 @@ yv api '{"op":"session.handoff","sessionId":"{{sid_claude}}","engine":"codex","m
 yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-hello from Claude","group":"TEST-handoff"}]}'
 yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-handoff"},"text":"2"}]'
 ```
-
-### mark-chat-unread
-Marking a chat unread persists across reloads, including the open chat. Opening
-it deliberately or choosing Mark as read clears it.
-
-```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
-```
-
 
 ## Gotchas
 - Row menus render on document.body (a portal), so find menu items by role, not inside the row.

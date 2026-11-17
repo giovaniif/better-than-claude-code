@@ -526,6 +526,8 @@ h1, h2, h3, p { margin: 0; }
    the grid, with the details opening under it. */
 .hosts-inner.host-list { max-width: none; }
 .host-list > .add-host { max-width: 560px; }
+/* Closed cards share a row height; expanded details grow independently. */
+.host-grid:not(:has(.host-details)) { align-items: stretch; }
 .host-grid > .host-card { min-width: 0; gap: 8px; padding: 12px 10px 6px 14px; border-radius: 12px; background: var(--bg); }
 .host-grid > .host-empty { min-width: 0; }
 .host-grid .host-head { min-height: 22px; padding-right: 4px; }
@@ -541,7 +543,7 @@ h1, h2, h3, p { margin: 0; }
 .host-engine-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .host-engine.engine-off { color: var(--muted); }
 .host-engine-note { color: var(--warn-ink); }
-.host-card-foot { display: flex; align-items: center; gap: 2px; min-height: 32px; padding-top: 4px; border-top: 1px solid var(--line); }
+.host-card-foot { margin-top: auto; display: flex; align-items: center; gap: 2px; min-height: 32px; padding-top: 4px; border-top: 1px solid var(--line); }
 .host-sessions { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn-text.host-more { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px; font-size: 12px; }
 .host-more[aria-expanded="true"] { color: var(--ink); }
