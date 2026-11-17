@@ -375,6 +375,16 @@ export function regressedJobs(jobs: { name: string; conclusion: string | null }[
   return jobs.filter((j) => j.conclusion === "failure" || j.conclusion === "timed_out").map((j) => j.name);
 }
 
+/**
+ * A failed job counts only once a re-run of it failed too. Some failures are
+ * the outside world's, not the code's: on #125's merge the macOS stapler lost
+ * its connection to Apple (error 68) and the re-run passed. Reverting on the
+ * first attempt opened a revert nobody needed.
+ */
+export function regressionAfterRetry(attempt: number, regressed: string[]): boolean {
+  return attempt > 1 && regressed.length > 0;
+}
+
 async function watch(n: number, a: Args): Promise<Result> {
   const cfg = landConfig();
   const pr = prView(n);
@@ -383,7 +393,7 @@ async function watch(n: number, a: Args): Promise<Result> {
   const runs = (ghJson(["api", `repos/${REPO}/actions/runs?head_sha=${sha}&per_page=50`]).workflow_runs ?? []) as any[];
   const watched = runs.filter((r) => (cfg.guards?.watchWorkflows ?? []).includes(r.name));
   const bad = watched.filter((r) => r.status === "completed" && !["success", "skipped", "neutral", "cancelled"].includes(r.conclusion));
-  const failed = bad.filter((r) => regressedJobs(ghJson(["api", `repos/${REPO}/actions/runs/${r.id}/jobs?per_page=100`]).jobs ?? []).length > 0);
+  const failed = bad.filter((r) => regressionAfterRetry(r.run_attempt ?? 1, regressedJobs(ghJson(["api", `repos/${REPO}/actions/runs/${r.id}/jobs?per_page=100`]).jobs ?? [])));
   const rerun = bad.filter((r) => !failed.includes(r));
   if (!a.flags["dry-run"]) for (const r of rerun) run(["gh", "run", "rerun", String(r.id), "--failed", "--repo", REPO]);
   const pending = [...watched.filter((r) => r.status !== "completed"), ...rerun];
