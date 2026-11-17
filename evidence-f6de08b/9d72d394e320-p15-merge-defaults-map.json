@@ -1,0 +1,27 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "session-defaults",
+      "at": "2026-11-17T20:29:32.619Z",
+      "counts": {
+        "pass": 2
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "remembers-remote-session",
+          "status": "pass",
+          "ms": 23139
+        },
+        {
+          "label": "remembers-changes-in-existing-chat",
+          "status": "pass",
+          "ms": 17300
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

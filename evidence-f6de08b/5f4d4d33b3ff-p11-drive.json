@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+    "short": "f8bbe4f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:08:27.471Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-08-28-822Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 12381,
+      "steps": 25,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-08-28-822Z/remembered-defaults-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 10221,
+      "steps": 25,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-08-28-822Z/remembered-defaults-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

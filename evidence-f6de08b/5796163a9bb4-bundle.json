@@ -1,0 +1,457 @@
+{
+  "v": 1,
+  "claim": "Host cards misalign when engine status wraps; unused connectors overwhelm the page; remote session defaults are forgotten; chats cannot be marked unread.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a",
+  "base": "fac280cb657483fd57de5e9703e114f9fc62c967",
+  "head": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/connectors.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/connectors.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/rowState.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/rowState.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sessionDefaults.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sessionDefaults.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/session-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T20:02:57.120Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1839e70072594c1bfc9c530202f65604f22510f3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-connectors.json",
+          "sha256": "54a3ed368ad313b0cad1a4f03e00917aebe2b931db11340b2eb17264d74bd986"
+        },
+        {
+          "path": "p1-connectors-mobile.png",
+          "sha256": "065772ec576b12b00d822c0f78c6301dad32d20ed6f604bfda381bd5d2182cc4"
+        },
+        {
+          "path": "p1-connectors-desktop.png",
+          "sha256": "aee0b8cb4b69255afa927de1978ddc9c40e4148c49af14e51860dd731b6d1118"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.882Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "99fe4e79b5fccaf01ea13797586d571da8b04fba",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "4494c1c8e68b913ba55829fc9224294b218571ca2a5fcae4df3e13b8ee801fc8"
+        },
+        {
+          "path": "p2-fail-mobile-step16.png",
+          "sha256": "d5a25d5a5ecc8faa14aed7a6a35cd51e780d406a53e3b28647598433262977f2"
+        },
+        {
+          "path": "p2-fail-desktop-step16.png",
+          "sha256": "3502762c8dcc0b7d5d303f6f8e3b10e4c71d16e3fc1bcac0f2534d39ffa3578d"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.923Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "99fe4e79b5fccaf01ea13797586d571da8b04fba",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "7b8e569f283a2f040322e45236da680b87dd45729dd81f5e045132a78e265707"
+        },
+        {
+          "path": "p3-fail-desktop-step1.png",
+          "sha256": "0f567b2b7314f26abb3f0e63f73703266de6d34310a5c95bd737ad1d9f9b6284"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.970Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "456731113327ef2fd29c1ce94e535f6a72f183f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "7ada52dfbf70537da511fad68c66487b8603a1384bc74ca7c5da1bc355f8f6d4"
+        }
+      ],
+      "addedAt": "2026-11-17T20:09:20.448Z",
+      "cmd": "CARGO_BUILD_JOBS=2 verify/yv map run session-defaults --recipe remembers-remote-session",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "repro",
+      "at": "456731113327ef2fd29c1ce94e535f6a72f183f3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "7dffbb764de703b31a9f7cacd9a29c36af2fb899e916d38577fb562dfc15e639"
+        },
+        {
+          "path": "p5-wrapped-status-mobile.png",
+          "sha256": "dabe28a3292ee9225e0dba40f9c683c3dd5ce3a5f442dba6edc838904e744a79"
+        },
+        {
+          "path": "p5-wrapped-status-desktop.png",
+          "sha256": "93d4b1ada122fa5171a40855721bc772091125e768bf7f34abdba35af996c95b"
+        },
+        {
+          "path": "p5-fail-desktop-step3.png",
+          "sha256": "2cd10ece51603b88e01af669d81252ff3c0e2d5716e429e339ae0b94b122e494"
+        }
+      ],
+      "addedAt": "2026-11-17T20:11:01.443Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "f81c8e420836810bb191097ab6713b104fbedc8d32852885c25fa13f5f5323a4"
+        }
+      ],
+      "addedAt": "2026-11-17T20:29:04.958Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-2-drive.json",
+          "sha256": "9873a7e4e1a30e4c9803e3ade3f5d1f88fe5044be27cd7bd3d5ca3ed4ff3912a"
+        },
+        {
+          "path": "p7-2-wrapped-status-mobile.png",
+          "sha256": "8b7201f9544819160ebe82a0072715e968b270bc9fe0ee781055b1870bffde6a"
+        },
+        {
+          "path": "p7-2-wrapped-status-desktop.png",
+          "sha256": "e92cd0974b2ab4f3d852349630efc3b77da15bfa06dce610790626adc316cba2"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.237Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-2-drive.json",
+          "sha256": "983d9b4daea48df4fcb067dd2125d63db96d25ecbbb251201cf1f291325efc95"
+        },
+        {
+          "path": "p8-2-empty-search-mobile.png",
+          "sha256": "062099326c37ef4753c1d5729179e19195b219e1fe85428f8808751c610b258e"
+        },
+        {
+          "path": "p8-2-connected-filter-mobile.png",
+          "sha256": "d3c4d9f8d055393ec95b64acbdbad99dd8d84356da32942c7d3527c8ae9f3ca0"
+        },
+        {
+          "path": "p8-2-empty-search-desktop.png",
+          "sha256": "b972c04d4dc070e1e15e356b15676dab478566269bfed40b1c028f6a461e9ef0"
+        },
+        {
+          "path": "p8-2-connected-filter-desktop.png",
+          "sha256": "9ba8affb57942650ad10c2a8f5d8d7a02bd7a76cb45ba41043f997a6f0b6d043"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.334Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-2-drive.json",
+          "sha256": "a3c60fd34c6ec6b0425f832ecdaab381f64bf34b4179d7253531e3dbd219b5f9"
+        },
+        {
+          "path": "p9-2-marked-unread-desktop.png",
+          "sha256": "a24c7f7018f0d80e991d13aa21fb00263b5a499f3cd5496d8708d10c9b79d1a7"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.430Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-2-drive.json",
+          "sha256": "eabf5681d5ef535188a9bc86cdc387dbb78c149f0cda9af4bd53855dd8028bee"
+        },
+        {
+          "path": "p10-2-marked-unread-mobile.png",
+          "sha256": "505ca93d1bbb7238b65edb33bfacbb8f9e8158cd717ec9361939c8030ad7c6ba"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.525Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p11-2-drive.json",
+          "sha256": "707feb1b0bb0f603aa43239ece5f27e93b1966322b926dabfb810de4a02b3209"
+        },
+        {
+          "path": "p11-2-remembered-defaults-mobile.png",
+          "sha256": "64bfb3785750993b63ebeb15d9fcb601eb537450ca236b9f4b09b6552472cba2"
+        },
+        {
+          "path": "p11-2-remembered-defaults-desktop.png",
+          "sha256": "a9638d88d60bbd1bce3241eceb6a9790126a8eb696ca97f87f1a6dc938421e6e"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.623Z",
+      "failedApi": []
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p12-2-drive.json",
+          "sha256": "119eb505c30919f75079c066494efe6a8ec4439d06e727b26eda79824c21c558"
+        },
+        {
+          "path": "p12-2-existing-session-defaults-mobile.png",
+          "sha256": "b13d0fcf25a705eb96fd26ac1230a368166f88882c7d55c1a83cf731bc6c765e"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.719Z",
+      "failedApi": []
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p13-2-drive.json",
+          "sha256": "475e9b5221ace508dd4a4625c1257ced983621df2a879f33ec2defa2212165be"
+        },
+        {
+          "path": "p13-2-existing-session-defaults-desktop.png",
+          "sha256": "468ceea203e35075b519e86ee7e9dcb4df213d6e467175146930535200f4aecd"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.815Z",
+      "failedApi": []
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-merge-new-session-map.json",
+          "sha256": "50ecdfee7f91ee6dc9befed9e9eff6a5f8f0b0d3d0396d3728898c38d527cd53"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:26.910Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    },
+    {
+      "id": 15,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p15-merge-defaults-map.json",
+          "sha256": "9d72d394e320f128b4d87e85f63c0a5d1c7fd9a88977e607df628bf5cff91452"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:27.006Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "session-defaults/remembers-remote-session",
+        "session-defaults/remembers-changes-in-existing-chat"
+      ]
+    },
+    {
+      "id": 16,
+      "ref": "head",
+      "kind": "design",
+      "at": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p16-design.json",
+          "sha256": "3054c7eea429776cdaec3632822161b8842f787cdc7ceeebf69719b197932f0e"
+        }
+      ],
+      "addedAt": "2026-11-17T20:30:27.102Z",
+      "cmd": "verify/yv design-check --base fac280cb6574",
+      "exit": 0
+    }
+  ]
+}

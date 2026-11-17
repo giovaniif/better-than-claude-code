@@ -1,0 +1,63 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-17T20:04:13.353Z",
+      "counts": {
+        "pass": 8,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "connectors-list",
+          "status": "pass",
+          "ms": 7726
+        },
+        {
+          "label": "focused-search-and-status",
+          "status": "pass",
+          "ms": 6072
+        },
+        {
+          "label": "claude-sign-in",
+          "status": "pass",
+          "ms": 7900
+        },
+        {
+          "label": "codex-sign-in-pasted",
+          "status": "pass",
+          "ms": 6092
+        },
+        {
+          "label": "add-linear",
+          "status": "pass",
+          "ms": 9291
+        },
+        {
+          "label": "codex-chart",
+          "status": "pass",
+          "ms": 8185
+        },
+        {
+          "label": "claude-chart",
+          "status": "pass",
+          "ms": 7320
+        },
+        {
+          "label": "widget-calls-and-sandbox",
+          "status": "manual",
+          "why": "`yv drive` cannot reach inside a frame"
+        },
+        {
+          "label": "large-catalog-stays-bounded",
+          "status": "pass",
+          "ms": 6101
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

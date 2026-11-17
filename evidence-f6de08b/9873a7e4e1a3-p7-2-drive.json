@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "f6de08bd4bbcd3d4900398477f7e1e81bfe1f596",
+    "short": "f6de08b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:27:44.685Z"
+  },
+  "dir": ".verify/merge-proof-hosts",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2442,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/merge-proof-hosts/wrapped-status-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); (b.querySelector(\".host-engine-label\") || b.querySelector(\".host-engine\")).append(document.createTextNode(\" · not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.insertBefore(b,a.nextSibling); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=document.querySelector(\"section[aria-label=TEST-wrapped-status]\").getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1355,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/merge-proof-hosts/wrapped-status-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); (b.querySelector(\".host-engine-label\") || b.querySelector(\".host-engine\")).append(document.createTextNode(\" · not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.insertBefore(b,a.nextSibling); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=document.querySelector(\"section[aria-label=TEST-wrapped-status]\").getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
