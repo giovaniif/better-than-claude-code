@@ -1,0 +1,18 @@
+$ cd ui && bun test src/engines.test.ts
+# exit 1 after 10 ms at c4266c9f4f08d6839e44857f3d7c2d345f48fe01
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/engines.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'queuedHint' not found in module '/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/ui/src/engines.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [5.00ms]

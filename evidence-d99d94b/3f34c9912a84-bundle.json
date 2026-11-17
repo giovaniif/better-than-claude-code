@@ -1,0 +1,253 @@
+{
+  "v": 1,
+  "claim": "On an OpenCode or Grok session, a message sent mid-turn is queued with 'Queued: the agent reads it after its current step', but neither engine takes input inside a turn: yardd sends it as the next turn, after the whole task finishes.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629",
+  "base": "4b346cea6f571dcd872b15e80c31b108e0db09d7",
+  "head": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T00:47:09.025Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c4266c9f4f08d6839e44857f3d7c2d345f48fe01",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6fbf6cb80b670067d9e3117cdf51dc458df979bcf28cb22e787e34c7bb508daa"
+        },
+        {
+          "path": "p1-queued-mobile.png",
+          "sha256": "0775521c8b718bd435c725d0961e44a5022f36e9faf61b1bd404f3ede0324837"
+        }
+      ],
+      "addedAt": "2026-11-17T00:47:43.828Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c4266c9f4f08d6839e44857f3d7c2d345f48fe01",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "d08dbd2b22c091b6ac5bb73bca3d211b5a811938a7afe4b58d7ef9c41726daff"
+        },
+        {
+          "path": "p2-queued-desktop.png",
+          "sha256": "ba5dd374170ac5322a73e018c8ed65ee819a099c9b6f58e985667d91499f643c"
+        }
+      ],
+      "addedAt": "2026-11-17T00:47:43.871Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c4266c9f4f08d6839e44857f3d7c2d345f48fe01",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "61cb478bba202c6d502ed064fea9cb4fc37e701f86940e23a5c49b98402da3e3"
+        },
+        {
+          "path": "p3-queued-while-asking-desktop.png",
+          "sha256": "d13366d66741f6a0b566868184505363b67f94c06a53d0e9d33c30d3dddf5486"
+        },
+        {
+          "path": "p3-next-turn-desktop.png",
+          "sha256": "d4162705bb668f8db0146719323c580752cf6015878d5d60e6bfcbb4d2388bc5"
+        }
+      ],
+      "addedAt": "2026-11-17T00:47:43.914Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "c4266c9f4f08d6839e44857f3d7c2d345f48fe01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "86428101e435ba73494f604b37913db3646324dbd84f632dab6ca93ac11f9cc3"
+        }
+      ],
+      "addedAt": "2026-11-17T00:47:43.956Z",
+      "cmd": "cd ui && bun test src/engines.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "test",
+      "at": "c4266c9f4f08d6839e44857f3d7c2d345f48fe01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "1641d6511bc8890ae6c2a7f248486a9ca1a9b3798e7194cb97ac57b96bf401f8"
+        }
+      ],
+      "addedAt": "2026-11-17T00:47:44.008Z",
+      "cmd": "verify/yv map run acp-engines --recipe queued-message-waits-for-next-turn",
+      "exit": 1
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "29e8120588cb36446c28cbaf50f8c162cd7f9d67e98e4ce0def38f075b8d2d4d"
+        },
+        {
+          "path": "p6-queued-mobile.png",
+          "sha256": "160e4e2dba21b5427ff6fa38bc419d50dc78d01c19b7ddffd3e5d992818ace55"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:22.809Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "1d586274ab7de7a9bbd3264e812ef60d01a9a220aaab633e0a36e2d1d0d312b5"
+        },
+        {
+          "path": "p7-queued-desktop.png",
+          "sha256": "6f9068eff89f3e17371b3bbd275733e823706b0dec418a7669373661908361b7"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:22.856Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "b35bb5f3a203853fa00ad8078044d933795bf2b6e5d82f8db1f4715e856a00b2"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:22.898Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "7af6f9bc0b98f347fc9004840878e1ec71042d34a61b47e1a9f0179f2bd36e64"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:23.018Z",
+      "cmd": "verify/yv map run acp-engines --recipe queued-message-waits-for-next-turn",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "0ab19a7f3e0a767d53984ffaeafac55b5b1d28d439a42e0a9112c578c44f9756"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:34.555Z",
+      "cmd": "verify/yv design-check --base 4b346cea6f57",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "d99d94b355acbb6cfe2bd358abae94d2841b7f03",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-acp-engines.json",
+          "sha256": "560db84d14ac0f3a0d07a602aa36b818f20913a817eff80095f60b06ea7f7bc6"
+        }
+      ],
+      "addedAt": "2026-11-17T00:48:34.632Z",
+      "cmd": "verify/yv map run acp-engines",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn"
+      ]
+    }
+  ]
+}

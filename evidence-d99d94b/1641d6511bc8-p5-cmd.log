@@ -1,0 +1,40 @@
+$ verify/yv map run acp-engines --recipe queued-message-waits-for-next-turn
+# exit 1 after 15325 ms at c4266c9f4f08d6839e44857f3d7c2d345f48fe01
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-17T00:47:59.329Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "queued-message-waits-for-next-turn",
+          "status": "fail",
+          "ms": 14467,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"expect\":\"css:.pending\",\"text\":\"Queued: sent when the current turn ends\"}: expected \"css:.pending\" to contain \"Queued: sent when the current turn ends\", got \"Queued: the agent reads it after its current step",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T00-47-45-206Z/fail-mobile-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": " },\n  \"reply\": {\n    \"op\": \"created\",\n    \"sessionId\": \"s1a1e6f95ea7e\"\n  },\n  \"saved\": {\n    \"oc_queue_sid\": \"s1a1e6f95ea7e\"\n  },\n  \"received\": 6,\n  \"problems\": []\n}\n{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1e6f95ea7e\",\n  \"build\": {\n    \"sha\": \"c4266c9f4f08d6839e44857f3d7c2d345f48fe01\",\n    \"short\": \"c4266c9\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-17T00:47:11.308Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T00-47-45-206Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"mobile\",\n      \"ms\": 13809,\n      \"steps\": 8,\n      \"failed\": {\n        \"step\": 4,\n        \"action\": {\n          \"expect\": \"css:.pending\",\n          \"text\": \"Queued: sent when the current turn ends\"\n        },\n        \"reason\": \"expected \\\"css:.pending\\\" to contain \\\"Queued: sent when the current turn ends\\\", got \\\"Queued: the agent reads it after its current step\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T00-47-45-206Z/fail-mobile-step4.png\",\n        \"aria\": \"- main:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"[slow] TEST-opencode long job mobile\\\" [level=1]\\n  - code: yard/slow-test-opencode-long-job-e91d\\n  - button \\\"Stop\\\"\\n  - button \\\"Delete\\\"\\n  - text: \\\"[slow] TEST-opencode long job mobile\\\"\\n  - paragraph: Working\\n  - region \\\"Waiting to send\\\":\\n    - text: \\\"Queued: the agent reads it after its current step TEST-after the opencode job\\\"\\n    - button \\\"Edit\\\"\\n    - button \\\"Remove from queue\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Queue a message for the agent\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Fake Free (opencode)\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Add to queue\\\" [disabled]\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"expect\\\":\\\"css:.pending\\\",\\\"text\\\":\\\"Queued: sent when the current turn ends\\\"}: expected \\\"css:.pending\\\" to contain \\\"Queued: sent when the current turn ends\\\", got \\\"Queued: the agent reads it after its current step\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629/.verify/drives/2026-11-17T00-47-45-206Z/fail-mobile-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "acp-engines/queued-message-waits-for-next-turn",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
