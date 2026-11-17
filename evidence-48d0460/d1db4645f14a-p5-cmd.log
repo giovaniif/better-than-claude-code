@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test acp opencode_asks_before
+# exit 101 after 715 ms at e2083bf0cd2ba9067b7475615495219f05c7fd2a
+
+
+running 1 test
+test opencode_asks_before_a_command_and_takes_the_answer ... FAILED
+
+failures:
+
+---- opencode_asks_before_a_command_and_takes_the_answer stdout ----
+
+thread 'opencode_asks_before_a_command_and_takes_the_answer' (891729) panicked at crates/yardd/tests/acp.rs:111:5:
+assertion `left == right` failed
+  left: Null
+ right: String("call-2")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-891728-oc-approve-0 for inspection
+
+
+failures:
+    opencode_asks_before_a_command_and_takes_the_answer
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 16 filtered out; finished in 0.14s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.53s
+     Running tests/acp.rs (target/debug/build/yardd/0b0866475f883849/out/acp-0b0866475f883849)
+error: test failed, to rerun pass `-p yardd --test acp`

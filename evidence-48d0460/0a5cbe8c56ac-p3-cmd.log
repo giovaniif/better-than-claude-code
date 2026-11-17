@@ -1,0 +1,143 @@
+$ cd ui && bun test src/protocol.test.ts src/thread.test.ts
+# exit 1 after 22 ms at e2083bf0cd2ba9067b7475615495219f05c7fd2a
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+197 |   const call = (itemId: string, kind: string, extra: Partial<ToolItem> = {}): ToolItem => ({
+198 |     kind: "tool", key: itemId, itemId, toolKind: kind, title: kind === "read" ? "Read" : "Ran", detail: itemId, state: "ok", ...extra,
+199 |   });
+200 | 
+201 |   test("a denied command is not run and not failed", () => {
+202 |     expect(summarize([call("c", "command", { state: "failed", asked: "denied" })])).toBe("1 command not run");
+                                                                                          ^
+error: expect(received).toBe(expected)
+
+Expected: "1 command not run"
+Received: "Ran 1 command · 1 failed"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/thread.test.ts:202:85)
+(fail) summarize, with calls that never ran > a denied command is not run and not failed [0.41ms]
+202 |     expect(summarize([call("c", "command", { state: "failed", asked: "denied" })])).toBe("1 command not run");
+203 |   });
+204 | 
+205 |   test("next to work that ran, the calls that did not are counted apart", () => {
+206 |     const entries = [call("a", "read"), call("b", "read"), call("c", "command", { state: "failed", asked: "unanswered" }), call("d", "command", { state: "failed" })];
+207 |     expect(summarize(entries)).toBe("Read 2 files, ran 1 command · 1 failed · 1 command not run");
+                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "Read 2 files, ran 1 command · 1 failed · 1 command not run"
+Received: "Read 2 files, ran 2 commands · 2 failed"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/thread.test.ts:207:32)
+(fail) summarize, with calls that never ran > next to work that ran, the calls that did not are counted apart [0.18ms]
+
+src/protocol.test.ts:
+229 |     { type: "approval_request", requestId: "r1", kind: "command", title: "echo hi", detail: "", itemId: "c1" },
+230 |   ];
+231 |   const tool = (items: Item[]) => items.find((it) => it.kind === "tool");
+232 | 
+233 |   test("is waiting, not running, until someone answers", () => {
+234 |     expect(tool(fold(asked))).toMatchObject({ state: "running", asked: "waiting" });
+                                    ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "asked": "waiting",
++   "detail": "echo hi",
++   "itemId": "c1",
++   "key": "e2",
++   "kind": "tool",
+    "state": "running",
++   "title": "Ran",
++   "toolKind": "command",
+  }
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/protocol.test.ts:234:31)
+(fail) a call that waits for an approval > is waiting, not running, until someone answers [0.97ms]
+241 |       ...asked,
+242 |       { type: "approval_resolved", requestId: "r1", decision: "deny" },
+243 |       { type: "tool_completed", itemId: "c1", ok: false, note: "declined" },
+244 |       { type: "turn_completed", status: "completed", at: 2_000 },
+245 |     ]);
+246 |     expect(tool(items)).toMatchObject({ state: "failed", asked: "denied" });
+                              ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "asked": "denied",
++   "detail": "echo hi",
++   "itemId": "c1",
++   "key": "e2",
++   "kind": "tool",
++   "output": null,
+    "state": "failed",
++   "title": "Ran",
++   "toolKind": "command",
+  }
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/protocol.test.ts:246:25)
+(fail) a call that waits for an approval > denied, it did not run: denied, not failed [0.25ms]
+250 |     const items = fold([
+251 |       { type: "user_message", text: "[cmd] run it" },
+252 |       { type: "approval_request", requestId: "r1", kind: "command", title: "echo hi", detail: "", itemId: "c1" },
+253 |       { type: "tool_started", itemId: "c1", kind: "command", title: "Ran", detail: "echo hi" },
+254 |     ]);
+255 |     expect(tool(items)).toMatchObject({ asked: "waiting" });
+                              ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "asked": "waiting",
++   "detail": "echo hi",
++   "itemId": "c1",
++   "key": "e2",
++   "kind": "tool",
++   "state": "running",
++   "title": "Ran",
++   "toolKind": "command",
+  }
+
+- Expected  - 1
++ Received  + 7
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/protocol.test.ts:255:25)
+(fail) a call that waits for an approval > an approval that comes before its call still links to it [0.17ms]
+255 |     expect(tool(items)).toMatchObject({ asked: "waiting" });
+256 |   });
+257 | 
+258 |   test("a turn that ends before anyone answers leaves it unanswered", () => {
+259 |     const items = fold([...asked, { type: "turn_completed", status: "interrupted", at: 2_000 }]);
+260 |     expect(tool(items)).toMatchObject({ state: "failed", asked: "unanswered" });
+                              ^
+error: expect(received).toMatchObject(expected)
+
+  {
+-   "asked": "unanswered",
++   "detail": "echo hi",
++   "itemId": "c1",
++   "key": "e2",
++   "kind": "tool",
+    "state": "failed",
++   "title": "Ran",
++   "toolKind": "command",
+  }
+
+- Expected  - 1
++ Received  + 6
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251/ui/src/protocol.test.ts:260:25)
+(fail) a call that waits for an approval > a turn that ends before anyone answers leaves it unanswered [0.18ms]
+
+ 35 pass
+ 6 fail
+ 67 expect() calls
+Ran 41 tests across 2 files. [17.00ms]

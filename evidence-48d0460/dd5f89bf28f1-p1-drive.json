@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e842c6d64",
+  "build": {
+    "sha": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+    "short": "e2083bf",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T06:46:59.240Z"
+  },
+  "dir": ".verify/evidence/approval-row-state-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4008,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/approval-row-state-base-desktop/waiting-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/approval-row-state-base-desktop/denied-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

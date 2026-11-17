@@ -1,0 +1,42 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-17T06:56:46.480Z",
+      "counts": {
+        "pass": 5
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "picker-lists-opencode-and-grok",
+          "status": "pass",
+          "ms": 4100
+        },
+        {
+          "label": "opencode-session-streams-a-reply",
+          "status": "pass",
+          "ms": 6660
+        },
+        {
+          "label": "grok-command-asks-first",
+          "status": "pass",
+          "ms": 8043
+        },
+        {
+          "label": "opencode-hands-off-from-its-picker",
+          "status": "pass",
+          "ms": 2816
+        },
+        {
+          "label": "queued-message-waits-for-next-turn",
+          "status": "pass",
+          "ms": 10227
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

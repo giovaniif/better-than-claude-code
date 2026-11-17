@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e842d8fb6",
+  "build": {
+    "sha": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+    "short": "e2083bf",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T06:46:59.240Z"
+  },
+  "dir": ".verify/evidence/approval-row-state-base-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4649,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/approval-row-state-base-mobile/waiting-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/approval-row-state-base-mobile/denied-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

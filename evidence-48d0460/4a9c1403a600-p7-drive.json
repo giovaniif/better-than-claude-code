@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e84389524",
+  "build": {
+    "sha": "1eef9fa27065ad72b43374a7da13b0bb0fe11368",
+    "short": "1eef9fa",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T06:48:10.843Z"
+  },
+  "dir": ".verify/evidence/approval-row-state-head-opencode-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4404,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/approval-row-state-head-opencode-desktop/waiting-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/approval-row-state-head-opencode-desktop/denied-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

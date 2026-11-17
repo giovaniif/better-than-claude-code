@@ -1,0 +1,423 @@
+{
+  "v": 1,
+  "claim": "A command waiting for approval reads 'Running' with a live pulse, and a denied one reads 'Ran · failed' in red and counts as failed in the turn's fold, though it never ran (Codex and OpenCode/Grok)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d251",
+  "base": "5188356fe0d5b46be2f9dc75c739a77af1cbc80f",
+  "head": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approvals.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/stop.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T06:46:56.827Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "dd5f89bf28f1a33a4ddd0b05c1b8d36a3e23b3e8f687a866aeb3300e6b55ae22"
+        },
+        {
+          "path": "p1-waiting-desktop.png",
+          "sha256": "4c47ed30fb358f0c415b304242e3cb98133a169e641eaed42608b448173e331f"
+        },
+        {
+          "path": "p1-denied-desktop.png",
+          "sha256": "54b0c2ff6420125c8bfec4bbf4510cc47d93ed1f2a675bcaeb29773cb726cb74"
+        }
+      ],
+      "addedAt": "2026-11-17T06:47:42.701Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "9be0b638b317913b71ed88977fa2c2dabf26574cff138deb8bf16894391317c5"
+        },
+        {
+          "path": "p2-waiting-mobile.png",
+          "sha256": "6b03acda3216131ab78ff6e1c9a537755347c3b1cb486c95b0383ec6446d49f6"
+        },
+        {
+          "path": "p2-denied-mobile.png",
+          "sha256": "fc6293b95893b6a3a3619e0701daab009fb4a04fb12c5a5921e9015c391af0c7"
+        }
+      ],
+      "addedAt": "2026-11-17T06:47:42.745Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "0a5cbe8c56acc9710f081bc1cc263dab0fd59ccb43184d579451a29f74a9a92d"
+        }
+      ],
+      "addedAt": "2026-11-17T06:47:47.218Z",
+      "cmd": "cd ui && bun test src/protocol.test.ts src/thread.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "ba5ada7399f95b9b4491a1698ae3efd46bf84310ff2fd0905a9d52ccc9ae2475"
+        }
+      ],
+      "addedAt": "2026-11-17T06:47:47.283Z",
+      "cmd": "verify/yv map run approvals --recipe waiting-then-denied-command-did-not-run",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "test",
+      "at": "e2083bf0cd2ba9067b7475615495219f05c7fd2a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "d1db4645f14a5864c1c010259b071d31314fed268979f703dc00489ee1e2f34e"
+        }
+      ],
+      "addedAt": "2026-11-17T06:48:05.610Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test acp opencode_asks_before",
+      "exit": 101
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-2-drive.json",
+          "sha256": "711f8e45cc53fac1f41364141cbe9cfcc89c2b007d065e271b3537eef86c5eab"
+        },
+        {
+          "path": "p6-2-waiting-desktop.png",
+          "sha256": "a9993548dc7076ddf16e4799200c71221de5ca25d23475bc19bf1f737eabf6b8"
+        },
+        {
+          "path": "p6-2-denied-desktop.png",
+          "sha256": "5fa5dcb012a50e5bcb614b4cc0e76647bb3476351d78cbf77fcfac8250e60809"
+        }
+      ],
+      "addedAt": "2026-11-17T06:54:28.912Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-2-drive.json",
+          "sha256": "4f4e413b8e0f6454861d9ac5da9e3d5c7d3619bdd23490c8be481a3544dc228a"
+        },
+        {
+          "path": "p7-2-waiting-desktop.png",
+          "sha256": "c9ae202a88d05341d932f0432fd4fb37848b516cf6c6a2f78fbbd1a57245b529"
+        },
+        {
+          "path": "p7-2-denied-desktop.png",
+          "sha256": "68846f0789163c8fe5b65e242f943269de350fc843bf422ecf3ea5664af55918"
+        }
+      ],
+      "addedAt": "2026-11-17T06:54:34.689Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-2-drive.json",
+          "sha256": "09775568ececc2dc0ce3353fb409d2d0b308e65f763772ed0b3d2ef7546c3b99"
+        },
+        {
+          "path": "p8-2-waiting-mobile.png",
+          "sha256": "49257ba0bcc6802828a5fbfa4cfd5d5746328ef4f758611e043c9e9f99c32afc"
+        },
+        {
+          "path": "p8-2-denied-mobile.png",
+          "sha256": "170ff96f2bee098a591b294c0a05d52374b8e460988b0b85d5fa8ff5df9aeb9b"
+        }
+      ],
+      "addedAt": "2026-11-17T06:54:38.991Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-2-drive.json",
+          "sha256": "b8b9455bbe159373fe287b40f888abf3b5fbfebdbd838cf8b30c6aabf407beb7"
+        },
+        {
+          "path": "p9-2-waiting-mobile.png",
+          "sha256": "fd455a0984f537e0bc00d6f020678d98e891546544ea8392d4e96a74a6c97f55"
+        },
+        {
+          "path": "p9-2-denied-mobile.png",
+          "sha256": "e9b2cea8ee9419e7cc4a8a03da3053a5044437f3748e7e62ba9b33f4f185bab9"
+        }
+      ],
+      "addedAt": "2026-11-17T06:54:43.588Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "test",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-cmd.log",
+          "sha256": "48baa7592c1aa80ef0394be5a60060c5f4c7a8f5071ee52adff2ace5f39a5310"
+        }
+      ],
+      "addedAt": "2026-11-17T06:54:47.415Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "test",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-cmd.log",
+          "sha256": "d9d8c0a4d7d25614d6e40d894b0a7b4e154abe70977a24b20f9e2f4d889737ad"
+        }
+      ],
+      "addedAt": "2026-11-17T06:55:07.275Z",
+      "cmd": "verify/yv map run approvals --recipe waiting-then-denied-command-did-not-run",
+      "exit": 0
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "design",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-design.json",
+          "sha256": "96673b6417e69e8636bd5beac3e0a1d71ac8a402bce706c22aef01918c128105"
+        }
+      ],
+      "addedAt": "2026-11-17T06:55:26.842Z",
+      "cmd": "verify/yv design-check --base 5188356fe0d5",
+      "exit": 0
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-map-approvals.json",
+          "sha256": "9ed0874aa96c8fdd10688196d520dcc7dd526d8f7a574e7ca24891cfc01e7bfc"
+        }
+      ],
+      "addedAt": "2026-11-17T06:55:26.923Z",
+      "cmd": "verify/yv map run approvals",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/allow-then-follow-up",
+        "approvals/deny",
+        "approvals/waiting-then-denied-command-did-not-run",
+        "approvals/always-allow",
+        "approvals/double-click-allow-once"
+      ]
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-map-acp-engines.json",
+          "sha256": "43e1d61cc4d9ca584e59225d63d2784fe8acafdcc4200f9da1133d155546f701"
+        }
+      ],
+      "addedAt": "2026-11-17T06:56:13.750Z",
+      "cmd": "verify/yv map run acp-engines",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn"
+      ]
+    },
+    {
+      "id": 15,
+      "ref": "head",
+      "kind": "regression",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p15-map-stop.json",
+          "sha256": "2318daa6352cadf091a7f68df11b0b0ec663240106a047718787df5effa972f5"
+        }
+      ],
+      "addedAt": "2026-11-17T06:56:46.529Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn",
+        "stop/stop-stuck-opencode-turn",
+        "stop/stop-while-asking",
+        "stop/stop-while-asking-says-not-answered"
+      ]
+    },
+    {
+      "id": 16,
+      "ref": "head",
+      "kind": "regression",
+      "at": "48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p16-map-thread.json",
+          "sha256": "8e5e9ecfb65a733ddb0eae16ec42ad6c26c7e8cc587030c64e900df989e092b7"
+        }
+      ],
+      "addedAt": "2026-11-17T06:57:38.957Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/subagent-nests-and-expands"
+      ]
+    }
+  ]
+}

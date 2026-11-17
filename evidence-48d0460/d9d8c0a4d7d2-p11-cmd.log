@@ -1,0 +1,26 @@
+$ verify/yv map run approvals --recipe waiting-then-denied-command-did-not-run
+# exit 0 after 19528 ms at 48d0460e0d1a6eee4a80c73c9039ca9279fa1f2e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-17T06:55:26.800Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "waiting-then-denied-command-did-not-run",
+          "status": "pass",
+          "ms": 18678
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
