@@ -123,6 +123,11 @@ ends, and `verify/yv loop tidy` frees the `target/` of a run idle for two hours.
   under `~/.yard` from tests, no Claude turns, LocalStack ports are off limits,
   `CARGO_BUILD_JOBS` stays modest (4).
 - Never weaken a recipe or a test to make it pass.
+- Don't switch this worktree's checkout while a `map run` is still going in
+  the background: it builds and serves from the checkout, and a recipe that
+  lands on the half-switched build fails for no product reason (automations
+  `run-time-is-how-long-it-ran` timed out on `.sidebar` that way, then passed
+  12/12 on a quiet re-run). Finish background maps before branching or proving.
 - Merge only through `verify/yv land merge` (or the owner's explicit `merge`
   on that PR). Never `gh pr merge` around the gate, never push to `main`.
 - Changes to CI, `verify/` (except `verify/features/`), skills or CLAUDE.md
