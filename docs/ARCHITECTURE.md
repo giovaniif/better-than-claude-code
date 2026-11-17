@@ -29,9 +29,7 @@ The same yardd binary runs on my Mac and on the remote box. A remote session is 
 
 The WebSocket is on a localhost TCP port because a webview cannot open a unix socket. yardd rejects any browser origin other than its own page and the Tauri window, so a website cannot drive agents.
 
-## Events
-
-### iOS / TestFlight
+## iOS / TestFlight
 
 `mobile/` is a SwiftUI + WKWebView iPhone/iPad shell loading the same privately
 reachable HTTPS yardd UI. It never starts a local daemon. `project.yml` generates
@@ -48,6 +46,8 @@ The narrow workspace is reachable with Workspace, including all four tabs.
 The native main-frame bridge adapts Apple's speech APIs to the shared voice
 hook and local notifications to the shared notification rules. Backgrounding
 stops speech; foregrounding reconnects the WebSocket. There is no APNs service.
+
+## Events
 
 
 Every engine is normalized to one event list per session. The UI replays it on open.

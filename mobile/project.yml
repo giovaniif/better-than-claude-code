@@ -23,6 +23,8 @@ targets:
         NSMicrophoneUsageDescription: Dictate messages and talk to your Switchyard sessions.
         NSSpeechRecognitionUsageDescription: Turn your speech into messages for your Switchyard sessions.
         NSLocalNetworkUsageDescription: Connect to your Switchyard host on your private network.
+        NSCameraUsageDescription: Take a photo to attach to a Switchyard message.
+        NSPhotoLibraryUsageDescription: Choose photos to attach to a Switchyard message.
         ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: sh.giovani.switchyard.mobile

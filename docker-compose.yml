@@ -19,6 +19,8 @@ services:
       YARD_ALLOW_ORIGIN: ${YARD_ALLOW_ORIGIN:?}
       # The name the UI shows for this machine. Default: the hostname above.
       YARD_HOST_NAME: ${YARD_HOST_NAME:-}
+      # Optional. The iPhone beta's real TestFlight invitation, once available.
+      YARD_TESTFLIGHT_URL: ${YARD_TESTFLIGHT_URL:-}
       # Optional. Lets `gh` (PR pane) and git over HTTPS work without
       # `gh auth login` in the container terminal.
       GH_TOKEN: ${GH_TOKEN:-}

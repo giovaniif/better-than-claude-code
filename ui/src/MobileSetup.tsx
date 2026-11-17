@@ -16,7 +16,7 @@ export function MobileSetup({ mobile }: { mobile: MobileStatus }) {
   return (
     <section className="host-card mobile-setup" aria-label="iPhone app">
       <div className="row"><Icon d={PHONE} size={18} /><h2>Switchyard for iPhone</h2><span className="spacer" /><span className="muted small">{mobile.configured ? "Connected" : "TestFlight beta"}</span></div>
-      <p>Your sessions, editor, voice mode and workspace, together on your phone. New assistant features arrive with your host’s UI.</p>
+      <p>Your sessions, editor, voice mode and workspace, together on your phone.</p>
       <ol className="login-steps">
         <li>{invite ? <a className="btn btn-primary login-open" href={invite} target="_blank" rel="noreferrer">Install with TestFlight</a> : <><strong>Install with TestFlight.</strong> <span className="muted">The beta invitation will appear here when the first build is available.</span></>}</li>
         <li>Connect your iPhone to the same private network as this host, such as Tailscale.</li>
