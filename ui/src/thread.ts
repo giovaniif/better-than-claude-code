@@ -120,10 +120,15 @@ const PLURAL: Record<string, [string, string, string]> = {
   search: ["Searched", "time", "times"],
 };
 
-/** "Read 3 files, ran 2 commands", from the two biggest kinds of work. */
+/** A call whose approval was denied or never answered: it did not run. */
+export const didNotRun = (e: WorkItem) => e.kind === "tool" && e.state !== "ok" && (e.asked === "denied" || e.asked === "unanswered");
+
+/** "Read 3 files, ran 2 commands", from the two biggest kinds of work. Calls
+ *  that were not allowed to run are counted apart: "1 command not run". */
 export function summarize(entries: WorkItem[]): string {
+  const ran = entries.filter((e) => !didNotRun(e));
   const counts = new Map<string, number>();
-  for (const e of entries) {
+  for (const e of ran) {
     const kind = e.kind === "reasoning" ? "think" : PLURAL[e.toolKind] ? e.toolKind : "other";
     counts.set(kind, (counts.get(kind) ?? 0) + 1);
   }
@@ -136,10 +141,15 @@ export function summarize(entries: WorkItem[]): string {
       const [verb, one, many] = PLURAL[kind];
       return `${verb.toLowerCase()} ${n} ${n === 1 ? one : many}`;
     });
-  if (!parts.length) return counts.has("think") ? "Thought" : "";
+  const failed = ran.filter((e) => e.kind === "tool" && e.state === "failed").length;
+  const skipped = entries.filter(didNotRun) as ToolItem[];
+  const kinds = new Set(skipped.map((e) => e.toolKind));
+  const noun = kinds.size === 1 && PLURAL[skipped[0]?.toolKind] ? PLURAL[skipped[0].toolKind] : ["", "step", "steps"];
+  const notRun = skipped.length ? `${skipped.length} ${skipped.length === 1 ? noun[1] : noun[2]} not run` : "";
+  if (!parts.length && !notRun) return counts.has("think") ? "Thought" : "";
   const text = parts.join(", ");
-  const failed = entries.filter((e) => e.kind === "tool" && e.state === "failed").length;
-  return text[0].toUpperCase() + text.slice(1) + (failed ? ` · ${failed} failed` : "");
+  const head = text ? text[0].toUpperCase() + text.slice(1) + (failed ? ` · ${failed} failed` : "") : "";
+  return [head, notRun].filter(Boolean).join(" · ");
 }
 
 /** One line for a thought: its leading **heading**, else its first sentence. */

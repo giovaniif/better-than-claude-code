@@ -19,7 +19,7 @@ import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
 import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
-import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
+import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
 
@@ -2606,15 +2606,27 @@ function WorkEntry({ entry }: { entry: WorkItem }) {
         <span className={`tool-chevron ${open ? "open" : ""} ${expandable ? "" : "hidden"}`}>
           <Icon d={CHEVRON_RIGHT} size={12} />
         </span>
-        {/* Codex titles a command "Ran" from the start; until it ends, it has not. */}
-        <span>{entry.state === "running" && entry.title === "Ran" ? "Running" : entry.title}</span>
+        {/* Codex titles a command "Ran" from the start; until it ends, it has not,
+            and while its approval is open or after a denial it never started. */}
+        <span>{entry.title === "Ran" ? ranLabel(entry) : entry.title}</span>
         {entry.detail && <code>{entry.detail}</code>}
-        {entry.state === "running" && <span className="pulse" aria-label="running" />}
-        {entry.state === "failed" && <span className="bad">· failed</span>}
+        {entry.state === "running" && entry.asked !== "waiting" && <span className="pulse" aria-label="running" />}
+        {entry.asked === "waiting" && entry.title !== "Ran" && <span className="muted">· waiting</span>}
+        {didNotRun(entry) ? (
+          <span className="muted">· {entry.asked === "denied" ? "denied" : "not answered"}</span>
+        ) : (
+          entry.state === "failed" && <span className="bad">· failed</span>
+        )}
       </button>
       {open && entry.output && <pre className="tool-output">{entry.output}</pre>}
     </div>
   );
+}
+
+function ranLabel(entry: ToolItem): string {
+  if (entry.asked === "waiting") return "Waiting to run";
+  if (didNotRun(entry)) return "Did not run";
+  return entry.state === "running" ? "Running" : "Ran";
 }
 
 /** A subagent: one line, collapsed. Open, the steps it took and its report. */
