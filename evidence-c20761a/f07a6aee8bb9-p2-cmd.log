@@ -1,0 +1,31 @@
+$ cd ui && bun test src/thread.test.ts
+# exit 1 after 18 ms at 8e0bfbef5f46811a5fc5f04d3a16e8ff47f81c60
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+101 |       { type: "user_message", text: "shorter please", steered: true, at: 3_000 },
+102 |       { type: "assistant_message", itemId: "m2", text: "Short" },
+103 |       { type: "turn_completed", status: "interrupted", at: 7_000 },
+104 |     ]);
+105 |     const rows = layout(items, false);
+106 |     expect(shape(rows)).toEqual(["user", "assistant", "user", "assistant", "stopped"]);
+                              ^
+error: expect(received).toEqual(expected)
+
+@@ -5,3 +5,2 @@
+    "assistant",
+-   "stopped",
+  ]
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-4614/ui/src/thread.test.ts:106:25)
+(fail) layout > a steered text-only turn that is stopped marks its last part, once [0.52ms]
+
+ 21 pass
+ 1 fail
+ 38 expect() calls
+Ran 22 tests across 1 file. [14.00ms]

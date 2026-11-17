@@ -1,0 +1,153 @@
+{
+  "v": 1,
+  "claim": "A text-only turn that was steered (a message given mid-turn) and then stopped got no Stopped mark on either part, so its cut-off text read as a full answer (verifier note on #208)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-4614",
+  "base": "ac7b356d16e97ab0aae9e988e56e8240c0d09554",
+  "head": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T22:59:59.309Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "8e0bfbef5f46811a5fc5f04d3a16e8ff47f81c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T22:59:59.356Z",
+      "text": "no-repro: the scripted Codex takes steered input only at a tool step, so a steered text-only turn cannot be produced on an isolated yardd (a queued message during [slow] goes back to the box on Stop); the layout test reproduces it"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "8e0bfbef5f46811a5fc5f04d3a16e8ff47f81c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f07a6aee8bb90d0d6bfa67ccfc00548e0bde03807fad00784c28f43b8bccb38e"
+        }
+      ],
+      "addedAt": "2026-11-17T22:59:59.400Z",
+      "cmd": "cd ui && bun test src/thread.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "62db1e67f48a90470cf8cb00c5da1b12216b91cd551ba2b1d44729bd7729b409"
+        },
+        {
+          "path": "p3-stopped-desktop.png",
+          "sha256": "696a96b6a5e934946316149bc6125614a2e31fa19767d6b5e8e64921253290d1"
+        }
+      ],
+      "addedAt": "2026-11-17T23:00:08.201Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "c1cdf13e44e7d53a00695c9895ac74801b16ff565b44143a734806e2c9ddc764"
+        },
+        {
+          "path": "p4-stopped-mobile.png",
+          "sha256": "6f8a9b64e81efe9420146728b85db4e5ea179153a992379bb8c4fec2460f5c11"
+        }
+      ],
+      "addedAt": "2026-11-17T23:00:12.978Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "57cdcf42811d9b6b8f8d5529f924e3e70b999c54ae3ba4b66a6e58f204ba99c3"
+        }
+      ],
+      "addedAt": "2026-11-17T23:00:13.016Z",
+      "cmd": "verify/yv design-check --base ac7b356d16e9",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "d5cc5b70fa0ce3339b31f18d1f16114bca85e78b7511ec57888215dbbd57e709"
+        }
+      ],
+      "addedAt": "2026-11-17T23:00:13.090Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-stop.json",
+          "sha256": "bbf3a571bb24e8ad0c563224d260590d68b267518dc4958f316828efde35136f"
+        }
+      ],
+      "addedAt": "2026-11-17T23:00:13.237Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn",
+        "stop/stop-stuck-opencode-turn",
+        "stop/stop-while-asking",
+        "stop/stop-while-asking-says-not-answered"
+      ]
+    }
+  ]
+}

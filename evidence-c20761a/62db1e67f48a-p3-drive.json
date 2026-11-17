@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1ebbd24ac2",
+  "build": {
+    "sha": "c20761a96879f8f56e885d7338c44bff72c3fcbb",
+    "short": "c20761a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T23:00:03.685Z"
+  },
+  "dir": ".verify/evidence/stopped-steered-fix-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3763,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/stopped-steered-fix-desktop/stopped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
