@@ -141,7 +141,33 @@ yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"wait":1000},{"expect":{"css":".automation","hasText":"Last run failed"}},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
 ```
 
+### interval-and-weekly-schedules-from-the-form
+The form's other two schedule types: "Every few minutes or hours" shows Repeat every and its unit (no Time), "Weekly" shows the day and a Time. The hint under the schedule reads the schedule in words before saving, the card reads the same after, and the daemon stores `interval` (every 2, hours) and `weekly` (day 5, 08:00). A 5-hour usage limit typed in the form is stored as `maxFiveHour`. Each viewport creates one (interval at 390 px, weekly at 1440 px).
+
+Viewports: both, one automation each.
+
+```sh
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:New automation"},{"fill":"label:Automation name","value":"TEST-every two hours"},{"fill":"label:Prompt","value":"TEST-interval prompt"},{"click":{"css":".chip","hasText":"work"}},{"fill":"css:.menu-search","value":"{{repo}}"},{"press":"Enter"},{"eval":"(() => { const s = document.querySelector(\"select[aria-label=\\\"Schedule type\\\"]\"); s.value = \"interval\"; s.dispatchEvent(new Event(\"change\", { bubbles: true })); return s.value })()","equals":"interval"},{"expect":"label:Time","visible":false},{"fill":"label:Repeat every","value":"2"},{"eval":"(() => { const s = document.querySelector(\"select[aria-label=\\\"Repeat unit\\\"]\"); s.value = \"hours\"; s.dispatchEvent(new Event(\"change\", { bubbles: true })); return s.value })()","equals":"hours"},{"expect":{"css":".automation-field","hasText":"Every 2 hours, in"}},{"fill":"label:5-hour usage limit percent","value":"80"},{"shot":"interval-form"},{"click":"role:button:Save automation"},{"expect":{"css":".automation","hasText":"TEST-every two hours"}},{"expect":{"css":".automation","hasText":"Every 2 hours"}},{"shot":"interval-list"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:New automation"},{"fill":"label:Automation name","value":"TEST-weekly friday"},{"fill":"label:Prompt","value":"TEST-weekly prompt"},{"click":{"css":".chip","hasText":"work"}},{"fill":"css:.menu-search","value":"{{repo}}"},{"press":"Enter"},{"eval":"(() => { const s = document.querySelector(\"select[aria-label=\\\"Schedule type\\\"]\"); s.value = \"weekly\"; s.dispatchEvent(new Event(\"change\", { bubbles: true })); return s.value })()","equals":"weekly"},{"expect":"label:Repeat every","visible":false},{"eval":"(() => { const s = document.querySelector(\"select[aria-label=\\\"Day of the week\\\"]\"); s.value = \"5\"; s.dispatchEvent(new Event(\"change\", { bubbles: true })); return s.value })()","equals":"5"},{"fill":"label:Time","value":"08:00"},{"expect":{"css":".automation-field","hasText":"Fridays at 08:00, in"}},{"shot":"weekly-form"},{"click":"role:button:Save automation"},{"expect":{"css":".automation","hasText":"TEST-weekly friday"}},{"expect":{"css":".automation","hasText":"Fridays at 08:00"}},{"shot":"weekly-list"}]'
+yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"name":"TEST-every two hours","schedule":{"kind":"interval","every":2,"unit":"hours"},"maxFiveHour":80},{"name":"TEST-weekly friday","schedule":{"kind":"weekly","day":5,"time":"08:00"}}]}'
+```
+
+### a-working-run-dots-the-automations-button
+While a run is working, the sidebar's Automations button carries a dot named "A run is working" (the run itself stays out of the sidebar); Stop ends the run and the dot goes. At 390 px the button is in the drawer.
+
+```sh
+yv api '{"op":"automation.save","automation":{"name":"TEST-Long run","prompt":"[slow] TEST-long run","cwd":"{{repo}}","engine":"codex","model":"fake-fast","effort":"low","permission":"ask","enabled":false,"schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}' --save long_id=automation.id
+yv api '{"op":"automation.run","id":"{{long_id}}","force":true}' --wait '{"op":"automation.ran"}' --expect '{"op":"automation.ran","outcome":"started"}' --save long_sid=sessionId
+yv state --expect '{"sessions":[{"id":"{{long_sid}}","status":"running"}]}'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":"Automations"}},{"expect":"role:img:A run is working"},{"expect":{"css":".session-row","hasText":"TEST-Long run ·"},"visible":false},{"shot":"working"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:img:A run is working"},{"shot":"working"}]'
+yv api '{"op":"session.interrupt","sessionId":"{{long_sid}}"}'
+yv state --expect '{"sessions":[{"id":"{{long_sid}}","status":"idle"}]}'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":"Automations"}},{"expect":"role:img:A run is working","visible":false}]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
 - `disable-stops-the-schedule` expects no card to read "Next run off" once TEST-Patrol is back on, so a recipe before it must leave its own automations enabled (a daily slot will not fire during a run); recipes after it may add disabled ones.
+- The form's selects (Schedule type, Repeat unit, Day of the week) are set with an `eval` that sets the value and fires `change`, since `yv drive` has no select step; `fill` refuses a `<select>`.
