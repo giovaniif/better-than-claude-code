@@ -1,0 +1,49 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "f36a92ad42f6ca1c0d9b94aa472aa99d2119ba25",
+    "short": "f36a92a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T17:51:32.031Z"
+  },
+  "dir": ".verify/evidence/yv-count-waits-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1463,
+      "steps": 2,
+      "failed": {
+        "step": 1,
+        "action": {
+          "expect": "css:.yv-count-probe",
+          "count": 2
+        },
+        "reason": "expected 2 visible \"css:.yv-count-probe\", found 1",
+        "screenshot": ".verify/evidence/yv-count-waits-base/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host Healthy\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Opus 5.5 High\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself probe"
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const add = () => { const d = document.createElement(\"div\"); d.className = \"yv-count-probe\"; d.textContent = \"probe\"; document.body.appendChild(d); }; add(); setTimeout(add, 600); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"expect\":\"css:.yv-count-probe\",\"count\":2}: expected 2 visible \"css:.yv-count-probe\", found 1",
+      "hint": "see .verify/evidence/yv-count-waits-base/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

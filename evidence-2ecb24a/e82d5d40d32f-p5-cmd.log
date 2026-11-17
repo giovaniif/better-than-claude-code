@@ -1,0 +1,80 @@
+$ verify/yv map run mermaid && verify/yv map run mermaid --recipe automatic-diagrams && verify/yv map run mermaid --recipe automatic-diagrams
+# exit 0 after 42574 ms at 2ecb24a56d40e3bffe6d6cce398627abf56932c6
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-17T17:52:10.337Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "automatic-diagrams",
+          "status": "pass",
+          "ms": 9059
+        },
+        {
+          "label": "diagram-fallbacks",
+          "status": "pass",
+          "ms": 5748
+        },
+        {
+          "label": "safe-long-diagram-and-loading",
+          "status": "pass",
+          "ms": 7176
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-17T17:52:20.181Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "automatic-diagrams",
+          "status": "pass",
+          "ms": 8987
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-17T17:52:30.081Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "automatic-diagrams",
+          "status": "pass",
+          "ms": 9031
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

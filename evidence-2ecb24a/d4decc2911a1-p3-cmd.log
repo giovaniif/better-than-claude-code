@@ -1,0 +1,58 @@
+$ verify/yv drive new --steps '[{"eval":"(() => { const add = () => { const d = document.createElement(\"div\"); d.className = \"yv-count-probe\"; d.textContent = \"probe\"; document.body.appendChild(d); }; add(); setTimeout(add, 600); return true; })()","equals":true},{"expect":"css:.yv-count-probe","count":2}]'
+# exit 0 after 4731 ms at 2ecb24a56d40e3bffe6d6cce398627abf56932c6
+
+{
+  "command": "drive",
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "2ecb24a56d40e3bffe6d6cce398627abf56932c6",
+    "short": "2ecb24a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T17:51:42.201Z"
+  },
+  "dir": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/.verify/drives/2026-11-17T17-51-42-700Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2328,
+      "steps": 2,
+      "failed": null,
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const add = () => { const d = document.createElement(\"div\"); d.className = \"yv-count-probe\"; d.textContent = \"probe\"; document.body.appendChild(d); }; add(); setTimeout(add, 600); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1860,
+      "steps": 2,
+      "failed": null,
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const add = () => { const d = document.createElement(\"div\"); d.className = \"yv-count-probe\"; d.textContent = \"probe\"; document.body.appendChild(d); }; add(); setTimeout(add, 600); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
+
