@@ -51,6 +51,24 @@ printf 'TEST\000two, longer' > "$(v bin_cwd)/TEST-logo.bin"
 yv drive 'session:{{bin_sid}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".file-row","hasText":"TEST-logo.bin"},"text":"binary"},{"expect":{"css":".card","hasText":"TEST-logo.bin"},"text":"No text diff."},{"shot":"binary"}]'
 ```
 
+### renamed-file-shows-old-and-new-name
+Viewports: desktop
+A staged rename (`git mv`, then an edit) is listed as `old → new`, not git's
+brace form `{old => new}` (finding #114). Its own session, so the other
+recipes keep their folders.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-rename"}' --wait '{"op":"created"}' --save ren_sid=sessionId
+yv state --save ren_cwd='sessions[id={{ren_sid}}].cwd'
+mkdir -p "$(v ren_cwd)/TEST-src"
+printf 'one\ntwo\nthree\nfour\n' > "$(v ren_cwd)/TEST-src/greet.txt"
+git -C "$(v ren_cwd)" add TEST-src/greet.txt
+git -C "$(v ren_cwd)" -c user.name=TEST -c user.email=test@example.invalid -c commit.gpgsign=false commit -qm "TEST-greet"
+git -C "$(v ren_cwd)" mv TEST-src/greet.txt TEST-src/hello.txt
+printf 'one\ntwo\nthree\nfive\n' > "$(v ren_cwd)/TEST-src/hello.txt"
+yv drive 'session:{{ren_sid}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".file-row","hasText":"TEST-src/greet.txt → TEST-src/hello.txt"},"text":"+1 −1"},{"expect":{"css":".file-row","hasText":"=>"},"count":0},{"shot":"rename"}]'
+```
+
 ### refresh-picks-up-new-file
 Viewports: desktop
 A file written outside the agent shows after Refresh changes, as untracked.
