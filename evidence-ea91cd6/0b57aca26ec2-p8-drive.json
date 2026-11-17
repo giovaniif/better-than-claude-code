@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+    "short": "ea91cd6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:14:34.883Z"
+  },
+  "dir": ".verify/evidence/cw6-add-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3626,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cw6-add-desktop/catalog-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cw6-add-desktop/linear-sign-in-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

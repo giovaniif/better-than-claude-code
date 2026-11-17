@@ -1,0 +1,411 @@
+{
+  "v": 1,
+  "claim": "Connected work tools (Datadog, Sentry, Linear, GitHub...) could silently fail in Switchyard: no way to see which MCP servers each engine account has, which need sign-in, to sign them in, or to add one (Linear) where it is missing; MCP tools that draw charts (MCP Apps widgets) showed only text. Now a Connectors page lists, signs in and adds them for Claude and Codex, and widgets render in the thread, sandboxed.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-when-i-connect-my-work-8617",
+  "base": "09c5481b6221f5594aaacd74283c6ff781d507f2",
+  "head": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+  "changed": [
+    {
+      "status": "M",
+      "path": ".claude/skills/verify/SKILL.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/mcp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/widgets.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/connectors.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/chart.mjs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/claude"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/yard-claude"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/apps.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/connectors.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/mcp.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "sidecar/yard-claude/src/mcp.ts"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/tools.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/WidgetFrame.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/connectors.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/connectors.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/widget.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/widget.ts"
+    },
+    {
+      "status": "A",
+      "path": "verify/fakes/mcp-chart"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/connectors.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T12:14:35.687Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:14:35.722Z",
+      "text": "no-repro: a new feature; at base there is no Connectors page, no mcp.* or widget.* op and no widget rendering to reproduce a bug in"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:14:35.759Z",
+      "text": "no-failing-test: the tests are for new ops (crates/yardd/tests/connectors.rs, ui widget/connectors/store tests, sidecar mcp.test.ts); at base the ops answer 'unknown op' and the modules do not exist"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "note",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:14:35.797Z",
+      "text": "expected-api: mcp.auth: the claude-sign-in recipe pastes an address without code= on purpose; Claude Code refuses it and the row shows the reason with Try again"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "note",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:14:35.832Z",
+      "text": "expected-console: the chart drive passes --allow-errors because the test widget's fetch to example.com is blocked by the frame's CSP on purpose; that console error is the proof the sandbox holds"
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "e709f64f4208d89906210b19d4d63dbf57fe1f825c3f82cf6b2860e29ab01536"
+        },
+        {
+          "path": "p5-connectors-mobile.png",
+          "sha256": "065772ec576b12b00d822c0f78c6301dad32d20ed6f604bfda381bd5d2182cc4"
+        },
+        {
+          "path": "p5-connectors-desktop.png",
+          "sha256": "32c40344705f7c182d218d3e2ae3af0ef5edaea225aaec4f9da79b5b3dba646e"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.581Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "33346a27a619a5105b1423dd999770ec029b9627b5d43d7f01868d06c4e6e09c"
+        },
+        {
+          "path": "p6-claude-signed-in-desktop.png",
+          "sha256": "90a6c4ecd316f6d7d58ded3e18a90ba30675e4b15061bf6d893efff3b4e86a77"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.621Z",
+      "failedApi": [
+        "mcp.auth: Invalid callback URL: missing authorization code. Please paste the full redirect URL including the code parameter."
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "3952703012f01f32a8ca873df820649732df03bab28eabcbb2b084e14ed0b444"
+        },
+        {
+          "path": "p7-catalog-mobile.png",
+          "sha256": "d87b284815f1a75bb3c954bb902704afc6d4e941dc696b1cd39e8b8a71efca35"
+        },
+        {
+          "path": "p7-linear-sign-in-mobile.png",
+          "sha256": "e8efcc2c823ca40818b16c2c19887705140ed6fa42a549d56ddae5d1fe8acbc4"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.660Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "0b57aca26ec2228111bc86bded7a9b2a2e51612a45a3560203f928f56d37ca7e"
+        },
+        {
+          "path": "p8-catalog-desktop.png",
+          "sha256": "abd941db0fe6d88c8d95048249f90179be00abba79897687b44e4845e25912f6"
+        },
+        {
+          "path": "p8-linear-sign-in-desktop.png",
+          "sha256": "0b05bca8cc2ffc913167b005628ae23737505ce881607371df628a954530b208"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.699Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "24626360e37f517287cc373c7fd25608e3389a3c5f701f755069ef0a5d8c7b90"
+        },
+        {
+          "path": "p9-chart-mobile.png",
+          "sha256": "7c8f547e6901c562d88a69e73b3300451d18b56dfc2884fb93b3ee414d717a3a"
+        },
+        {
+          "path": "p9-chart-desktop.png",
+          "sha256": "7fafd94ab3fc29485a890b7750da45b2576da098899d1f3127751cd281dd1369"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.741Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "test",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-cmd.log",
+          "sha256": "17c9d8ee6416cd728e23f24f6e0ff318954f1739dc7f9c55f21b6fea1e35b483"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:04.783Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test src) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "design",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-design.json",
+          "sha256": "c1f224c229950f012ec09e1991348fc77558bd6a711a1b8c489ec581336af723"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:36.024Z",
+      "cmd": "verify/yv design-check --base 09c5481b6221",
+      "exit": 0
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ea91cd686911ef18260bb8d2321fdcd42fb08031",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-connectors.json",
+          "sha256": "628bb20792ba2f57093fc384bfeba4677ae59fb477aabdd75ec60b6866786e59"
+        }
+      ],
+      "addedAt": "2026-11-17T12:15:36.110Z",
+      "cmd": "verify/yv map run connectors",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/connectors-list",
+        "connectors/claude-sign-in",
+        "connectors/codex-sign-in-pasted",
+        "connectors/add-linear",
+        "connectors/codex-chart",
+        "connectors/claude-chart"
+      ]
+    }
+  ]
+}
