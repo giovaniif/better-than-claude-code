@@ -86,6 +86,21 @@ Enter does not take it: the chip keeps the folder it had.
 yv drive new --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{work}}/TEST-no-such-folder"},{"expect":"css:.picker-empty","text":"No folder in"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"shot":"no-match"},{"press":"Enter"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"press":"Escape"},{"expect":{"role":"button","name":"work","exact":true}}]'
 ```
 
+### refused-send-names-the-session-in-the-way
+Viewports: both
+A folder that cannot get a worktree (here a plain folder) takes one working
+session at a time. Sending another there is refused, and the banner names the
+session in the way and says to stop it or let it finish. The task stays in the
+box. (It used to say "Another session is working in this folder. Stop it
+first, or tick New worktree.", a box the page has not had since every
+repository session got a worktree.)
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"[slow] TEST-first writer"}' --wait '{"op":"created"}' --save hold_sid=sessionId
+yv drive new --allow-errors --steps '[{"click":{"role":"button","name":"work","exact":true}},{"fill":"placeholder:Search folders, or type a path","value":"{{plain}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-second writer"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":"css:.banner-error","text":"\"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first."},{"expect":"label:Message","value":"TEST-second writer"},{"shot":"refused"}]'
+yv api '{"op":"session.interrupt","sessionId":"{{hold_sid}}"}'
+```
+
 ### task-draft-survives-opening-a-session
 A half-typed task stays in the box while you look at a session and come back
 through New session. Once that task has started a session, the box is empty
@@ -103,4 +118,5 @@ browsing is covered by worktree-note.
 ## Gotchas
 - The default model is Claude Opus 5.5 even when only Codex is logged in; the fakes log both in.
 - The folder field browses as you type (`fs.dirs`); press Enter to pick the typed path. A path that names no folder is not taken; the list says so.
+- `role:button:Send` is not exact either: a sidebar row titled "TEST-… send" matches it first on desktop. Use `{"role":"button","name":"Send","exact":true}` once sessions exist.
 - `label:Folder` is not exact: once a session whose title contains "folder" exists (as in an iso you have been exploring), the sidebar row's button matches first and `fill` fails with "Element is not an <input>". Target the field by `placeholder:Search folders, or type a path` there.

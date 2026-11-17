@@ -585,10 +585,15 @@ async fn one_writer_per_folder() {
     c.wait_event(&first, "assistant_delta", 0).await;
 
     let refused = c.try_create(&cwd, "me too", json!({})).await.unwrap_err();
-    assert!(refused.contains("Another session is working in this folder"), "{refused}");
+    // It names the session in the way, and offers nothing the user cannot do:
+    // there is no "New worktree" box, and this folder could not have one.
+    assert!(refused.starts_with("\"[slow] busy\" is working in this folder."), "{refused}");
+    assert!(!refused.contains("worktree"), "{refused}");
+    let asked = c.try_create(&cwd, "me too", json!({ "worktree": true })).await.unwrap_err();
+    assert_eq!(asked, refused);
     // The same folder spelled with a trailing slash is still the same folder.
-    let refused = c.try_create(&format!("{cwd}/"), "me too", json!({})).await.unwrap_err();
-    assert!(refused.contains("Another session is working"), "{refused}");
+    let slash = c.try_create(&format!("{cwd}/"), "me too", json!({})).await.unwrap_err();
+    assert_eq!(slash, refused);
 
     c.send(json!({ "op": "session.interrupt", "sessionId": first })).await;
     c.wait_turn_done(&first, 0).await;
