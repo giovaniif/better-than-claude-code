@@ -119,3 +119,11 @@ script against `iso` on 2026-11-16; yardd's side is covered by
   CSP blocked it is the proof the sandbox holds.
 - Sign-ins persist in the fake's state for the life of the isolated yardd, so
   the sign-in recipes run once per `iso up`.
+
+### focused-search-and-status
+Only one account is expanded. Search matches service names and a status filter
+shows only usable connectors, with a clear empty state.
+
+```sh
+yv drive connectors --steps '[{"expect":"label:Connector account"},{"expect":"css:.connectors-card","count":1},{"fill":"placeholder:Search connectors","value":"datadog"},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"Datadog"},{"fill":"placeholder:Search connectors","value":"no-such-service"},{"expect":"text:No connectors match","visible":true},{"shot":"empty-search"},{"fill":"placeholder:Search connectors","value":""},{"click":{"role":"button","name":"Connected","exact":true}},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"chart"},{"shot":"connected-filter"}]'
+```
