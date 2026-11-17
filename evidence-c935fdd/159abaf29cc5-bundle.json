@@ -1,0 +1,195 @@
+{
+  "v": 1,
+  "claim": "A source handed off twice whose first new session is deleted: its first 'Handed off to' note opens the second new session and the second note has no link, because notes are matched to children by order",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-484b",
+  "base": "1483f3702ebdbb57d7c10c5415c3da47e21d2c13",
+  "head": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T05:44:55.574Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1483f3702ebdbb57d7c10c5415c3da47e21d2c13",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "b68d47352f00da4d77c411c1890d158cf36320b7008c400c1eba38f6b675532b"
+        },
+        {
+          "path": "p1-source-desktop.png",
+          "sha256": "6a9db4f43dc68c91e41a065eb9429bd90fc6543b8be485a57db780d749a42cdc"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "2e23771dc3eed65f679b6db19848817521730d768cb25ec353a0c400b5b90312"
+        }
+      ],
+      "addedAt": "2026-11-17T05:44:55.613Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "21207e98f5e11ab9c6b0efd5c4ef0fadc8026218",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "2909baea68754dfabe411f747d94fdcbc2a7dee6b786a672d03c7e59776de035"
+        }
+      ],
+      "addedAt": "2026-11-17T05:45:00.019Z",
+      "cmd": "(cd ui && bun test src/thread.test.ts) && verify/yv map run models --recipe hand-off-note-links-survive-a-deleted-sibling",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "0332713e208bd63cd38fe27eec43fd63830dde585fe17a78ea615e1e4516ff39"
+        },
+        {
+          "path": "p3-source-desktop.png",
+          "sha256": "1bf941139c66443b27950204087aa4c7d7440d358ffe9da3b152a79335d49e43"
+        },
+        {
+          "path": "p3-second-desktop.png",
+          "sha256": "4de829d2e62ff4773b8249568cbce555f2bf94f796ddc8a19539a3d23f8c7f3b"
+        }
+      ],
+      "addedAt": "2026-11-17T05:45:34.392Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4dc08ea7fedd3d3fd87d2c26e7ec75c3d77c9202ac1ab74105dc5fbdb5940a56"
+        },
+        {
+          "path": "p4-source-mobile.png",
+          "sha256": "e88c6a3143ef73c16883de0522c6c8eed660406be307e0cb36991771a8563a20"
+        },
+        {
+          "path": "p4-second-mobile.png",
+          "sha256": "fa7a9bc67a10a20c5b8c2ba57c8ee15463bf43f467b8396aa7dad0a0af3ace84"
+        }
+      ],
+      "addedAt": "2026-11-17T05:45:34.434Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "1af55b12ddaa6234358f3ef3244fcd3e38bf7cf31d1c59e31be41137e68778da"
+        }
+      ],
+      "addedAt": "2026-11-17T05:45:34.474Z",
+      "cmd": "verify/yv design-check --base 1483f3702ebd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "9d10769c44edcbfaffdbacf59a2e1381e4b4d2024e7953e51846695a51c03f52"
+        }
+      ],
+      "addedAt": "2026-11-17T05:45:40.927Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && verify/yv map run models --recipe hand-off-note-links-survive-a-deleted-sibling",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-models.json",
+          "sha256": "3c1edb72a5ed382d5eccb915a66b688e7edfb76eac005bdbd6eb894db8999f31"
+        }
+      ],
+      "addedAt": "2026-11-17T05:46:08.951Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling"
+      ]
+    }
+  ]
+}

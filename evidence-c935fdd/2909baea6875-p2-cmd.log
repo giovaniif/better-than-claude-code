@@ -1,0 +1,31 @@
+$ (cd ui && bun test src/thread.test.ts) && verify/yv map run models --recipe hand-off-note-links-survive-a-deleted-sibling
+# exit 1 after 16 ms at 21207e98f5e11ab9c6b0efd5c4ef0fadc8026218
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+175 |     const items = fold([
+176 |       { type: "note", text: "Handed off to Claude.", session: "s2" },
+177 |       { type: "note", text: "Handed off to Claude.", session: "s3" },
+178 |     ]);
+179 |     // s2 is gone: its note gets no link and does not take s3's.
+180 |     expect(handoffLinks(items, src, { s1: src, s3: second })).toEqual({ [items[1].key]: "s3" });
+                                                                    ^
+error: expect(received).toEqual(expected)
+
+  {
+-   "e1": "s3",
++   "e0": "s3",
+  }
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-484b/ui/src/thread.test.ts:180:63)
+(fail) handoffLinks > a note that names its session links there, even after an earlier child was deleted [0.46ms]
+
+ 16 pass
+ 1 fail
+ 28 expect() calls
+Ran 17 tests across 1 file. [12.00ms]

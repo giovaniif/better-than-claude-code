@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "c935fddc1a74f4a98a5d47bdd94dfeafae3fe26c",
+    "short": "c935fdd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T05:45:15.402Z"
+  },
+  "dir": ".verify/handoff-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4138,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/handoff-head-mobile/source-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/handoff-head-mobile/second-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".note\")].filter(n=>n.textContent.startsWith(\"Handed off to\")).map(n=>!!n.querySelector(\".note-link\")).join()",
+          "value": "false,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
