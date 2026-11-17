@@ -1,0 +1,118 @@
+{
+  "ok": false,
+  "route": "switchy",
+  "build": {
+    "sha": "f5bd8ad0ea378d04468aad40ea516ab30a3ce277",
+    "short": "f5bd8ad",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:46:00.896Z"
+  },
+  "dir": ".verify/evidence/switchy-stale-scope-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 16253,
+      "steps": 8,
+      "failed": {
+        "step": 6,
+        "action": {
+          "expect": {
+            "css": ".assistant-answer",
+            "hasText": "TEST-base after removal"
+          },
+          "text": "This is a scripted Switchy answer."
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/switchy-stale-scope-base/fail-mobile-step6.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - article:\n    - text: \"[slow] TEST-long question\"\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 11 sources · 03:41 PM\n  - article:\n    - text: \"[fail] TEST-boom\"\n    - strong: Switchy\n    - text: fake-fast\n    - alert: \"fake failure: the model is unavailable\"\n    - group: 11 sources · 03:41 PM\n  - article:\n    - text: TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:42 PM\n  - article:\n    - text: TEST-what runs on the gone host?\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n  - article:\n    - text: TEST-base scoped\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n  - textbox \"Ask Switchy\":\n    - /placeholder: Ask about your servers or your work…\n    - text: TEST-base after removal\n  - combobox \"Host scope\":\n    - option \"All hosts\" [selected]\n    - option \"iso-host\"\n  - combobox \"Switchy model\":\n    - option \"Codex · Fake Fast\" [selected]\n    - option \"Codex · Fake Deep\"\n    - option \"Claude · Opus 5.5\"\n    - option \"Claude · Sonnet 5.5\"\n    - option \"Claude · Haiku 5.5\"\n  - text: Read only\n  - button \"Send question\": ↑\n  - alert: Unknown host scope\n  - paragraph: Answers use selected host evidence. Expand sources to see what was checked."
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-stale-scope-base/after-removal-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".assistant-scope select\").selectedOptions[0].textContent",
+          "value": "All hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "switchy.send",
+          "message": "Unknown host scope"
+        }
+      ],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 15815,
+      "steps": 8,
+      "failed": {
+        "step": 6,
+        "action": {
+          "expect": {
+            "css": ".assistant-answer",
+            "hasText": "TEST-base after removal"
+          },
+          "text": "This is a scripted Switchy answer."
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/switchy-stale-scope-base/fail-desktop-step6.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 3% · 45%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - article:\n    - text: \"[slow] TEST-long question\"\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 11 sources · 03:41 PM\n  - article:\n    - text: \"[fail] TEST-boom\"\n    - strong: Switchy\n    - text: fake-fast\n    - alert: \"fake failure: the model is unavailable\"\n    - group: 11 sources · 03:41 PM\n  - article:\n    - text: TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:42 PM\n  - article:\n    - text: TEST-what runs on the gone host?\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n  - article:\n    - text: TEST-base scoped\n    - strong: Switchy\n    - text: fake-fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n  - textbox \"Ask Switchy\":\n    - /placeholder: Ask about your servers or your work…\n    - text: TEST-base after removal\n  - combobox \"Host scope\":\n    - option \"All hosts\" [selected]\n    - option \"iso-host\"\n  - combobox \"Switchy model\":\n    - option \"Codex · Fake Fast\" [selected]\n    - option \"Codex · Fake Deep\"\n    - option \"Claude · Opus 5.5\"\n    - option \"Claude · Sonnet 5.5\"\n    - option \"Claude · Haiku 5.5\"\n  - text: Read only\n  - button \"Send question\": ↑\n  - alert: Unknown host scope\n  - paragraph: Answers use selected host evidence. Expand sources to see what was checked."
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-stale-scope-base/after-removal-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".assistant-scope select\").selectedOptions[0].textContent",
+          "value": "All hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "switchy.send",
+          "message": "Unknown host scope"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 6 {\"expect\":{\"css\":\".assistant-answer\",\"hasText\":\"TEST-base after removal\"},\"text\":\"This is a scripted Switchy answer.\"}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/switchy-stale-scope-base/fail-mobile-step6.png and the aria snapshot"
+    },
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 6 {\"expect\":{\"css\":\".assistant-answer\",\"hasText\":\"TEST-base after removal\"},\"text\":\"This is a scripted Switchy answer.\"}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/switchy-stale-scope-base/fail-desktop-step6.png and the aria snapshot"
+    }
+  ]
+}

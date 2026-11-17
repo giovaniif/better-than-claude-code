@@ -1,0 +1,26 @@
+$ cd ui && bun test src/switchy.test.ts
+# exit 1 after 10 ms at f5bd8ad0ea378d04468aad40ea516ab30a3ce277
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/switchy.test.ts:
+16 |   });
+17 | 
+18 |   // The picker has no option for a host that was removed, so it reads "All
+19 |   // hosts" while yardd would refuse the stale id as an unknown host scope.
+20 |   test("a saved scope naming a removed host falls back to every host", () => {
+21 |     expect(switchyScope(null, "h-gone", hosts)).toBe("all");
+                                                     ^
+error: expect(received).toBe(expected)
+
+Expected: "all"
+Received: "h-gone"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920/ui/src/switchy.test.ts:21:49)
+(fail) switchyScope > a saved scope naming a removed host falls back to every host [0.33ms]
+
+ 2 pass
+ 1 fail
+ 6 expect() calls
+Ran 3 tests across 1 file. [6.00ms]

@@ -1,0 +1,36 @@
+$ verify/yv map run switchy
+# exit 0 after 30477 ms at 23e31202b58cfea58b73ead07c0fb4edc6fbaa74
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-17T18:48:14.356Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "ask-and-reload",
+          "status": "pass",
+          "ms": 9693
+        },
+        {
+          "label": "context-and-followup",
+          "status": "pass",
+          "ms": 7160
+        },
+        {
+          "label": "removed-host-scope-falls-back",
+          "status": "pass",
+          "ms": 12761
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

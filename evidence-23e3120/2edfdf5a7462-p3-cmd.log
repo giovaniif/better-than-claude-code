@@ -1,0 +1,53 @@
+$ verify/yv map run switchy --recipe removed-host-scope-falls-back
+# exit 1 after 33485 ms at f5bd8ad0ea378d04468aad40ea516ab30a3ce277
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-17T18:47:18.676Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "removed-host-scope-falls-back",
+          "status": "fail",
+          "ms": 32622,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"expect\":{\"css\":\".assistant-answer\",\"hasText\":\"TEST-after the host went away\"},\"text\":\"This is a scripted Switchy answer.\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920/.verify/drives/2026-11-17T18-46-51-757Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "errors",
+              "msg": "mobile: 0 console, 0 page, 1 API, 0 HTTP errors"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"expect\":{\"css\":\".assistant-answer\",\"hasText\":\"TEST-after the host went away\"},\"text\":\"This is a scripted Switchy answer.\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920/.verify/drives/2026-11-17T18-46-51-757Z/fail-desktop-step4.png and the aria snapshot"
+            },
+            {
+              "code": "errors",
+              "msg": "desktop: 0 console, 0 page, 1 API, 0 HTTP errors"
+            }
+          ],
+          "tail": "tton \\\"iso-host 5% · 46%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Switchy\\\" [level=1]\\n  - button \\\"Context\\\"\\n- main:\\n  - article:\\n    - text: TEST-what runs on the scoped host?\\n    - strong: Switchy\\n    - text: fake-fast\\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\\n  - textbox \\\"Ask Switchy\\\":\\n    - /placeholder: Ask about your servers or your work…\\n    - text: TEST-after the host went away\\n  - combobox \\\"Host scope\\\":\\n    - option \\\"All hosts\\\" [selected]\\n    - option \\\"iso-host\\\"\\n  - combobox \\\"Switchy model\\\":\\n    - option \\\"Codex · Fake Fast\\\" [selected]\\n    - option \\\"Codex · Fake Deep\\\"\\n    - option \\\"Claude · Opus 5.5\\\"\\n    - option \\\"Claude · Sonnet 5.5\\\"\\n    - option \\\"Claude · Haiku 5.5\\\"\\n  - text: Read only\\n  - button \\\"Send question\\\": ↑\\n  - alert: Unknown host scope\\n  - paragraph: Answers use selected host evidence. Expand sources to see what was checked.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"document.querySelector(\\\".assistant-scope select\\\").value\",\n          \"value\": \"all\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"error\",\n          \"for\": \"switchy.send\",\n          \"message\": \"Unknown host scope\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"expect\\\":{\\\"css\\\":\\\".assistant-answer\\\",\\\"hasText\\\":\\\"TEST-after the host went away\\\"},\\\"text\\\":\\\"This is a scripted Switchy answer.\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920/.verify/drives/2026-11-17T18-46-51-757Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"errors\",\n      \"msg\": \"mobile: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"expect\\\":{\\\"css\\\":\\\".assistant-answer\\\",\\\"hasText\\\":\\\"TEST-after the host went away\\\"},\\\"text\\\":\\\"This is a scripted Switchy answer.\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920/.verify/drives/2026-11-17T18-46-51-757Z/fail-desktop-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"errors\",\n      \"msg\": \"desktop: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "switchy/removed-host-scope-falls-back",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

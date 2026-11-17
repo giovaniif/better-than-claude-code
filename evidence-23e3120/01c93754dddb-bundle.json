@@ -1,0 +1,179 @@
+{
+  "v": 1,
+  "claim": "Switchy: after the host a question was scoped to is removed, the picker reads All hosts but every question is refused with Unknown host scope",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920",
+  "base": "42fea6a8397b8cd5459fd6468e23f3d16f323677",
+  "head": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/switchy.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/switchy.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T18:45:56.766Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "f5bd8ad0ea378d04468aad40ea516ab30a3ce277",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "65093e848ab68fdaa3d65b9ed0a5b9dc73727a35ac5e5863a98db7d176039c5b"
+        },
+        {
+          "path": "p1-after-removal-mobile.png",
+          "sha256": "b905b2851ca6bfe72733225b8e4271699d5308b2012efac64e14da299e5a7cc6"
+        },
+        {
+          "path": "p1-fail-mobile-step6.png",
+          "sha256": "b905b2851ca6bfe72733225b8e4271699d5308b2012efac64e14da299e5a7cc6"
+        },
+        {
+          "path": "p1-after-removal-desktop.png",
+          "sha256": "93da69e25bcb03aa1d96b08556f66149bf58d3131294e45b996d33b56d2c9450"
+        },
+        {
+          "path": "p1-fail-desktop-step6.png",
+          "sha256": "8f4236fbde19d41e668681ac0f826bc2319c9236492d1c8912ebf0f76f7e3d3a"
+        }
+      ],
+      "addedAt": "2026-11-17T18:46:41.204Z",
+      "failedApi": [
+        "switchy.send: Unknown host scope",
+        "switchy.send: Unknown host scope"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "f5bd8ad0ea378d04468aad40ea516ab30a3ce277",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "07cff4f9fc2ae04a11d5270bdf4bb7ac3acfd44264e52a2f785cc05e07875a29"
+        }
+      ],
+      "addedAt": "2026-11-17T18:46:41.258Z",
+      "cmd": "cd ui && bun test src/switchy.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "f5bd8ad0ea378d04468aad40ea516ab30a3ce277",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2edfdf5a7462eef63733ce1d2abdbbe5ddb012a48c5339b3be18a38f32c1379a"
+        }
+      ],
+      "addedAt": "2026-11-17T18:46:45.196Z",
+      "cmd": "verify/yv map run switchy --recipe removed-host-scope-falls-back",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "52a2d7868d193b21832e533299fca7b82d375e9cb34981838926497849e0505f"
+        },
+        {
+          "path": "p4-after-removal-mobile.png",
+          "sha256": "9e94c638261bbbf5459a1c9fb27a7289b523c2f48665b458443648daf2cd22b3"
+        },
+        {
+          "path": "p4-after-removal-desktop.png",
+          "sha256": "57dc59472ccc40b32d24e120f034f5e23b9bb277f6c036381d39e92d5cd9e48e"
+        }
+      ],
+      "addedAt": "2026-11-17T18:47:43.834Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "d676f44756d85c19d428aea42adac27a6f84985deced939af9c352d10ee253bf"
+        }
+      ],
+      "addedAt": "2026-11-17T18:47:43.882Z",
+      "cmd": "verify/yv map run switchy",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "189fab3107ae2f72d35547c1d7d3e2de9745cd084f5233c23dd2d1e4c41b8a61"
+        }
+      ],
+      "addedAt": "2026-11-17T18:48:14.422Z",
+      "cmd": "verify/yv design-check --base 42fea6a8397b",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "4866fb02719e8d8c8c0cfeb7832ee9c679d536d7b7a237716761195b52c5f412"
+        }
+      ],
+      "addedAt": "2026-11-17T18:48:19.589Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    }
+  ]
+}

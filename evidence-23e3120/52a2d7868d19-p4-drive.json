@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "23e31202b58cfea58b73ead07c0fb4edc6fbaa74",
+    "short": "23e3120",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:47:22.763Z"
+  },
+  "dir": ".verify/evidence/switchy-stale-scope-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6346,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-stale-scope-head/after-removal-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".assistant-scope select\").selectedOptions[0].textContent",
+          "value": "All hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 5863,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-stale-scope-head/after-removal-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".assistant-scope select\").selectedOptions[0].textContent",
+          "value": "All hosts"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
