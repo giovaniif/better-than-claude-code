@@ -96,8 +96,8 @@ first, or tick New worktree.", a box the page has not had since every
 repository session got a worktree.)
 
 ```sh
-yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"[slow] TEST-holds the folder"}' --wait '{"op":"created"}' --save hold_sid=sessionId
-yv drive new --allow-errors --steps '[{"click":{"role":"button","name":"work","exact":true}},{"fill":"placeholder:Search folders, or type a path","value":"{{plain}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-second writer"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":"css:.banner-error","text":"\"[slow] TEST-holds the folder\" is working in this folder. Stop it or let it finish first."},{"expect":"label:Message","value":"TEST-second writer"},{"shot":"refused"}]'
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"[slow] TEST-first writer"}' --wait '{"op":"created"}' --save hold_sid=sessionId
+yv drive new --allow-errors --steps '[{"click":{"role":"button","name":"work","exact":true}},{"fill":"placeholder:Search folders, or type a path","value":"{{plain}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-second writer"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":"css:.banner-error","text":"\"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first."},{"expect":"label:Message","value":"TEST-second writer"},{"shot":"refused"}]'
 yv api '{"op":"session.interrupt","sessionId":"{{hold_sid}}"}'
 ```
 
