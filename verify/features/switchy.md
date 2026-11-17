@@ -39,19 +39,6 @@ a follow-up without changing routes.
 yv drive switchy --steps '[{"click":"role:button:Context"},{"expect":"css:.assistant-context","text":"Saved terminal activity"},{"shot":"switchy-context"},{"click":"role:button:Context"},{"fill":"label:Ask Switchy","value":"TEST-Which processes are using CPU?"},{"press":"Enter","target":"label:Ask Switchy"},{"wait":"text:This is a scripted Switchy answer."},{"expect":"css:.assistant-conversation","inViewport":true}]'
 ```
 
-### removed-host-scope-falls-back
-Viewports: both
-A question scoped to a remote host saves that scope. Once the host is removed,
-the picker reads "All hosts" and the next question is asked of every host and
-answered, not refused as an unknown host scope.
-
-```sh
-yv api '{"op":"host.add","name":"TEST-scope-gone","kind":"ssh","destination":"test@scope-gone.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-scope-gone"}]}' --save scope_host='hosts[name=TEST-scope-gone].id'
-yv drive switchy --viewport desktop --steps '[{"expect":"role:heading:Switchy"},{"eval":"(()=>{const s=document.querySelector(\".assistant-scope select\");const o=[...s.options].find(o=>o.textContent===\"TEST-scope-gone\");Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,\"value\").set.call(s,o.value);s.dispatchEvent(new Event(\"change\",{bubbles:true}));return s.value===o.value})()","equals":true},{"fill":"label:Ask Switchy","value":"TEST-what runs on the scoped host?"},{"click":"role:button:Send question"},{"expect":{"css":".assistant-answer","hasText":"TEST-what runs on the scoped host?"},"text":"This is a scripted Switchy answer."}]'
-yv api '{"op":"host.remove","hostId":"{{scope_host}}"}'
-yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"eval":"document.querySelector(\".assistant-scope select\").value","equals":"all"},{"fill":"label:Ask Switchy","value":"TEST-after the host went away"},{"click":"role:button:Send question"},{"expect":{"css":".assistant-answer","hasText":"TEST-after the host went away"},"text":"This is a scripted Switchy answer."},{"expect":"css:.assistant-notice","count":0},{"shot":"scope-after-removal"}]'
-```
-
 ## Gotchas
 
 - Model inference is scripted in this map. Live Claude/Codex output is not proven

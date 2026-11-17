@@ -3,7 +3,6 @@ import { ENGINE_NAME } from "./engines";
 import { Icon, Markdown, MenuButton } from "./App";
 import { hostName, type Actions, type State } from "./store";
 import type { SwitchyTurn } from "./protocol";
-import { switchyScope } from "./switchy";
 
 const SPARK = "M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z";
 const SERVER = "M4 3h16v7H4ZM4 14h16v7H4ZM7 6h.01M7 17h.01";
@@ -105,9 +104,9 @@ export function AssistantPage({
     selection ??
     (conversation ? `${conversation.engine}:${conversation.model}` : "");
   const current = choices.find((c) => c.value === preferred) ?? choices[0];
+  const scope = chosenScope ?? conversation?.scope ?? "all";
   const busy = pending || (!!conversation && conversation.status !== "idle");
   const hosts = ["local", ...state.hosts.map((h) => h.id)];
-  const scope = switchyScope(chosenScope, conversation?.scope, hosts);
   const turns = conversation?.turns ?? [];
   useEffect(() => {
     if (state.connected) actions.post({ op: "switchy.get" });
