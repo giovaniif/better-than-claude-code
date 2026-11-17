@@ -188,6 +188,10 @@ async function handle(msg) {
     }
     case "thread/start": {
       if (dir) appendFileSync(`${dir}/thread-starts.jsonl`, `${JSON.stringify(p)}\n`);
+      // Codex converts JSON null to an empty TOML string, which is invalid for numeric timeouts.
+      for (const [name, server] of Object.entries(p.config?.mcp_servers ?? {})) {
+        if (server.tool_timeout_sec === null) return fail(`invalid type: string "", expected f64 in mcp_servers.${name}.tool_timeout_sec`);
+      }
       const tid = newId("thread");
       threads.set(tid, { cwd: p.cwd ?? "" });
       saveThreads();
@@ -284,6 +288,7 @@ async function handle(msg) {
     case "config/mcpServer/reload":
       return reply({});
     case "config/read":
+      if (dir && existsSync(`${dir}/config-read.json`)) return reply({ config: JSON.parse(readFileSync(`${dir}/config-read.json`, "utf8")), origins: {}, layers: null });
       return reply({ config: { mcp_servers: Object.fromEntries(addedServers().map((a) => [a.name, { url: a.url }])) }, origins: {}, layers: null });
     case "config/value/write": {
       const m = /^mcp_servers\.([A-Za-z0-9_-]+)$/.exec(p.keyPath ?? "");

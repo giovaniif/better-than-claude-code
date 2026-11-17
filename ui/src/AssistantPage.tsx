@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ENGINE_NAME } from "./engines";
-import { Icon, Markdown, MenuButton } from "./App";
+import { Composer, Icon, Markdown, MenuButton, ModelPicker } from "./App";
 import { hostName, type Actions, type State } from "./store";
 import type { SwitchyTurn } from "./protocol";
 import { switchyScope } from "./switchy";
@@ -86,7 +85,6 @@ export function AssistantPage({
   const conversation = state.switchy;
   const [selection, setSelection] = useState<string | null>(null);
   const [chosenScope, setScope] = useState<string | null>(null);
-  const [question, setQuestion] = useState("");
   const [contextOpen, setContextOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -98,7 +96,6 @@ export function AssistantPage({
       value: `${engine}:${m.id}`,
       engine,
       model: m.id,
-      label: `${ENGINE_NAME[engine]} · ${m.name || m.id}`,
     })),
   );
   const preferred =
@@ -125,7 +122,7 @@ export function AssistantPage({
       !state.connected ||
       !conversation
     )
-      return;
+      return false;
     sending.current = true;
     setPending(true);
     setError("");
@@ -137,12 +134,16 @@ export function AssistantPage({
         current.model,
         scope,
       );
-      if (reply.error) setError(reply.error);
-      else setQuestion("");
+      if (reply.error) {
+        setError(reply.error);
+        return false;
+      }
+      return true;
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Could not send your question.",
       );
+      return false;
     } finally {
       sending.current = false;
       setPending(false);
@@ -155,6 +156,31 @@ export function AssistantPage({
         <Icon d={SPARK} />
         <h1>Switchy</h1>
         <span className="spacer" />
+        <label className="assistant-scope">
+          <Icon d={SERVER} />
+          <select
+            aria-label="Host scope"
+            value={scope}
+            disabled={busy}
+            onChange={(e) => setScope(e.target.value)}
+          >
+            <option value="all">All hosts</option>
+            {hosts.map((id) => (
+              <option key={id} value={id}>
+                {hostName(state, id)}
+              </option>
+            ))}
+          </select>
+        </label>
+        {busy && (
+          <button
+            className="btn"
+            disabled={!state.connected}
+            onClick={() => actions.post({ op: "switchy.stop" })}
+          >
+            Stop
+          </button>
+        )}
         <button
           className="btn-text"
           onClick={() => setContextOpen(!contextOpen)}
@@ -210,94 +236,30 @@ export function AssistantPage({
             </div>
           </div>
           <div className="assistant-compose-wrap">
-            <form
-              className="composer assistant-compose"
-              onSubmit={(e) => {
-                e.preventDefault();
-                void ask(question);
-              }}
+            <Composer
+              placeholder="Ask about your servers or your work…"
+              rows={1}
+              draft="switchy"
+              target={{ host: "local" }}
+              maxLength={8000}
+              busy={busy || !current || !state.connected || !conversation}
+              onSubmit={ask}
             >
-              <textarea
-                aria-label="Ask Switchy"
-                placeholder="Ask about your servers or your work…"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                rows={2}
-                maxLength={8000}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !e.nativeEvent.isComposing
-                  ) {
-                    e.preventDefault();
-                    void ask(question);
+              {current && (
+                <ModelPicker
+                  models={state.models.local ?? {}}
+                  engines={["codex", "claude"]}
+                  value={{
+                    engine: current.engine,
+                    model: current.model,
+                    effort: "low",
+                  }}
+                  onChange={(choice) =>
+                    setSelection(`${choice.engine}:${choice.model}`)
                   }
-                }}
-              />
-              <div className="row">
-                <label className="assistant-scope">
-                  <Icon d={SERVER} />
-                  <select
-                    aria-label="Host scope"
-                    value={scope}
-                    disabled={busy}
-                    onChange={(e) => setScope(e.target.value)}
-                  >
-                    <option value="all">All hosts</option>
-                    {hosts.map((id) => (
-                      <option key={id} value={id}>
-                        {hostName(state, id)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="assistant-scope assistant-model">
-                  <Icon d={SPARK} />
-                  <select
-                    aria-label="Switchy model"
-                    value={current?.value ?? ""}
-                    disabled={busy || !choices.length}
-                    onChange={(e) => setSelection(e.target.value)}
-                  >
-                    {!choices.length && (
-                      <option value="">No models available</option>
-                    )}
-                    {choices.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <span className="muted small">Read only</span>
-                <span className="spacer" />
-                {busy ? (
-                  <button
-                    className="btn"
-                    type="button"
-                    onClick={() => actions.post({ op: "switchy.stop" })}
-                    disabled={!state.connected}
-                  >
-                    Stop
-                  </button>
-                ) : (
-                  <button
-                    className="btn-primary"
-                    type="submit"
-                    aria-label="Send question"
-                    disabled={
-                      !question.trim() ||
-                      !current ||
-                      !state.connected ||
-                      !conversation
-                    }
-                  >
-                    ↑
-                  </button>
-                )}
-              </div>
-            </form>
+                />
+              )}
+            </Composer>
             {error && (
               <p className="assistant-notice bad" role="alert">
                 {error}

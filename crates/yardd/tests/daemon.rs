@@ -633,6 +633,29 @@ async fn worktree_branches_and_a_session_from_a_base() {
     assert!(refused.contains("is not a branch or commit"), "{refused}");
 }
 
+/// New session asks for the branches of the folder it remembers. A folder
+/// deleted since must read as gone, not as a plain folder that Send would
+/// then refuse.
+#[tokio::test]
+async fn branches_of_a_missing_folder_say_it_is_missing() {
+    let sb = Sandbox::new("branches-missing");
+    let plain = sb.folder("plain");
+    let gone = format!("{plain}-gone");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    c.send(json!({ "op": "git.branches", "cwd": plain })).await;
+    let reply = c.wait_for("plain folder branches", |m| m["op"] == "git.branches" && m["cwd"] == plain).await;
+    assert!(reply["error"].is_string(), "{reply}");
+    assert_eq!(reply.get("missing"), None, "an existing folder is not missing: {reply}");
+
+    c.send(json!({ "op": "git.branches", "cwd": gone })).await;
+    let reply = c.wait_for("missing folder branches", |m| m["op"] == "git.branches" && m["cwd"] == gone).await;
+    assert_eq!(reply["missing"], true, "{reply}");
+    // An answer, not a failure: the page reads `missing`.
+    assert_eq!(reply.get("error"), None, "{reply}");
+}
+
 #[tokio::test]
 async fn a_folder_outside_a_repository_runs_in_place() {
     let sb = Sandbox::new("inplace");

@@ -202,6 +202,8 @@ export interface BranchList {
   current?: string;
   /** Local and `origin/*` branches, most recently committed first, at most 200. */
   branches?: string[];
+  /** The folder does not exist (deleted since it was picked). */
+  missing?: boolean;
   error?: string;
 }
 

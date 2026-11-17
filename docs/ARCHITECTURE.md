@@ -73,7 +73,7 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - Streamed `assistant_delta`s are not saved. The final `assistant_message` has the full text.
 - On startup yardd loads every session. One that was mid-turn gets an `error` ("yardd restarted during this turn.") and a failed `turn_completed`.
 - A restored session resumes on its next message. Codex: `thread/resume` with the saved thread id. Claude: a new sidecar started with the SDK `resume` option and the saved Claude Code session id.
-- `session.delete` stops the session's engine and terminal and removes it from memory and the database. Git worktrees are kept.
+- `session.delete` stops the session's engine and terminal and removes it from memory and the database. Git worktrees are kept (until merged, see Worktrees).
 
 ## Engines
 
@@ -138,7 +138,7 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
 - **Processes tab:** `session.procs { sessionId }` answers `session.procs { sessionId, procs }`, the session's processes from the same sample (so up to 3 s old): `pid`, `ppid`, `name`, `cmd` (at most 400 characters), `cpu` (percent of one core), `memBytes`, `ageSecs`, `start` (seconds since the epoch), `origin` (`agent` for the sidecar tree or a Codex command, `terminal` for a shell) and `engine` (the engine's own process: a Claude sidecar, or the sidecar's child whose name or command line says `claude`, which is the CLI the SDK starts). It is asked for, not broadcast, and routes through the hub like any session op. The tab (`ProcPane`, next to Changes, Terminal and Pull request, so hidden below 1100 px) asks when opened and every 3 s while visible, and draws the tree with each command line shortened. An older remote yardd answers "unknown op": the tab stays on "Loading…".
 - **Stopping a process:** `session.kill { sessionId, pid, start?, signal: "term"|"kill", tree? }` answers `session.killed { sessionId, pid, signal, tree, result, reason?, running }` (and the request's `ref`). yardd does not trust the pid: it reads the process table again at that moment, works out every session's tree from it the same way as the sample, and refuses (`result: "refused"` with a `reason`, not an error) pid 0 or 1, its own pid, any engine process (a Claude sidecar or its CLI, a Codex app-server or ACP agent, which other sessions may share; these are never in the tab's reach, the session's Stop and Delete end them), a pid that is not in this session's tree now, a pid another session lists too, and a `start` that differs from the listed one (the pid was reused). It signals from that same read, then checks every 100 ms whether the processes are gone (a zombie counts as gone) for up to 3 s after SIGTERM or 2 s after SIGKILL: `killed`, or `running` with the pids still alive. Killed pids are dropped from the cached list so the next `session.procs` leaves them out. `tree: true` signals the process and everything below it in the session's list, children before parents in one pass with no pause between, so a parent waiting on a child has no time to start a replacement. Not by process group: a command that did not start its own group shares the one of whatever started it, which can be the engine, and the list is what was checked. Only `term` and `kill` exist; anything else, a missing pid or an unknown session is an error. It routes through the hub like any session op; an older remote answers `unknown op`, which the row shows as that host needing Update Switchyard. The tab offers each row a Stop (×, shown on hover, always on touch) that asks for a second click, with "Stop with children" when the row has children; a row still running after SIGTERM offers "Force kill", also confirmed. The engine's rows offer nothing. The tab refreshes the list after each answer. Known limit: a Codex or ACP child is matched to a session by folder and start time (above), so a helper the shared agent starts in that folder while a command runs there would look like the session's.
-- Not built: worktree disk sizes with cleanup.
+- Not built: worktree disk sizes. Merged worktrees are swept (see Worktrees).
 
 ## Remote hosts
 
@@ -260,6 +260,7 @@ Every new session in a git repository with at least one commit gets its own bran
 - The worktree is made before the session. If `git worktree add` fails, nothing else runs and no session exists.
 - **Setup:** after a successful add, yardd runs `<data dir>/setup/<repo>.sh` if it exists, else `.yard/worktree-setup.sh` from the repo, with bash in the new worktree (`YARD_REPO`, `YARD_WORKTREE`, 5 minute limit). This is where `node_modules` and `.env` get linked. If it fails, yardd removes that worktree and branch and creates no session. It never runs in the original checkout.
 - **Removal:** deleting a worktree session offers "Delete and remove worktree". It runs `git worktree remove`, never forced, and is refused if anything is uncommitted or untracked, or another session still uses the folder. The branch goes with `git branch -d`, which keeps unmerged branches.
+- **Merged worktrees go by themselves,** for every repository, with no setting (`sweep.rs`). Every 10 minutes (first pass a minute after start; `YARD_WORKTREE_SWEEP_SECS` changes it, `0` turns it off) yardd looks at each linked worktree under `<data dir>/wt/<repo>/`, whether a session made it or not. One goes when it is clean (no changed or untracked files), no session in it is running, waiting for approval or queued, no process has its current folder inside it (a terminal, a dev server; an idle Claude session's own CLI does not count and is stopped first), and `gh pr list --state merged --search <HEAD>` returns a PR whose `headRefOid` is exactly HEAD, so a branch with commits after the merge stays. Then `git worktree remove` (never forced) from the main checkout and `git branch -D`: a squash merge leaves the branch unmerged to git, and GitHub keeps the PR's head commit. Each session that ran there gets a note ("Worktree and branch … removed: pull request #N was merged."); its conversation stays. A repository without GitHub, or a host without a logged-in `gh`, is never swept.
 - **One writer per folder:** a session without a new worktree is refused while another session in the same folder is running, waiting for approval or queued.
 - Uncommitted changes in the original checkout are not carried over.
 - Files a setup script creates count as untracked unless gitignored, so they block removal.
@@ -418,7 +419,9 @@ Next:
 ## Switchy
 
 `#/assistant` is Switchy, a persistent quick-question conversation separate from
-coding sessions. Its composer shares the session `.composer` styling. Context
+coding sessions. It uses the session `Composer` and `ModelPicker` components, including auto-grow,
+dictation, draft retention and the send control. Host scope is in the header;
+attachments remain disabled because the Switchy protocol accepts text only. Context
 opens the host rail. Model and host scope are independent: inference runs on the
 hub's default Claude or Codex account; evidence comes from Local, a selected
 remote, or All hosts. Other engines are omitted until a supported tool restriction
@@ -469,6 +472,9 @@ path is implemented. No worktree, sidebar session or engine resume is created.
   removed after each answer. Codex receives an ephemeral, read-only thread with
   approvals disabled, shell/exec, apps, browser, computer, JS/code-mode, hooks,
   multi-agent and configured MCP/plugin tools disabled by thread-local overrides.
+  Null optional fields from `config/read` are omitted from copied overrides: Codex
+  converts JSON nulls to empty TOML strings, which breaks typed fields such as MCP
+  timeouts. Transport settings and concrete values are retained.
   Claude receives a fresh sidecar with no tools, strict empty MCP configuration,
   no setting sources/plugins/hooks, no persisted engine session, and a denying
   permission callback. Coding-session settings are untouched. Grok/OpenCode,
