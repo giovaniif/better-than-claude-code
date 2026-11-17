@@ -1,0 +1,212 @@
+{
+  "v": 1,
+  "claim": "Cmd-K with an empty search lists eight 'recent sessions', but archived automation runs fill all eight, so none of the sidebar's conversations appear; the empty list should show the sidebar's recent sessions while search still finds runs",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18",
+  "base": "f36a92ad42f6ca1c0d9b94aa472aa99d2119ba25",
+  "head": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T17:43:31.676Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1cec72f2b420080efbfffe900eb50136fbc1b2a2",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "4d0b39f7ebccf6c2edc25d2aa29ac0bd669272894cc79a8f10dbdcf61e32297c"
+        },
+        {
+          "path": "p1-palette-mobile.png",
+          "sha256": "33970d47c98e6d27e28f4b2e7e5d631e2647ba769bc1fa6d5020ecc05f5cfdf9"
+        },
+        {
+          "path": "p1-palette-desktop.png",
+          "sha256": "6668856229b33d030a65487cc6340c617d1c832ea82718d49806c969da417732"
+        }
+      ],
+      "addedAt": "2026-11-17T17:43:39.918Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1cec72f2b420080efbfffe900eb50136fbc1b2a2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f21e7b1e0dd39cb307e2988b65f54ee1a98178f3d395b218cd53a55714c379b2"
+        }
+      ],
+      "addedAt": "2026-11-17T17:43:39.961Z",
+      "cmd": "cd ui && bun test src/navigation.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "1cec72f2b420080efbfffe900eb50136fbc1b2a2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "370eca34a5ebb1e1015fe0349ce061707f2a6e35eff681d5082aabbb7bf9d38d"
+        }
+      ],
+      "addedAt": "2026-11-17T17:43:40.015Z",
+      "cmd": "verify/yv map run navigation --recipe recent-list-skips-automation-runs",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "625f9c5ddd3c672b00e914e4516d97ad82df26d931c68654eb2b855b52c9d8ea"
+        },
+        {
+          "path": "p4-palette-mobile.png",
+          "sha256": "035b24706635761b799bd71550ed38e7205b6e3d8afecdc3ab2eb93b78ff1315"
+        },
+        {
+          "path": "p4-search-runs-mobile.png",
+          "sha256": "f628cebee05b7d43af54c4bc68330d1d8ded040544bf73e6bb13f7c386512488"
+        },
+        {
+          "path": "p4-palette-desktop.png",
+          "sha256": "8832324164a13820c93f8f326eea5520f741676d1da9112c501013a7a15240c4"
+        },
+        {
+          "path": "p4-search-runs-desktop.png",
+          "sha256": "667c4ac813c5d8af3119dda9e512f18095319d04d482d3dee6613ed89e24d305"
+        }
+      ],
+      "addedAt": "2026-11-17T17:44:25.742Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "6fd859b28ba6f13d0c04390618210bb9e2282cba06377f6c28dfcdfe0f56a371"
+        }
+      ],
+      "addedAt": "2026-11-17T17:44:25.791Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "6052fea31a2a0a0153d1ffa448f0a4e34f449425ff04d5e9746f6d41533de672"
+        }
+      ],
+      "addedAt": "2026-11-17T17:44:25.933Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "39dc680b04266252ade6b2db7a43570ede50f4d16e9a561ce2286360e0327c21"
+        }
+      ],
+      "addedAt": "2026-11-17T17:44:54.384Z",
+      "cmd": "verify/yv design-check --base f36a92ad42f6",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-automations.json",
+          "sha256": "48c4ced20f3349b55afbd6cdaf6dcf3120856a2d5e63fbd1434dc55bd5198e6a"
+        }
+      ],
+      "addedAt": "2026-11-17T17:44:54.493Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/grid-of-cards-and-the-run-strip",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button",
+        "automations/manual-run-with-its-own-prompt"
+      ]
+    }
+  ]
+}

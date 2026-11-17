@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b330d11a59a5d34fe0fdf82c4d466f9e3c2df049",
+    "short": "b330d11",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T17:44:18.693Z"
+  },
+  "dir": ".verify/evidence/palette-recent-skips-runs-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3375,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/palette-recent-skips-runs-head/palette-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/palette-recent-skips-runs-head/search-runs-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".navigation-option .navigation-title\")].map(e=>e.textContent).join(\" | \")",
+          "value": "[cmd] TEST-run the migration | TEST-hello from Claude | [edit] TEST-fix the greeting | TEST-say hello | [think] TEST-plan the refactor | [fail] TEST-failing turn | New session | Automations | Connectors | Settings | Hosts | Import"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2979,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/palette-recent-skips-runs-head/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/palette-recent-skips-runs-head/search-runs-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".navigation-option .navigation-title\")].map(e=>e.textContent).join(\" | \")",
+          "value": "[cmd] TEST-run the migration | TEST-hello from Claude | [edit] TEST-fix the greeting | TEST-say hello | [think] TEST-plan the refactor | [fail] TEST-failing turn | New session | Automations | Connectors | Settings | Hosts | Import"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

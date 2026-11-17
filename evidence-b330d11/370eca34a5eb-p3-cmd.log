@@ -1,0 +1,45 @@
+$ verify/yv map run navigation --recipe recent-list-skips-automation-runs
+# exit 1 after 26941 ms at 1cec72f2b420080efbfffe900eb50136fbc1b2a2
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-17T17:44:06.952Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "recent-list-skips-automation-runs",
+          "status": "fail",
+          "ms": 26082,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"expect\":{\"css\":\".navigation-option\",\"hasText\":\"TEST-say hello\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/.verify/drives/2026-11-17T17-43-43-041Z/fail-mobile-step2.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"expect\":{\"css\":\".navigation-option\",\"hasText\":\"TEST-say hello\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/.verify/drives/2026-11-17T17-43-43-041Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "ze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-571a · yard/test-nav-runs-2026-11-571a · Archived · Automation\\\"\\n    - option \\\"TEST-Nav runs · 2026-11-17 14:43 Codex · iso-host · /tmp/yv-map-navigation-3938237-mwkze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-b418 · yard/test-nav-runs-2026-11-b418 · Archived · Automation\\\"\\n    - option \\\"TEST-Nav runs · 2026-11-17 14:43 Codex · iso-host · /tmp/yv-map-navigation-3938237-mwkze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-1a16 · yard/test-nav-runs-2026-11-1a16 · Archived · Automation\\\"\\n    - option \\\"TEST-Nav runs · 2026-11-17 14:43 Codex · iso-host · /tmp/yv-map-navigation-3938237-mwkze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-6e14 · yard/test-nav-runs-2026-11-6e14 · Archived · Automation\\\"\\n    - option \\\"TEST-Nav runs · 2026-11-17 14:43 Codex · iso-host · /tmp/yv-map-navigation-3938237-mwkze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-c912 · yard/test-nav-runs-2026-11-c912 · Archived · Automation\\\"\\n    - option \\\"TEST-Nav runs · 2026-11-17 14:43 Codex · iso-host · /tmp/yv-map-navigation-3938237-mwkze984/data/wt/TEST-demo-app/yard-test-nav-runs-2026-11-2110 · yard/test-nav-runs-2026-11-2110 · Archived · Automation\\\"\\n    - option \\\"New session Start a conversation\\\"\\n    - option \\\"Automations Scheduled work and runs\\\"\\n    - option \\\"Connectors MCP servers and connections\\\"\\n    - option \\\"Settings Notifications and sidebar\\\"\\n    - option \\\"Hosts Local and remote machines\\\"\\n    - option \\\"Import Claude Code sessions\\\"\\n  - contentinfo: ↑ ↓ to navigate Enter to open\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"expect\\\":{\\\"css\\\":\\\".navigation-option\\\",\\\"hasText\\\":\\\"TEST-say hello\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/.verify/drives/2026-11-17T17-43-43-041Z/fail-mobile-step2.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"expect\\\":{\\\"css\\\":\\\".navigation-option\\\",\\\"hasText\\\":\\\"TEST-say hello\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/.verify/drives/2026-11-17T17-43-43-041Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "navigation/recent-list-skips-automation-runs",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

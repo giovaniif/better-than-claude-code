@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "1cec72f2b420080efbfffe900eb50136fbc1b2a2",
+    "short": "1cec72f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T17:43:35.429Z"
+  },
+  "dir": ".verify/evidence/palette-recent-skips-runs-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1979,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/palette-recent-skips-runs-base/palette-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".navigation-option .navigation-title\")].slice(0,8).map(e=>e.textContent).join(\" | \")",
+          "value": "[cmd] TEST-run the migration | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1791,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/palette-recent-skips-runs-base/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".navigation-option .navigation-title\")].slice(0,8).map(e=>e.textContent).join(\" | \")",
+          "value": "[cmd] TEST-run the migration | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41 | TEST-Patrol · 2026-11-17 14:41"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

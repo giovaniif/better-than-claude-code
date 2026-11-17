@@ -1,0 +1,40 @@
+$ cd ui && bun test src/navigation.test.ts
+# exit 1 after 13 ms at 1cec72f2b420080efbfffe900eb50136fbc1b2a2
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/navigation.test.ts:
+30 |     const live = session("Loop patrol · live", { automation: "patrol", updatedAt: 200 });
+31 |     const pinned = session("pinned run", { automation: "patrol", pinned: true, updatedAt: 50 });
+32 |     const archived = session("put away", { archived: true, updatedAt: 300 });
+33 |     const work = [session("fix login", { updatedAt: 2 }), session("plan refactor", { updatedAt: 1 })];
+34 |     const recent = navigationEntries([...runs, live, pinned, archived, ...work], context, "").filter((e) => e.group === "Sessions");
+35 |     expect(recent.map((e) => e.title)).toEqual(["pinned run", "fix login", "plan refactor"]);
+                                            ^
+error: expect(received).toEqual(expected)
+
+  [
+-   "pinned run",
+-   "fix login",
+-   "plan refactor",
++   "put away",
++   "Loop patrol · live",
++   "Loop patrol · 8",
++   "Loop patrol · 7",
++   "Loop patrol · 6",
++   "Loop patrol · 5",
++   "Loop patrol · 4",
++   "Loop patrol · 3",
+  ]
+
+- Expected  - 3
++ Received  + 8
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-7c18/ui/src/navigation.test.ts:35:40)
+(fail) navigationEntries > the recent list leaves out archived sessions and runs, as the sidebar does, but search finds them [0.96ms]
+
+ 5 pass
+ 1 fail
+ 19 expect() calls
+Ran 6 tests across 1 file. [9.00ms]
