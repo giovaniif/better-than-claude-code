@@ -169,6 +169,24 @@ describe("handoffLinks", () => {
     expect(handoffLinks([note("e0", "Handed off from Codex.")], child, { "h1~s1": src, "h1~s2": child })).toEqual({ e0: "h1~s1" });
   });
 
+  test("a note that names its session links there, even after an earlier child was deleted", () => {
+    const src = meta("s1");
+    const second = meta("s3", { parent: "s1", engine: "claude", createdAt: 20 });
+    const items = fold([
+      { type: "note", text: "Handed off to Claude.", session: "s2" },
+      { type: "note", text: "Handed off to Claude.", session: "s3" },
+    ]);
+    // s2 is gone: its note gets no link and does not take s3's.
+    expect(handoffLinks(items, src, { s1: src, s3: second })).toEqual({ [items[1].key]: "s3" });
+  });
+
+  test("the new session's note links to the session it names", () => {
+    const src = meta("s1");
+    const child = meta("s2", { parent: "s1", engine: "claude" });
+    const items = fold([{ type: "note", text: "Handed off from Codex.", session: "s1" }]);
+    expect(handoffLinks(items, child, { s1: src, s2: child })).toEqual({ [items[0].key]: "s1" });
+  });
+
   test("no link to a session that is gone, and other notes stay plain", () => {
     const child = meta("s2", { parent: "s1" });
     expect(handoffLinks([note("e0", "Handed off from Codex."), note("e1", "Something else.")], child, { s2: child })).toEqual({});

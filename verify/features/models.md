@@ -56,6 +56,20 @@ Claude." goes to the new one.
 yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Sonnet 5.5","exact":true}},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Sonnet 5.5","timeout":15000},{"expect":{"css":".note","hasText":"Handed off from Codex."}},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Fake Fast Low"},{"expect":"css:.thread","text":"Handed off to Claude."},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
 ```
 
+### hand-off-note-links-survive-a-deleted-sibling
+A source handed off twice keeps each "Handed off to" note on the session that
+hand-off made: after the first new session is deleted, the first note has no
+link and the second still opens the second session. The source is the only
+"TEST-plan the refactor" row on Fake Fast (the new sessions share its title).
+
+```sh
+yv api '{"op":"session.handoff","sessionId":"{{sid_think}}","engine":"claude","model":"claude-haiku-5-5","effort":"low"}' --wait '{"op":"created"}' --save handoff_first=sessionId
+yv state --expect '{"sessions":[{"id":"{{handoff_first}}","status":"idle"}]}'
+yv api '{"op":"session.handoff","sessionId":"{{sid_think}}","engine":"claude","model":"claude-sonnet-5-5","effort":"low"}' --wait '{"op":"created"}' --save handoff_second=sessionId
+yv api '{"op":"session.delete","sessionId":"{{handoff_first}}"}' --wait '{"op":"session.deleted"}'
+yv drive new --viewport desktop --steps '[{"click":{"css":".session-row:has-text(\"Fake Fast\")","hasText":"TEST-plan the refactor"}},{"expect":"css:.thread","text":"Handed off to Claude."},{"eval":"[...document.querySelectorAll(\".note\")].filter(n=>n.textContent.startsWith(\"Handed off to\")).map(n=>!!n.querySelector(\".note-link\")).join()","equals":"false,true"},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
+```
+
 ### effort-change-claude-mid-session (manual: not built, see ARCHITECTURE "Engines")
 Changing a Claude session's effort mid-session goes through `applyFlagSettings`, which is not wired yet.
 

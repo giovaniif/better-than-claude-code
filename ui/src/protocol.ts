@@ -393,7 +393,7 @@ export type AgentEvent =
   | { type: "approval_resolved"; requestId: string; decision: Decision }
   | { type: "error"; message: string }
   /** A quiet line from yardd itself, such as a hand-off or a worktree setup. Changes no status. */
-  | { type: "note"; text: string }
+  | { type: "note"; text: string; /** A hand-off note's other session. */ session?: string }
   /** The session is waiting for the host to have room. Carries its prompt. */
   | { type: "queued"; reason: string; text?: string; attachments?: Attachment[] };
 
@@ -441,7 +441,7 @@ export type Item =
       sending?: boolean;
     }
   | { kind: "error"; key: string; message: string }
-  | { kind: "note"; key: string; text: string }
+  | { kind: "note"; key: string; text: string; session?: string }
   | { kind: "queued"; key: string; reason: string };
 
 /** Where an item with this engine id sits in the current turn, or -1. Ids
@@ -568,7 +568,7 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       return [...items, { kind: "error", key, message: ev.message }];
     }
     case "note":
-      return [...items, { kind: "note", key, text: ev.text }];
+      return [...items, ev.session ? { kind: "note", key, text: ev.text, session: ev.session } : { kind: "note", key, text: ev.text }];
     case "queued":
       return [...items, { kind: "queued", key, reason: ev.reason }];
     default:

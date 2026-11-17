@@ -165,8 +165,10 @@ export function duration(ms: number): string {
 /** The session each hand-off note in `meta`'s thread points at, by note key.
  *  Both sides keep one title, so the notes are the way between them. yardd
  *  writes "Handed off to X." in the source, once per hand-off, and "Handed
- *  off from X." in the new session, whose `parent` is the source. A source's
- *  n-th note is its n-th child by creation; a session that is gone gets none. */
+ *  off from X." in the new session, whose `parent` is the source; each note
+ *  names the other session. Notes written before they did fall back to order:
+ *  a source's n-th note is its n-th child by creation. A session that is gone
+ *  gets no link. */
 export function handoffLinks(items: Item[], meta: SessionMeta, sessions: Record<string, SessionMeta>): Record<string, string> {
   const children = Object.values(sessions)
     .filter((s) => s.parent === meta.id)
@@ -177,10 +179,12 @@ export function handoffLinks(items: Item[], meta: SessionMeta, sessions: Record<
   for (const it of items) {
     if (it.kind !== "note") continue;
     if (it.text.startsWith("Handed off to ")) {
-      const child = children[next++];
+      const child = it.session ? sessions[it.session] : children[next];
+      next++;
       if (child) links[it.key] = child.id;
-    } else if (it.text.startsWith("Handed off from ") && parent) {
-      links[it.key] = parent;
+    } else if (it.text.startsWith("Handed off from ")) {
+      const source = it.session ? (sessions[it.session] ? it.session : null) : parent;
+      if (source) links[it.key] = source;
     }
   }
   return links;
