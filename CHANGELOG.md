@@ -14,7 +14,6 @@ Each version is a [GitHub release](https://github.com/giovaniif/better-than-clau
 - **Fixed:**
   - Cmd-K's recent list shows your sessions, not archived automation runs.
   - Switchy: a removed host's saved scope falls back to All hosts instead of refusing every question.
-  - A Claude login could leave its account showing "not logged in"; it reports the login again.
 
 ## 0.8.0 (2026-11-17)
 
