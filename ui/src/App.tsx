@@ -5,6 +5,7 @@ import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, En
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
+import { nameFromDestination } from "./addHost";
 import { SettingsPage } from "./SettingsPage";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
@@ -3791,9 +3792,6 @@ function RemoveHost({ onConfirm, onUpdate }: { onConfirm(): void; onUpdate?(): v
     </div>
   );
 }
-
-/** `user@box.tailnet.ts.net` → `box`. */
-const nameFromDestination = (dest: string) => dest.trim().replace(/^.*@/, "").split(".")[0] ?? "";
 
 function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: number; connected: boolean; onDone(): void }) {
   const { actions, hosts, errorCount, connected, onDone } = props;
