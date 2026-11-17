@@ -1394,6 +1394,9 @@ async fn sessions_are_pinned_and_archived_across_restarts() {
     c.wait_for("a pinned", |m| m["op"] == "session" && m["session"]["id"] == a && m["session"]["pinned"] == true).await;
     // Archiving a pinned session unpins it.
     c.send(json!({ "op": "session.update", "sessionId": b, "pinned": true })).await;
+    // Ops run in their own tasks: a pin applied after the archive would
+    // unarchive it again, so the archive goes once the pin has landed.
+    c.wait_for("b pinned", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["pinned"] == true).await;
     c.send(json!({ "op": "session.update", "sessionId": b, "archived": true })).await;
     let archived = c
         .wait_for("b archived", |m| m["op"] == "session" && m["session"]["id"] == b && m["session"]["archived"] == true)
