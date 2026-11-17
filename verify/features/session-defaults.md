@@ -36,5 +36,5 @@ Changing model and effort in an existing chat updates New session defaults;
 the source project is restored rather than the generated worktree.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo:"},{"click":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"Fake Deep","exact":true}},{"press":"Escape"},{"click":{"css":".composer button","hasText":"Low"}},{"click":"role:button:Effort High"},{"click":"role:menuitemradio:Low"},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Low"},{"expect":{"css":".new-chips button","hasText":"TEST-demo-app"}},{"reload":true},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Low"},{"shot":"existing-session-defaults"}]'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"css:.thread","text":"Echo:"},{"click":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"Fake Deep","exact":true}},{"press":"Escape"},{"click":"role:button:Effort Medium"},{"click":"role:menuitemradio:Xhigh"},{"goto":"new"},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Xhigh"},{"expect":{"css":".new-chips button","hasText":"TEST-demo-app"}},{"reload":true},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Xhigh"},{"shot":"existing-session-defaults"}]'
 ```
