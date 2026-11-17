@@ -1,0 +1,35 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon -- a_run_can_carry a_manual_automation
+# exit 101 after 3024 ms at cd51dfefc318e586c1fb17529b3e31062dd52e90
+
+
+running 2 tests
+test a_manual_automation_never_fires_on_its_own ... FAILED
+test a_run_can_carry_its_own_prompt_and_title ... FAILED
+
+failures:
+
+---- a_manual_automation_never_fires_on_its_own stdout ----
+
+thread 'a_manual_automation_never_fires_on_its_own' (2446813) panicked at crates/yardd/tests/daemon.rs:1935:134:
+called `Result::unwrap()` on an `Err` value: "invalid automation: unknown variant `manual`, expected one of `interval`, `daily`, `weekly`"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2446812-auto-manual-0 for inspection
+
+---- a_run_can_carry_its_own_prompt_and_title stdout ----
+
+thread 'a_run_can_carry_its_own_prompt_and_title' (2446814) panicked at crates/yardd/tests/daemon.rs:1897:5:
+Loop verify · 2026-11-17 09:42
+kept /tmp/yardd-test-2446812-auto-prompt-1 for inspection
+
+
+failures:
+    a_manual_automation_never_fires_on_its_own
+    a_run_can_carry_its_own_prompt_and_title
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 73 filtered out; finished in 0.24s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-acb82efedd6f359ff/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.73s
+     Running tests/daemon.rs (target/debug/build/yardd/07b0c2b9089c5228/out/daemon-07b0c2b9089c5228)
+error: test failed, to rerun pass `-p yardd --test daemon`

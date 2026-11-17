@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b827d997bf0d6045baa9848321bce973067a77f7",
+    "short": "b827d99",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:43:10.092Z"
+  },
+  "dir": ".verify/evidence/loop-verify-automation-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4632,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/loop-verify-automation-head-m/sidebar-without-loop-runs-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/loop-verify-automation-head-m/automations-page-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/loop-verify-automation-head-m/edit-manual-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

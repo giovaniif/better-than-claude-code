@@ -1,0 +1,20 @@
+{
+  "command": "loop run",
+  "ok": true,
+  "started": {
+    "sessionId": "s1a1e98861e5f",
+    "kind": "verify",
+    "engine": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high",
+    "pr": 4242,
+    "automation": "a1a1e9886186d"
+  },
+  "via": "automation",
+  "fellBack": null,
+  "tidied": {
+    "archived": [],
+    "pruned": []
+  },
+  "problems": []
+}

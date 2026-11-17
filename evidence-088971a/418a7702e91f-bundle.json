@@ -1,0 +1,319 @@
+{
+  "v": 1,
+  "claim": "A verifier started by patrol (verify/yv loop run verify --pr N) is an ordinary session, so 'Loop verify #N ...' shows in the sidebar instead of on the Automations page like the scheduled loops",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-acb82efedd6f359ff",
+  "base": "e70de180bed1a5aba93cba8b2260443a789e0a64",
+  "head": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/VERIFICATION.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/loops.json"
+    },
+    {
+      "status": "M",
+      "path": "verify/loops/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/loop.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T12:42:42.705Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e70de180bed1a5aba93cba8b2260443a789e0a64",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c85b9cb9da05fe0bc1cad44aedaaf68abb088f9aff3812a2c245a8d65ba17ed4"
+        },
+        {
+          "path": "p1-sidebar-has-loop-verify-desktop.png",
+          "sha256": "15a86aedd61de57f71a083a268f778ec9688ff0a5fb5bc634ae4386b11724e00"
+        }
+      ],
+      "addedAt": "2026-11-17T12:42:50.624Z",
+      "text": "base e70de18: the session.create the old 'yv loop run verify' sent (base main: the TEST repo has no origin) shows as 'Loop verify #4242 ...' in the sidebar",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "cd51dfefc318e586c1fb17529b3e31062dd52e90",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "3d9a4caf4f11850f1029f775892951a8c5489b1251f1aee937bcb51c08a7c641"
+        }
+      ],
+      "addedAt": "2026-11-17T12:42:50.816Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon -- a_run_can_carry a_manual_automation",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-2-drive.json",
+          "sha256": "f94fe481b08d552300357af730cd50b0a71bd44429aa721de78a817b1bbff4b6"
+        },
+        {
+          "path": "p3-3-sidebar-without-loop-runs-desktop.png",
+          "sha256": "1c34327b10217ebeba888e6ff9bfccb600e553478aa872fa4b3653dce55de3b6"
+        },
+        {
+          "path": "p3-3-automations-page-desktop.png",
+          "sha256": "668f6534f409db86f215f547a9f8901aaa32f563fc61e74d604a329744af0e45"
+        },
+        {
+          "path": "p3-4-automations-page-desktop.png",
+          "sha256": "668f6534f409db86f215f547a9f8901aaa32f563fc61e74d604a329744af0e45"
+        },
+        {
+          "path": "p3-4-sidebar-without-loop-runs-desktop.png",
+          "sha256": "1c34327b10217ebeba888e6ff9bfccb600e553478aa872fa4b3653dce55de3b6"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:24.908Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-2-drive.json",
+          "sha256": "b0a0c702cfdc9100721d76f1a5b817eef3fc38fb8e7e1f3aca106942c7a60cfa"
+        },
+        {
+          "path": "p4-3-sidebar-without-loop-runs-mobile.png",
+          "sha256": "6f9ca9881ab6601cc9dd0eab388cba627217c276f41a5eeb4759b2395b2fb7b0"
+        },
+        {
+          "path": "p4-3-automations-page-mobile.png",
+          "sha256": "7a135435f27d260caebe3dd6ee7a1a578ec49e4c0f1ae1a18c35ee18eaadf9ef"
+        },
+        {
+          "path": "p4-3-edit-manual-mobile.png",
+          "sha256": "7e66f863a874885bda5f71f25676beb1a1adf1959ad164920d36917dc419f5d4"
+        },
+        {
+          "path": "p4-4-automations-page-mobile.png",
+          "sha256": "7a135435f27d260caebe3dd6ee7a1a578ec49e4c0f1ae1a18c35ee18eaadf9ef"
+        },
+        {
+          "path": "p4-4-sidebar-without-loop-runs-mobile.png",
+          "sha256": "6f9ca9881ab6601cc9dd0eab388cba627217c276f41a5eeb4759b2395b2fb7b0"
+        },
+        {
+          "path": "p4-4-edit-manual-mobile.png",
+          "sha256": "7e66f863a874885bda5f71f25676beb1a1adf1959ad164920d36917dc419f5d4"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:24.952Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-2-loop-run-verify-4242.json",
+          "sha256": "2f32fff690a3e518b48baafe4feba25b2ab77b40a5e2e75af8e5a19709c49e86"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:24.994Z",
+      "text": "verify/yv loop run verify --pr 4242 / --pr 4243 and babysit --pr 4242 with --iso lv: each via automation.run on the manual automations Loop verify / Loop babysit (created by the first run); the live ~/.local/state/switchyard-verify/loops records were not touched (records go to the iso's folder)",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "note",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:48:25.032Z",
+      "text": "Old yardd fallback (checked before the rebases, client at 94fba67 against an iso yardd built at 45faba5; loop.ts has not changed since): loop run verify returned ok with via: session and oldYardd: 'the yardd ... predates manual automations (automation.save: invalid automation: unknown variant manual ...); started an ordinary session, which shows in the sidebar. Update yardd, then run verify/yv loop automations --apply'. loop automations --apply on that yardd created the three scheduled loops and reported Loop verify / Loop babysit as needs-newer-yardd."
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "b83b67de4fef5763678b46f9e91f5b2fea8f84dc80f281f0d25b8b2cef649a45"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:25.069Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd verify && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "1f5d9e62145eaa5feaced265a2897c921d3df8b0a855c11d85a000529d6cdaed"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:45.754Z",
+      "cmd": "verify/yv design-check --base e70de180bed1",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-automations.json",
+          "sha256": "167aadb68cd3e7c0b6e38f54895ccb790a849d38f8b5afb1aec07d580464072d"
+        }
+      ],
+      "addedAt": "2026-11-17T12:48:45.829Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/grid-of-cards-and-the-run-strip",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button",
+        "automations/manual-run-with-its-own-prompt"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "088971ae2003f9d531faf9991a2457c5c0d44d28",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-sidebar.json",
+          "sha256": "f00b44149982eacf9d2eca42bd3af5d8de15c8909c2bf3f24da0e2e1e4105f29"
+        }
+      ],
+      "addedAt": "2026-11-17T12:51:03.751Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    }
+  ]
+}
