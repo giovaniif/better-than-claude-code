@@ -121,6 +121,15 @@ done
 yv drive hosts --viewport desktop --steps '[{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"visible":false},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-removed"}]'
 ```
 
+
+### add-account-stays-at-the-right
+Every engine's Add account sits at the right edge of its row on the Hosts
+page, also at 390 px where OpenCode's row (with Add provider) wraps.
+
+```sh
+yv drive hosts --steps '[{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0]},{"shot":"add-account-buttons"}]'
+```
+
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
