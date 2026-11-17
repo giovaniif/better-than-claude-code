@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
+sdk_version=$(xcrun --sdk iphoneos --show-sdk-version)
+if [ "${sdk_version%%.*}" -lt 26 ]; then
+  echo "App Store Connect requires the iOS 26 SDK or newer; select Xcode 26+ with xcode-select." >&2
+  exit 1
+fi
 : "${IOS_CERTIFICATE:?Set IOS_CERTIFICATE to a base64 Apple Distribution p12}"
 : "${IOS_CERTIFICATE_PASSWORD:?Set IOS_CERTIFICATE_PASSWORD}"
 : "${IOS_PROVISION_PROFILE:?Set IOS_PROVISION_PROFILE to a base64 App Store provisioning profile}"

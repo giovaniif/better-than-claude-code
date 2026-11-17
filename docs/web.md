@@ -28,8 +28,6 @@ The compose file publishes container port 47717 on the server's `127.0.0.1`, whi
 
 Update the container by redeploying it; the app's **Update Switchyard** button refuses, since it only manages the Switchyard it installed.
 
-## Projects
-
 ## iPhone app
 
 The iOS app connects to this same private HTTPS origin and uses the existing

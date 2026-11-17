@@ -42,7 +42,7 @@ URLs on `testflight.apple.com/join/` are linked.
 
 ## Build and test on a Mac
 
-Requires Xcode with the iOS SDK and XcodeGen (`brew install xcodegen`). No new
+Requires Xcode 26+ with the iOS SDK and XcodeGen (`brew install xcodegen`). No new
 JavaScript dependencies or Rust cross-compilation is needed.
 
 ```sh
@@ -61,6 +61,8 @@ The **iOS app** Actions workflow builds and runs unit tests on a simulator for
 mobile pull requests and pushes to main. UI and native bridge JavaScript tests
 run in the existing UI job. `verify/yv map run mobile` checks discovery and
 workspace navigation against scripted engines at both screen sizes.
+The workflow uses macOS 26 and the iOS 26+ SDK to meet
+[Apple's upload requirements](https://developer.apple.com/news/upcoming-requirements/?id=04282026a).
 
 ## TestFlight first
 

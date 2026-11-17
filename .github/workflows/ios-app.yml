@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   simulator:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
@@ -45,7 +45,7 @@ jobs:
   testflight:
     if: github.event_name == 'workflow_dispatch' && inputs.testflight
     needs: simulator
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     environment: testflight
     steps:
