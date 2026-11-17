@@ -2140,16 +2140,21 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
     const el = scroller.current;
     if (el && pinned.current) el.scrollTop = el.scrollHeight;
   }, [items]);
-  // Thumbnails arrive after their message and grow it; stay at the bottom.
-  // `load` does not bubble, but it does pass ancestors while capturing.
+  // Not only new items move the bottom: the Working line appears with the
+  // status (sent just after the event), thumbnails load, the reply box grows
+  // with queued messages and cards. While pinned, any change in the
+  // thread's height or the visible area keeps the bottom in view.
   useEffect(() => {
     const el = scroller.current;
-    if (!el) return;
+    const column = el?.firstElementChild;
+    if (!el || !column) return;
     const keep = () => {
       if (pinned.current) el.scrollTop = el.scrollHeight;
     };
-    el.addEventListener("load", keep, true);
-    return () => el.removeEventListener("load", keep, true);
+    const watch = new ResizeObserver(keep);
+    watch.observe(column);
+    watch.observe(el);
+    return () => watch.disconnect();
   }, []);
 
   // The working tree has probably changed whenever a turn ends.
