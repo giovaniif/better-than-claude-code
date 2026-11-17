@@ -1,0 +1,52 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-17T04:47:04.887Z",
+      "counts": {
+        "pass": 7
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-pr",
+          "status": "pass",
+          "ms": 3840
+        },
+        {
+          "label": "no-pr",
+          "status": "pass",
+          "ms": 3450
+        },
+        {
+          "label": "send-thread-to-session",
+          "status": "pass",
+          "ms": 5105
+        },
+        {
+          "label": "review-with-other-engine",
+          "status": "pass",
+          "ms": 6727
+        },
+        {
+          "label": "double-click-send-to-session",
+          "status": "pass",
+          "ms": 6399
+        },
+        {
+          "label": "double-click-review-with-other-engine",
+          "status": "pass",
+          "ms": 5479
+        },
+        {
+          "label": "review-offered-when-the-pr-cannot-be-read",
+          "status": "pass",
+          "ms": 9627
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

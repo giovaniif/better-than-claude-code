@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "route": "session:s1a1e7d33d952",
+  "build": {
+    "sha": "f56d9c11bb41418b62609475eaca6427a79094ae",
+    "short": "f56d9c1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T04:45:42.987Z"
+  },
+  "dir": ".verify/evidence/pr-review-without-pr-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4386,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-review-without-pr-head/head-detached-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-review-without-pr-head/head-review-started-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "pr",
+          "message": "no branch is checked out"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

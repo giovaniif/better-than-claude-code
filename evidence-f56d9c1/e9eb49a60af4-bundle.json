@@ -1,0 +1,201 @@
+{
+  "v": 1,
+  "claim": "PR pane: when the PR cannot be read (detached HEAD, gh logged out, non-GitHub remote) the pane shows only 'Cannot read the pull request' and hides Review with <engine>, though the review only needs git",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-a347",
+  "base": "da098787f2bb726a6ca2a673f378d49a834090be",
+  "head": "f56d9c11bb41418b62609475eaca6427a79094ae",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T04:44:57.589Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "5eedf71f91cd5fdce8efa166fcf4a4474f46110d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0e61493a7d56267a55970f97d70b0c892a2fdbaf87702066fa72df573463b48d"
+        },
+        {
+          "path": "p1-base-detached-desktop.png",
+          "sha256": "cc40c3611520ac5710f93d271ee1bf69eb3c81e4542403a66dd2b4c47160564a"
+        },
+        {
+          "path": "p1-2-base-detached-desktop.png",
+          "sha256": "cc40c3611520ac5710f93d271ee1bf69eb3c81e4542403a66dd2b4c47160564a"
+        }
+      ],
+      "addedAt": "2026-11-17T04:45:10.510Z",
+      "failedApi": [
+        "pr: no branch is checked out"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "5eedf71f91cd5fdce8efa166fcf4a4474f46110d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "341c0628e7a6076dec6ce7ddfc810d613d28658e139710897ffbdca9751b0698"
+        }
+      ],
+      "addedAt": "2026-11-17T04:45:16.896Z",
+      "cmd": "verify/yv map run pr-pane --recipe review-offered-when-the-pr-cannot-be-read",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f56d9c11bb41418b62609475eaca6427a79094ae",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "e10ae66ca433f2afa56f5da34e82b4ba09c0ed685168b876e1f59da460056186"
+        },
+        {
+          "path": "p3-head-detached-desktop.png",
+          "sha256": "f33f579ea87d3af767bfec0626aefd4c28066dd7fd4d30745f9d589ca0b5c6ca"
+        },
+        {
+          "path": "p3-head-review-started-desktop.png",
+          "sha256": "1c52806ba81faa3a7a2f33a0975dc522d7a598934e1c4e1a0882ef9b7d41050d"
+        },
+        {
+          "path": "p3-2-head-detached-desktop.png",
+          "sha256": "f33f579ea87d3af767bfec0626aefd4c28066dd7fd4d30745f9d589ca0b5c6ca"
+        },
+        {
+          "path": "p3-2-head-review-started-desktop.png",
+          "sha256": "1c52806ba81faa3a7a2f33a0975dc522d7a598934e1c4e1a0882ef9b7d41050d"
+        }
+      ],
+      "addedAt": "2026-11-17T04:45:58.386Z",
+      "failedApi": [
+        "pr: no branch is checked out"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f56d9c11bb41418b62609475eaca6427a79094ae",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "5de491681db3758620b3020c0291166e62e86ffe67c18916e05852803821bd7b"
+        },
+        {
+          "path": "p4-head-mobile-mobile.png",
+          "sha256": "fb707740d97924fcc919285161ee4d0f6ff9a6b539c68c56aab7779bc3c30438"
+        },
+        {
+          "path": "p4-2-head-mobile-mobile.png",
+          "sha256": "fb707740d97924fcc919285161ee4d0f6ff9a6b539c68c56aab7779bc3c30438"
+        }
+      ],
+      "addedAt": "2026-11-17T04:45:58.438Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "f56d9c11bb41418b62609475eaca6427a79094ae",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "f8dcc2f628612adfbd2d9f4dde85e01a0e2de0dffda50ee61966a1e7acc379f9"
+        }
+      ],
+      "addedAt": "2026-11-17T04:45:58.482Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "f56d9c11bb41418b62609475eaca6427a79094ae",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "c084a44b57fa4641f683573624fb74642e9522ad68eb65b92b4f4dd41ce0e5ae"
+        }
+      ],
+      "addedAt": "2026-11-17T04:46:23.325Z",
+      "cmd": "verify/yv design-check --base da098787f2bb",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f56d9c11bb41418b62609475eaca6427a79094ae",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-pr-pane.json",
+          "sha256": "a773d36c5eeb7d561854aaf9bf6c3320f6935e7ca3624dc082b0d975b644c733"
+        }
+      ],
+      "addedAt": "2026-11-17T04:46:23.409Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "pr-pane/shows-pr",
+        "pr-pane/no-pr",
+        "pr-pane/send-thread-to-session",
+        "pr-pane/review-with-other-engine",
+        "pr-pane/double-click-send-to-session",
+        "pr-pane/double-click-review-with-other-engine",
+        "pr-pane/review-offered-when-the-pr-cannot-be-read"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "route": "session:s1a1e7d2997c2",
+  "build": {
+    "sha": "5eedf71f91cd5fdce8efa166fcf4a4474f46110d",
+    "short": "5eedf71",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T04:45:00.982Z"
+  },
+  "dir": ".verify/evidence/pr-review-without-pr-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4006,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-review-without-pr-base/base-detached-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "pr",
+          "message": "no branch is checked out"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
