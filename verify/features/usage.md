@@ -112,4 +112,4 @@ yv api '{"op":"account.remove","id":"{{work_acct}}"}' --wait '{"op":"accounts"}'
 ```
 
 ## Gotchas
-- The 5-hour and week limits come from the engines (Claude's `rate_limit_event`, Codex's `account/rateLimits`); a Claude plan reports them only after a session has run, so a yardd on a fresh data dir shows no Claude meters until then (later restarts keep the last ones, from `usage.json`).
+- The 5-hour and week limits come from the engines (Claude's `rate_limit_event` during a turn and its usage report, read without a turn at start, every 10 minutes and when an account is added or logs in; Codex's `account/rateLimits`). A yardd started with `YARD_CLAUDE_USAGE_EVERY_MS=0` (the daemon tests) shows no Claude meters until a session has run (later restarts keep the last ones, from `usage.json`).

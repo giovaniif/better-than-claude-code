@@ -174,11 +174,14 @@ export function stripGroups(sources: UsageSource[], engines: Engine[]): StripGro
       }
     }
   }
-  // Every added account is listed, reported or not.
+  // Every added account is listed, reported or not, and so is Default next
+  // to them: with two accounts, the one missing must not look like the only one.
   for (const { host, accounts } of sources) {
     for (const a of accounts) {
+      if (!engines.includes(a.engine)) continue;
       const key = `${a.engine}\0${a.name.toLowerCase()}`;
-      if (engines.includes(a.engine) && !found.has(key)) found.set(key, { engine: a.engine, account: a.name, host, usage: {} as Usage, reported: false });
+      if (!found.has(key)) found.set(key, { engine: a.engine, account: a.name, host, usage: {} as Usage, reported: false });
+      if (!found.has(`${a.engine}\0`)) found.set(`${a.engine}\0`, { engine: a.engine, account: null, host, usage: {} as Usage, reported: false });
     }
   }
   const all = [...found.values()];

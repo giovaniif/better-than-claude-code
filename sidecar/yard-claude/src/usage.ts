@@ -69,8 +69,11 @@ export function fromUsageReport(report: any): ClaudeUsage | null {
     if (l.kind === "session") key = "five_hour";
     else if (l.kind === "weekly_all") key = "seven_day";
     else if (l.kind === "weekly_scoped") {
+      // The family, as turn events name the window ("Opus 5.5" -> seven_day_opus),
+      // so both sources write the same meter.
       const name = l.scope?.model?.display_name ?? l.scope?.model?.id;
-      if (typeof name === "string" && name.trim()) key = `seven_day_${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_")}`;
+      const family = typeof name === "string" ? name.trim().split(/[\s-]+/)[0].toLowerCase().replace(/[^a-z0-9]+/g, "") : "";
+      if (family) key = `seven_day_${family}`;
     }
     if (key && !windows[key]) windows[key] = { utilization: l.percent / 100, resetsAt: seconds(l.resets_at) };
   }
