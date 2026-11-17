@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ea0d4fa86",
+  "build": {
+    "sha": "438c011224df21c70478a68d9d41099e18301e94",
+    "short": "438c011",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:17:46.330Z"
+  },
+  "dir": ".verify/mobile-review/editor-final",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5381,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/mobile-review/editor-final/editor-restored-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "getComputedStyle(document.querySelector(\".composer textarea\")).fontSize",
+          "value": "16px"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

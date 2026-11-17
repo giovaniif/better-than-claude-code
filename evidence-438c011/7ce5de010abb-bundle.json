@@ -1,0 +1,398 @@
+{
+  "v": 1,
+  "claim": "An iPhone app using the full host UI, native voice, TestFlight delivery and persistent setup discovery",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916",
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "head": "438c011224df21c70478a68d9d41099e18301e94",
+  "changed": [
+    {
+      "status": "A",
+      "path": ".github/workflows/ios-app.yml"
+    },
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/mobile.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/mobile.rs"
+    },
+    {
+      "status": "M",
+      "path": "docker-compose.yml"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/web.md"
+    },
+    {
+      "status": "A",
+      "path": "mobile/README.md"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/Assets.xcassets/AppIcon.appiconset/Contents.json"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/Assets.xcassets/Contents.json"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/ContentView.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/HostAddress.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/HostWebView.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/PrivacyInfo.xcprivacy"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/SpeechBridge.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/SwitchyardApp.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/bridge.js"
+    },
+    {
+      "status": "A",
+      "path": "mobile/SwitchyardTests/HostAddressTests.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/project.yml"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/icon.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/prepare.sh"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/testflight.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/MobileSetup.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobile.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobile.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobileBridge.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/notify.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/useVoice.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/mobile.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T15:01:40.441Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "5f0afab6afd72301d5554f682b8cd3e8eb570c89",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T15:01:40.643Z",
+      "text": "no-repro: new iOS app and setup flow; no mobile app or installation entry point exists on the base revision"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "5f0afab6afd72301d5554f682b8cd3e8eb570c89",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "342b4012ecffb5ecb4d92744eccca39e6f114fe9ca54ababd2e54e3437ca636d"
+        }
+      ],
+      "addedAt": "2026-11-17T15:13:25.284Z",
+      "cmd": "cd ui && bun test src/mobile.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b351b14b656e5b7f07eda8a84dd8409f0b2338bc",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "57bca1cf49fb12f6790f362b98f74878679d8cb2cf66a2adfcf9b388300e8f6a"
+        },
+        {
+          "path": "p3-fail-mobile-step0.png",
+          "sha256": "08136da021aa68376b926a210e853fddb2b8dc0d7f9d7e65d9b787d9ac99ffe5"
+        }
+      ],
+      "addedAt": "2026-11-17T15:17:43.793Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "d53261a87c2bb84e9756824adfaac50117b8f7bd492ed3b2502dd4765b86b2df"
+        }
+      ],
+      "addedAt": "2026-11-17T15:17:57.725Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "58766fe9b98621f8f890be8207de9e590a8eeae763f4b797c580f39077600361"
+        }
+      ],
+      "addedAt": "2026-11-17T15:17:57.885Z",
+      "cmd": "verify/yv design-check --base 9b5e35f8af1a",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-2-drive.json",
+          "sha256": "a2bf34efeb448017efbbda3020efb8c5c34b039f2c0ba07a45182b163fe04917"
+        },
+        {
+          "path": "p6-session-editor-mobile.png",
+          "sha256": "e1822d535d143080d8c96a9d737f17616f9ec1deb513c2006b86681ae0ca6914"
+        },
+        {
+          "path": "p6-session-editor-desktop.png",
+          "sha256": "cec770230400181da4f15cff91b7ba024612d1eabbb0591a141219b32eaf901c"
+        }
+      ],
+      "addedAt": "2026-11-17T15:19:07.052Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-2-drive.json",
+          "sha256": "ea59081fae39d2a0b5e55ec80e73b639c8b7911fe36f4c5fafbf4c43c64544f3"
+        },
+        {
+          "path": "p7-editor-restored-mobile.png",
+          "sha256": "634d11b63d1ba3bab789557ef9dbf1bbc91495e60d97a33b49204112dc44d70e"
+        }
+      ],
+      "addedAt": "2026-11-17T15:19:07.148Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "720c955d696c400448bb6bf6459889a2d38f1742015eb6f009c206b5a2876cbe"
+        },
+        {
+          "path": "p8-setup-mobile.png",
+          "sha256": "1e3edc1f330033b6028e2cb125def1826a2697bdec99d8bf08d8e1564ea369d7"
+        },
+        {
+          "path": "p8-setup-error-mobile.png",
+          "sha256": "7f1044be52cc9378731267e534a70373a99a6581b722e27b675b0e5660ef91db"
+        },
+        {
+          "path": "p8-setup-desktop.png",
+          "sha256": "4e351c306a1a09586913df02379b43f8b2ffb70365433a602476c17244db80a9"
+        },
+        {
+          "path": "p8-setup-error-desktop.png",
+          "sha256": "ac2f2193d225d536c738c36be51fb01bfc95a3f4331747da8b660220de71a781"
+        }
+      ],
+      "addedAt": "2026-11-17T15:19:07.226Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-2-drive.json",
+          "sha256": "c2fb5c8bdad58701dae90b450ed10e5dbaf778bee866bfd4141217a2995f150f"
+        },
+        {
+          "path": "p9-connected-mobile.png",
+          "sha256": "b1116cac214d4680adf2f399fd0b5391a60f52588ad28f56e76b001274585cf4"
+        },
+        {
+          "path": "p9-connected-desktop.png",
+          "sha256": "4562bb63846c2d413c51be87161b5f06f350684eba741ddc58806d4380be9a7a"
+        }
+      ],
+      "addedAt": "2026-11-17T15:19:07.337Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-drive.json",
+          "sha256": "672c13551e9ae2703ae55ce4c5649cc4047e8e8f6d7b3b42b6e3fad303d1c169"
+        },
+        {
+          "path": "p10-configured-mobile.png",
+          "sha256": "ec5d2db4d1f5466165c6727d7e2825052ef21f24d6f162a30516281b1bd12fb8"
+        },
+        {
+          "path": "p10-configured-desktop.png",
+          "sha256": "5fc501c30f99b9a717f68d9f19aa679101b3e092d61d23b30126d43dd449b9aa"
+        }
+      ],
+      "addedAt": "2026-11-17T15:19:07.439Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "note",
+      "at": "438c011224df21c70478a68d9d41099e18301e94",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T15:19:07.537Z",
+      "text": "Full daemon (161 tests), UI (348), sidecar (38) and verification CLI (52) suites passed at b351b14. The final commit only adjusts composer CSS; UI tests, both screen sizes and the 16px editor regression were rechecked at head. Native Swift compiles and its three unit tests passed on the iPhone simulator in run 44111849332 (the run was cancelled after TEST SUCCEEDED by the final CSS push); the head simulator run is still in progress. Physical device voice and signed TestFlight distribution are unverified; required iOS credentials and invitation are absent."
+    }
+  ]
+}

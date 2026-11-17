@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "438c011224df21c70478a68d9d41099e18301e94",
+    "short": "438c011",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:17:46.330Z"
+  },
+  "dir": ".verify/mobile-review/configured-current",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1933,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/mobile-review/configured-current/configured-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1343,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/mobile-review/configured-current/configured-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

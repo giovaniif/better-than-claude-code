@@ -1,0 +1,49 @@
+{
+  "ok": false,
+  "route": "session:s1a1ea0d4fa86",
+  "build": {
+    "sha": "b351b14b656e5b7f07eda8a84dd8409f0b2338bc",
+    "short": "b351b14",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:13:39.237Z"
+  },
+  "dir": ".verify/mobile-review/font-before",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2302,
+      "steps": 1,
+      "failed": {
+        "step": 0,
+        "action": {
+          "eval": "getComputedStyle(document.querySelector(\".composer textarea\")).fontSize",
+          "equals": "16px"
+        },
+        "reason": "eval returned \"14px\", expected \"16px\"",
+        "screenshot": ".verify/mobile-review/font-before/fail-mobile-step0.png",
+        "aria": "- main:\n  - button \"Open sessions\"\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-f905\n  - button \"Set up iPhone app\"\n  - button \"Workspace\"\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Fake Fast Low\"\n  - button \"Ask first\"\n  - button \"Send\" [disabled]"
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "getComputedStyle(document.querySelector(\".composer textarea\")).fontSize",
+          "value": "14px"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 0 {\"eval\":\"getComputedStyle(document.querySelector(\\\".composer textarea\\\")).fontSize\",\"equals\":\"16px\"}: eval returned \"14px\", expected \"16px\"",
+      "hint": "see .verify/mobile-review/font-before/fail-mobile-step0.png and the aria snapshot"
+    }
+  ]
+}

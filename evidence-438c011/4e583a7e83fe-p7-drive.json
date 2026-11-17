@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "b351b14b656e5b7f07eda8a84dd8409f0b2338bc",
+    "short": "b351b14",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:13:39.237Z"
+  },
+  "dir": ".verify/mobile-review/invitation",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1858,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/mobile-review/invitation/invitation-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\"a[href^=\\\"https://testflight.apple.com/join/\\\"]\").href",
+          "value": "https://testflight.apple.com/join/AbCd1234"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1836,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/mobile-review/invitation/invitation-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\"a[href^=\\\"https://testflight.apple.com/join/\\\"]\").href",
+          "value": "https://testflight.apple.com/join/AbCd1234"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

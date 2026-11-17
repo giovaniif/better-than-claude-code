@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "b351b14b656e5b7f07eda8a84dd8409f0b2338bc",
+    "short": "b351b14",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:13:39.237Z"
+  },
+  "dir": ".verify/mobile-review/native-connection",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3393,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/mobile-review/native-connection/native-connection-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "window.SwitchyardMobile = { version: 1, connected() { window.__phoneConnected = true; } }; window.dispatchEvent(new Event(\"yard:resume\")); true",
+          "value": true
+        },
+        {
+          "step": 2,
+          "eval": "window.__phoneConnected",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2223,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/mobile-review/native-connection/native-connection-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "window.SwitchyardMobile = { version: 1, connected() { window.__phoneConnected = true; } }; window.dispatchEvent(new Event(\"yard:resume\")); true",
+          "value": true
+        },
+        {
+          "step": 2,
+          "eval": "window.__phoneConnected",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
