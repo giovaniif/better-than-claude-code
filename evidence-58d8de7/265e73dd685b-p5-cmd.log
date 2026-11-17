@@ -1,0 +1,185 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test src) && (cd sidecar/yard-claude && bun test)
+# exit 0 after 31539 ms at 58d8de77d9bcce8e5146ca157494aaff4107656c
+
+
+running 49 tests
+test acp::tests::the_permission_mode_answers_what_it_covers ... ok
+test acp::tests::a_patch_keeps_two_lines_of_context ... ok
+test attachments::tests::inline_image_types_must_match_the_bytes ... ok
+test acp::tests::tool_calls_read_like_the_other_engines ... ok
+test acp::tests::answers_pick_the_offered_option_or_cancel ... ok
+test attachments::tests::the_prompt_lists_attachment_paths ... ok
+test automations::tests::claude_limits_read_the_sidecars_windows ... ok
+test automations::tests::daily_is_the_next_time_strictly_after_now ... ok
+test attachments::tests::names_are_one_safe_path_component ... ok
+test automations::tests::intervals_count_from_the_given_moment ... ok
+test automations::tests::schedules_are_validated ... ok
+test automations::tests::the_time_zone_decides_what_9_30_means ... ok
+test automations::tests::usage_limits_read_each_engines_figures ... ok
+test automations::tests::weekly_waits_for_its_day ... ok
+test engines::tests::every_engine_has_a_name ... ok
+test automations::tests::a_backlog_fires_once_and_moves_past_now ... ok
+test git::tests::keeps_the_last_non_empty_lines ... ok
+test git::tests::numstat_names_a_rename_by_its_old_and_new_path ... ok
+test grok::tests::models_and_efforts_come_from_initialize ... ok
+test grok::tests::the_device_link_and_code_come_out_of_the_cli_output ... ok
+test grok::tests::the_login_line_says_who_is_signed_in ... ok
+test handoff::tests::handoff_brief_names_attached_files ... ok
+test handoff::tests::handoff_brief_reports_pending_approval_and_short_log ... ok
+test import::tests::an_import_keeps_the_model_the_session_last_used ... ok
+test import::tests::an_unknown_or_missing_model_falls_back_to_the_first ... ok
+test mcp::tests::added_servers_are_a_plain_name_and_https_address ... ok
+test opencode::tests::a_sign_in_works_from_the_app_when_its_prompts_have_defaults ... ok
+test mcp::tests::codex_statuses_map_to_the_shared_shape ... ok
+test opencode::tests::chunked_bodies_are_joined ... ok
+test mcp::tests::only_loopback_redirects_are_replayed ... ok
+test opencode::tests::verbose_models_become_picker_models ... ok
+test login::tests::finds_the_sign_in_link_in_the_cli_output ... ok
+test opencode::tests::device_codes_are_found_in_instructions ... ok
+test opencode::tests::providers_are_offered_connected_and_popular_first ... ok
+test tests::bind_list ... ok
+test tests::the_page_is_rechecked_and_hashed_assets_are_kept ... ok
+test remote::tests::terminal_ids_are_prefixed_inside_a_term_list ... ok
+test widgets::tests::ids_cannot_leave_the_folder ... ok
+test widgets::tests::widget_visibility_defaults_to_both ... ok
+test remote::tests::a_snapshot_becomes_a_host_snapshot ... ok
+test ws::tests::allow_origin_is_a_trimmed_comma_list ... ok
+test widgets::tests::a_codex_call_reports_its_text_and_failure ... ok
+test remote::tests::destinations_that_look_like_options_are_refused ... ok
+test remote::tests::ids_get_the_host_prefix_and_lose_it_on_the_way_back ... ok
+test handoff::tests::handoff_brief_keeps_task_recent_turns_and_cap ... ok
+test claude::tests::an_answer_is_logged_before_the_sidecar_reads_it ... ok
+test git::tests::new_files_show_their_lines_in_the_diff ... ok
+test git::tests::non_ascii_paths_come_out_as_written ... ok
+test git::tests::a_subfolder_session_lists_every_file_from_the_repository_root ... ok
+
+test result: ok. 49 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 17 tests
+test opencode_lists_its_models_and_reports_its_providers ... ok
+test an_opencode_turn_streams_then_completes_and_follows_up ... ok
+test opencode_thinking_streams_as_reasoning ... ok
+test an_opencode_agent_that_dies_fails_the_turn_and_the_next_one_resumes ... ok
+test messages_sent_during_an_opencode_turn_are_the_next_turn ... ok
+test opencode_takes_the_model_and_effort_from_the_session ... ok
+test opencode_asks_before_a_command_and_takes_the_answer ... ok
+test opencode_edits_show_their_diff_and_follow_the_permission_mode ... ok
+test an_opencode_session_resumes_after_a_restart ... ok
+test an_added_opencode_account_has_its_own_logins_and_sessions ... ok
+test a_failed_grok_login_says_why ... ok
+test an_added_grok_account_logs_in_on_its_own ... ok
+test grok_follows_the_permission_mode_with_its_own_modes ... ok
+test grok_lists_models_logs_in_with_a_device_code_and_runs_a_turn ... ok
+test opencode_providers_log_in_from_the_app ... ok
+test text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer ... ok
+test stop_ends_an_opencode_turn_even_when_it_does_not_listen ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.62s
+
+
+running 5 tests
+test codex_servers_are_listed_and_a_pasted_redirect_signs_one_in ... ok
+test a_codex_chart_is_kept_served_and_can_load_more_after_a_restart ... ok
+test linear_is_added_to_each_engine_signed_in_and_removed ... ok
+test claude_connectors_sign_in_and_running_sessions_dial_again ... ok
+test a_claude_chart_calls_back_through_the_sidecar_even_after_a_restart ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.34s
+
+
+running 72 tests
+test a_folder_outside_a_repository_runs_in_place ... ok
+test allow_origin_takes_a_list ... ok
+test an_error_turn_reports_and_fails ... ok
+test a_claude_session_whose_sidecar_died_takes_the_next_message ... ok
+test attachments_reach_codex_as_a_local_image_and_a_path ... ok
+test a_plain_turn_streams_then_completes ... ok
+test a_queued_message_can_be_taken_back_to_edit ... ok
+test a_file_change_carries_its_diff_with_relative_paths ... ok
+test approval_deny_declines_the_command ... ok
+test a_session_says_when_and_how_its_last_turn_ended ... ok
+test a_failing_worktree_setup_makes_no_session ... ok
+test a_session_whose_folder_is_gone_says_so ... ok
+test a_hub_runs_sessions_on_a_direct_host ... ok
+test codex_reasoning_streams_as_thinking ... ok
+test automations_are_saved_listed_edited_and_deleted ... ok
+test accounts_are_per_host_through_the_hub ... ok
+test a_hub_routes_automations_to_the_host_that_runs_them ... ok
+test foreign_origins_are_refused ... ok
+test a_claude_session_runs_under_its_accounts_config_dir ... ok
+test folders_are_listed_for_the_picker ... ok
+test claude_usage_survives_a_restart ... ok
+test a_run_is_skipped_while_the_previous_one_is_still_going ... ok
+test forced_pressure_queues_until_start_now ... ok
+test a_run_is_skipped_when_engine_usage_is_above_the_limit ... ok
+test handoff_keeps_the_sidebar_group ... ok
+test handoff_to_the_same_engine_or_mid_turn_is_refused ... ok
+test claude_code_sessions_are_listed_and_imported_with_their_history ... ok
+test delete_removes_a_session_across_a_restart ... ok
+test notify_needs_a_title_and_only_takes_web_links ... ok
+test notify_reaches_every_connected_window ... ok
+test approval_allow_runs_the_command ... ok
+test an_account_is_added_logged_in_and_removed_without_touching_default ... ok
+test session_procs_for_an_unknown_session_is_an_error ... ok
+test permission_modes_reach_codex_and_switch_mid_session ... ok
+test removing_a_codex_account_stops_its_app_server ... ok
+test pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for ... ok
+test one_writer_per_folder ... ok
+test a_new_client_gets_its_snapshot_before_any_broadcast ... ok
+test removing_a_dirty_worktree_is_refused ... ok
+test a_codex_session_runs_on_its_accounts_own_app_server ... ok
+test resizing_an_exited_terminal_is_not_an_error ... ok
+test snapshot_has_its_shape_and_the_fake_models ... ok
+test run_now_starts_a_worktree_session_that_is_archived_when_it_ends ... ok
+test engines_log_in_from_the_app ... ok
+test resuming_a_thread_the_engine_lost_fails_the_turn ... ok
+test the_page_is_sent_so_a_web_view_rechecks_it ... ok
+test the_codex_sandbox_can_be_set ... ok
+test the_snapshot_names_this_machine_before_its_first_stats_sample ... ok
+test sessions_are_pinned_and_archived_across_restarts ... ok
+test terminal_runs_commands_and_replays_its_scrollback ... ok
+test sessions_are_grouped_across_restarts ... ok
+test terminal_keystrokes_reach_the_shell_in_order ... ok
+test upload_names_are_sanitized ... ok
+test two_imports_of_one_claude_code_session_at_once_make_one_session ... ok
+test sessions_survive_a_restart_and_resume_their_thread ... ok
+test worktree_branches_and_a_session_from_a_base ... ok
+test an_answered_approval_is_logged_before_the_engine_moves_on ... ok
+test a_runs_finish_time_stays_put_when_it_is_pinned_later ... ok
+test messages_after_the_last_step_go_together_as_the_next_turn ... ok
+test stop_hands_queued_messages_back ... ok
+test messages_queued_during_an_approval_reach_the_agent_after_it ... ok
+test a_message_sent_mid_turn_is_steered_into_the_codex_turn ... ok
+test a_message_sent_mid_turn_is_folded_into_the_claude_turn ... ok
+test install_sets_up_yardd_on_an_ssh_host ... ok
+test the_scheduler_fires_a_missed_run_once_and_automations_survive_a_restart ... ok
+test a_too_large_upload_is_refused_and_the_socket_survives ... ok
+test the_local_host_carries_its_configured_name ... ok
+test stop_ends_a_codex_turn_that_ignores_the_interrupt ... ok
+test stop_kills_a_claude_sidecar_that_ignores_the_interrupt ... ok
+test attachments_land_on_the_remote_host_through_the_hub ... ok
+test session_procs_goes_through_the_hub ... ok
+test session_procs_lists_what_a_session_is_running ... ok
+
+test result: ok. 72 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.56s
+
+bun test v1.4.4 (38afee6c8)
+bun test v1.4.4 (38afee6c8)
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/better-than-claude-code/yard-when-i-connect-my-work-8617/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 2.61s
+     Running unittests src/main.rs (target/debug/build/yardd/3b90891a0fbea05f/out/yardd-3b90891a0fbea05f)
+     Running tests/acp.rs (target/debug/build/yardd/0b0866475f883849/out/acp-0b0866475f883849)
+     Running tests/connectors.rs (target/debug/build/yardd/5cebe18e0c562912/out/connectors-5cebe18e0c562912)
+     Running tests/daemon.rs (target/debug/build/yardd/07b0c2b9089c5228/out/daemon-07b0c2b9089c5228)
+
+ 306 pass
+ 0 fail
+ 661 expect() calls
+Ran 306 tests across 20 files. [121.00ms]
+
+ 38 pass
+ 0 fail
+ 88 expect() calls
+Ran 38 tests across 6 files. [173.00ms]
