@@ -1,5 +1,37 @@
 import { describe, expect, test } from "bun:test";
-import { splitRow, blockSegments } from "./markdown";
+import { splitRow, blockSegments, fencedBlocks } from "./markdown";
+
+describe("fencedBlocks", () => {
+  test("keeps surrounding prose and recognises a complete Mermaid fence", () => {
+    expect(fencedBlocks("Before\n```mermaid\nflowchart LR\nA --> B\n```\nAfter")).toEqual([
+      { kind: "text", text: "Before\n" },
+      { kind: "code", language: "mermaid", body: "flowchart LR\nA --> B", complete: true },
+      { kind: "text", text: "After" },
+    ]);
+  });
+  test("waits for the closing fence while streaming, including an empty block", () => {
+    expect(fencedBlocks("```mermaid\nflowchart LR\nA -->")).toEqual([
+      { kind: "code", language: "mermaid", body: "flowchart LR\nA -->", complete: false },
+    ]);
+    expect(fencedBlocks("```mermaid\n")).toEqual([{ kind: "code", language: "mermaid", body: "", complete: false }]);
+    expect(fencedBlocks("```mermaid\n```\n")).toEqual([{ kind: "code", language: "mermaid", body: "", complete: true }]);
+  });
+  test("supports tildes, case, CRLF and longer fences without parsing nested examples", () => {
+    expect(fencedBlocks("  ~~~MERMAID title\r\nsequenceDiagram\r\n  ~~~~\r\n")).toEqual([
+      { kind: "code", language: "mermaid", body: "sequenceDiagram", complete: true },
+    ]);
+    expect(fencedBlocks("````markdown\n```mermaid\nA\n```\n````")).toEqual([
+      { kind: "code", language: "markdown", body: "```mermaid\nA\n```", complete: true },
+    ]);
+  });
+  test("leaves inline backticks alone and preserves code indentation and language", () => {
+    expect(fencedBlocks("Use `mermaid` and ```inline``` here.")).toEqual([{ kind: "text", text: "Use `mermaid` and ```inline``` here." }]);
+    expect(fencedBlocks("```ts\n  const x = 1;\n```\n```\nplain\n```\n")).toEqual([
+      { kind: "code", language: "ts", body: "  const x = 1;", complete: true },
+      { kind: "code", language: "", body: "plain", complete: true },
+    ]);
+  });
+});
 
 describe("splitRow", () => {
   test("drops the outer pipes and trims cells", () => {

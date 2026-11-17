@@ -163,6 +163,12 @@ h1, h2, h3, p { margin: 0; }
 .md-table .align-center { text-align: center; }
 .md-table .align-right { text-align: right; }
 .code { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; font-size: 12px; line-height: 1.6; }
+.mermaid { min-width: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.mermaid-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; padding: 4px 12px; border-bottom: 1px solid var(--line); background: var(--side); }
+.mermaid-note { padding: 10px 12px; }
+.mermaid .code { border: 0; border-radius: 0; }
+.mermaid-image { overflow-x: auto; padding: 12px; }
+.mermaid-image img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 
 .tool { display: flex; flex-direction: column; gap: 6px; margin: -8px 0; }
 .tool-row { display: flex; align-items: center; gap: 8px; max-width: 100%; padding: 3px 0; border: 0; background: transparent; color: var(--muted); text-align: left; }

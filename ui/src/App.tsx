@@ -16,7 +16,8 @@ import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
 import { draftOf, fenceSegments, keepDraft, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
-import { blockSegments, type MdTable } from "./markdown";
+import { blockSegments, fencedBlocks, type MdTable } from "./markdown";
+import { MermaidDiagram } from "./MermaidDiagram";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { ConnectorsPage } from "./ConnectorsPage";
 import { WidgetFrame } from "./WidgetFrame";
@@ -2990,20 +2991,19 @@ function MdTableView({ table }: { table: MdTable }) {
 }
 
 function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
-  const blocks = text.split(/```/);
+  const blocks = fencedBlocks(text);
   return (
     <div className="prose" data-quotable={quotable ? "" : undefined}>
       {blocks.map((block, i) => {
-        if (i % 2 === 1) {
-          // Fenced code: drop the language line.
-          const body = block.replace(/^[^\n]*\n/, "").replace(/\n$/, "");
+        if (block.kind === "code") {
+          if (block.language === "mermaid") return <MermaidDiagram key={i} source={block.body} complete={block.complete} />;
           return (
             <pre key={i} className="code">
-              {body}
+              {block.body}
             </pre>
           );
         }
-        return block
+        return block.text
           .split(/\n{2,}/)
           .filter((p) => p.trim())
           .map((para, j) => {
