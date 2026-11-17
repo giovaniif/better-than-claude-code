@@ -3618,17 +3618,24 @@ function Engines(props: {
               <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
               <span>{ENGINE_LABEL[engine]}</span>
               <span className="muted small">{engineStateText(st)}</span>
-              {!st.installed && <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>}
-              {st.installed && (st.loggedIn !== true || addsProviders(engine)) && onLogin && (
-                <button className="btn engine-login" onClick={() => onLogin(engine)}>
-                  {addsProviders(engine) && st.loggedIn === true ? "Add provider" : "Log in"}
-                </button>
-              )}
-              {st.installed && accountActions && adding !== engine && (
-                <button className="btn-text engine-add" aria-label={`Add ${ENGINE_LABEL[engine]} account`} onClick={() => setAdding(engine)}>
-                  <Icon d={PLUS} size={12} />
-                  Add account
-                </button>
+              {/* Either the install command or one action group sits at the right: a narrow row wraps the group whole instead of
+                  leaving Add account at the left, and an empty group would share the free space with the install command. */}
+              {!st.installed ? (
+                <code className="engine-cmd">{ENGINE_INSTALL[engine]}</code>
+              ) : (
+                <span className="engine-actions">
+                  {(st.loggedIn !== true || addsProviders(engine)) && onLogin && (
+                    <button className="btn engine-login" onClick={() => onLogin(engine)}>
+                      {addsProviders(engine) && st.loggedIn === true ? "Add provider" : "Log in"}
+                    </button>
+                  )}
+                  {accountActions && adding !== engine && (
+                    <button className="btn-text engine-add" aria-label={`Add ${ENGINE_LABEL[engine]} account`} onClick={() => setAdding(engine)}>
+                      <Icon d={PLUS} size={12} />
+                      Add account
+                    </button>
+                  )}
+                </span>
               )}
             </div>
             {accounts

@@ -525,6 +525,7 @@ h1, h2, h3, p { margin: 0; }
 .engine-block { display: flex; flex-direction: column; gap: 6px; }
 .engine-add { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
 .engine-login + .engine-add { margin-left: 0; }
+.engine-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .account-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: 16px; padding-left: 10px; border-left: 2px solid var(--line); font-size: 13px; }
 .account-name { font-weight: 500; overflow-wrap: anywhere; }
 .account-remove { margin-left: auto; font-size: 12px; }

@@ -121,6 +121,24 @@ done
 yv drive hosts --viewport desktop --steps '[{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"visible":false},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-removed"}]'
 ```
 
+### add-account-stays-at-the-right
+Every engine's Add account sits at the right edge of its row on the Hosts
+page, also at 390 px where OpenCode's row (with Add provider) wraps.
+
+```sh
+yv drive hosts --steps '[{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0]},{"shot":"add-account-buttons"}]'
+```
+
+### install-command-stays-at-the-right
+An engine that is not installed shows its install command at the right edge
+of its row, like Add account on the others. The iso cannot uninstall an
+engine, so the page rewrites the next `engines` reply to say Grok is not
+installed and drops the socket once to ask again.
+
+```sh
+yv drive hosts --steps '[{"expect":"role:button:Add OpenCode account"},{"eval":"(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()"},{"expect":"css:.engine-cmd","text":"grok"},{"eval":"(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()","equals":0},{"shot":"install-command"}]'
+```
+
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
