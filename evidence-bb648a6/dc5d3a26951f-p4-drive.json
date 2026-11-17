@@ -1,0 +1,45 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "4000a101b8f6eaef3f285a60a05830e89938188a",
+    "short": "4000a10",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:41:21.967Z"
+  },
+  "dir": ".verify/evidence/al-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11481,
+      "steps": 6,
+      "failed": {
+        "step": 0,
+        "action": {
+          "expect": {
+            "css": ".usage-line-account",
+            "hasText": "Claude · Default"
+          }
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": ".verify/evidence/al-base/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle · Default\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 11% · 47%\"\n- separator \"Resize the sessions sidebar\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Opus 5.5 High · Default\"\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"expect\":{\"css\":\".usage-line-account\",\"hasText\":\"Claude · Default\"}}: for: Timeout 10000ms exceeded.",
+      "hint": "see .verify/evidence/al-base/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}

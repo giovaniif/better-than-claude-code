@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1ead0937a6",
+  "build": {
+    "sha": "bb648a6aabc612cfd704f648a962599712ffd75e",
+    "short": "bb648a6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:41:39.852Z"
+  },
+  "dir": ".verify/evidence/al-nometers",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2960,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/al-nometers/picker-and-strip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

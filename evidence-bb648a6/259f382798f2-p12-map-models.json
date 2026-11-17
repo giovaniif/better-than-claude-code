@@ -1,0 +1,53 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "models",
+      "at": "2026-11-17T18:44:52.450Z",
+      "counts": {
+        "pass": 6,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "switch-model-same-engine",
+          "status": "pass",
+          "ms": 3721
+        },
+        {
+          "label": "effort-is-its-own-chip",
+          "status": "pass",
+          "ms": 10784
+        },
+        {
+          "label": "permission-mode",
+          "status": "pass",
+          "ms": 4363
+        },
+        {
+          "label": "hand-off-to-claude",
+          "status": "pass",
+          "ms": 4134
+        },
+        {
+          "label": "hand-off-notes-link-both-sessions",
+          "status": "pass",
+          "ms": 3660
+        },
+        {
+          "label": "hand-off-note-links-survive-a-deleted-sibling",
+          "status": "pass",
+          "ms": 4808
+        },
+        {
+          "label": "effort-change-claude-mid-session",
+          "status": "manual",
+          "why": "not built, see ARCHITECTURE \"Engines\""
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
