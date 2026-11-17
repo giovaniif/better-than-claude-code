@@ -159,6 +159,7 @@ pub struct App {
     pub terms: crate::pty::Terms,
     pub guard: crate::guard::Guard,
     pub store: crate::store::Store,
+    pub switchy: crate::switchy::Switchy,
     pub remotes: crate::remote::Remotes,
     pub automations: crate::automations::Automations,
     pub logins: crate::login::Logins,
@@ -210,7 +211,7 @@ impl App {
             terms: crate::pty::Terms::default(),
             guard: crate::guard::Guard::default(),
             store,
-            remotes: crate::remote::Remotes::new(crate::store::data_dir()),
+            switchy: crate::switchy::Switchy::load(crate::store::data_dir()),            remotes: crate::remote::Remotes::new(crate::store::data_dir()),
             automations: crate::automations::Automations::load(crate::store::data_dir()),
             logins: crate::login::Logins::default(),
             mcp: crate::mcp::Connectors::default(),
@@ -405,6 +406,13 @@ impl App {
     /// Append a normalized event to the session log and fan it out.
     /// Session status is derived here so both engines behave the same.
     pub fn emit(&self, sid: &str, mut event: Value) {
+        if crate::switchy::internal(sid) {
+            let mut map = self.sessions.lock().unwrap();
+            let Some(session) = map.get_mut(sid) else { return };
+            if event["type"] == "turn_completed" { session.meta.status = "idle".into(); }
+            let _ = self.switchy.events.send((sid.to_string(), event));
+            return;
+        }
         // A widget's HTML and data go to a file; the log keeps its id.
         crate::widgets::take(self, &mut event);
         // Turn boundaries carry the time, so the UI can say how long one took.
@@ -485,7 +493,7 @@ impl App {
         let Some(s) = map.get_mut(sid) else { return };
         if s.engine_ref.as_deref() != Some(engine_ref) {
             s.engine_ref = Some(engine_ref.to_string());
-            self.store.engine_ref(sid, engine_ref);
+            if !crate::switchy::internal(sid) { self.store.engine_ref(sid, engine_ref); }
         }
     }
 
@@ -582,6 +590,7 @@ impl App {
             .lock()
             .unwrap()
             .values()
+            .filter(|s| !crate::switchy::internal(&s.meta.id))
             .map(|s| s.meta.clone())
             .collect();
         sessions.sort_by(|a, b| b.created_at.cmp(&a.created_at));

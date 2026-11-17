@@ -278,6 +278,12 @@ pub async fn create_session(
 }
 
 async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
+    if msg["op"].as_str().is_some_and(|op| op.starts_with("switchy.")) {
+        return crate::switchy::handle(app, direct, msg).await;
+    }
+    if msg["sessionId"].as_str().is_some_and(crate::switchy::internal) {
+        bail!("Switchy engine threads are private; use switchy operations");
+    }
     if msg["op"].as_str().is_some_and(|op| op.starts_with("pr.")) {
         return pr::handle(app, direct, msg).await;
     }

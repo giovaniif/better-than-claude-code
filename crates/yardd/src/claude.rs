@@ -166,6 +166,7 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     let _ = tx.send(
         json!({
             "type": "start",
+            "switchy": crate::switchy::internal(sid),
             "cwd": meta.cwd,
             "model": meta.model,
             "effort": meta.effort,

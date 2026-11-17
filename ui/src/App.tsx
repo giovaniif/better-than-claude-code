@@ -212,7 +212,7 @@ export function App() {
               <NewSession state={state} actions={actions} />
             </>
           )}
-          {route.page === "assistant" && <AssistantPage models={state.models.local ?? {}} />}
+          {route.page === "assistant" && <AssistantPage state={state} actions={actions} />}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
@@ -2995,7 +2995,7 @@ function MdTableView({ table }: { table: MdTable }) {
   );
 }
 
-function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
+export function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
   const blocks = text.split(/```/);
   return (
     <div className="prose" data-quotable={quotable ? "" : undefined}>

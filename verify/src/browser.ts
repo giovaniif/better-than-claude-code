@@ -202,6 +202,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
     }
   } else if (route === "settings") {
     await page.getByRole("button", { name: "Settings", exact: true }).first().click();
+  } else if (route === "switchy") {
+    await page.getByRole("button", { name: "Switchy", exact: true }).first().click();
   } else if (route === "connectors") {
     await page.getByRole("button", { name: "Connectors" }).first().click();
   } else if (route.startsWith("session:")) {
