@@ -389,7 +389,7 @@ export type AgentEvent =
    *  can be after the turn that started it. */
   | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null; ms?: number | null }
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
-  | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string }
+  | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string; /** The call it asks about. */ itemId?: string | null }
   | { type: "approval_resolved"; requestId: string; decision: Decision }
   | { type: "error"; message: string }
   /** A quiet line from yardd itself, such as a hand-off or a worktree setup. Changes no status. */
@@ -408,6 +408,9 @@ export interface ToolItem {
   title: string;
   detail: string;
   state: "running" | "ok" | "failed";
+  /** Set while an approval for this call is open, and after it was denied or
+   *  never answered: then the call did not run, whatever `state` says. */
+  asked?: "waiting" | "denied" | "unanswered";
   output?: string | null;
   agent?: string;
   /** The itemId of the Agent call this step runs under. */
@@ -435,6 +438,8 @@ export type Item =
       title: string;
       detail: string;
       decision: Decision | null;
+      /** The tool call it asks about, when the engine says. */
+      itemId?: string;
       /** The turn ended (Stop, a failure, a yardd restart) before anyone answered. */
       unanswered?: boolean;
       /** A decision was sent and yardd has not resolved it yet. */
@@ -460,6 +465,23 @@ function inTurn(items: Item[], match: (it: Item) => boolean): number {
 
 function startsTurn(it: Item): boolean {
   return it.kind === "user" && !it.steered;
+}
+
+/** What an approval makes of the call it asks about. */
+function askedOf(a: Extract<Item, { kind: "approval" }>): ToolItem["asked"] {
+  if (a.decision === null) return a.unanswered ? "unanswered" : "waiting";
+  return a.decision === "deny" ? "denied" : undefined;
+}
+
+/** Marks the call an approval names (from `from` on) with what the approval made of it. */
+function markAsked(items: Item[], from: number, approval: Extract<Item, { kind: "approval" }>): Item[] {
+  if (!approval.itemId) return items;
+  const asked = askedOf(approval);
+  return items.map((it, i) => {
+    if (i < from || it.kind !== "tool" || it.itemId !== approval.itemId) return it;
+    const { asked: _, ...rest } = it;
+    return asked ? { ...rest, asked } : rest;
+  });
 }
 
 function turnStart(items: Item[]): number {
@@ -510,6 +532,15 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       const tool: ToolItem = { kind: "tool", key, itemId: ev.itemId, toolKind: ev.kind, title: ev.title, detail: ev.detail, state: "running" };
       if (ev.agent) tool.agent = ev.agent;
       if (ev.parent) tool.parent = ev.parent;
+      // Some engines ask before they announce the call.
+      const from = turnStart(items);
+      for (let i = items.length - 1; i >= from; i--) {
+        const it = items[i];
+        if (it.kind !== "approval" || it.itemId !== ev.itemId) continue;
+        const asked = askedOf(it);
+        if (asked) tool.asked = asked;
+        break;
+      }
       return [...items, tool];
     }
     case "tool_completed": {
@@ -523,16 +554,27 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
     }
     case "file_change":
       return ev.files.length ? [...items, { kind: "diff", key, files: ev.files }] : items;
-    case "approval_request":
-      return [
-        ...items,
-        { kind: "approval", key, requestId: ev.requestId, approvalKind: ev.kind, title: ev.title, detail: ev.detail, decision: null },
-      ];
+    case "approval_request": {
+      const approval: Extract<Item, { kind: "approval" }> = {
+        kind: "approval",
+        key,
+        requestId: ev.requestId,
+        approvalKind: ev.kind,
+        title: ev.title,
+        detail: ev.detail,
+        decision: null,
+      };
+      if (ev.itemId) approval.itemId = ev.itemId;
+      return markAsked([...items, approval], turnStart(items), approval);
+    }
     case "approval_resolved": {
       const from = turnStart(items);
-      return items.map((it, i) =>
-        i >= from && it.kind === "approval" && it.requestId === ev.requestId ? { ...it, decision: ev.decision } : it,
-      );
+      let resolved: Extract<Item, { kind: "approval" }> | undefined;
+      const next = items.map((it, i) => {
+        if (i >= from && it.kind === "approval" && it.requestId === ev.requestId) return (resolved = { ...it, decision: ev.decision });
+        return it;
+      });
+      return resolved ? markAsked(next, from, resolved) : next;
     }
     case "turn_started":
       return [...items, { kind: "turn", key, start: ev.at, status: "running" }];
@@ -554,7 +596,7 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
         if (i === open && it.kind === "turn") return { ...it, end: ev.at, status: ev.status };
         if ((it.kind === "assistant" || it.kind === "reasoning") && it.streaming) return { ...it, streaming: false };
         if (it.kind === "tool" && it.state === "running" && !goesOn.has(it.itemId) && !(it.parent && goesOn.has(it.parent))) {
-          return { ...it, state: "failed" as const };
+          return { ...it, state: "failed" as const, ...(it.asked === "waiting" ? { asked: "unanswered" as const } : {}) };
         }
         // Nobody chose, so it is not shown as "Denied".
         if (it.kind === "approval" && it.decision === null) return { ...it, unanswered: true };
