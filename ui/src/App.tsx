@@ -17,7 +17,7 @@ import { blockSegments, type MdTable } from "./markdown";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
-import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines } from "./engines";
+import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
 import { duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
@@ -1148,8 +1148,8 @@ function Composer(props: {
   rows: number;
   large?: boolean;
   busy?: boolean;
-  /** A turn is running: sending queues the message for the agent's next step. */
-  queueing?: boolean;
+  /** A turn is running: sending queues the message. Says when the agent gets it (see queuedHint). */
+  queueing?: string;
   /** Up arrow in an empty box: take the last queued message back to edit. True when it did. */
   onEditLastQueued?(): boolean;
   /** Keep the text and files after sending, for a submit that can still fail. */
@@ -1447,7 +1447,7 @@ function Composer(props: {
         <button
           className="send"
           aria-label={props.queueing ? "Add to queue" : "Send"}
-          title={props.queueing ? "The agent reads it after its current step" : undefined}
+          title={props.queueing ? props.queueing.charAt(0).toUpperCase() + props.queueing.slice(1) : undefined}
           disabled={!canSend}
           onClick={submit}
         >
@@ -2222,13 +2222,13 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} account={accountOf(meta)} onClose={() => setLoggingIn(false)} />
           )}
           {online && (
-            <PendingList pending={meta.pending ?? []} busy={busy} onEdit={(id) => actions.unqueue(meta.id, id)} onRemove={(id) => actions.unqueue(meta.id, id, true)} />
+            <PendingList pending={meta.pending ?? []} busy={busy} hint={queuedHint(meta.engine)} onEdit={(id) => actions.unqueue(meta.id, id)} onRemove={(id) => actions.unqueue(meta.id, id, true)} />
           )}
           <Composer
             placeholder={!online ? "Offline" : busy ? "Queue a message for the agent" : "Reply"}
             rows={1}
             busy={meta.status === "queued" || !online}
-            queueing={busy}
+            queueing={busy ? queuedHint(meta.engine) : undefined}
             onEditLastQueued={() => {
               const last = meta.pending?.[meta.pending.length - 1];
               if (!last) return false;
@@ -2339,14 +2339,14 @@ function QuoteReply({ sessionId }: { sessionId: string }) {
 
 /**
  * Messages sent while a turn runs, as in Claude Code: the agent reads them at
- * its next step, in the same turn. Edit takes one back into the reply box;
+ * its next step, in the same turn (OpenCode and Grok: in the next turn). Edit takes one back into the reply box;
  * Stop gives them all back. After a failed turn they go with the next message.
  */
-function PendingList({ pending, busy, onEdit, onRemove }: { pending: PendingMessage[]; busy: boolean; onEdit(id: string): void; onRemove(id: string): void }) {
+function PendingList({ pending, busy, hint, onEdit, onRemove }: { pending: PendingMessage[]; busy: boolean; hint: string; onEdit(id: string): void; onRemove(id: string): void }) {
   if (pending.length === 0) return null;
   return (
     <section className="pending" aria-label="Waiting to send">
-      <div className="muted small">{busy ? "Queued: the agent reads it after its current step" : "Not sent: the last turn did not finish. It goes with your next message."}</div>
+      <div className="muted small">{busy ? `Queued: ${hint}` : "Not sent: the last turn did not finish. It goes with your next message."}</div>
       {pending.map((p) => {
         const { quotes, text } = splitQuotes(p.text);
         return (

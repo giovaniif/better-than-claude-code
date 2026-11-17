@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ENGINES, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, reviewEngine } from "./engines";
+import { ENGINES, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint, reviewEngine } from "./engines";
 import type { ModelInfo, Models } from "./protocol";
 
 const m = (id: string): ModelInfo => ({ id, name: id, efforts: [] });
@@ -12,6 +12,13 @@ describe("engines", () => {
       expect(ENGINE_INSTALL[e]).toBeTruthy();
       expect(ENGINE_LOGIN[e]).toBeTruthy();
     }
+  });
+
+  test("a queued message says when the agent gets it: mid-turn on Claude and Codex, next turn on OpenCode and Grok", () => {
+    expect(queuedHint("claude")).toBe("the agent reads it after its current step");
+    expect(queuedHint("codex")).toBe("the agent reads it after its current step");
+    expect(queuedHint("opencode")).toBe("sent when the current turn ends");
+    expect(queuedHint("grok")).toBe("sent when the current turn ends");
   });
 
   test("Claude and Codex are always offered, the session's engine first", () => {
