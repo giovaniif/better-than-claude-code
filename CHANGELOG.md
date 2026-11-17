@@ -2,6 +2,20 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.8.0 (2026-11-17)
+
+- **Connectors.** A new Connectors page (plug icon in the sidebar) lists every MCP server each engine account has on each host: claude.ai connectors, plugins, your config files and, for Codex, ChatGPT apps. Each one says whether it works: Connected, Needs sign-in, or Not working with the reason. Checking spends no usage.
+  - **Connect** signs a server in from the app. A claude.ai connector opens claude.ai and turns Connected by itself. A server that ends its sign-in on a page of the server you can't reach asks you to paste that page's address. Running sessions pick the server up without a restart.
+  - **Add connector** adds Linear, Sentry, Datadog, PostHog, Notion, Atlassian or Vercel, or any https address, to Claude Code or Codex for any account, then opens its sign-in. This is how an added work account gets the connectors your Default one has from plugins. Remove takes one out.
+- **Charts from connector tools.** When an MCP tool comes with an interactive view (MCP Apps), such as a chart, it shows in the thread under the call and stays in view when the turn folds. It runs sandboxed: it can't reach the page, only the sites its server declares, and only its own server's tools (anything that isn't read-only asks you first on Claude).
+- **Hover cards on PR links.** A GitHub pull request link in an answer is a real link, and resting on it shows the PR's state, checks, review status, size, author and age, through the host's own `gh`.
+- **Hosts:** each host's Sessions list starts collapsed to one line (how many sessions, their CPU and memory, how many are queued). Click it to see the table.
+- **Fixed:**
+  - Archiving the session you're looking at no longer opens the Archived list.
+  - The PR pane's title opens the pull request on GitHub, like the number beside it.
+  - Review with an engine waits while a session works in its folder, instead of being refused.
+  - A refused new session names the session in the way, not a "New worktree" box that is gone.
+
 ## 0.7.0 (2026-11-17)
 
 - **Stop a session's processes.** The Processes tab has a × on each row: a second click stops the process, Force kill follows if it is still running, and Stop with children takes its whole branch. Only the session's own processes can be stopped, never the agent itself, a process another session shares, or anything else on the machine.
