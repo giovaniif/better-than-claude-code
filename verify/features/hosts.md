@@ -1,9 +1,13 @@
 # Hosts
 
-The Hosts page lists this machine and every remote yardd with CPU, memory,
-disk, a CPU sparkline, per-session use and each engine's login. A remote is
-added by SSH destination (one tunnel, retried with backoff) or, for testing, a
-direct WebSocket URL. Its sessions join the sidebar with a cloud icon.
+The Hosts page is a grid of small host cards, this machine first, like the
+Automations page: each card shows the host's state, CPU, memory and disk, one
+line for its sessions and a mark per engine with its login. Details (one per
+card, closed by default and kept per browser) opens the CPU sparkline, the
+sessions table and queue rule, each engine's accounts with Log in, Add account
+and Remove, and Update or Remove host. A remote is added by SSH destination
+(one tunnel, retried with backoff) or, for testing, a direct WebSocket URL.
+Its sessions join the sidebar with a cloud icon.
 
 ## Setup
 
@@ -25,22 +29,34 @@ yv iso down
 
 ### hosts-page
 Viewports: desktop
-The heading, this host's card with its stats and both engines logged in. (At
-390 px the page does not fit: see layout/mobile-hosts-page.)
+The heading, this host's card with its stats and a green mark per engine;
+its Details list both engines logged in. (At 390 px see
+layout/mobile-hosts-page and hosts-grid.)
 
 ```sh
-yv drive hosts --viewport desktop --steps '[{"expect":"role:heading:Hosts"},{"expect":{"role":"region","name":"iso-host"},"text":"CPU"},{"expect":{"role":"region","name":"iso-host"},"text":"logged in as me@example.com"},{"expect":{"role":"region","name":"iso-host"},"text":"Codex"},{"shot":"hosts"}]'
+yv drive hosts --viewport desktop --steps '[{"expect":"role:heading:Hosts"},{"expect":{"role":"region","name":"iso-host"},"text":"CPU"},{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .host-engine.engine-ok","hasText":"Claude Code"}},{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .host-engine.engine-ok","hasText":"Codex"}},{"shot":"hosts"},{"click":"role:button:Details: iso-host"},{"expect":{"role":"region","name":"iso-host"},"text":"logged in as me@example.com"},{"expect":{"css":".engine-row","hasText":"Codex"},"text":"logged in as me@example.com"}]'
+```
+
+### empty-state-tile
+With no remote host yet, "Run sessions on another machine" is a dashed tile
+in the grid after this machine's card (beside it at desktop); clicking it
+opens the Add host form above the grid and the tile goes away; Cancel brings
+it back. Runs before add-direct-host.
+
+```sh
+yv drive hosts --viewport desktop --steps '[{"expect":"role:button:Run sessions on another machine"},{"eval":"(() => { const a = document.querySelector(\".host-grid > .host-card\").getBoundingClientRect(); const t = document.querySelector(\".host-grid > .host-empty\").getBoundingClientRect(); return Math.round(a.top) === Math.round(t.top) && t.left >= a.right; })()","equals":true},{"shot":"empty-tile"},{"click":"role:button:Run sessions on another machine"},{"expect":"label:SSH destination"},{"expect":"role:button:Run sessions on another machine","count":0},{"click":"role:button:Cancel"},{"expect":"role:button:Run sessions on another machine"}]'
+yv drive hosts --viewport mobile --steps '[{"expect":"role:button:Run sessions on another machine"},{"eval":"(() => { const a = document.querySelector(\".host-grid > .host-card\").getBoundingClientRect(); const t = document.querySelector(\".host-grid > .host-empty\").getBoundingClientRect(); return t.top >= a.bottom && Math.round(t.width) === Math.round(a.width); })()","equals":true}]'
 ```
 
 ### sessions-list-collapsed
-Each host card's Sessions list (what each session uses) starts collapsed: one
-line with how many sessions use the host, their CPU and memory, and how many
-are queued. The queue rule below it stays visible. A click opens the table;
-the choice is kept per browser across a reload; another click closes it.
-Here the scripted Claude sidecar is the one session using the host.
+Each host card shows its sessions as one line (how many sessions use the
+host, their CPU and memory, and how many are queued); the table and the queue
+rule are in Details, which starts closed. A click opens it; the choice is kept
+per browser across a reload; another click closes it. Here the scripted Claude
+sidecar is the one session using the host.
 
 ```sh
-yv drive hosts --steps '[{"expect":{"css":"section.usage button.list-toggle[aria-expanded=\"false\"]","hasText":"Sessions"}},{"expect":{"css":"section.usage button.list-toggle","hasText":"Sessions"},"text":"1 session"},{"expect":"css:section.usage table","count":0},{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"shot":"sessions-collapsed"},{"click":{"css":"section.usage button.list-toggle","hasText":"Sessions"}},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"reload":true},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"shot":"sessions-open"},{"click":{"css":"section.usage button.list-toggle","hasText":"Sessions"}},{"expect":"css:section.usage table","count":0}]'
+yv drive hosts --steps '[{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .host-sessions"},"text":"1 session"},{"expect":"css:section.host-card[aria-label=\"iso-host\"] button.host-more[aria-expanded=\"false\"]"},{"expect":"css:section.usage table","count":0},{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"},"count":0},{"shot":"sessions-collapsed"},{"click":"role:button:Details: iso-host"},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"reload":true},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"shot":"sessions-open"},{"click":"role:button:Details: iso-host"},{"expect":"css:section.usage table","count":0}]'
 ```
 
 ### add-direct-host
@@ -60,6 +76,20 @@ yv drive 'session:{{rsid}}' --steps '[{"expect":"css:.thread","text":"Echo: TEST
 yv state --iso map-hosts-remote --expect '{"sessions":[{"title":"TEST-on the remote","status":"idle"}]}'
 ```
 
+### hosts-grid
+The cards form a grid like the Automations page: this machine first, then
+the remotes. At desktop the cards sit side by side in one row, and opening
+one card's Details grows only that card; at mobile they stack in one column,
+each the full width. It adds its own direct host, TEST-grid, and removes it
+at the end.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-grid","kind":"direct","url":"ws://127.0.0.1:{{remote_port}}/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-grid","status":"connected"}]}' --save grid_id='hosts[name=TEST-grid].id'
+yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-grid","text":"CPU"},{"eval":"(() => { const names = [...document.querySelectorAll(\".host-grid > .host-card\")].map((c) => c.getAttribute(\"aria-label\")); return [names[0], names[names.length - 1]]; })()","equals":["iso-host","TEST-grid"]},{"eval":"(() => { const a = document.querySelector(\".host-grid > .host-card\").getBoundingClientRect(); const b = document.querySelector(\"section.host-card[aria-label=TEST-grid]\").getBoundingClientRect(); return Math.round(a.top) === Math.round(b.top) && b.left >= a.right && a.width < 600; })()","equals":true},{"shot":"grid"},{"eval":"(window.__h = Math.round(document.querySelector(\"section.host-card[aria-label=TEST-grid]\").getBoundingClientRect().height)) > 0","equals":true},{"click":"role:button:Details: iso-host"},{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .engine-row","hasText":"Claude Code"}},{"eval":"Math.round(document.querySelector(\"section.host-card[aria-label=TEST-grid]\").getBoundingClientRect().height) === window.__h","equals":true},{"shot":"grid-details"}]'
+yv drive hosts --viewport mobile --steps '[{"expect":"role:region:TEST-grid","text":"CPU"},{"eval":"(() => { const a = document.querySelector(\".host-grid > .host-card\").getBoundingClientRect(); const b = document.querySelector(\"section.host-card[aria-label=TEST-grid]\").getBoundingClientRect(); return b.top >= a.bottom && Math.round(a.left) === Math.round(b.left) && Math.round(a.width) === Math.round(b.width) && a.width >= 300; })()","equals":true},{"shot":"grid-mobile"}]'
+yv api '{"op":"host.remove","hostId":"{{grid_id}}"}' --wait '{"op":"hosts"}'
+```
+
 ### ssh-host-unreachable
 An SSH host that cannot be reached reports an error instead of hanging.
 
@@ -70,13 +100,13 @@ yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-ssh"}]'
 
 ### remove-host
 Viewports: desktop
-"Remove host" asks for a second click ("Click again to remove", with "Its
+In the card's Details, "Remove host" asks for a second click ("Click again to remove", with "Its
 sessions keep running there."); the second click drops the card and its
 sidebar row. Read back: after a reload the card is still gone.
 
 ```sh
 yv api '{"op":"host.add","name":"TEST-gone","kind":"ssh","destination":"test@gone.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-gone"}]}'
-yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-gone"},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Remove host"}},{"expect":"role:region:TEST-gone","text":"Its sessions keep running there."},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Click again to remove"}},{"expect":"role:region:TEST-gone","count":0},{"expect":{"css":".host-row","hasText":"TEST-gone"},"count":0},{"reload":true},{"expect":"role:heading:Hosts"},{"expect":"role:region:TEST-gone","count":0}]'
+yv drive hosts --viewport desktop --steps '[{"expect":"role:region:TEST-gone"},{"click":"role:button:Details: TEST-gone"},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Remove host"}},{"expect":"role:region:TEST-gone","text":"Its sessions keep running there."},{"click":{"css":"section.host-card[aria-label=\"TEST-gone\"] .host-foot button","hasText":"Click again to remove"}},{"expect":"role:region:TEST-gone","count":0},{"expect":{"css":".host-row","hasText":"TEST-gone"},"count":0},{"reload":true},{"expect":"role:heading:Hosts"},{"expect":"role:region:TEST-gone","count":0}]'
 ```
 
 ### refused-add-keeps-the-form
@@ -104,12 +134,12 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".host-row .host-name
 
 ### no-memory-limit-says-load-only
 Viewports: both
-With `YARD_MIN_FREE_GB=0` (no memory limit) the Sessions card says new sessions queue on load alone, not "or less than 0 GB of memory is free".
+With `YARD_MIN_FREE_GB=0` (no memory limit) the Sessions part of the host's Details says new sessions queue on load alone, not "or less than 0 GB of memory is free".
 
 ```sh
 yv iso down --name map-hosts-nomem >/dev/null
 yv iso up --name map-hosts-nomem --env YARD_MIN_FREE_GB=0 >/dev/null
-yv drive hosts --iso map-hosts-nomem --steps '[{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"expect":{"css":"section.usage","hasText":"GB of memory"},"visible":false},{"shot":"no-memory-limit"}]'
+yv drive hosts --iso map-hosts-nomem --steps '[{"click":"css:.host-more"},{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"expect":{"css":"section.usage","hasText":"GB of memory"},"visible":false},{"shot":"no-memory-limit"}]'
 yv iso down --name map-hosts-nomem
 ```
 
