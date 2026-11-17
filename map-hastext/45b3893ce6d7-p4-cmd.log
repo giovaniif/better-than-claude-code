@@ -1,0 +1,51 @@
+$ verify/yv map run stop
+# exit 0 after 53975 ms at a6aaf4aaa62c6682c6de7cbf0fb90ad563d6f205
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "stop",
+      "at": "2026-11-17T03:02:01.028Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-slow-turn",
+          "status": "pass",
+          "ms": 4595
+        },
+        {
+          "label": "stop-stuck-codex-turn",
+          "status": "pass",
+          "ms": 8150
+        },
+        {
+          "label": "stop-stuck-claude-turn",
+          "status": "pass",
+          "ms": 8764
+        },
+        {
+          "label": "stop-stuck-opencode-turn",
+          "status": "pass",
+          "ms": 9437
+        },
+        {
+          "label": "stop-while-asking",
+          "status": "pass",
+          "ms": 8169
+        },
+        {
+          "label": "stop-while-asking-says-not-answered",
+          "status": "pass",
+          "ms": 14007
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

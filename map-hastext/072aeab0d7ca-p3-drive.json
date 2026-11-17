@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e761b1b56",
+  "build": {
+    "sha": "a6aaf4aaa62c6682c6de7cbf0fb90ad563d6f205",
+    "short": "a6aaf4a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T03:01:01.789Z"
+  },
+  "dir": ".verify/evidence/map-hastext-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2295,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/map-hastext-head/hastext-case-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2248,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/map-hastext-head/hastext-case-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
