@@ -57,6 +57,24 @@ yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"lo
 yv drive 'session:{{deny_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Deny","exact":true}},{"expect":"css:.thread","text":"Skipped it."},{"click":"role:button:Worked for"},{"expect":"css:.thread","text":"Denied"}]'
 ```
 
+### waiting-then-denied-command-did-not-run
+Viewports: both
+While the card asks, the command's row reads "Waiting to run" with no live
+pulse: nothing runs before the answer. Denied, the turn's fold counts "1
+command not run" and the row reads "Did not run · denied", not a red
+"failed". The same for Codex and for OpenCode (ACP), whose approvals name
+the call they ask about.
+
+```sh
+for vp in desktop mobile; do
+  for eng in codex opencode; do
+    if [ $eng = codex ]; then model=fake-fast; cmd="echo approved"; else model=opencode/fake-free; cmd="echo hi"; fi
+    yv api '{"op":"session.create","engine":"'$eng'","model":"'$model'","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-deny '$eng' '$vp'"}' --wait '{"op":"created"}' --save deny2_sid=sessionId
+    yv drive 'session:{{deny2_sid}}' --viewport $vp --steps '[{"expect":"text:Allow this command?","timeout":15000},{"expect":{"css":".tool-row","hasText":"'"$cmd"'"},"text":"Waiting to run"},{"expect":"css:.thread .tool-row .pulse","count":0},{"shot":"waiting-'$eng'"},{"click":{"role":"button","name":"Deny","exact":true}},{"expect":"css:.thread","text":"Skipped it."},{"expect":"role:button:Worked for","text":"1 command not run"},{"click":"role:button:Worked for"},{"expect":{"css":".tool-row","hasText":"'"$cmd"'"},"text":"Did not run"},{"expect":{"css":".tool-row","hasText":"'"$cmd"'"},"text":"denied"},{"expect":"css:.thread .tool-row .bad","count":0},{"shot":"denied-'$eng'"}]'
+  done
+done
+```
+
 ### always-allow
 "Always allow" runs it and records the choice.
 

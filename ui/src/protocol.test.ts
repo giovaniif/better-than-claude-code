@@ -220,3 +220,48 @@ describe("applyEvent", () => {
     expect(agent).toMatchObject({ state: "ok", output: "found it", ms: 9000 });
   });
 });
+
+describe("a call that waits for an approval", () => {
+  const asked: AgentEvent[] = [
+    { type: "user_message", text: "[cmd] run it" },
+    { type: "turn_started", at: 1_000 },
+    { type: "tool_started", itemId: "c1", kind: "command", title: "Ran", detail: "echo hi" },
+    { type: "approval_request", requestId: "r1", kind: "command", title: "echo hi", detail: "", itemId: "c1" },
+  ];
+  const tool = (items: Item[]) => items.find((it) => it.kind === "tool");
+
+  test("is waiting, not running, until someone answers", () => {
+    expect(tool(fold(asked))).toMatchObject({ state: "running", asked: "waiting" });
+    const allowed = fold([...asked, { type: "approval_resolved", requestId: "r1", decision: "allow" }]);
+    expect(tool(allowed)?.kind === "tool" && tool(allowed)).not.toHaveProperty("asked");
+  });
+
+  test("denied, it did not run: denied, not failed", () => {
+    const items = fold([
+      ...asked,
+      { type: "approval_resolved", requestId: "r1", decision: "deny" },
+      { type: "tool_completed", itemId: "c1", ok: false, note: "declined" },
+      { type: "turn_completed", status: "completed", at: 2_000 },
+    ]);
+    expect(tool(items)).toMatchObject({ state: "failed", asked: "denied" });
+  });
+
+  test("an approval that comes before its call still links to it", () => {
+    const items = fold([
+      { type: "user_message", text: "[cmd] run it" },
+      { type: "approval_request", requestId: "r1", kind: "command", title: "echo hi", detail: "", itemId: "c1" },
+      { type: "tool_started", itemId: "c1", kind: "command", title: "Ran", detail: "echo hi" },
+    ]);
+    expect(tool(items)).toMatchObject({ asked: "waiting" });
+  });
+
+  test("a turn that ends before anyone answers leaves it unanswered", () => {
+    const items = fold([...asked, { type: "turn_completed", status: "interrupted", at: 2_000 }]);
+    expect(tool(items)).toMatchObject({ state: "failed", asked: "unanswered" });
+  });
+
+  test("an approval without an itemId changes no call", () => {
+    const items = fold([...asked.slice(0, 3), { type: "approval_request", requestId: "r1", kind: "command", title: "echo hi", detail: "" }]);
+    expect(tool(items)).not.toHaveProperty("asked");
+  });
+});
