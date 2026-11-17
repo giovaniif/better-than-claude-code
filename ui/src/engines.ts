@@ -32,6 +32,14 @@ export const ENGINE_ACCOUNT: Partial<Record<Engine, string>> = { codex: "ChatGPT
 /** OpenCode runs on providers, each logged in on its own: its Log in adds one. */
 export const addsProviders = (engine: Engine) => engine === "opencode";
 
+/** Whether a message sent mid-turn joins the running turn at the agent's next
+ *  step (yardd's `engines::can_steer`). OpenCode and Grok take no input inside
+ *  a turn, so yardd sends it as the next one. */
+export const canSteer = (engine: Engine) => engine === "claude" || engine === "codex";
+
+/** When a queued message reaches the agent, as the queue and the send button say it. */
+export const queuedHint = (engine: Engine) => (canSteer(engine) ? "the agent reads it after its current step" : "sent when the current turn ends");
+
 /** Claude and Codex are always offered, as before there were more; any other
  *  engine only once its host reports models for it (it is installed there). */
 const ALWAYS: Engine[] = ["claude", "codex"];
