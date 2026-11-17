@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+    "short": "e8c1ee3",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:29:10.274Z"
+  },
+  "dir": ".verify/evidence/hosts-grid-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6174,
+      "steps": 16,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-grid-head/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-grid-head/details-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-grid-head/offline-details-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".host-grid > .host-card\")].map((c) => c.getAttribute(\"aria-label\"))",
+          "value": [
+            "iso-host",
+            "TEST-remote",
+            "TEST-ssh"
+          ]
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const [a, b] = [...document.querySelectorAll(\".host-grid > .host-card\")].map((c) => c.getBoundingClientRect()); return window.innerWidth > 700 ? Math.round(a.top) === Math.round(b.top) && b.left >= a.right : b.top >= a.bottom && Math.round(a.width) === Math.round(b.width); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4277,
+      "steps": 16,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-grid-head/hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-grid-head/details-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-grid-head/offline-details-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".host-grid > .host-card\")].map((c) => c.getAttribute(\"aria-label\"))",
+          "value": [
+            "iso-host",
+            "TEST-remote",
+            "TEST-ssh"
+          ]
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const [a, b] = [...document.querySelectorAll(\".host-grid > .host-card\")].map((c) => c.getBoundingClientRect()); return window.innerWidth > 700 ? Math.round(a.top) === Math.round(b.top) && b.left >= a.right : b.top >= a.bottom && Math.round(a.width) === Math.round(b.width); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

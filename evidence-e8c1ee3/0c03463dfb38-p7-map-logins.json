@@ -1,0 +1,47 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-17T18:32:07.406Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page-shows-logged-out",
+          "status": "pass",
+          "ms": 5489
+        },
+        {
+          "label": "codex-device-login",
+          "status": "pass",
+          "ms": 2900
+        },
+        {
+          "label": "claude-code-login",
+          "status": "pass",
+          "ms": 5337
+        },
+        {
+          "label": "grok-device-login",
+          "status": "pass",
+          "ms": 7501
+        },
+        {
+          "label": "opencode-api-key",
+          "status": "pass",
+          "ms": 10879
+        },
+        {
+          "label": "opencode-device-sign-in",
+          "status": "pass",
+          "ms": 5715
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

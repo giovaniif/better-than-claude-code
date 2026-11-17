@@ -1,0 +1,287 @@
+{
+  "v": 1,
+  "claim": "The Hosts page stacks one tall full-width card per host (stats, sparkline, sessions, queue rule, every engine and account row), so two hosts already need scrolling and cannot be compared side by side; the owner wants a grid of small cards like the Automations page",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-a3f508ab00aa84a16",
+  "base": "616a45fc72ec53b65a0bdeb6c0fde19f4ac24ba1",
+  "head": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/hosts.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/hosts.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/queue.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T18:28:31.700Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7e6023edfd20b36ad6af70a672c351369b7f24b9",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "fec301f6afa7baa05362c290e830b7423e2be8ed3009af295541beacaf2bdc1f"
+        },
+        {
+          "path": "p1-hosts-mobile.png",
+          "sha256": "36554ae5d0cf0fe02d74aa0041ec3a2413e918a687d4684542452c9252ce2faa"
+        },
+        {
+          "path": "p1-hosts-desktop.png",
+          "sha256": "7f4b9179b10b9a696ab3c9b7ed696d0f2e2a9732e483bdd9f7e3387ba9bfcea6"
+        }
+      ],
+      "addedAt": "2026-11-17T18:28:54.746Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "7e6023edfd20b36ad6af70a672c351369b7f24b9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "0eb64bb01fe25adcf3b51045d2e1e0f5f26f97bd0e1b9f0b59f6fcf3f241447a"
+        }
+      ],
+      "addedAt": "2026-11-17T18:28:54.791Z",
+      "cmd": "verify/yv map run hosts --recipe hosts-grid",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3b678ac077650c81205613bc5a1cd5ed20933e47022c0f7196c8a508d4e808ce"
+        },
+        {
+          "path": "p3-hosts-mobile.png",
+          "sha256": "35ebbc498b1e8c640f8cab2e9ac920e322fc48003c61ccf7762d4f18ecba83e8"
+        },
+        {
+          "path": "p3-details-mobile.png",
+          "sha256": "0a186c1c3ddb96f786b4438a4feee98aec556cbde4459ee027bf09e3bb60f2ef"
+        },
+        {
+          "path": "p3-offline-details-mobile.png",
+          "sha256": "426129f8aa2d45b5b036215a357995e91500055be42db3d513d079c9e86bbdb3"
+        },
+        {
+          "path": "p3-hosts-desktop.png",
+          "sha256": "2170a970c4c1b73cdf9940a52179c6cdaee14a63fd1a247e7e3bbe8132ebfe1d"
+        },
+        {
+          "path": "p3-details-desktop.png",
+          "sha256": "0f7946eb94137d6183246bc473c21b15902b9ba92bdbb238c7bef503b13724d7"
+        },
+        {
+          "path": "p3-offline-details-desktop.png",
+          "sha256": "fef81809f4072eecb52820200f27a1f56767cd15787b672b3582740bd33c4856"
+        }
+      ],
+      "addedAt": "2026-11-17T18:29:34.500Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "914b56d073294d89d3f246320c242b920eda6ad13a68f3db7d412085b12e7a38"
+        }
+      ],
+      "addedAt": "2026-11-17T18:29:34.547Z",
+      "cmd": "verify/yv design-check --base 616a45fc72ec",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "36126577018cde2823e474e6cf142764b663dd57f95ef2f6a70fcad921e85e3b"
+        }
+      ],
+      "addedAt": "2026-11-17T18:29:34.633Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test src) && verify/yv map run hosts --recipe hosts-grid",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-hosts.json",
+          "sha256": "83b5f70768197186655df75db4c8138573c56ce01e2495465627286b24772956"
+        }
+      ],
+      "addedAt": "2026-11-17T18:30:25.292Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-logins.json",
+          "sha256": "0c03463dfb38acf314997897557e4fff8f16cd1f1b0ab77fdd390e8ccbd39175"
+        }
+      ],
+      "addedAt": "2026-11-17T18:31:29.221Z",
+      "cmd": "verify/yv map run logins",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "logins/hosts-page-shows-logged-out",
+        "logins/codex-device-login",
+        "logins/claude-code-login",
+        "logins/grok-device-login",
+        "logins/opencode-api-key",
+        "logins/opencode-device-sign-in"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-queue.json",
+          "sha256": "a026e9d8e16d34b69d5515df8ed34d6fc80a0b0014d37ad9f03c52135bc0422b"
+        }
+      ],
+      "addedAt": "2026-11-17T18:32:07.454Z",
+      "cmd": "verify/yv map run queue",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "queue/new-session-queues",
+        "queue/start-anyway",
+        "queue/double-click-start-anyway",
+        "queue/hosts-page-shows-pressure"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e8c1ee37724f0853437dedfac3a934a781a92fbf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-accounts.json",
+          "sha256": "ae29d298d67b048ee494a7a3ca156b932f625b0f0c1d67960cc20edd6d329432"
+        }
+      ],
+      "addedAt": "2026-11-17T18:32:25.671Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-17T18:31:29.172Z",
+      "counts": {
+        "pass": 12,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page",
+          "status": "pass",
+          "ms": 3507
+        },
+        {
+          "label": "empty-state-tile",
+          "status": "pass",
+          "ms": 4816
+        },
+        {
+          "label": "sessions-list-collapsed",
+          "status": "pass",
+          "ms": 7288
+        },
+        {
+          "label": "add-direct-host",
+          "status": "pass",
+          "ms": 3283
+        },
+        {
+          "label": "remote-session",
+          "status": "pass",
+          "ms": 7272
+        },
+        {
+          "label": "hosts-grid",
+          "status": "pass",
+          "ms": 5780
+        },
+        {
+          "label": "ssh-host-unreachable",
+          "status": "pass",
+          "ms": 2212
+        },
+        {
+          "label": "remove-host",
+          "status": "pass",
+          "ms": 6060
+        },
+        {
+          "label": "refused-add-keeps-the-form",
+          "status": "pass",
+          "ms": 6726
+        },
+        {
+          "label": "local-name-right-after-start",
+          "status": "pass",
+          "ms": 2389
+        },
+        {
+          "label": "no-memory-limit-says-load-only",
+          "status": "pass",
+          "ms": 5879
+        },
+        {
+          "label": "ip-destination-keeps-the-whole-address",
+          "status": "pass",
+          "ms": 7418
+        },
+        {
+          "label": "install-on-host",
+          "status": "manual",
+          "why": "needs a real SSH server"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
