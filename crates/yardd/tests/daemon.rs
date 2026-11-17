@@ -770,6 +770,11 @@ async fn handoff_keeps_the_sidebar_group() {
         .wait_for("the new session's meta", |m| m["op"] == "session" && m["session"]["id"] == new_sid && m["session"]["parent"] == sid)
         .await;
     assert_eq!(meta["session"]["group"], "TEST-grp");
+
+    // Both sessions keep one title, so each hand-off note names the other one.
+    let note = |events: Vec<Value>| events.into_iter().find(|e| e["type"] == "note").expect("a hand-off note");
+    assert_eq!(note(c.history(&sid).await)["session"], new_sid.as_str());
+    assert_eq!(note(c.history(&new_sid).await)["session"], sid.as_str());
 }
 
 #[tokio::test]

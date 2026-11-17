@@ -77,10 +77,12 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
         // The work goes on here, so it sits where the user filed the source.
         m.group = source.group.clone();
     });
-    app.emit(sid, json!({ "type": "note", "text": format!("Handed off to {}.", engine_name(engine)) }));
+    // Each note names the other side, so its link survives a sibling being
+    // deleted; both sessions keep one title, so nothing else tells them apart.
+    app.emit(sid, json!({ "type": "note", "text": format!("Handed off to {}.", engine_name(engine)), "session": new_sid }));
     app.emit(
         &new_sid,
-        json!({ "type": "note", "text": format!("Handed off from {}.", engine_name(&source.engine)) }),
+        json!({ "type": "note", "text": format!("Handed off from {}.", engine_name(&source.engine)), "session": sid }),
     );
     let _ = direct.send(json!({ "op": "created", "sessionId": new_sid }).to_string());
     sessions::begin(app, &new_sid, &brief, &[]).await;

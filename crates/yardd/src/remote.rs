@@ -701,6 +701,12 @@ fn rewrite_session(host: &str, s: &mut Value) {
     }
 }
 
+fn rewrite_event(host: &str, ev: &mut Value) {
+    if ev["type"] == "note" {
+        prefix(host, ev, "session");
+    }
+}
+
 fn rewrite_stats(host: &str, name: &str, stats: &mut Value) {
     let Some(obj) = stats.as_object_mut() else { return };
     obj.insert("id".into(), json!(host));
@@ -763,6 +769,13 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
         _ => {
             prefix(host, &mut msg, "sessionId");
             prefix(host, &mut msg, "termId");
+            // A hand-off note names a session on the same host.
+            rewrite_event(host, &mut msg["event"]);
+            if let Some(events) = msg["events"].as_array_mut() {
+                for ev in events {
+                    rewrite_event(host, ev);
+                }
+            }
         }
     }
     Some(msg.to_string())
@@ -789,6 +802,12 @@ mod tests {
         let out = rewrite_incoming("h1", "box", r#"{"op":"event","sessionId":"s9","seq":0,"event":{}}"#).unwrap();
         let v: Value = serde_json::from_str(&out).unwrap();
         assert_eq!(v["sessionId"], "h1~s9");
+        let note = r#"{"op":"history","sessionId":"s9","events":[{"type":"note","text":"Handed off to Claude.","session":"s8"}]}"#;
+        let v: Value = serde_json::from_str(&rewrite_incoming("h1", "box", note).unwrap()).unwrap();
+        assert_eq!(v["events"][0]["session"], "h1~s8");
+        let note = r#"{"op":"event","sessionId":"s8","seq":0,"event":{"type":"note","text":"Handed off from Codex.","session":"s9"}}"#;
+        let v: Value = serde_json::from_str(&rewrite_incoming("h1", "box", note).unwrap()).unwrap();
+        assert_eq!(v["event"]["session"], "h1~s9");
         let back = outgoing(json!({ "op": "term.input", "termId": "h1~t3", "data": "x" }));
         assert_eq!(back["termId"], "t3");
         assert_eq!(route(&json!({ "op": "session.send", "sessionId": "h1~s9" })).as_deref(), Some("h1"));
