@@ -127,5 +127,22 @@ yv drive 'session:{{nr_sid}}' --viewport desktop --steps '[{"click":{"role":"but
 rm -rf "$nr"
 ```
 
+### review-waits-while-the-folder-is-busy
+Viewports: desktop
+The review runs in the session's own folder, and yardd lets one session work
+in a folder at a time. While this session works (a `[slow]` turn), "Review
+with Claude" is disabled and the note under it names the session in the way;
+once the turn is stopped it is enabled again and starts the review. (It stayed
+enabled, and every click was refused with a red banner: "… is working in this
+folder. Stop it or let it finish first.") Its own session in a new worktree,
+so the other recipes keep theirs.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-busy review"}' --wait '{"op":"created"}' --save busy_sid=sessionId
+yv drive 'session:{{busy_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"css:.pr-foot","text":"is working in this folder"},{"expect":"role:button:Review with Claude","enabled":false},{"shot":"busy"}]'
+yv api '{"op":"session.interrupt","sessionId":"{{busy_sid}}"}' --wait '{"op":"event","sessionId":"{{busy_sid}}","event":{"type":"turn_completed"}}'
+yv drive 'session:{{busy_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"role:button:Review with Claude","enabled":true},{"click":"role:button:Review with Claude"},{"expect":"role:heading:Review this branch","timeout":15000}]'
+```
+
 ## Gotchas
 - The PR pane polls every 60 s while visible; Refresh pull request forces a reload.
