@@ -1,0 +1,102 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-17T13:40:23.104Z",
+      "counts": {
+        "pass": 17
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 4429
+        },
+        {
+          "label": "rows-mark-what-needs-you",
+          "status": "pass",
+          "ms": 12051
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6346
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 6067
+        },
+        {
+          "label": "archiving-the-open-session-keeps-the-list-closed",
+          "status": "pass",
+          "ms": 7097
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 3055
+        },
+        {
+          "label": "group-new",
+          "status": "pass",
+          "ms": 3153
+        },
+        {
+          "label": "group-move-to-existing",
+          "status": "pass",
+          "ms": 2976
+        },
+        {
+          "label": "group-drag-out-to-ungrouped",
+          "status": "pass",
+          "ms": 5543
+        },
+        {
+          "label": "group-drag-into-group",
+          "status": "pass",
+          "ms": 4616
+        },
+        {
+          "label": "group-drag-noop",
+          "status": "pass",
+          "ms": 3664
+        },
+        {
+          "label": "group-collapse-persists",
+          "status": "pass",
+          "ms": 3288
+        },
+        {
+          "label": "group-rename",
+          "status": "pass",
+          "ms": 3191
+        },
+        {
+          "label": "group-remove-from-group",
+          "status": "pass",
+          "ms": 3021
+        },
+        {
+          "label": "group-ungroup",
+          "status": "pass",
+          "ms": 3021
+        },
+        {
+          "label": "archived-header-stays-at-bottom",
+          "status": "pass",
+          "ms": 8811
+        },
+        {
+          "label": "hand-off-keeps-the-group",
+          "status": "pass",
+          "ms": 2279
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
