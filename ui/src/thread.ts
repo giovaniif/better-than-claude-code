@@ -92,7 +92,7 @@ export function layout(items: Item[], running: boolean): Row[] {
     const to = cut ?? marker?.end;
     const ms = from != null && to != null ? to - from : null;
     // Only the part that runs to the stop is marked, not each steered part.
-    const stoppedMark = (): Row[] => (!live && own && cut === undefined && own.status === "interrupted" ? [{ type: "stopped", key: `stopped-${own.key}`, ms }] : []);
+    const stoppedMark = (): Row[] => (!live && marker && cut === undefined && marker.status === "interrupted" ? [{ type: "stopped", key: `stopped-${marker.key}`, ms }] : []);
     if (live || !body.some(isWork)) {
       rows.push(...group(body, live), ...stoppedMark());
       return;
