@@ -93,6 +93,21 @@ describe("layout", () => {
     expect(shape(layout(items.filter((it) => it.kind !== "turn"), true))).toEqual(["user", "assistant"]);
   });
 
+  test("a steered text-only turn that is stopped marks its last part, once", () => {
+    const items = fold([
+      { type: "user_message", text: "write it" },
+      { type: "turn_started", at: 1_000 },
+      { type: "assistant_message", itemId: "m1", text: "Starting" },
+      { type: "user_message", text: "shorter please", steered: true, at: 3_000 },
+      { type: "assistant_message", itemId: "m2", text: "Short" },
+      { type: "turn_completed", status: "interrupted", at: 7_000 },
+    ]);
+    const rows = layout(items, false);
+    expect(shape(rows)).toEqual(["user", "assistant", "user", "assistant", "stopped"]);
+    const mark = rows[4];
+    expect(mark.type === "stopped" && mark.ms).toBe(4_000);
+  });
+
   test("a turn with no tools is left alone, and errors stay in view", () => {
     const items = fold([
       { type: "user_message", text: "hi" },
