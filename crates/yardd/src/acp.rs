@@ -251,7 +251,15 @@ impl Client {
         if self.streams.lock().unwrap().get(sid).is_some_and(|s| s.loading) {
             return;
         }
-        match u["sessionUpdate"].as_str().unwrap_or("") {
+        let kind = u["sessionUpdate"].as_str().unwrap_or("");
+        // Output with no turn is a prompt that Stop ended here and the agent
+        // kept running: shown, it would open a message no turn owns and the
+        // next answer would be appended to it. Updates carry no prompt id, so
+        // what such a prompt says during the next turn cannot be told apart.
+        if matches!(kind, "agent_message_chunk" | "agent_thought_chunk" | "tool_call" | "tool_call_update") && !in_turn(app, sid) {
+            return;
+        }
+        match kind {
             "agent_message_chunk" => {
                 let Some(text) = u["content"]["text"].as_str() else { return };
                 let id = {
@@ -820,6 +828,10 @@ pub fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {
     c.cancel_approvals(sid);
     c.send(json!({ "jsonrpc": "2.0", "method": "session/cancel", "params": { "sessionId": acp_sid } }));
     Ok(())
+}
+
+fn in_turn(app: &App, sid: &str) -> bool {
+    matches!(app.sessions.lock().unwrap().get(sid).map(|s| &s.backend), Some(Backend::Acp { turn: Some(_), .. }))
 }
 
 /// The turn did not end after Stop: forget it, so a late answer says nothing.
