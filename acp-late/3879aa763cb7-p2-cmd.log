@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test acp output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped
+# exit 101 after 8738 ms at c465e20c470fd0413ef7521cd34c1329c9c51e91
+
+
+running 1 test
+test output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped ... FAILED
+
+failures:
+
+---- output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped stdout ----
+
+thread 'output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped' (4031606) panicked at crates/yardd/tests/acp.rs:264:5:
+no turn owns these: [Object {"itemId": String("opencode-ses-4031669-1-r2"), "text": String("Late thought"), "type": String("reasoning_delta")}, Object {"itemId": String("opencode-ses-4031669-1-r2"), "text": String("Late thought"), "type": String("reasoning")}, Object {"itemId": String("opencode-ses-4031669-1-t3"), "text": String("Late words"), "type": String("assistant_delta")}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-4031605-oc-late-0 for inspection
+
+
+failures:
+    output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 17 filtered out; finished in 8.16s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.54s
+     Running tests/acp.rs (target/debug/build/yardd/0b0866475f883849/out/acp-0b0866475f883849)
+error: test failed, to rerun pass `-p yardd --test acp`

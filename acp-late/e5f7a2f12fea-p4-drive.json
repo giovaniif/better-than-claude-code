@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e76dc61b2",
+  "build": {
+    "sha": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+    "short": "3c58ffd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T02:54:53.267Z"
+  },
+  "dir": ".verify/evidence/acp-late-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11599,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/acp-late-head/late-dropped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/acp-late-head/next-answer-clean-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e76d14492",
+  "build": {
+    "sha": "c465e20c470fd0413ef7521cd34c1329c9c51e91",
+    "short": "c465e20",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T02:54:07.742Z"
+  },
+  "dir": ".verify/evidence/acp-late-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 10786,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/acp-late-base/late-shown-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/acp-late-base/runs-into-next-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

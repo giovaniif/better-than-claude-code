@@ -1,0 +1,184 @@
+{
+  "v": 1,
+  "claim": "After Stop ended a stuck OpenCode/Grok turn, output the agent streamed later showed up as a message no turn owned, and the next answer was appended to it ('Late wordsEcho: …').",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b",
+  "base": "d55d39e0b18909bb4d2ab00c7e65efe7c94c525a",
+  "head": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/acp-agent.mjs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/stop.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T02:54:04.708Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c465e20c470fd0413ef7521cd34c1329c9c51e91",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "ce0bb49ede4e81c55f99fdce4863b74d5138fed3733fb654e42671c023ccd6c2"
+        },
+        {
+          "path": "p1-late-shown-desktop.png",
+          "sha256": "4bf75787e672da66913ddf21198813a4167ff12ece6c4d02ce9e8de7956cacd2"
+        },
+        {
+          "path": "p1-runs-into-next-desktop.png",
+          "sha256": "049ce5a0f5ef04d05644f209ca116c66b0d5922bc19e9690b3f92c2ae0c589ec"
+        }
+      ],
+      "addedAt": "2026-11-17T02:54:19.329Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "c465e20c470fd0413ef7521cd34c1329c9c51e91",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "3879aa763cb749b6aa7ba97407346c482f25376f3f9c8d83fded8e5c0622f5b6"
+        }
+      ],
+      "addedAt": "2026-11-17T02:54:19.375Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test acp output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "c465e20c470fd0413ef7521cd34c1329c9c51e91",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "3135cb337813098157b9e5152270d6c9442f3e80ba80bf7615fba3e1c21f22a4"
+        }
+      ],
+      "addedAt": "2026-11-17T02:54:28.160Z",
+      "cmd": "verify/yv map run stop --recipe stuck-opencode-late-output-is-dropped",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "e5f7a2f12fea5ea2cc9fd75754c9cdd1afc57f4bbbbede92d2b9f946fd86ffe2"
+        },
+        {
+          "path": "p4-late-dropped-desktop.png",
+          "sha256": "b84897101f5d5cef959782e1097adef600912a6fd1ebcebfbf1bff9c1b05a4c1"
+        },
+        {
+          "path": "p4-next-answer-clean-desktop.png",
+          "sha256": "0f887ced8d57c7802cb73844ec7b3cc25cb2fe0207e71e164e5e6ca9bdc4b56e"
+        }
+      ],
+      "addedAt": "2026-11-17T02:55:05.661Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "8a6fd0c2b6d78dc95ec9aabcf610357b339261832c3314af794e070e462525da"
+        }
+      ],
+      "addedAt": "2026-11-17T02:55:05.705Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-stop.json",
+          "sha256": "cdd9942c7120976e5a5bb27a23ce1dfb3660c73b3062d923cc91c6761e73b4c9"
+        }
+      ],
+      "addedAt": "2026-11-17T02:55:33.086Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn",
+        "stop/stop-stuck-opencode-turn",
+        "stop/stuck-opencode-late-output-is-dropped",
+        "stop/stop-while-asking",
+        "stop/stop-while-asking-says-not-answered"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3c58ffd9f7f39587c9c64137e79b87e327ee7242",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-acp-engines.json",
+          "sha256": "89bf78fe29b934db69da041c6ca1e9ad231c0d524ce42110c8903cd56d251bca"
+        }
+      ],
+      "addedAt": "2026-11-17T02:56:39.510Z",
+      "cmd": "verify/yv map run acp-engines",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn"
+      ]
+    }
+  ]
+}
