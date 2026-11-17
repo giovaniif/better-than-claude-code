@@ -1,0 +1,222 @@
+{
+  "v": 1,
+  "claim": "On the Hosts page at 390 px, OpenCode's Add account wraps to the left edge of its row; the first fix (2b335e9) then pushed an uninstalled engine's install command off the right edge, because an empty action group shared the row's free space.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b",
+  "base": "a5ee090f39111246657f6fec8c9dc6af311b7967",
+  "head": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T02:45:07.687Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1dcf5262f42106beda6eb6eb40810cfc5fc07ea5",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "e4a52f495b98bdd58d904acbd964998f8980400a35c792a1b62f332f7d79a353"
+        },
+        {
+          "path": "p1-hosts-mobile.png",
+          "sha256": "a7ae8fe8c7ad9b4a74d0317ceec9ccbc9e041a480abe3238ce11e9aa34dca880"
+        }
+      ],
+      "addedAt": "2026-11-17T02:45:14.113Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1dcf5262f42106beda6eb6eb40810cfc5fc07ea5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "178ed202c7766742d1eb1a26701952409337895f615e90c5b79a4130cf6ae1e9"
+        }
+      ],
+      "addedAt": "2026-11-17T02:45:14.160Z",
+      "cmd": "verify/yv map run accounts --recipe add-account-stays-at-the-right",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7c2d2ac08ce8ee4558e76887c2b35aeb3143ea11",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "d217bdf814d4aed172514099a584121368df91701f51c4c204a57ae3c7002c77"
+        },
+        {
+          "path": "p3-fail-mobile-step3.png",
+          "sha256": "ce63650e786712a365c7136015d94f24a01bc94b1e512e6b882643ef78603971"
+        },
+        {
+          "path": "p3-fail-desktop-step3.png",
+          "sha256": "a92719a6734c31102926cfd5d0cc16a08dc801ed03ed79e35011f454addad64d"
+        }
+      ],
+      "addedAt": "2026-11-17T02:45:40.852Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "7c2d2ac08ce8ee4558e76887c2b35aeb3143ea11",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "7d170ffa2597f02c4ff16bac2f81dfe45b09520651006289799761e279300d54"
+        }
+      ],
+      "addedAt": "2026-11-17T02:45:40.904Z",
+      "cmd": "verify/yv map run accounts --recipe install-command-stays-at-the-right",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "60f6a658f0dd876e762d25276a3a48ffa06be1b43abc9464fe6bca574fa2693e"
+        },
+        {
+          "path": "p5-add-account-mobile.png",
+          "sha256": "9219183341cc7c080c31282f3b41ade20c1cc2a73b1a39805aff637cee93075e"
+        },
+        {
+          "path": "p5-install-command-mobile.png",
+          "sha256": "7ba35935a038fae9d50d605bad1af70aa99fe293d7d43c4b5bda3dab83070e8a"
+        },
+        {
+          "path": "p5-add-account-desktop.png",
+          "sha256": "7f8d6d21e06f1596b9d2c3875b8c9d5df752ea2ffe156f5bfab8b4b2091ada2a"
+        },
+        {
+          "path": "p5-install-command-desktop.png",
+          "sha256": "ff7887947fc6ddeca781ac7154440cc4b81d337b35e7cbecfd4f9cc1031b54d1"
+        }
+      ],
+      "addedAt": "2026-11-17T02:46:17.735Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "012b2d6529c4ab87b3388b4691fdc20de47f1e714cd95344cd0a7b0bc6b99909"
+        }
+      ],
+      "addedAt": "2026-11-17T02:46:21.527Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "3887a99a630dd3f497b29e23e1394ac61c562cb83319b138a62cfef18a347123"
+        }
+      ],
+      "addedAt": "2026-11-17T02:46:21.652Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "7e4955f130ec88d495cb837c07a5b171ada8da174e3c8fa361c3b031852010da"
+        }
+      ],
+      "addedAt": "2026-11-17T02:47:25.372Z",
+      "cmd": "verify/yv design-check --base a5ee090f3911",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cf721107927fbe2ed78a90009f6dbb77f31a8bdb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-hosts.json",
+          "sha256": "4448796f68056548fb88c7909c11d6121ee2fa38281a09490cd9fa72dbe1c6ee"
+        }
+      ],
+      "addedAt": "2026-11-17T02:47:25.457Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only"
+      ]
+    }
+  ]
+}

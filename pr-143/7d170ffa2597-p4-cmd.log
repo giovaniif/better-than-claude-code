@@ -1,0 +1,45 @@
+$ verify/yv map run accounts --recipe install-command-stays-at-the-right
+# exit 1 after 14618 ms at 7c2d2ac08ce8ee4558e76887c2b35aeb3143ea11
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-17T02:45:55.518Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "install-command-stays-at-the-right",
+          "status": "fail",
+          "ms": 13763,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"eval\":\"(() => { const c = document.querySelector(\\\".engine-cmd\\\"); return Math.round(c.closest(\\\".engine-row\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\",\"equals\":0}: eval returned 62, expected 0",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b/.verify/drives/2026-11-17T02-45-41-951Z/fail-mobile-step3.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"eval\":\"(() => { const c = document.querySelector(\\\".engine-cmd\\\"); return Math.round(c.closest(\\\".engine-row\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\",\"equals\":0}: eval returned 106, expected 0",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b/.verify/drives/2026-11-17T02-45-41-951Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "n  - button \\\"Add provider\\\"\\n  - button \\\"Add OpenCode account\\\": Add account\\n  - text: Grok not installed\\n  - code: npm i -g @xai-official/grok\\n- button \\\"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\\\":\\n  - strong: Run sessions on another machine\\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \\\"data\\\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \\\"data\\\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \\\"string\\\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \\\"engines\\\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 3,\n          \"eval\": \"(() => { const c = document.querySelector(\\\".engine-cmd\\\"); return Math.round(c.closest(\\\".engine-row\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\",\n          \"value\": 106\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"eval\\\":\\\"(() => { const c = document.querySelector(\\\\\\\".engine-cmd\\\\\\\"); return Math.round(c.closest(\\\\\\\".engine-row\\\\\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\\\",\\\"equals\\\":0}: eval returned 62, expected 0\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b/.verify/drives/2026-11-17T02-45-41-951Z/fail-mobile-step3.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"eval\\\":\\\"(() => { const c = document.querySelector(\\\\\\\".engine-cmd\\\\\\\"); return Math.round(c.closest(\\\\\\\".engine-row\\\\\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\\\",\\\"equals\\\":0}: eval returned 106, expected 0\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-7e3b/.verify/drives/2026-11-17T02-45-41-951Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "accounts/install-command-stays-at-the-right",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

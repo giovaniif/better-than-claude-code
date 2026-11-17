@@ -1,0 +1,92 @@
+{
+  "ok": false,
+  "route": "hosts",
+  "build": {
+    "sha": "7c2d2ac08ce8ee4558e76887c2b35aeb3143ea11",
+    "short": "7c2d2ac",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T02:45:26.390Z"
+  },
+  "dir": ".verify/evidence/p143-base2",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 7502,
+      "steps": 5,
+      "failed": {
+        "step": 3,
+        "action": {
+          "eval": "(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()",
+          "equals": 0
+        },
+        "reason": "eval returned 62, expected 0",
+        "screenshot": ".verify/evidence/p143-base2/fail-mobile-step3.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iso-host\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy CPU 4% load 1.0 of 28 Memory 13.8 GB of 23.4 GB Disk 70.0 GB of 97.9 GB\n  - img \"CPU over the last hour\"\n  - region \"Sessions\":\n    - heading \"Sessions\" [level=2]\n    - text: No session is running anything. New sessions are queued while load is above 28.\n  - text: Claude Code logged in as me@example.com\n  - button \"Add Claude Code account\": Add account\n  - text: Codex logged in as me@example.com\n  - button \"Add Codex account\": Add account\n  - text: \"OpenCode providers: opencode\"\n  - button \"Add provider\"\n  - button \"Add OpenCode account\": Add account\n  - text: Grok not installed\n  - code: npm i -g @xai-official/grok\n- button \"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\":\n  - strong: Run sessions on another machine\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's."
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()",
+          "value": 62
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 6256,
+      "steps": 5,
+      "failed": {
+        "step": 3,
+        "action": {
+          "eval": "(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()",
+          "equals": 0
+        },
+        "reason": "eval returned 106, expected 0",
+        "screenshot": ".verify/evidence/p143-base2/fail-desktop-step3.png",
+        "aria": "- navigation \"Sessions\":\n  - text: Switchyard\n  - button \"New session\"\n  - button \"Automations\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 4% · 59%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iso-host\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy CPU 4% load 0.9 of 28 Memory 13.7 GB of 23.4 GB Disk 70.0 GB of 97.9 GB\n  - img \"CPU over the last hour\"\n  - region \"Sessions\":\n    - heading \"Sessions\" [level=2]\n    - text: No session is running anything. New sessions are queued while load is above 28.\n  - text: Claude Code logged in as me@example.com\n  - button \"Add Claude Code account\": Add account\n  - text: Codex logged in as me@example.com\n  - button \"Add Codex account\": Add account\n  - text: \"OpenCode providers: opencode\"\n  - button \"Add provider\"\n  - button \"Add OpenCode account\": Add account\n  - text: Grok not installed\n  - code: npm i -g @xai-official/grok\n- button \"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\":\n  - strong: Run sessions on another machine\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's."
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()",
+          "value": 106
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 3 {\"eval\":\"(() => { const c = document.querySelector(\\\".engine-cmd\\\"); return Math.round(c.closest(\\\".engine-row\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\",\"equals\":0}: eval returned 62, expected 0",
+      "hint": "see .verify/evidence/p143-base2/fail-mobile-step3.png and the aria snapshot"
+    },
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 3 {\"eval\":\"(() => { const c = document.querySelector(\\\".engine-cmd\\\"); return Math.round(c.closest(\\\".engine-row\\\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()\",\"equals\":0}: eval returned 106, expected 0",
+      "hint": "see .verify/evidence/p143-base2/fail-desktop-step3.png and the aria snapshot"
+    }
+  ]
+}
