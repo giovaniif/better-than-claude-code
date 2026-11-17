@@ -21,12 +21,12 @@ yv iso down
 
 ### stop-slow-turn
 A turn that honours interrupts stops at once: the Stop button goes away and
-the session is idle. (A turn with no tool calls has no work-log row, so no
-"Stopped after" label shows.)
+the session is idle. The cut-off text is marked "Stopped after …" under it,
+even though a turn with no tool calls has no work-log fold to carry the label.
 
 ```sh
 yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-long job"}' --wait '{"op":"created"}' --save slow_sid=sessionId
-yv drive 'session:{{slow_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false}]'
+yv drive 'session:{{slow_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false},{"expect":"css:.thread","text":"Stopped after"},{"shot":"stopped-text-turn"}]'
 yv state --expect '{"sessions":[{"id":"{{slow_sid}}","status":"idle"}]}'
 ```
 
