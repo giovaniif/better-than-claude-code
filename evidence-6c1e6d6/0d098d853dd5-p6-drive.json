@@ -1,0 +1,111 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9f9743b4",
+  "build": {
+    "sha": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+    "short": "6c1e6d6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T14:46:41.682Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-57-569Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3277,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-57-569Z/safe-long-diagram-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "document.querySelectorAll(\".mermaid\").forEach(e => e.setAttribute(\"data-existing\", \"\")); window.__diagramStatuses = []; window.__diagramObserver = new MutationObserver(() => { document.querySelectorAll(\".mermaid [role=status]\").forEach(e => window.__diagramStatuses.push(e.textContent)); }); window.__diagramObserver.observe(document.querySelector(\".thread\"), {subtree:true, childList:true}); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(async () => { const i = document.querySelector(\".mermaid:not([data-existing]) img\"); await i.decode(); const svg = await fetch(i.src).then(r => r.text()); const d = new DOMParser().parseFromString(svg, \"image/svg+xml\"); return i.getBoundingClientRect().width <= Number(d.documentElement.getAttribute(\"viewBox\").split(/\\s+/)[2]) + 1 && !d.querySelector(\"script, foreignObject, [onclick], [onerror]\") && d.documentElement.textContent.replace(/\\s/g, \"\").includes(\"Reviewthecompleterequest\") && !svg.includes(\"body { display:none }\"); })()",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "window.__diagramObserver.disconnect(); window.__diagramStatuses.includes(\"Drawing diagram…\")",
+          "value": true
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelectorAll(\".prose svg, .prose iframe, .prose script\").length",
+          "value": 0
+        },
+        {
+          "step": 7,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3177,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-57-569Z/safe-long-diagram-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "document.querySelectorAll(\".mermaid\").forEach(e => e.setAttribute(\"data-existing\", \"\")); window.__diagramStatuses = []; window.__diagramObserver = new MutationObserver(() => { document.querySelectorAll(\".mermaid [role=status]\").forEach(e => window.__diagramStatuses.push(e.textContent)); }); window.__diagramObserver.observe(document.querySelector(\".thread\"), {subtree:true, childList:true}); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(async () => { const i = document.querySelector(\".mermaid:not([data-existing]) img\"); await i.decode(); const svg = await fetch(i.src).then(r => r.text()); const d = new DOMParser().parseFromString(svg, \"image/svg+xml\"); return i.getBoundingClientRect().width <= Number(d.documentElement.getAttribute(\"viewBox\").split(/\\s+/)[2]) + 1 && !d.querySelector(\"script, foreignObject, [onclick], [onerror]\") && d.documentElement.textContent.replace(/\\s/g, \"\").includes(\"Reviewthecompleterequest\") && !svg.includes(\"body { display:none }\"); })()",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "window.__diagramObserver.disconnect(); window.__diagramStatuses.includes(\"Drawing diagram…\")",
+          "value": true
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelectorAll(\".prose svg, .prose iframe, .prose script\").length",
+          "value": 0
+        },
+        {
+          "step": 7,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,97 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9f9747f6",
+  "build": {
+    "sha": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+    "short": "6c1e6d6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T14:46:41.682Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-42-820Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4290,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-42-820Z/automatic-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-42-820Z/source-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 11,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4108,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-42-820Z/automatic-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-46-42-820Z/source-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 11,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

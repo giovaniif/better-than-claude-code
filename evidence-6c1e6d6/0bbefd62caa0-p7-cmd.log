@@ -1,0 +1,45 @@
+$ verify/yv map run mermaid --recipe automatic-diagrams
+# exit 1 after 29175 ms at fa38484170f9ff4db53008005ea034241acb005f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-17T14:47:45.159Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "automatic-diagrams",
+          "status": "fail",
+          "ms": 25983,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":\"css:.mermaid img\",\"count\":2}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-47-19-491Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":\"css:.mermaid img\",\"count\":2}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-47-19-491Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "ting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 5% · 40%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-3cc5\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: \\\"TEST-diagrams Before the diagrams. flowchart LR A[Start] --> B[Finish] Between diagrams. ~~~mermaid sequenceDiagram Alice->>Bob: Hello ~~~\\\"\\n  - button \\\"Show more (4 lines)\\\"\\n  - paragraph: \\\"Echo: TEST-diagrams\\\"\\n  - paragraph: Before the diagrams.\\n  - text: flowchart LR A[Start] --> B[Finish]\\n  - paragraph: \\\"Between diagrams. ~~~mermaid sequenceDiagram Alice->>Bob: Hello ~~~\\\"\\n  - text: const ordinary = true;\\n  - paragraph: After the diagrams.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":\\\"css:.mermaid img\\\",\\\"count\\\":2}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-47-19-491Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":\\\"css:.mermaid img\\\",\\\"count\\\":2}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff/.verify/drives/2026-11-17T14-47-19-491Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "mermaid/automatic-diagrams",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,259 @@
+{
+  "v": 1,
+  "claim": "Mermaid fences in assistant chat show raw source instead of automatically rendering diagrams",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-mermaid-diagram-view-to-6fff",
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "head": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/bun.lock"
+    },
+    {
+      "status": "M",
+      "path": "ui/package.json"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/MermaidDiagram.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/markdown.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/markdown.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/mermaid.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T14:47:06.016Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "fa38484170f9ff4db53008005ea034241acb005f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-2-drive.json",
+          "sha256": "f62cf89a0fbef84471734121e17d121390f25078e4d60999a12833ce584748a7"
+        },
+        {
+          "path": "p1-2-fail-mobile-step0.png",
+          "sha256": "ba4cab96317ce2c3672c8752e88dae805c865f3f10ef4daa489802355c54a06f"
+        },
+        {
+          "path": "p1-2-fail-desktop-step0.png",
+          "sha256": "d9623e7052aee5133fb4719795f022264156e456ba592e29de447a202c21862f"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:06.055Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "test",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "b8713f7d2f889af17a985c21dccfa812dc359b7997b2ce2b5f0f94cded11f1a3"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:06.100Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "89895cfdb34b733d9ea94a00362208a013cfd638764fe48c7da4d98c2193760a"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:06.252Z",
+      "cmd": "verify/yv design-check --base 9b5e35f8af1a",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "b42326a8984b8dae233e2ad7149b4d28fdbaedca179280750ff6da0013d5bef3"
+        },
+        {
+          "path": "p4-automatic-mobile.png",
+          "sha256": "1dbed7c8a1a053645f5cf51d93c4e2cde6f75c502b646555d6e4a6e979df9d66"
+        },
+        {
+          "path": "p4-source-mobile.png",
+          "sha256": "7f9f38aa3f86e95549c4f245e205600bbb4af48cba5a5f9afdb2f058f225aa44"
+        },
+        {
+          "path": "p4-automatic-desktop.png",
+          "sha256": "1edc1518557ee2b9023946cd9243bc4507e7a852c8c09a030f89b64ff78be1ea"
+        },
+        {
+          "path": "p4-source-desktop.png",
+          "sha256": "ca4942ae7c16c0d44152f1ba972f964ebb783d13e6995bf0cadc38dfe4bc2809"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:15.839Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "d6322c7238536604fedd96e566bbc3169a7b56e112013def25a47f63659aed61"
+        },
+        {
+          "path": "p5-fallbacks-mobile.png",
+          "sha256": "543c765feb2fc4b72a48f8f6475277f5ba6f486032e2b6ecc2955a118de1524c"
+        },
+        {
+          "path": "p5-fallbacks-desktop.png",
+          "sha256": "18ec4f6d5cb3fc9487abefcc4ab7b864140731f8cf0e306565ab3b83ef8fa679"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:15.882Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "0d098d853dd565bcdf428cc0b61c0cc5a4ab3bf210c2710443c8bcc30532bb7d"
+        },
+        {
+          "path": "p6-safe-long-diagram-mobile.png",
+          "sha256": "c8f4d0f1dad833bc5449dc9e332d69101ae39a0c3ad79385c496180c8d933e93"
+        },
+        {
+          "path": "p6-safe-long-diagram-desktop.png",
+          "sha256": "33cc49e1cf99223b513141028515466fac218488055e7df8e75e5bc724df7c56"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:15.923Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "test",
+      "at": "fa38484170f9ff4db53008005ea034241acb005f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "0bbefd62caa0a1ee9f4b1066b499d335e5d2bf8fc1413c7fd697c61ef376b01c"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:15.988Z",
+      "cmd": "verify/yv map run mermaid --recipe automatic-diagrams",
+      "exit": 1
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "6c1e6d651e3faf18a760318c186a9f71aa836736",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-thread.json",
+          "sha256": "807f7c1f6fda74dddcc24d85dd89aa86a01382a87caa9208adaa9747fbfc26a5"
+        }
+      ],
+      "addedAt": "2026-11-17T14:47:58.825Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/subagent-nests-and-expands",
+        "thread/working-line-stays-in-view",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch"
+      ]
+    }
+  ]
+}
