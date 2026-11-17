@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "311349b5ceb22700e93c0736f1b884c2a08a1baf",
+    "short": "311349b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:47:13.639Z"
+  },
+  "dir": ".verify/evidence/refused-new-session-names-the-blocker-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5014,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/refused-new-session-names-the-blocker-head/refused-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "\"[slow] TEST-head holds the folder\" is working in this folder. Stop it or let it finish first."
+        }
+      ],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4568,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/refused-new-session-names-the-blocker-head/refused-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "\"[slow] TEST-head holds the folder\" is working in this folder. Stop it or let it finish first."
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

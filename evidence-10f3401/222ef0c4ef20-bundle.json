@@ -1,0 +1,183 @@
+{
+  "v": 1,
+  "claim": "A session refused because another is working in the same folder says \"Stop it first, or tick New worktree.\", but there is no New worktree box and the folder could not get a worktree anyway; it should name the session in the way and say to stop it or let it finish.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-2c61",
+  "base": "d3a6137c79ff0ab7e25d53bb20534d9336515375",
+  "head": "10f3401f1302fdff9a1c42700daca962118513ef",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T12:46:41.362Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "bfda2f20029af7ec703047bcfaee9d3795568228",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "421cc96ca622db649e0b86200648461e38524c0507eca374492cb7e8dfd92719"
+        },
+        {
+          "path": "p1-refused-mobile.png",
+          "sha256": "1f159b7663cc6ac7a1e32c1f55cc722fe63846b2110e9fa1dbdd01a2ea955f19"
+        },
+        {
+          "path": "p1-refused-desktop.png",
+          "sha256": "fef442577684c3f3f224a6a5087c6f08d38d7f29e79c9370893b2e6bed3fea6b"
+        }
+      ],
+      "addedAt": "2026-11-17T12:47:00.612Z",
+      "failedApi": [
+        "session.create: Another session is working in this folder. Stop it first, or tick New worktree.",
+        "session.create: Another session is working in this folder. Stop it first, or tick New worktree."
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "bfda2f20029af7ec703047bcfaee9d3795568228",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d45e415165aa1cc60b55ff1ec837c2c59ce53c65788f22ec9747c88ef94125fc"
+        }
+      ],
+      "addedAt": "2026-11-17T12:47:00.662Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon one_writer_per_folder",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "10f3401f1302fdff9a1c42700daca962118513ef",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-2-drive.json",
+          "sha256": "53660673bd3453f323d241a6b947ea680630a55b7f4196bbfd1e07484c87feb8"
+        },
+        {
+          "path": "p3-2-refused-mobile.png",
+          "sha256": "8178b112149219db61eb54bb9237bf148b5deedfffe82ce336ecf07fd87fc7f5"
+        },
+        {
+          "path": "p3-2-refused-desktop.png",
+          "sha256": "bcaba42f2da880062e3f0bdb19b10bf0b72e4a737174e791d1ecbb256eb33254"
+        }
+      ],
+      "addedAt": "2026-11-17T12:49:30.686Z",
+      "failedApi": [
+        "session.create: \"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first.",
+        "session.create: \"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first."
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "note",
+      "at": "10f3401f1302fdff9a1c42700daca962118513ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T12:49:30.738Z",
+      "text": "expected-api: session.create: the fix is the wording of this refusal; a second session in a busy plain folder must still be refused, now naming the session in the way"
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "10f3401f1302fdff9a1c42700daca962118513ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-new-session.json",
+          "sha256": "be3532f62b2ab5b4ed864a88418f9872190c143aa95a56928e6689912ff9b6ee"
+        }
+      ],
+      "addedAt": "2026-11-17T12:49:33.864Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "10f3401f1302fdff9a1c42700daca962118513ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-worktrees.json",
+          "sha256": "0ba1b8ddd9e0c4d2b443a115c72e8246e1aee21f5df69e9978faea8da21f0792"
+        }
+      ],
+      "addedAt": "2026-11-17T12:50:26.939Z",
+      "cmd": "verify/yv map run worktrees",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "worktrees/session-gets-worktree",
+        "worktrees/plain-folder-in-place",
+        "worktrees/one-writer-per-folder",
+        "worktrees/delete-removes-clean-worktree",
+        "worktrees/dirty-worktree-is-kept"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "10f3401f1302fdff9a1c42700daca962118513ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "61e56e86481e29152ce2fa0949e33df326822cd8742c9006c571062a38c9460c"
+        }
+      ],
+      "addedAt": "2026-11-17T12:50:40.911Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    }
+  ]
+}

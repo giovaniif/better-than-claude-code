@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "10f3401f1302fdff9a1c42700daca962118513ef",
+    "short": "10f3401",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:49:20.360Z"
+  },
+  "dir": ".verify/evidence/refused-new-session-names-the-blocker-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4984,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/refused-new-session-names-the-blocker-head/refused-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "\"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first."
+        }
+      ],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4529,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/refused-new-session-names-the-blocker-head/refused-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "\"[slow] TEST-first writer\" is working in this folder. Stop it or let it finish first."
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

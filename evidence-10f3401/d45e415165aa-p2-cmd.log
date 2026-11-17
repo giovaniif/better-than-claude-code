@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon one_writer_per_folder
+# exit 101 after 1027 ms at bfda2f20029af7ec703047bcfaee9d3795568228
+
+
+running 1 test
+test one_writer_per_folder ... FAILED
+
+failures:
+
+---- one_writer_per_folder stdout ----
+
+thread 'one_writer_per_folder' (2487096) panicked at crates/yardd/tests/daemon.rs:590:5:
+Another session is working in this folder. Stop it first, or tick New worktree.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2487093-writer-0 for inspection
+
+
+failures:
+    one_writer_per_folder
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.14s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-2c61/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.85s
+     Running tests/daemon.rs (target/debug/build/yardd/07b0c2b9089c5228/out/daemon-07b0c2b9089c5228)
+error: test failed, to rerun pass `-p yardd --test daemon`

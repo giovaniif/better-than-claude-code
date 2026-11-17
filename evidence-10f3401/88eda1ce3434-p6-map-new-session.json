@@ -1,0 +1,78 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-17T12:48:57.815Z",
+      "counts": {
+        "pass": 7,
+        "fail": 1,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 3935
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 5872
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 3792
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 3408
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 5389
+        },
+        {
+          "label": "typed-path-with-no-match-says-so",
+          "status": "pass",
+          "ms": 7327
+        },
+        {
+          "label": "refused-send-names-the-session-in-the-way",
+          "status": "pass",
+          "ms": 9321
+        },
+        {
+          "label": "task-draft-survives-opening-a-session",
+          "status": "fail",
+          "ms": 5453,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 11 {\"fill\":\"label:Folder\",\"value\":\"/tmp/yv-map-new-session-2507808-mwkouakb/work/TEST-demo-app\"}: fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-2c61/.verify/drives/2026-11-17T12-48-52-576Z/fail-desktop-step11.png and the aria snapshot"
+            }
+          ],
+          "tail": " - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 11% · 69%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n  - text: TEST-half a task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Fake Fast High\\\"\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\"\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\" [expanded]\\n- textbox \\\"Folder\\\":\\n  - /placeholder: Search folders, or type a path\\n- listbox:\\n  - text: Recent\\n  - option \\\"TEST-plain-folder /tmp/yv-map-new-session-2507808-mwkouakb/work/TEST-plain-folder\\\" [selected]\\n  - option \\\"TEST-demo-app /tmp/yv-map-new-session-2507808-mwkouakb/work/TEST-demo-app\\\"\\n- button \\\"Browse folders…\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-2c61/.verify/drives/2026-11-17T12-48-52-576Z/task-kept-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 11 {\\\"fill\\\":\\\"label:Folder\\\",\\\"value\\\":\\\"/tmp/yv-map-new-session-2507808-mwkouakb/work/TEST-demo-app\\\"}: fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-2c61/.verify/drives/2026-11-17T12-48-52-576Z/fail-desktop-step11.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "new-session/task-draft-survives-opening-a-session",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
