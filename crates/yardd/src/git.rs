@@ -397,10 +397,15 @@ async fn new_file_diff(cwd: &str, path: &str, room: usize) -> String {
 
 pub async fn changes(cwd: &str) -> Result<Value> {
     ensure_folder(cwd)?;
-    let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
+    let (is_repo, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
     if !is_repo {
         bail!("not a git repository");
     }
+    // A session can start in a subfolder (`apps/web/`), but `git diff` names
+    // files from the root and covers the whole repository. New files are
+    // listed and read from the root too, so the pane names every file one
+    // way and keeps the ones the agent made outside the subfolder.
+    let top = top.trim();
     // A repo with no commits has no HEAD to diff against.
     let (has_head, _) = git(cwd, &["rev-parse", "--verify", "HEAD"]).await?;
     let base: &[&str] = if has_head { &["HEAD"] } else { &[] };
@@ -421,7 +426,7 @@ pub async fn changes(cwd: &str) -> Result<Value> {
         })
         .collect();
 
-    let (_, untracked) = git(cwd, &["ls-files", "--others", "--exclude-standard"]).await?;
+    let (_, untracked) = git(top, &["ls-files", "--others", "--exclude-standard"]).await?;
     let untracked: Vec<&str> = untracked.lines().take(200).collect();
     for path in &untracked {
         files.push(json!({ "path": path, "added": null, "removed": null, "untracked": true }));
@@ -436,7 +441,7 @@ pub async fn changes(cwd: &str) -> Result<Value> {
             break;
         }
         let room = MAX_DIFF_BYTES + 1 - diff.len();
-        diff.push_str(&new_file_diff(cwd, path, room).await);
+        diff.push_str(&new_file_diff(top, path, room).await);
     }
     let truncated = diff.len() > MAX_DIFF_BYTES;
     if truncated {
@@ -528,6 +533,33 @@ mod tests {
         assert!(diff.contains("diff --git a/ação.txt b/ação.txt\n"), "{diff}");
         // A new file is read through `ls-files`, which quotes too.
         assert!(diff.contains("+++ b/café.txt\n@@ -0,0 +1,1 @@\n+new\n"), "{diff}");
+    }
+
+    #[tokio::test]
+    async fn a_subfolder_session_lists_every_file_from_the_repository_root() {
+        let dir = std::env::temp_dir().join(format!("yardd-subfolder-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("apps/web")).unwrap();
+        std::fs::create_dir_all(dir.join("docs")).unwrap();
+        std::fs::write(dir.join("apps/web/a.txt"), "a\n").unwrap();
+        std::fs::write(dir.join("docs/d.txt"), "d\n").unwrap();
+        run(&dir, &["init", "-q"]);
+        run(&dir, &["add", "."]);
+        run(&dir, &["commit", "-q", "-m", "first"]);
+        std::fs::write(dir.join("apps/web/a.txt"), "a\nb\n").unwrap();
+        std::fs::write(dir.join("apps/web/new.txt"), "inside\n").unwrap();
+        std::fs::write(dir.join("docs/other.txt"), "outside\n").unwrap();
+
+        let changes = changes(dir.join("apps/web").to_str().unwrap()).await.unwrap();
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // `git diff` names files from the root, so new files must too, or
+        // the pane names one folder two ways and drops the other new files.
+        let paths: Vec<&str> = changes["files"].as_array().unwrap().iter().map(|f| f["path"].as_str().unwrap()).collect();
+        assert_eq!(paths, ["apps/web/a.txt", "apps/web/new.txt", "docs/other.txt"]);
+        let diff = changes["diff"].as_str().unwrap();
+        assert!(diff.contains("+++ b/apps/web/new.txt\n@@ -0,0 +1,1 @@\n+inside\n"), "{diff}");
+        assert!(diff.contains("+++ b/docs/other.txt\n@@ -0,0 +1,1 @@\n+outside\n"), "{diff}");
     }
 }
 

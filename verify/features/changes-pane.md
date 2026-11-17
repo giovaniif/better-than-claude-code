@@ -87,5 +87,21 @@ echo "TEST-olá" > "$(v echo_cwd)/TEST-configuração.md"
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".file-row","hasText":"TEST-configuração.md"},"text":"new"},{"shot":"non-ascii"}]'
 ```
 
+### subfolder-session-names-files-from-the-root
+Viewports: desktop
+A session started in a subfolder (`src/`) lists an edit, a new file inside
+the subfolder and a new file outside it, all from the repository root:
+`src/TEST-inside.txt`, not `TEST-inside.txt`, and `TEST-outside.txt` is not
+dropped (finding #108).
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}/src","worktree":true,"text":"TEST-in a subfolder"}' --wait '{"op":"created"}' --save sub_sid=sessionId
+yv state --save sub_cwd='sessions[id={{sub_sid}}].cwd'
+echo "TEST-inside" > "$(v sub_cwd)/TEST-inside.txt"
+echo "TEST-outside" > "$(v sub_cwd)/../TEST-outside.txt"
+echo "// TEST-edit" >> "$(v sub_cwd)/lib.rs"
+yv drive 'session:{{sub_sid}}' --viewport desktop --steps '[{"click":"role:button:Refresh changes"},{"expect":{"css":".file-row","hasText":"src/lib.rs"},"text":"+1 −0"},{"expect":{"css":".file-row","hasText":"src/TEST-inside.txt"},"text":"new"},{"expect":{"css":".file-row","hasText":"TEST-outside.txt"},"text":"new"},{"expect":{"css":".card","hasText":"TEST-outside.txt"},"text":"+TEST-outside"},{"shot":"subfolder"}]'
+```
+
 ## Gotchas
 - Below 1100 px the pane is hidden (`@media (max-width: 1100px)`): no Changes, Terminal or Pull request on mobile.
