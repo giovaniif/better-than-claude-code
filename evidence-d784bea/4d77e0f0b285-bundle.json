@@ -1,0 +1,204 @@
+{
+  "v": 1,
+  "claim": "Settings and Import clutter the Mac sidebar and there is no keyboard navigation menu for sessions and pages",
+  "repo": "/tmp/switchyard-macos-app-menu",
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "head": "d784beaa746b5d42e50061b62b06c4109cee9185",
+  "changed": [
+    {
+      "status": "M",
+      "path": "app/src-tauri/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/NavigationPalette.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T15:05:31.710Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a7c7ab4ceea8620315d8671cb7715720e27f8749",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "3571cdf18af45bcd8c91fc01851a9f90070994ea7d233aedbfd304e8330f759d"
+        },
+        {
+          "path": "p1-fail-mobile-step2.png",
+          "sha256": "a9255f3480ddd0e2fcb16c682996ebbdc7d932275ed260a340c5595b434d54a3"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "7271a383dd4a9da1e8e21c8ec43cbc5dc704e0608ecfc67ddfeff72413876824"
+        }
+      ],
+      "addedAt": "2026-11-17T15:05:31.748Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "design",
+      "at": "d784beaa746b5d42e50061b62b06c4109cee9185",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-design.json",
+          "sha256": "58565ba2b1ea2ade9f941f08bca8e2db4b41004d9ed1deb4d60634c2cd90caca"
+        }
+      ],
+      "addedAt": "2026-11-17T15:05:31.793Z",
+      "cmd": "verify/yv design-check --base 9b5e35f8af1a",
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "d784beaa746b5d42e50061b62b06c4109cee9185",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "d8bca4853b6a2b238104dd33901a67cf991663e69af94c1f2d32daee7b24213e"
+        }
+      ],
+      "addedAt": "2026-11-17T15:05:31.879Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo check -p switchyard && CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "d784beaa746b5d42e50061b62b06c4109cee9185",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "8f75073e8c77f95dff779ebd87bfa8cb2944f74f5ef3b97d978ad7494f615a08"
+        },
+        {
+          "path": "p4-palette-mobile.png",
+          "sha256": "a1064630acc7467799762afd4ae1bad2f9a01ef6904eff394e48965623c01980"
+        },
+        {
+          "path": "p4-empty-mobile.png",
+          "sha256": "fd8a863cbc1756a425ac1782a6c54642eadf25a17bbe07ca82a81573ec8535cf"
+        },
+        {
+          "path": "p4-palette-desktop.png",
+          "sha256": "5fb28225983f772bae76d3c0457a0f3407cb9236b3e8a8ddb6645c9c0ca355c9"
+        },
+        {
+          "path": "p4-empty-desktop.png",
+          "sha256": "656eeeb0b17a55b3b0a517a11414d906feca1983537b6a7322783f0686330153"
+        }
+      ],
+      "addedAt": "2026-11-17T15:07:30.570Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "d784beaa746b5d42e50061b62b06c4109cee9185",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "6daceb1e11d108bf99da0cbaf474446a5a90effc82c6536e067dc1230c031fd4"
+        },
+        {
+          "path": "p5-mac-sidebar-mobile.png",
+          "sha256": "3591e40e74eccdcca9ac5dbda678f767c146bed06f6f2ffb47b6d527cb00a7cc"
+        },
+        {
+          "path": "p5-menu-import-mobile.png",
+          "sha256": "dab90fdae45e5b58467a37068ad2097a3eea2c4eb964565dd88393db108fac4b"
+        },
+        {
+          "path": "p5-mac-sidebar-desktop.png",
+          "sha256": "c4f6f19488270bc3ac370c32afd5ead37f1083e628714bcddfc23af2d4c20c81"
+        },
+        {
+          "path": "p5-menu-import-desktop.png",
+          "sha256": "2a8b51efa8378a51828d9478b54e2ff1185172ea2adbe520fbf3a381b078bbdd"
+        }
+      ],
+      "addedAt": "2026-11-17T15:07:30.613Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "base",
+      "kind": "test",
+      "at": "a7c7ab4ceea8620315d8671cb7715720e27f8749",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "98384f16162380c8915f33c20def792fe496ba8046ad4a66a33403c06e625e92"
+        }
+      ],
+      "addedAt": "2026-11-17T15:07:30.694Z",
+      "cmd": "verify/yv map run navigation --recipe command-k-navigation",
+      "exit": 1
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "note",
+      "at": "d784beaa746b5d42e50061b62b06c4109cee9185",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T15:08:56.038Z",
+      "text": "The native shell compiles on Linux. Browser checks exercise the Mac capability flag and the exact menu DOM events; clicking the macOS menu and its native accelerators was not verified on a Mac."
+    }
+  ]
+}

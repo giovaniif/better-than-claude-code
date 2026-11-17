@@ -1,0 +1,45 @@
+$ verify/yv map run navigation --recipe command-k-navigation
+# exit 1 after 29156 ms at a7c7ab4ceea8620315d8671cb7715720e27f8749
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-17T15:07:59.846Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-navigation",
+          "status": "fail",
+          "ms": 25923,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"expect\":\"role:dialog:Go to session or page\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-07-34-129Z/fail-mobile-step2.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"expect\":\"role:dialog:Go to session or page\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-07-34-129Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "fail-desktop-step2.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - text: Switchyard\\n  - button \\\"New session\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Connectors\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 6% · 40%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-ce65\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"expect\\\":\\\"role:dialog:Go to session or page\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-07-34-129Z/fail-mobile-step2.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"expect\\\":\\\"role:dialog:Go to session or page\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-07-34-129Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "navigation/command-k-navigation",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

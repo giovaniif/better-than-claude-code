@@ -1,0 +1,135 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "d784beaa746b5d42e50061b62b06c4109cee9185",
+    "short": "d784bea",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:05:07.667Z"
+  },
+  "dir": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-19-604Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3977,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-19-604Z/mac-sidebar-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-19-604Z/menu-import-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "window.__SWITCHYARD_APP_MENU__ = true; true",
+          "value": true
+        },
+        {
+          "step": 1,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"settings\"})); true",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".sidebar-top button\")].map(e => e.textContent.trim())",
+          "value": [
+            "New session",
+            "Automations",
+            "Connectors"
+          ]
+        },
+        {
+          "step": 5,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"import\"})); true",
+          "value": true
+        },
+        {
+          "step": 9,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"navigation\"})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4173,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-19-604Z/mac-sidebar-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-19-604Z/menu-import-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "window.__SWITCHYARD_APP_MENU__ = true; true",
+          "value": true
+        },
+        {
+          "step": 1,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"settings\"})); true",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".sidebar-top button\")].map(e => e.textContent.trim())",
+          "value": [
+            "New session",
+            "Automations",
+            "Connectors"
+          ]
+        },
+        {
+          "step": 5,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"import\"})); true",
+          "value": true
+        },
+        {
+          "step": 9,
+          "eval": "window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"navigation\"})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

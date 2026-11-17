@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "route": "session:s1a1ea0a54d06",
+  "build": {
+    "sha": "d784beaa746b5d42e50061b62b06c4109cee9185",
+    "short": "d784bea",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:05:07.667Z"
+  },
+  "dir": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-08-685Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5734,
+      "steps": 40,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-08-685Z/palette-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-08-685Z/empty-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "window.__firstOption = document.querySelector(\"[role=option][aria-selected=true]\").id; true",
+          "value": true
+        },
+        {
+          "step": 7,
+          "eval": "document.querySelector(\"[role=option][aria-selected=true]\").id !== window.__firstOption",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Close"
+        },
+        {
+          "step": 12,
+          "eval": "document.activeElement.getAttribute(\"role\")",
+          "value": "combobox"
+        },
+        {
+          "step": 14,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Message"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4613,
+      "steps": 40,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-08-685Z/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-macos-app-menu/.verify/drives/2026-11-17T15-05-08-685Z/empty-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "window.__firstOption = document.querySelector(\"[role=option][aria-selected=true]\").id; true",
+          "value": true
+        },
+        {
+          "step": 7,
+          "eval": "document.querySelector(\"[role=option][aria-selected=true]\").id !== window.__firstOption",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Close"
+        },
+        {
+          "step": 12,
+          "eval": "document.activeElement.getAttribute(\"role\")",
+          "value": "combobox"
+        },
+        {
+          "step": 14,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Message"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
