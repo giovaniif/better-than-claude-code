@@ -1,0 +1,45 @@
+$ verify/yv map run hosts --recipe sessions-list-collapsed
+# exit 1 after 27705 ms at 57f5e8e7f3eef36224ede8b2d0f913d0d1f727af
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-17T13:48:05.314Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "sessions-list-collapsed",
+          "status": "fail",
+          "ms": 24046,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":{\"css\":\"section.usage button.list-toggle[aria-expanded=\\\"false\\\"]\",\"hasText\":\"Sessions\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/hosts-sessions-collapsed/.verify/drives/2026-11-17T13-47-41-308Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":{\"css\":\"section.usage button.list-toggle[aria-expanded=\\\"false\\\"]\",\"hasText\":\"Sessions\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/better-than-claude-code/hosts-sessions-collapsed/.verify/drives/2026-11-17T13-47-41-308Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "r 12% Week 34%\\n  - button \\\"iso-host 8% · 67%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Hosts\\\" [level=1]\\n  - button \\\"Add host\\\"\\n- region \\\"iso-host\\\":\\n  - heading \\\"iso-host\\\" [level=2]\\n  - text: Healthy CPU 8% load 2.3 of 28 Memory 15.8 GB of 23.4 GB Disk 68.7 GB of 97.9 GB\\n  - img \\\"CPU over the last hour\\\"\\n  - region \\\"Sessions\\\":\\n    - heading \\\"Sessions\\\" [level=2]\\n    - table:\\n      - rowgroup:\\n        - row \\\"Session CPU Memory\\\":\\n          - cell \\\"Session\\\"\\n          - cell \\\"CPU\\\"\\n          - cell \\\"Memory\\\"\\n      - rowgroup:\\n        - row \\\"TEST-hello from Claude 0.0 cores 25 MB\\\":\\n          - cell \\\"TEST-hello from Claude\\\"\\n          - cell \\\"0.0 cores\\\"\\n          - cell \\\"25 MB\\\"\\n    - text: New sessions are queued while load is above 28.\\n  - text: Claude Code logged in as me@example.com\\n  - button \\\"Add Claude Code account\\\": Add account\\n  - text: Codex logged in as me@example.com\\n  - button \\\"Add Codex account\\\": Add account\\n  - text: \\\"OpenCode providers: opencode\\\"\\n  - button \\\"Add provider\\\"\\n  - button \\\"Add OpenCode account\\\": Add account\\n  - text: Grok logged in as default@grok.example\\n  - button \\\"Add Grok account\\\": Add account\\n- button \\\"Run sessions on another machine A server or desktop you reach over SSH. Its sessions show up here next to this one's.\\\":\\n  - strong: Run sessions on another machine\\n  - text: A server or desktop you reach over SSH. Its sessions show up here next to this one's.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":{\\\"css\\\":\\\"section.usage button.list-toggle[aria-expanded=\\\\\\\"false\\\\\\\"]\\\",\\\"hasText\\\":\\\"Sessions\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/hosts-sessions-collapsed/.verify/drives/2026-11-17T13-47-41-308Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":{\\\"css\\\":\\\"section.usage button.list-toggle[aria-expanded=\\\\\\\"false\\\\\\\"]\\\",\\\"hasText\\\":\\\"Sessions\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/better-than-claude-code/hosts-sessions-collapsed/.verify/drives/2026-11-17T13-47-41-308Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "hosts/sessions-list-collapsed",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

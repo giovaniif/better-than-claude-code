@@ -1,0 +1,204 @@
+{
+  "v": 1,
+  "claim": "On the Hosts page each host card listed every session using it, which on a busy server is dozens of rows. Now that list starts collapsed to one summary line (sessions, CPU, memory, queued) and opens on a click, remembered per browser.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/hosts-sessions-collapsed",
+  "base": "3616ed0edb499b1cc4ee2064b90072bae51364f6",
+  "head": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T13:47:37.567Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "57f5e8e7f3eef36224ede8b2d0f913d0d1f727af",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "c36adc797e20942328a47feb2bb63dd3cc9debc960a87277d2690519bd5385c7"
+        }
+      ],
+      "addedAt": "2026-11-17T13:47:37.614Z",
+      "cmd": "verify/yv map run hosts --recipe sessions-list-collapsed",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "57f5e8e7f3eef36224ede8b2d0f913d0d1f727af",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "add7ae569944858513e5d8b3f645fb4ba963baafbfb12f5cd34364b7ee157246"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "5ea7f2c9ffb772be720e73e34d12555df8878edf86fa23ab64bbae35abe79371"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:18.252Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "ebc5cb0415fb0c41f13fa31196498125bff7ffdb235d98eda5df4ff8754d02b5"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:18.451Z",
+      "cmd": "(cd ui && bun test src) && verify/yv map run hosts --recipe sessions-list-collapsed",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "5d5e323ebf8f6eb73e64a358ca5cca1a50bd14a021b49d4aed889acb16195763"
+        },
+        {
+          "path": "p4-sessions-collapsed-desktop.png",
+          "sha256": "05439165fdb3d2f2063fced74a91d7154aef4137fdbd10dd3d4402a0f8096d62"
+        },
+        {
+          "path": "p4-sessions-open-desktop.png",
+          "sha256": "602a157a349d24581f545e85363d2b19c1809784e41aa538da8260c3d21f8538"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:36.132Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "69e0a94f00ce4f9d1046a693335e540b100008225f617ababf9a7e595b04d898"
+        },
+        {
+          "path": "p5-sessions-collapsed-mobile.png",
+          "sha256": "29cfb5e56ab8c158bd848f44e6bc771f379ad821d734e1b9db1f6f9fb8f734e8"
+        },
+        {
+          "path": "p5-sessions-open-mobile.png",
+          "sha256": "996416b91611290517aef573b120e24183f484a846a17b7bbabbf957ca5febbb"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:40.633Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "dde97c0294887129ddb67c484645eb3c57e930fbb5085def8d1f1c3748b662f3"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:40.671Z",
+      "cmd": "verify/yv design-check --base 3616ed0edb49",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-hosts.json",
+          "sha256": "2164d68b748424daab379a9b9287df7c3c86fda65099fbbff604d1269422c6ee"
+        }
+      ],
+      "addedAt": "2026-11-17T13:48:40.759Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "493e8b21a484ee368f93461c0a8b179a339cd71f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-queue.json",
+          "sha256": "d1cc059144ae14dc62faeba11d872aa7e74afd7eb299952c46500cbc56230e4f"
+        }
+      ],
+      "addedAt": "2026-11-17T13:49:33.720Z",
+      "cmd": "verify/yv map run queue",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "queue/new-session-queues",
+        "queue/start-anyway",
+        "queue/double-click-start-anyway",
+        "queue/hosts-page-shows-pressure"
+      ]
+    }
+  ]
+}
