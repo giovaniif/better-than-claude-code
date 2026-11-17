@@ -45,20 +45,24 @@ function threadPrompt(t: PrThread): string {
  * The other engine's review prompt. The PR title and comments are left out:
  * they come from GitHub and may be written by anyone.
  */
-function reviewPrompt(pr: PrResult | undefined): string {
+export function reviewPrompt(pr: PrResult | undefined): string {
   let against: string;
-  let ref: string;
+  let read: string;
   if (isPr(pr)) {
     against = `the base of pull request #${pr.number} (${pr.base})`;
-    ref = `origin/${pr.base}`;
+    read = `Read \`git diff origin/${pr.base}...HEAD\` (fetch first if the ref is missing)`;
   } else {
-    const def = pr && "none" in pr ? pr.defaultBranch : null;
+    // yardd names a base only when the repository has it; a guessed
+    // origin/HEAD sends the reviewer into a failing command.
+    const def = pr && "defaultBranch" in pr ? pr.defaultBranch : null;
     against = def ? `the default branch (${def})` : "the default branch";
-    ref = def ?? "origin/HEAD";
+    read = def
+      ? `Read \`git diff ${def}...HEAD\``
+      : "Find the default branch in this repository, read the diff from it to HEAD (`git diff <branch>...HEAD`),";
   }
   return [
     `Review this branch's changes against ${against}.`,
-    `Read \`git diff ${ref}...HEAD\` (fetch first if the ref is missing) and the files it touches.`,
+    `${read} and the files it touches.`,
     "Report bugs, risks and unclear code, each with file and line, most serious first.",
     "Do not change, create or delete any files. This is a review only.",
   ].join("\n");

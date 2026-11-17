@@ -365,8 +365,11 @@ export interface ProcRow {
 export type PrResult =
   | PullRequest
   | { none: true; branch: string; defaultBranch?: string | null }
-  /** `repo`: the folder is a git repository, so a review is still possible. */
-  | { error: string; repo?: boolean };
+  /**
+   * `repo`: the folder is a git repository, so a review is still possible,
+   * against `defaultBranch` when yardd found one.
+   */
+  | { error: string; repo?: boolean; defaultBranch?: string | null };
 
 /** Normalized session events. Both engines produce exactly these. */
 export type AgentEvent =

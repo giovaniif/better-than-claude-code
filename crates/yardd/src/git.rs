@@ -614,27 +614,34 @@ pub async fn fresh_base(folder: &str, base: &str) -> Result<Option<String>> {
         Err(_) => eprintln!("yardd: git fetch in {top} timed out"),
         _ => {}
     }
-    let exists = |name: String| {
-        let top = top.clone();
-        async move { matches!(git(&top, &["rev-parse", "--verify", "--quiet", &format!("{name}^{{commit}}")]).await, Ok((true, _))) }
-    };
     let base = base.trim();
     if !base.is_empty() {
-        if !base.starts_with("origin/") && exists(format!("origin/{base}")).await {
+        if !base.starts_with("origin/") && ref_exists(&top, &format!("origin/{base}")).await {
             return Ok(Some(format!("origin/{base}")));
         }
         return Ok(Some(base.to_string()));
     }
-    if let Ok((true, head)) = git(&top, &["symbolic-ref", "--short", "refs/remotes/origin/HEAD"]).await {
+    Ok(local_base(&top).await)
+}
+
+/// The branch a change in `folder` is measured against, from what is already
+/// local: origin's HEAD, then the usual names. None when nothing matches, so
+/// a caller never names a ref the repository does not have.
+pub async fn local_base(folder: &str) -> Option<String> {
+    if let Ok((true, head)) = git(folder, &["symbolic-ref", "--short", "refs/remotes/origin/HEAD"]).await {
         let head = head.trim();
-        if !head.is_empty() && exists(head.to_string()).await {
-            return Ok(Some(head.to_string()));
+        if !head.is_empty() && ref_exists(folder, head).await {
+            return Some(head.to_string());
         }
     }
     for name in ["origin/main", "origin/master", "main", "master"] {
-        if exists(name.to_string()).await {
-            return Ok(Some(name.to_string()));
+        if ref_exists(folder, name).await {
+            return Some(name.to_string());
         }
     }
-    Ok(None)
+    None
+}
+
+async fn ref_exists(folder: &str, name: &str) -> bool {
+    matches!(git(folder, &["rev-parse", "--verify", "--quiet", &format!("{name}^{{commit}}")]).await, Ok((true, _)))
 }
