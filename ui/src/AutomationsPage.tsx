@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Automation, Engine, Permission, Schedule, SessionMeta } from "./protocol";
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, type Actions, type State } from "./store";
-import { cardStatus, describeSchedule, runOutcome, runsOf, runSummary, runTime, runTook, RUN_LABEL, scheduleLine, scheduleProblem, stripRuns, type CardStatus, type RunOutcome } from "./automations";
+import { cardStatus, describeSchedule, runLabel, runOutcome, runsOf, runSummary, runTook, RUN_LABEL, scheduleLine, scheduleProblem, stripRuns, type CardStatus, type RunOutcome } from "./automations";
 import { duration } from "./thread";
 import { ENGINE_NAME, pickerEngines } from "./engines";
 import { metersFor } from "./usage";
@@ -59,12 +59,12 @@ function Mark({ kind }: { kind: RunOutcome | string }) {
 }
 
 /** Every run, newest first, with how long it took and a pin: pinning is how a run goes back to the sidebar. */
-function RunList({ runs, state, actions, now }: { runs: SessionMeta[]; state: State; actions: Actions; now: number }) {
+function RunList({ name, runs, state, actions, now }: { name: string; runs: SessionMeta[]; state: State; actions: Actions; now: number }) {
   return (
     <ul className="automation-runs" aria-label="Runs, newest first">
       {runs.map((run) => {
         const outcome = runOutcome(run);
-        const when = runTime(run.createdAt, now);
+        const when = runLabel(run, name, now);
         return (
           <li key={run.id} className="automation-run-item">
             <button className="btn-quiet automation-run" title={run.title} onClick={() => actions.go({ page: "session", id: run.id })}>
@@ -153,7 +153,7 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
       <div className="automation-foot">
         <div className="automation-strip" role="group" aria-label={`Recent runs of ${a.name}, newest last`}>
           {stripRuns(runs, STRIP).map((r) => {
-            const summary = runSummary(r, now);
+            const summary = runSummary(r, now, a.name);
             return (
               <button key={r.id} className="btn-icon run-mark" aria-label={`Open run ${summary}`} title={summary} onClick={() => actions.go({ page: "session", id: r.id })}>
                 <Mark kind={runOutcome(r)} />
@@ -174,7 +174,7 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
           <Icon d={PENCIL} size={14} />
         </button>
       </div>
-      {open && runs.length > 0 && <RunList runs={runs} state={state} actions={actions} now={now} />}
+      {open && runs.length > 0 && <RunList name={a.name} runs={runs} state={state} actions={actions} now={now} />}
     </section>
   );
 }
@@ -252,7 +252,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   const [kind, setKind] = useState<Schedule["kind"]>(existing?.schedule.kind ?? "daily");
   const [every, setEvery] = useState(String(existing?.schedule.kind === "interval" ? existing.schedule.every : 1));
   const [unit, setUnit] = useState<"minutes" | "hours">(existing?.schedule.kind === "interval" ? existing.schedule.unit : "hours");
-  const [time, setTime] = useState(existing && existing.schedule.kind !== "interval" ? existing.schedule.time : "09:00");
+  const [time, setTime] = useState(existing && "time" in existing.schedule ? existing.schedule.time : "09:00");
   const [day, setDay] = useState(existing?.schedule.kind === "weekly" ? existing.schedule.day : 1);
   const [skip, setSkip] = useState(existing?.skipWhileRunning ?? true);
   const [fiveHour, setFiveHour] = useState(existing?.maxFiveHour == null ? "" : String(existing.maxFiveHour));
@@ -287,7 +287,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   }, [state.sessions, target]);
 
   const schedule: Schedule =
-    kind === "interval" ? { kind, every: Number(every), unit } : kind === "daily" ? { kind, time } : { kind, day, time };
+    kind === "interval" ? { kind, every: Number(every), unit } : kind === "daily" ? { kind, time } : kind === "weekly" ? { kind, day, time } : { kind };
   const problem =
     (!name.trim() && "Give it a name.") ||
     (!prompt.trim() && "Write the prompt it runs.") ||
@@ -370,6 +370,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
                 <option value="interval">Every few minutes or hours</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
+                <option value="manual">Manual: only when started</option>
               </select>
               {kind === "interval" && (
                 <>
@@ -389,10 +390,12 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
                   ))}
                 </select>
               )}
-              {kind !== "interval" && <input aria-label="Time" className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />}
+              {(kind === "daily" || kind === "weekly") && <input aria-label="Time" className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />}
             </div>
             <span className="muted small">
-              {describeSchedule(schedule)}, in {hostName(state, target)}'s local time zone. A run missed while Switchyard was off starts once when it is back.
+              {kind === "manual"
+                ? "Runs only when started, with Run now or by a script."
+                : `${describeSchedule(schedule)}, in ${hostName(state, target)}'s local time zone. A run missed while Switchyard was off starts once when it is back.`}
             </span>
           </div>
           <div className="automation-field">

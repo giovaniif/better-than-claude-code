@@ -1,5 +1,5 @@
 {
-  "$comment": "Agent loops on the live yardd (see verify/loops/README.md). patrol, maintain and review are yardd automations (Automations page, never the sidebar) built from this file by verify/yv loop automations --apply: rerun it after changing them. Their schedule is in the host's time zone; an interval counts from when it was saved. verify and babysit are started per PR by verify/yv loop run as ordinary sessions. Changing this file is a self-or-CI change.",
+  "$comment": "Agent loops on the live yardd (see verify/loops/README.md). patrol, maintain and review are yardd automations (Automations page, never the sidebar) built from this file by verify/yv loop automations --apply: rerun it after changing them. Their schedule is in the host's time zone; an interval counts from when it was saved. verify and babysit are manual automations (never fire on their own): verify/yv loop run verify|babysit --pr N saves them when they differ and starts a run with that PR's prompt. Changing this file is a self-or-CI change.",
   "yardUrl": "ws://127.0.0.1:47717/ws",
   "checkout": "~/.local/share/switchyard-loops/switchyard",
   "budget": {

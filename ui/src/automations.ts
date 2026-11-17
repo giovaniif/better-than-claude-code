@@ -17,6 +17,8 @@ export function describeSchedule(s: Schedule): string {
       return `Daily at ${s.time}`;
     case "weekly":
       return `${DAYS[s.day] ?? "?"}s at ${s.time}`;
+    case "manual":
+      return "Manual";
   }
 }
 
@@ -31,6 +33,8 @@ export function scheduleProblem(s: Schedule): string | null {
     case "weekly":
       if (!Number.isInteger(s.day) || s.day < 0 || s.day > 6) return "Pick a day of the week.";
       return badTime(s.time) ? "Enter a time as HH:MM." : null;
+    case "manual":
+      return null;
   }
 }
 
@@ -110,12 +114,28 @@ export function runTook(s: SessionMeta, now: number): number {
   return Math.max(0, (isLive(s) ? now : s.finishedAt ?? s.updatedAt) - s.createdAt);
 }
 
-export const runSummary = (s: SessionMeta, now: number): string => `${runTime(s.createdAt, now)} · ${duration(runTook(s, now))} · ${RUN_LABEL[runOutcome(s)]}`;
+/**
+ * What a run's title adds after the automation's name, such as the pull
+ * request a `Loop verify #161 · <date>` run was started for; "" for a plain
+ * `<name> · <date>` run.
+ */
+export function runTag(s: SessionMeta, name: string): string {
+  const head = s.title.split(" · ")[0];
+  return head.startsWith(`${name} `) ? head.slice(name.length + 1).trim() : "";
+}
+
+/** A run by its start time, plus its tag when it has one: `04:38 #161`. */
+export const runLabel = (s: SessionMeta, name: string, now: number): string => [runTime(s.createdAt, now), runTag(s, name)].filter(Boolean).join(" ");
+
+export const runSummary = (s: SessionMeta, now: number, name = ""): string =>
+  `${name ? runLabel(s, name, now) : runTime(s.createdAt, now)} · ${duration(runTook(s, now))} · ${RUN_LABEL[runOutcome(s)]}`;
 
 /** The newest `max` runs, oldest first, so the newest sits at the right end of the strip. */
 export const stripRuns = (runs: SessionMeta[], max: number): SessionMeta[] => runs.slice(0, max).reverse();
 
 export function scheduleLine(a: Automation, now: number): string {
+  // A manual automation has no next run: it runs when someone (or a script) starts it.
+  if (a.schedule.kind === "manual") return `Manual · ${a.enabled ? "runs when started" : "off"}`;
   const next = a.enabled && a.nextRun != null ? `next ${describeNext(a.nextRun, true, now)}` : "off";
   return `${describeSchedule(a.schedule)} · ${next}`;
 }

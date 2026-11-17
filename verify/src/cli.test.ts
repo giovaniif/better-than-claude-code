@@ -356,6 +356,63 @@ describe("loop automations", () => {
     expect(loopTest.changed(want, { schedule: { time: "08:00", kind: "weekly", day: 1 }, maxWeek: 80, effort: "high" })).toEqual([]);
     expect(loopTest.changed(want, { schedule: { kind: "weekly", day: 2, time: "08:00" }, maxWeek: 80 })).toEqual(["schedule", "effort"]);
   });
+  test("verify and babysit are manual automations with no budget or skip rules of their own", () => {
+    for (const kind of ["verify", "babysit"] as const) {
+      const s = loopTest.automationSpec(kind, cfg, "/tmp/loops", "claude-opus-5-5");
+      expect(s).toMatchObject({ name: `Loop ${kind}`, cwd: "/tmp/loops", engine: "claude", effort: cfg.loops[kind].effort, permission: "full", base: "main", schedule: { kind: "manual" }, skipWhileRunning: false, maxFiveHour: null, maxWeek: null });
+      // The saved prompt only runs from Run now: it names no PR and stops.
+      expect(s.prompt).toBe(loopTest.manualPrompt(kind));
+      expect(String(s.prompt)).toContain(`loop run ${kind} --pr N`);
+    }
+    // A run's engine override is saved onto the automation, since a run cannot change it.
+    const codex = loopTest.automationSpec("verify", cfg, "/x", "gpt-5.6-luna", { ...cfg.loops.verify, engine: "codex", effort: "low" });
+    expect(codex).toMatchObject({ engine: "codex", model: "gpt-5.6-luna", effort: "low" });
+  });
+  test("a per-PR run's prompt names its PR and says it is a run of the automation", () => {
+    const p = loopTest.prompt("verify", cfg.loops.verify, new Date("2026-11-17T04:38:00Z"), 161, true);
+    expect(p.split("\n")[0]).toBe("Loop verify #161 2026-11-17 04:38 UTC");
+    expect(p).toContain("https://github.com/giovaniif/switchyard/pull/161");
+    expect(p).toContain('a run of the Switchyard automation "Loop verify", started by `verify/yv loop run verify --pr 161`');
+    expect(p).toContain("05:18 UTC");
+    const old = loopTest.prompt("verify", cfg.loops.verify, new Date("2026-11-17T04:38:00Z"), 161);
+    expect(old).toContain("This session was started by `verify/yv loop run verify --pr 161`");
+  });
+  test("an automation is found by name, and a second one by the same name is refused", () => {
+    const spec = loopTest.automationSpec("verify", cfg, "/x", "m");
+    expect(loopTest.planFor([], spec).action).toBe("create");
+    expect(loopTest.planFor([{ id: "a1", ...spec }], spec)).toMatchObject({ action: "unchanged", changes: [] });
+    expect(loopTest.planFor([{ id: "a1", ...spec, effort: "low" }], spec)).toMatchObject({ action: "update", changes: ["effort"] });
+    expect(() => loopTest.planFor([{ id: "a1", ...spec }, { id: "a2", ...spec }], spec)).toThrow();
+  });
+  test("ensure creates switched on, edits by id keeping the switch, and reports a refusal", async () => {
+    const spec = loopTest.automationSpec("babysit", cfg, "/x", "m");
+    const sent: any[] = [];
+    const yardd = (answer: (m: any) => any) => async (m: any) => (sent.push(m), answer(m));
+    const saved = yardd((m) => ({ op: "automation.saved", automation: { id: "new", ...m.automation } }));
+    const made = await loopTest.ensure(saved, [], spec);
+    expect(made).toMatchObject({ action: "created", automation: { id: "new" } });
+    expect(sent.pop().automation).toMatchObject({ enabled: true, schedule: { kind: "manual" } });
+    const edited = await loopTest.ensure(saved, [{ id: "a1", ...spec, effort: "low", enabled: false }], spec);
+    expect(edited).toMatchObject({ action: "updated", changes: ["effort"] });
+    const body = sent.pop().automation;
+    expect(body.id).toBe("a1");
+    expect("enabled" in body).toBe(false);
+    expect(await loopTest.ensure(saved, [{ id: "a1", ...spec }], spec)).toMatchObject({ action: "unchanged" });
+    expect(sent).toEqual([]);
+    // What a yardd from before manual automations answers.
+    const old = yardd(() => ({ op: "error", message: "invalid automation: unknown variant `manual`, expected one of `interval`, `daily`, `weekly`" }));
+    const r = await loopTest.ensure(old, [], spec);
+    expect(r.action).toBe("refused");
+    expect(loopTest.OLD_YARDD.test(r.refused!)).toBe(true);
+    expect(loopTest.OLD_YARDD.test("the prompt is empty")).toBe(false);
+  });
+  test("an isolated yardd's pause flag is its own", () => {
+    const dir = mkdtempSync(join(tmpdir(), "yv-pause-"));
+    const flag = join(dir, "paused");
+    expect(loopTest.skipReason("verify", "claude", [], {}, { budget: {} }, false, flag)).toBeNull();
+    writeFileSync(flag, "x");
+    expect(loopTest.skipReason("verify", "claude", [], {}, { budget: {} }, false, flag)).toContain("paused");
+  });
 });
 
 

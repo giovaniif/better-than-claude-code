@@ -1896,7 +1896,7 @@ async fn a_run_can_carry_its_own_prompt_and_title() {
     let title = meta["title"].as_str().unwrap();
     assert!(title.starts_with("Loop verify #161 · "), "{title}");
     assert_eq!(meta["automation"], id, "a run, so the sidebar leaves it out");
-    assert_eq!(meta["permission"], "full");
+    c.wait_for("the run's permission", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "full").await;
     assert!(meta["branch"].as_str().unwrap().starts_with("yard/"), "a worktree: {meta}");
     assert_eq!(c.wait_event(&sid, "user_message", 0).await["text"], "verify pull request 161");
     c.wait_for("the run archived", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["archived"] == true).await;

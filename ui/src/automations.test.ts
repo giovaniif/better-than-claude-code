@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Automation, SessionMeta } from "./protocol";
-import { describeSchedule, describeNext, describeLast, runsOf, hiddenFromSidebar, scheduleProblem, runTime, runOutcome, RUN_LABEL, runSummary, stripRuns, scheduleLine, cardStatus } from "./automations";
+import { describeSchedule, describeNext, describeLast, runsOf, hiddenFromSidebar, scheduleProblem, runTime, runOutcome, RUN_LABEL, runSummary, runTag, runLabel, stripRuns, scheduleLine, cardStatus } from "./automations";
 import { initial, reduce } from "./store";
 
 const MIN = 60_000;
@@ -23,6 +23,10 @@ describe("the schedule in words", () => {
     expect(scheduleProblem({ kind: "daily", time: "25:00" })).toContain("time");
     expect(scheduleProblem({ kind: "weekly", day: 9, time: "10:00" })).toContain("day");
     expect(scheduleProblem({ kind: "daily", time: "07:05" })).toBeNull();
+  });
+  test("a manual schedule runs only when started", () => {
+    expect(describeSchedule({ kind: "manual" })).toBe("Manual");
+    expect(scheduleProblem({ kind: "manual" })).toBeNull();
   });
 });
 
@@ -173,6 +177,23 @@ describe("the card at a glance", () => {
     expect(scheduleLine(a({ schedule: { kind: "interval", every: 1, unit: "hours" }, nextRun: now + 30 * MIN }), now)).toBe("Every hour · next in 30 min");
     expect(scheduleLine(a({ schedule: { kind: "daily", time: "03:30" }, nextRun: at(3, 30, 17) }), now)).toBe("Daily at 03:30 · next tomorrow 03:30");
     expect(scheduleLine(a({ enabled: false, nextRun: null }), now)).toBe("Daily at 09:00 · off");
+  });
+
+  test("a manual automation has no next run: it runs when started", () => {
+    expect(scheduleLine(a({ schedule: { kind: "manual" }, nextRun: null }), now)).toBe("Manual · runs when started");
+    expect(scheduleLine(a({ schedule: { kind: "manual" }, enabled: false, nextRun: null }), now)).toBe("Manual · off");
+  });
+
+  test("a run started for a pull request is labelled with it, a plain run by its time alone", () => {
+    const pr = r("p", { title: "Loop verify #161 · 2026-11-16 04:38", createdAt: at(4, 38), updatedAt: at(5, 0), finishedAt: at(5, 0) });
+    expect(runTag(pr, "Loop verify")).toBe("#161");
+    expect(runLabel(pr, "Loop verify", now)).toBe("04:38 #161");
+    expect(runSummary(pr, now, "Loop verify")).toBe("04:38 #161 · 22m 0s · Done");
+    const plain = r("q", { title: "Loop patrol · 2026-11-16 04:38", createdAt: at(4, 38) });
+    expect(runTag(plain, "Loop patrol")).toBe("");
+    expect(runLabel(plain, "Loop patrol", now)).toBe("04:38");
+    // A run renamed by hand keeps no tag.
+    expect(runTag(r("x", { title: "my notes" }), "Loop verify")).toBe("");
   });
 
   test("a working run is what the card says first, with how long it has run, and it opens that run", () => {

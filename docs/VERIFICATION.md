@@ -12,7 +12,7 @@ Set up 2026-11-15.
 | Feature map | `verify/features/*.md` | 17 areas, 71 recipes: 61 pass, 6 manual, 4 fail on known product bugs (mobile layout, terminal replay after reload) |
 | Evidence bundle | `verify/yv evidence` | the proof bar from the playbook, enforced by `evidence verify` |
 | Land gate | `verify/yv land`, `verify/land.json` | **live** for every category: merges PRs it finds landable (PASS or PASS+NOTES) |
-| Verifier | `.claude/skills/verifier/SKILL.md`, `loop run verify --pr N` | a fresh session that knows only the PR URL |
+| Verifier | `.claude/skills/verifier/SKILL.md`, `loop run verify --pr N` | a fresh session that knows only the PR URL: a run of the manual automation `Loop verify`, on the Automations page |
 | Babysitting | `.claude/skills/babysit/SKILL.md`, `verify/yv pr …` | written |
 | Patrol / maintenance / weekly review | `.claude/skills/{patrol,map-maintenance,weekly-review}`, `verify/loops/` | yardd automations `Loop patrol`/`maintain`/`review` on the live yardd (`verify/yv loop automations --apply`); runs show on the Automations page |
 | CI | `.github/workflows/ci.yml` | yardd, ui, sidecar, verify (unit tests + a real Chromium round trip) |

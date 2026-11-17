@@ -4,7 +4,9 @@
 //! `hosts.json`). A scheduler task fires the due ones; a run is an ordinary
 //! `session.create` in a fresh worktree whose metadata carries the
 //! automation's id. Each host runs its own automations; the hub only routes
-//! the ops (see `remote::route`).
+//! the ops (see `remote::route`). A run started with `automation.run` may
+//! carry its own prompt and a title suffix: the per-PR agent loops are one
+//! manual automation each, with a prompt per pull request.
 
 use std::{
     path::PathBuf,
@@ -21,6 +23,11 @@ use tokio::sync::mpsc;
 use crate::state::{now_ms, App, PERMISSIONS};
 
 const DEFAULT_TICK_MS: u64 = 15_000;
+/// A per-run prompt. The UI's composer has no cap; this only keeps a runaway
+/// script from writing megabytes into a session's first event.
+const MAX_RUN_PROMPT: usize = 200_000;
+/// A run's title suffix (`#161`), in characters.
+const MAX_RUN_TITLE: usize = 80;
 
 /// When an automation runs, in the host's local time zone.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -32,6 +39,8 @@ pub enum Schedule {
     Daily { time: String },
     /// Every week on `day` (0 = Sunday) at `time`.
     Weekly { day: u8, time: String },
+    /// Never on its own: only Run now or `automation.run` start a run.
+    Manual,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -118,6 +127,7 @@ impl Schedule {
                 }
                 parse_time(time)?;
             }
+            Schedule::Manual => {}
         }
         Ok(())
     }
@@ -134,6 +144,7 @@ pub fn next_after<Tz: TimeZone>(schedule: &Schedule, from: u64, tz: &Tz) -> Opti
         }
         Schedule::Daily { time } => next_at(from, tz, parse_time(time).ok()?, None),
         Schedule::Weekly { day, time } => next_at(from, tz, parse_time(time).ok()?, Some(*day)),
+        Schedule::Manual => None,
     }
 }
 
@@ -386,7 +397,8 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
             let id = msg["id"].as_str().context("missing `id`")?;
             // Run now ignores the skip rules; a scheduled-style run keeps them.
             let force = msg["force"].as_bool().unwrap_or(false);
-            let last = fire(app, id, force).await?;
+            let over = RunOverride::from_msg(msg)?;
+            let last = fire(app, id, force, &over).await?;
             reply(json!({
                 "op": "automation.ran",
                 "id": id,
@@ -400,11 +412,52 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
     Ok(())
 }
 
+/// What one `automation.run` may change for its run only.
+#[derive(Default)]
+struct RunOverride {
+    /// Replaces the saved prompt.
+    prompt: Option<String>,
+    /// Goes after the name in the title: `Loop verify #161 · <date>`.
+    title: Option<String>,
+}
+
+impl RunOverride {
+    fn from_msg(msg: &Value) -> Result<Self> {
+        let prompt = match msg.get("prompt").filter(|v| !v.is_null()) {
+            None => None,
+            Some(v) => {
+                let p = v.as_str().context("`prompt` is not text")?.trim();
+                if p.is_empty() {
+                    bail!("the prompt is empty");
+                }
+                if p.len() > MAX_RUN_PROMPT {
+                    bail!("the prompt is too long ({} KB at most)", MAX_RUN_PROMPT / 1000);
+                }
+                Some(p.to_string())
+            }
+        };
+        let title = match msg.get("title").filter(|v| !v.is_null()) {
+            None => None,
+            Some(v) => {
+                let t = v.as_str().context("`title` is not text")?.trim();
+                if t.contains(['\n', '\r']) {
+                    bail!("the title must be one line");
+                }
+                if t.chars().count() > MAX_RUN_TITLE {
+                    bail!("the title is too long ({MAX_RUN_TITLE} characters at most)");
+                }
+                (!t.is_empty()).then(|| t.to_string())
+            }
+        };
+        Ok(RunOverride { prompt, title })
+    }
+}
+
 /// Start one run, or record why not. The result is also saved as the
 /// automation's last run.
-async fn fire(app: &Arc<App>, id: &str, force: bool) -> Result<LastRun> {
+async fn fire(app: &Arc<App>, id: &str, force: bool, over: &RunOverride) -> Result<LastRun> {
     let a = app.automations.get(id).context("no such automation")?;
-    let last = match run(app, &a, force).await {
+    let last = match run(app, &a, force, over).await {
         Ok(Err(reason)) => LastRun { at: now_ms(), outcome: "skipped".into(), session_id: None, reason: Some(reason) },
         Ok(Ok(sid)) => LastRun { at: now_ms(), outcome: "started".into(), session_id: Some(sid), reason: None },
         Err(e) => LastRun { at: now_ms(), outcome: "failed".into(), session_id: None, reason: Some(format!("{e:#}")) },
@@ -415,7 +468,7 @@ async fn fire(app: &Arc<App>, id: &str, force: bool) -> Result<LastRun> {
 }
 
 /// `Ok(Err(reason))` is a skip; `Err` is a run that could not start.
-async fn run(app: &Arc<App>, a: &Automation, force: bool) -> Result<std::result::Result<String, String>> {
+async fn run(app: &Arc<App>, a: &Automation, force: bool, over: &RunOverride) -> Result<std::result::Result<String, String>> {
     if !force {
         if a.skip_while_running {
             let going = app.sessions.lock().unwrap().values().find_map(|s| {
@@ -434,13 +487,17 @@ async fn run(app: &Arc<App>, a: &Automation, force: bool) -> Result<std::result:
         }
     }
     let base = crate::git::fresh_base(&a.cwd, &a.base).await?;
-    let title = format!("{} · {}", a.name, Local::now().format("%Y-%m-%d %H:%M"));
+    let name = match &over.title {
+        Some(t) => format!("{} {t}", a.name),
+        None => a.name.clone(),
+    };
+    let title = format!("{name} · {}", Local::now().format("%Y-%m-%d %H:%M"));
     let mut create = json!({
         "engine": a.engine,
         "model": a.model,
         "effort": a.effort,
         "cwd": a.cwd,
-        "text": a.prompt,
+        "text": over.prompt.as_deref().unwrap_or(&a.prompt),
         "permission": a.permission,
         "worktree": true,
     });
@@ -462,7 +519,7 @@ pub async fn run_scheduler(app: Arc<App>) {
         for id in app.automations.take_due(now_ms()) {
             let app = app.clone();
             tokio::spawn(async move {
-                if let Err(e) = fire(&app, &id, false).await {
+                if let Err(e) = fire(&app, &id, false, &RunOverride::default()).await {
                     eprintln!("yardd: automation {id}: {e:#}");
                 }
             });
@@ -534,6 +591,15 @@ mod tests {
         assert!(daily("09:60").validate().is_err());
         assert!(Schedule::Weekly { day: 7, time: "09:00".into() }.validate().is_err());
         assert!(daily("23:59").validate().is_ok());
+        assert!(Schedule::Manual.validate().is_ok());
+    }
+
+    #[test]
+    fn a_manual_schedule_has_no_next_run() {
+        assert_eq!(next_after(&Schedule::Manual, 1_000, &Utc), None);
+        let s: Schedule = serde_json::from_value(json!({ "kind": "manual" })).unwrap();
+        assert_eq!(s, Schedule::Manual);
+        assert_eq!(serde_json::to_value(&s).unwrap(), json!({ "kind": "manual" }));
     }
 
     fn sample(next_run: Option<u64>, every: u32) -> Automation {
