@@ -14,6 +14,7 @@ export interface NavigationEntry {
 
 const PAGES: NavigationEntry[] = [
   { id: "new", title: "New session", detail: "Start a conversation", group: "Pages", route: { page: "new" } },
+  { id: "assistant", title: "Switchy", detail: "Ask about your servers or your work", group: "Pages", route: { page: "assistant" } },
   { id: "automations", title: "Automations", detail: "Scheduled work and runs", group: "Pages", route: { page: "automations" } },
   { id: "connectors", title: "Connectors", detail: "MCP servers and connections", group: "Pages", route: { page: "connectors" } },
   { id: "settings", title: "Settings", detail: "Notifications and sidebar", group: "Pages", route: { page: "settings" } },
