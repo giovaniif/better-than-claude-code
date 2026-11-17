@@ -1,0 +1,26 @@
+$ verify/yv map run navigation --recipe native-app-menu
+# exit 0 after 8713 ms at 6453c18bce4f25ea0aad7eaab7d96042246e8f29
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-17T19:06:28.824Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "native-app-menu",
+          "status": "pass",
+          "ms": 7861
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

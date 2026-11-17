@@ -1,0 +1,78 @@
+{
+  "v": 1,
+  "claim": "Map drift: navigation/native-app-menu expected the sidebar top rows from before Switchy (#184) and failed on main while the app is right",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1920",
+  "base": "aaf76d5300121b0d2b524657f7071666e15bd31e",
+  "head": "6453c18bce4f25ea0aad7eaab7d96042246e8f29",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T19:05:43.941Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "6453c18bce4f25ea0aad7eaab7d96042246e8f29",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T19:05:43.982Z",
+      "text": "no-repro: map-only: the app is right; the recipe listed the sidebar rows from before #184 added Switchy (navigation/native-app-menu failed on main in this patrol run: eval returned [New session, Switchy, Automations, Connectors])"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "6453c18bce4f25ea0aad7eaab7d96042246e8f29",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T19:05:44.025Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "6453c18bce4f25ea0aad7eaab7d96042246e8f29",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-nav.json",
+          "sha256": "ac97c770d59c4dbefa8e580aef82f4cf4455efbc89dc69b1f2ed89615152800c"
+        }
+      ],
+      "addedAt": "2026-11-17T19:06:16.683Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "navigation/command-k-navigation",
+        "navigation/recent-list-skips-automation-runs",
+        "navigation/native-app-menu"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "6453c18bce4f25ea0aad7eaab7d96042246e8f29",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "740c84db97ada6786dce1264230a68f7aaa3f7e1045518560f2fe83410476acf"
+        }
+      ],
+      "addedAt": "2026-11-17T19:06:20.114Z",
+      "cmd": "verify/yv map run navigation --recipe native-app-menu",
+      "exit": 0
+    }
+  ]
+}
