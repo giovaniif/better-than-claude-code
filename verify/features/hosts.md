@@ -2,7 +2,9 @@
 
 The Hosts page is a grid of small host cards, this machine first, like the
 Automations page: each card shows the host's state, CPU, memory and disk, one
-line for its sessions and a mark per engine with its login. Details (one per
+line for its sessions and a mark per engine with its login. Engine marks use
+a fixed two-column grid; long login notes truncate with their full tooltip so
+wrapping cannot move a card’s footer below its neighbour. Details (one per
 card, closed by default and kept per browser) opens the CPU sparkline, the
 sessions table and queue rule, each engine's accounts with Log in, Add account
 and Remove, and Update or Remove host. A remote is added by SSH destination

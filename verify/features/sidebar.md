@@ -2,7 +2,7 @@
 
 Pinned sessions, then ungrouped ones newest first, then one collapsible
 section per group, each row with title, model and status. A row's … menu (or
-right-click) pins, moves to a group, archives or restores, and deletes after one
+right-click) marks read or unread, pins, moves to a group, archives or restores, and deletes after one
 confirmation; a worktree session also offers to remove its worktree. On a
 desktop-width window a row can also be dragged onto a group, the ungrouped
 Sessions rows or Pinned; on the phone drawer the menu is the only way. A group

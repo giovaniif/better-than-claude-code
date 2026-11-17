@@ -1,12 +1,14 @@
 # Connectors
 
 The Connectors page (`#/connectors`, the plug row in the sidebar's top nav)
-lists, per online host, every engine account's MCP servers: claude.ai
+shows one selected host and engine account at a time. The default Connected
+view hides unused services; Available, Not working and All expose the rest.
+Search matches service names and sources, with eight rows per page. Sources include claude.ai
 connectors, plugins, config files, project `.mcp.json` and, for Codex, ChatGPT
 apps. Each row has the service's name, where it comes from, its state
 (Connected, Needs sign-in, Not working with the server's error, Connecting,
 Off), a tool count, and a "widgets" tag when some of its tools come with an MCP
-Apps widget. Needs sign-in comes first, then Not working. Each card sums it up
+Apps widget. Within All, Needs sign-in comes first, then Not working. Each card sums it up
 ("1 connected · 2 need sign-in · 1 not working").
 
 Connect starts the CLI's own sign-in: a claude.ai connector opens claude.ai
@@ -54,8 +56,19 @@ connected with the widgets tag. Codex's card: fake-oauth needs sign-in and
 GitHub links to ChatGPT.
 
 ```sh
-yv drive connectors --steps '[{"expect":"role:heading:Connectors"},{"expect":{"css":".connectors-card","hasText":"Claude"},"text":"1 connected \u00b7 2 need sign-in \u00b7 1 not working"},{"expect":{"css":".connector","hasText":"Datadog"},"text":"claude.ai"},{"expect":{"css":".connector","hasText":"Datadog"},"text":"Needs sign-in"},{"expect":{"css":".connector","hasText":"gmail"},"text":"No URL configured for this server"},{"expect":{"css":".connector","hasText":"chart"},"text":"widgets"},{"expect":{"css":".connectors-card","hasText":"Codex"},"text":"1 connected \u00b7 2 need sign-in"},{"expect":"role:link:Connect on ChatGPT"},{"shot":"connectors"}]'
+yv drive connectors --steps '[{"expect":"role:heading:Connectors"},{"expect":{"css":".connectors-card","hasText":"Claude"},"text":"1 connected · 2 need sign-in · 1 not working"},{"expect":"css:.connectors-card","count":1},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"chart"},{"expect":"css:.connector","text":"widgets"},{"shot":"connected-only"},{"click":{"role":"button","name":"Available","exact":true}},{"expect":{"css":".connector","hasText":"Datadog"},"text":"claude.ai"},{"expect":{"css":".connector","hasText":"Datadog"},"text":"Needs sign-in"},{"click":{"role":"button","name":"Not working","exact":true}},{"expect":{"css":".connector","hasText":"gmail"},"text":"No URL configured for this server"},{"eval":"(() => { const s=document.querySelector(\"select[aria-label=\\\"Connector account\\\"]\"); s.value=[...s.options].find(o=>o.textContent.startsWith(\"Codex · Default\")).value; s.dispatchEvent(new Event(\"change\",{bubbles:true})); return true; })()","equals":true},{"expect":{"css":".connectors-card","hasText":"Codex"},"text":"1 connected · 2 need sign-in"},{"click":{"role":"button","name":"Available","exact":true}},{"expect":"role:link:Connect on ChatGPT"},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"Needs sign-in"},{"shot":"codex-available"}]'
 ```
+
+### focused-search-and-status
+Only one account is expanded and only connected services show by default.
+Available reveals unused services. Search matches service names and a status filter
+shows only usable connectors, with a clear empty state.
+
+```sh
+yv drive connectors --steps '[{"expect":"label:Connector account"},{"expect":"css:.connectors-card","count":1},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"chart"},{"expect":{"css":".connector","hasText":"Datadog"},"count":0},{"click":{"role":"button","name":"Available","exact":true}},{"fill":"placeholder:Search connectors","value":"datadog"},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"Datadog"},{"fill":"placeholder:Search connectors","value":"no-such-service"},{"expect":"text:No connectors match","visible":true},{"shot":"empty-search"},{"fill":"placeholder:Search connectors","value":""},{"click":{"role":"button","name":"Connected","exact":true}},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"chart"},{"shot":"connected-filter"}]'
+```
+
+
 
 ### claude-sign-in
 Viewports: desktop
@@ -64,7 +77,7 @@ without `code=` is refused with Claude Code's reason, then the right one
 connects it. The card then reads 3 connected.
 
 ```sh
-yv drive connectors --viewport desktop --allow-errors --steps '[{"click":{"css":".connector:has-text(\"Datadog\") button","hasText":"Connect"}},{"expect":{"css":".connector","hasText":"Datadog"},"text":"Running sessions pick it up now"},{"expect":{"css":".connector","hasText":"Datadog"},"text":"12 tools"},{"click":{"css":".connector:has-text(\"sentry\") button","hasText":"Connect"}},{"expect":"role:link:Open the sign-in page"},{"expect":{"css":".connector","hasText":"sentry"},"text":"paste that page"},{"fill":"css:#connector-paste","value":"http://localhost:39999/callback"},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"sentry"},"text":"missing authorization code"},{"click":{"css":".connector:has-text(\"sentry\") button","hasText":"Try again"}},{"fill":"css:#connector-paste","value":"http://localhost:39999/callback?code=TEST"},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"sentry"},"text":"Running sessions pick it up now"},{"expect":{"css":".connectors-card","hasText":"Claude"},"text":"3 connected \u00b7 1 not working"},{"shot":"claude-signed-in"}]'
+yv drive connectors --viewport desktop --allow-errors --steps '[{"click":{"role":"button","name":"Available","exact":true}},{"click":{"css":".connector:has-text(\"Datadog\") button","hasText":"Connect"}},{"expect":{"css":".connector","hasText":"Datadog"},"text":"Running sessions pick it up now"},{"expect":{"css":".connector","hasText":"Datadog"},"text":"12 tools"},{"click":{"css":".connector:has-text(\"sentry\") button","hasText":"Connect"}},{"expect":"role:link:Open the sign-in page"},{"expect":{"css":".connector","hasText":"sentry"},"text":"paste that page"},{"fill":"css:#connector-paste","value":"http://localhost:39999/callback"},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"sentry"},"text":"missing authorization code"},{"click":{"css":".connector:has-text(\"sentry\") button","hasText":"Try again"}},{"fill":"css:#connector-paste","value":"http://localhost:39999/callback?code=TEST"},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"sentry"},"text":"Running sessions pick it up now"},{"expect":{"css":".connectors-card","hasText":"Claude"},"text":"3 connected · 1 not working"},{"shot":"claude-signed-in"}]'
 ```
 
 ### codex-sign-in-pasted
@@ -73,7 +86,7 @@ fake-oauth's sign-in page redirects to a loopback page on the host; pasting
 that address finishes it through yardd and the card reads 2 connected.
 
 ```sh
-yv drive connectors --viewport desktop --steps '[{"click":{"css":".connector:has-text(\"fake-oauth\") button","hasText":"Connect"}},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll(\"a\")].find((x) => x.textContent.includes(\"Open the sign-in page\")); const cb = new URL(a.href).searchParams.get(\"redirect_uri\") + \"?code=TEST-code&state=s1\"; const i = document.querySelector(\"#connector-paste\"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, \"value\").set.call(i, cb); i.dispatchEvent(new Event(\"input\", { bubbles: true })); return cb.startsWith(\"http://127.0.0.1:\"); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"Running sessions pick it up now"},{"expect":{"css":".connectors-card","hasText":"Codex"},"text":"2 connected \u00b7 1 needs sign-in"},{"shot":"codex-signed-in"}]'
+yv drive connectors --viewport desktop --steps '[{"eval":"(() => { const s=document.querySelector(\"select[aria-label=\\\"Connector account\\\"]\"); s.value=[...s.options].find(o=>o.textContent.startsWith(\"Codex · Default\")).value; s.dispatchEvent(new Event(\"change\",{bubbles:true})); return true; })()","equals":true},{"click":{"role":"button","name":"Available","exact":true}},{"click":{"css":".connector:has-text(\"fake-oauth\") button","hasText":"Connect"}},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll(\"a\")].find((x) => x.textContent.includes(\"Open the sign-in page\")); const cb = new URL(a.href).searchParams.get(\"redirect_uri\") + \"?code=TEST-code&state=s1\"; const i = document.querySelector(\"#connector-paste\"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, \"value\").set.call(i, cb); i.dispatchEvent(new Event(\"input\", { bubbles: true })); return cb.startsWith(\"http://127.0.0.1:\"); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connector","hasText":"fake-oauth"},"text":"Running sessions pick it up now"},{"expect":{"css":".connectors-card","hasText":"Codex"},"text":"2 connected · 1 needs sign-in"},{"shot":"codex-signed-in"}]'
 ```
 
 ### add-linear
@@ -85,7 +98,7 @@ takes Claude's out again. "Other address…" refuses a plain `http://` address
 before sending anything.
 
 ```sh
-yv drive connectors --viewport desktop --steps '[{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"expect":{"css":".connector-catalog button","hasText":"Linear"}},{"click":{"css":".connectors-card:has-text(\"Claude\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"paste that page"},{"fill":"css:#connector-paste","value":"http://localhost:39998/callback?code=TEST"},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"click":{"css":".connectors-card:has-text(\"Codex\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Codex\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll(\"a\")].find((x) => x.textContent.includes(\"Open the sign-in page\")); const cb = new URL(a.href).searchParams.get(\"redirect_uri\") + \"?code=TEST-code&state=s1\"; const i = document.querySelector(\"#connector-paste\"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, \"value\").set.call(i, cb); i.dispatchEvent(new Event(\"input\", { bubbles: true })); return cb.startsWith(\"http://127.0.0.1:\"); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"shot":"linear-both"},{"click":"role:button:Remove Linear"},{"click":"role:button:Confirm removing Linear"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"count":0},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Other address"}},{"fill":"label:Connector name","value":"metabase"},{"fill":"label:Connector address","value":"http://metabase.local/mcp"},{"expect":{"css":".connector-add-panel"},"text":"https://"}]'
+yv drive connectors --viewport desktop --steps '[{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"expect":{"css":".connector-catalog button","hasText":"Linear"}},{"click":{"css":".connectors-card:has-text(\"Claude\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"paste that page"},{"fill":"css:#connector-paste","value":"http://localhost:39998/callback?code=TEST"},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"shot":"linear-claude"},{"click":"role:button:Remove Linear"},{"click":"role:button:Confirm removing Linear"},{"expect":{"css":".connectors-card:has-text(\"Claude\") .connector","hasText":"Linear"},"count":0},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Other address"}},{"fill":"label:Connector name","value":"metabase"},{"fill":"label:Connector address","value":"http://metabase.local/mcp"},{"expect":{"css":".connector-add-panel"},"text":"https://"},{"click":"role:button:Cancel"},{"eval":"(() => { const s=document.querySelector(\"select[aria-label=\\\"Connector account\\\"]\"); s.value=[...s.options].find(o=>o.textContent.startsWith(\"Codex · Default\")).value; s.dispatchEvent(new Event(\"change\",{bubbles:true})); return true; })()","equals":true},{"click":{"css":".connectors-card:has-text(\"Codex\") button","hasText":"Add connector"}},{"click":{"css":".connectors-card:has-text(\"Codex\") .connector-catalog button","hasText":"Linear"}},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"paste that page"},{"eval":"(() => { const a = [...document.querySelectorAll(\"a\")].find((x) => x.textContent.includes(\"Open the sign-in page\")); const cb = new URL(a.href).searchParams.get(\"redirect_uri\") + \"?code=TEST-code&state=s1\"; const i = document.querySelector(\"#connector-paste\"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, \"value\").set.call(i, cb); i.dispatchEvent(new Event(\"input\", { bubbles: true })); return cb.startsWith(\"http://127.0.0.1:\"); })()","equals":true},{"click":"role:button:Finish"},{"expect":{"css":".connectors-card:has-text(\"Codex\") .connector","hasText":"Linear"},"text":"Running sessions pick it up now"},{"shot":"linear-both"}]'
 ```
 
 ### codex-chart
@@ -111,14 +124,17 @@ cannot read `window.parent.document` (SecurityError). Checked with a Playwright
 script against `iso` on 2026-11-16; yardd's side is covered by
 `crates/yardd/tests/connectors.rs`.
 
-### focused-search-and-status
-Only one account is expanded. Search matches service names and a status filter
-shows only usable connectors, with a clear empty state.
+### large-catalog-stays-bounded
+Many unused entries stay hidden in Connected. All is limited to eight rows,
+Next reaches the final row, and changing search resets pagination. A long
+service name wraps within the phone viewport.
 
 ```sh
-yv drive connectors --steps '[{"expect":"label:Connector account"},{"expect":"css:.connectors-card","count":1},{"fill":"placeholder:Search connectors","value":"datadog"},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"Datadog"},{"fill":"placeholder:Search connectors","value":"no-such-service"},{"expect":"text:No connectors match","visible":true},{"shot":"empty-search"},{"fill":"placeholder:Search connectors","value":""},{"click":{"role":"button","name":"Connected","exact":true}},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"chart"},{"shot":"connected-filter"}]'
+yv iso up --name map-connectors-many
+bun -e 'const fs=require("node:fs"); fs.writeFileSync(process.argv[1]+"/claude-mcp.txt", Array.from({length:21},(_,i)=>"TEST-service-"+String(i).padStart(2,"0")+(i===20?"-very-long-service-name".repeat(6):"")+" https://example.com/mcp").join("\n")+"\n")' "$(yv var get fake --iso map-connectors-many | jq -r .value)"
+yv drive connectors --iso map-connectors-many --steps '[{"expect":"css:.connector","count":1},{"expect":{"css":".connector","hasText":"TEST-service"},"count":0},{"click":{"role":"button","name":"All","exact":true}},{"expect":"css:.connector","count":8},{"expect":"role:navigation:Connector pages","text":"1–8 of 25"},{"click":"role:button:Next"},{"expect":"role:navigation:Connector pages","text":"9–16 of 25"},{"click":"role:button:Next"},{"click":"role:button:Next"},{"expect":"css:.connector","count":1},{"expect":"role:button:Next","enabled":false},{"fill":"placeholder:Search connectors","value":"TEST-service-20"},{"expect":"css:.connector","count":1},{"expect":"css:.connector","text":"TEST-service-20"},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"long-service-name"},{"fill":"placeholder:Search connectors","value":""},{"expect":"role:navigation:Connector pages","text":"1–8 of 25"},{"shot":"bounded-catalog"}]'
+yv iso down --name map-connectors-many
 ```
-
 
 ## Gotchas
 - claude-sign-in passes `--allow-errors`: the refused address is an `mcp.auth`

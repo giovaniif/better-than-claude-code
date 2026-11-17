@@ -1,5 +1,6 @@
 import type { SwitchyConversation } from "./protocol";
 import { useEffect, useMemo, useReducer, useRef } from "react";
+import { rememberSession } from "./sessionDefaults";
 import { returnToComposer } from "./compose";
 import { peekKey, peekResult, prPeeks, type PeekResult } from "./prPeek";
 import {
@@ -855,11 +856,18 @@ export function useYard(): { state: State; actions: Actions } {
         termListeners.current.add(listener);
         return () => termListeners.current.delete(listener);
       },
-      send: (sessionId, text, attachments) =>
-        post(attachments?.length ? { op: "session.send", sessionId, text, attachments } : { op: "session.send", sessionId, text }),
+      send: (sessionId, text, attachments) => {
+        const session = sessionsRef.current[sessionId];
+        if (session) rememberSession(session);
+        post(attachments?.length ? { op: "session.send", sessionId, text, attachments } : { op: "session.send", sessionId, text });
+      },
       upload,
       attachmentUrl,
-      setModel: (sessionId, model, effort) => post({ op: "session.setModel", sessionId, model, effort }),
+      setModel: (sessionId, model, effort) => {
+        const session = sessionsRef.current[sessionId];
+        if (session) rememberSession({ ...session, model, effort });
+        post({ op: "session.setModel", sessionId, model, effort });
+      },
       setPermission: (sessionId, permission) => post({ op: "session.setPermission", sessionId, permission }),
       handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),

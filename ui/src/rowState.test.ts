@@ -43,3 +43,23 @@ describe("markSeen", () => {
     expect(markSeen(before, meta({}), new Set(["s"]))).toBe(before);
   });
 });
+
+
+describe("manual unread", () => {
+  test("marks stopped, failed and older chats unread independently of the turn end", () => {
+    for (const patch of [{}, { turnEndedAt: 200, lastTurn: "completed" }, { turnEndedAt: 200, lastTurn: "interrupted" }, { status: "error" }] as Partial<SessionMeta>[]) {
+      expect(rowState(meta(patch), 500, true, true)).toBe("unread");
+    }
+  });
+  test("live states and offline status retain priority", () => {
+    expect(rowState(meta({ status: "running" }), 500, true, true)).toBe("working");
+    expect(rowState(meta({ status: "needs_approval" }), 500, true, true)).toBe("approval");
+    expect(rowState(meta({ status: "queued" }), 500, true, true)).toBe("queued");
+    expect(rowState(meta({}), 500, false, true)).toBe("offline");
+  });
+  test("opening a manually unread chat clears the marker, even without a turn end", () => {
+    expect(markSeen({ s: -1 }, meta({ turnEndedAt: 200 }), new Set(["s"]))).toEqual({ s: 200 });
+    expect(markSeen({ s: -1 }, meta({}), new Set(["s"]))).toEqual({ s: 0 });
+    expect(ROW_LABEL.unread).toBe("Unread");
+  });
+});

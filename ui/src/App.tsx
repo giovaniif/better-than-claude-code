@@ -29,6 +29,9 @@ import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, E
 import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
+import { loadChoice, loadFolder, loadHost, readRecent, rememberSession, validChoice, type Choice } from "./sessionDefaults";
+export { loadChoice, readRecent } from "./sessionDefaults";
+export type { Choice } from "./sessionDefaults";
 import { NavigationPalette } from "./NavigationPalette";
 import { navigationShortcut, type NavigationEntry } from "./navigation";
 
@@ -412,10 +415,10 @@ interface RowDrag {
   end(): void;
 }
 
-function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number; drag?: RowDrag }) {
+function SessionRow({ state, actions, session: s, active, groups, seenAt, unread, onUnread, onRead, drag }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number; unread: boolean; onUnread(): void; onRead(): void; drag?: RowDrag }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
-  const mark = rowState(s, seenAt, online);
+  const mark = rowState(s, seenAt, online, unread);
   const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState(false);
   // The menu's group pages: the list of groups, then the name field for a new one.
@@ -498,8 +501,8 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }
       }}
     >
       <button
-        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"} ${mark === "answered" ? "unread" : ""}`}
-        onClick={() => actions.go({ page: "session", id: s.id })}
+        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"} ${mark === "answered" || mark === "unread" ? "unread" : ""}`}
+        onClick={() => { onRead(); actions.go({ page: "session", id: s.id }); }}
       >
         <RowMark state={mark} />
         <span className="session-text">
@@ -554,6 +557,10 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }
               </form>
             ) : !confirm ? (
               <>
+                <button className="picker-item menu-item" role="menuitem" onClick={() => { unread || mark === "answered" ? onRead() : onUnread(); close(); }}>
+                  <Icon d={unread || mark === "answered" ? CHECK : "M4 6h16v12H4ZM4 6l8 6 8-6"} size={14} />
+                  {unread || mark === "answered" ? "Mark as read" : "Mark as unread"}
+                </button>
                 {!s.archived && (
                   <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
                     <Icon d={PIN} size={14} />
@@ -829,7 +836,7 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
   // Runs of automations live on the Automations page, not in this list.
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
-  const seenAt = useSeen(state.sessions, route.page === "session" ? route.id : null);
+  const seen = useSeen(state.sessions, route.page === "session" ? route.id : null, state.restore);
   // Going to an archived session shows the section, so its row stays in
   // view. Only on going there: archiving the session already open leaves the
   // section as it was (it used to spring open on every archive).
@@ -852,7 +859,10 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
       session={s}
       groups={groupNames}
       active={route.page === "session" && route.id === s.id}
-      seenAt={seenAt(s.id)}
+      seenAt={seen.seenAt(s.id)}
+      unread={seen.isUnread(s.id)}
+      onUnread={() => seen.markUnread(s.id)}
+      onRead={() => seen.markRead(s.id)}
       // Touch has no HTML5 drag; in the phone drawer the row menu moves sessions.
       drag={narrow ? undefined : rowDrag(s.id)}
     />
@@ -970,12 +980,6 @@ const hostPressure = (h: Host) =>
   h.pressure !== undefined ? !!h.pressure : h.load > h.cores || h.memUsed / h.memTotal > 0.9;
 
 /* ---------- model picker ---------- */
-
-export interface Choice {
-  engine: Engine;
-  model: string;
-  effort: string;
-}
 
 export function effortFor(model: ModelInfo | undefined, wanted: string): string {
   if (!model) return wanted;
@@ -1736,45 +1740,20 @@ function SentAttachment({ attachment: a, load }: { attachment: Attachment; load(
 
 /* ---------- new session ---------- */
 
-export function loadChoice(models: Models): Choice {
-  try {
-    const saved = JSON.parse(localStorage.getItem("yard.choice") ?? "null") as Choice | null;
-    if (saved && models[saved.engine]?.some((m) => m.id === saved.model)) return saved;
-  } catch {
-    /* fall through to the default */
-  }
-  const first = models.claude?.[0];
-  return { engine: "claude", model: first?.id ?? "", effort: first?.defaultEffort ?? "medium" };
-}
-
-/** Remembered per host: the folder last used there, and recent picks. */
-const cwdKey = (host: string) => (host === "local" ? "yard.cwd" : `yard.cwd.${host}`);
-const recentKey = (host: string) => `yard.recent.${host}`;
-export function readRecent(host: string): string[] {
-  try {
-    const list = JSON.parse(localStorage.getItem(recentKey(host)) ?? "[]");
-    return Array.isArray(list) ? list.filter((p) => typeof p === "string") : [];
-  } catch {
-    return [];
-  }
-}
-function remember(host: string, folder: string) {
-  localStorage.setItem(cwdKey(host), folder);
-  localStorage.setItem(recentKey(host), JSON.stringify([folder, ...readRecent(host).filter((p) => p !== folder)].slice(0, 12)));
-}
-
 /** The New session box's draft key: it has no session yet (compose.ts). */
 const NEW_TASK_DRAFT = "new";
 
 function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // Where the session runs. A remote host can be picked only while connected.
-  const [host, setHost] = useState("local");
-  const target = host === "local" || state.hosts.some((h) => h.id === host && hostOnline(state, h.id)) ? host : "local";
+  const [host, setHost] = useState(loadHost);
+  // A configured host stays selected while reconnecting. Never silently send
+  // a remote task to another machine because its connection briefly dropped.
+  const target = host === "local" || !state.connected || state.hosts.some((h) => h.id === host) ? host : "local";
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
   const workspace = state.workspace[target] || home;
   const [loggingIn, setLoggingIn] = useState(false);
-  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
+  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target));
   // The account per engine on this host, remembered like the model. One that
   // was removed meanwhile falls back to Default.
   const accounts = accountsOn(state, target);
@@ -1796,7 +1775,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     const saved = localStorage.getItem("yard.permission");
     return PERMISSIONS.some((p) => p.id === saved) ? (saved as Permission) : "ask";
   });
-  const [cwd, setCwd] = useState("");
+  const [cwd, setCwd] = useState(() => loadFolder(target));
+  const previousTarget = useRef(target);
   // What the worktree is cut from; empty means the folder's current branch.
   const [base, setBase] = useState("");
   // From send until yardd answers. On success this page is replaced by the
@@ -1818,11 +1798,15 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   );
   // Models and the home folder arrive after the first render, and differ per host.
   useEffect(() => {
-    if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
-  }, [models, target]);
-  useEffect(() => {
-    setCwd(localStorage.getItem(cwdKey(target)) || workspace);
-  }, [target, workspace]);
+    const changed = previousTarget.current !== target;
+    setChoice((current) => {
+      const next = changed ? loadChoice(models, target) : validChoice(models, current);
+      return next.engine === current.engine && next.model === current.model && next.effort === current.effort ? current : next;
+    });
+    if (previousTarget.current !== target) setCwd(loadFolder(target) || workspace);
+    else setCwd((current) => current || loadFolder(target) || workspace);
+    previousTarget.current = target;
+  }, [models, target, workspace]);
 
   // Recent picks first, then the folders of this host's sessions. A worktree
   // session counts as the repository it was cut from.
@@ -1849,9 +1833,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
       setLoggingIn(true);
       return;
     }
-    if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
+    rememberSession({ ...choice, host: target, cwd });
     localStorage.setItem("yard.permission", permission);
-    remember(target, cwd);
     setPending(true);
     actions.create({
       ...choice,
@@ -1880,7 +1863,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          busy={pending || !state.connected || !choice.model || !cwd}
+          busy={pending || !state.connected || !hostOnline(state, target) || !choice.model || !cwd}
         >
           <ModelPicker
             models={models}
@@ -3744,8 +3727,10 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
           {engineGlance(engines, accounts).map((e) => (
             <li key={e.engine} className={`host-engine engine-${e.tone}`} title={e.title}>
               <span className={`dot ${e.tone === "ok" ? "host-dot-ok" : e.tone === "warn" ? "host-dot-busy" : "host-dot-down"}`} aria-hidden="true" />
-              {e.label}
-              {e.note && <span className="host-engine-note">{e.note}</span>}
+              <span className="host-engine-label">
+                {e.label}
+                {e.note && <span className="host-engine-note"> · {e.note}</span>}
+              </span>
             </li>
           ))}
         </ul>
