@@ -12,6 +12,8 @@ import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, h
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
+import { PeekScope, PrLink } from "./PrHoverCard";
+import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
 import { draftOf, fenceSegments, keepDraft, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
 import { blockSegments, type MdTable } from "./markdown";
@@ -222,7 +224,9 @@ export function App() {
               <AutomationsPage state={state} actions={actions} />
             ))}
           {route.page === "session" && state.sessions[route.id] && (
-            <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
+            <PeekScope sessionId={route.id} peek={actions.peekPr}>
+              <SessionView key={route.id} meta={state.sessions[route.id]} state={state} actions={actions} />
+            </PeekScope>
           )}
         </div>
       </div>
@@ -2919,12 +2923,32 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
 
 /* ---------- markdown (rendered as elements, never as HTML) ---------- */
 
+// Markdown links, code, bold, and bare PR URLs. One capturing group, so split keeps every match at an odd index.
+const INLINE = new RegExp(`(${[/\[`?[^\]`]+`?\]\([^)]+\)/.source, /`[^`]+`/.source, /\*\*[^*]+\*\*/.source, PR_URL_SOURCE].join("|")})`, "g");
+
 function inline(text: string): ReactNode[] {
-  return text.split(/(\[`?[^\]`]+`?\]\([^)]+\)|`[^`]+`|\*\*[^*]+\*\*)/g).map((part, i) => {
+  return text.split(INLINE).map((part, i) => {
     // Links are shown by their label only. Agents mostly link local files,
-    // and nothing here should navigate the window away.
-    const link = part.match(/^\[`?([^\]`]+)`?\]\([^)]+\)$/);
-    if (link) return <code key={i}>{link[1]}</code>;
+    // and nothing here should navigate the window away. A GitHub PR is the
+    // exception: it opens in a new tab and has a hover card.
+    const link = part.match(/^\[`?([^\]`]+)`?\]\(([^)]+)\)$/);
+    if (link) {
+      return prLink(link[2]) ? (
+        <PrLink key={i} href={link[2]}>
+          {link[1]}
+        </PrLink>
+      ) : (
+        <code key={i}>{link[1]}</code>
+      );
+    }
+    const bare = i % 2 === 1 ? prLink(part) : null;
+    if (bare) {
+      return (
+        <PrLink key={i} href={part}>
+          {shortLabel(bare)}
+        </PrLink>
+      );
+    }
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2) return <code key={i}>{part.slice(1, -1)}</code>;
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i}>{part.slice(2, -2)}</strong>;
     return part;

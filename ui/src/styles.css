@@ -21,6 +21,10 @@
   --rec-clear: rgba(180, 35, 24, 0);
   --add: #e8f5ec;
   --del: #fcebea;
+  /* GitHub's merged purple, toned to the theme like --ok-ink and --add. */
+  --merged-ink: #7a3fd1;
+  --merged-fill: #f3edfc;
+  --shadow-pop: 0 8px 28px rgba(0, 0, 0, 0.12);
   --scrim: rgba(0, 0, 0, 0.28);
   --off: #b8b8b8;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -404,6 +408,25 @@ h1, h2, h3, p { margin: 0; }
 .pr-author { font-size: 12px; font-weight: 500; }
 .pr-body { white-space: pre-wrap; overflow-wrap: anywhere; }
 .pr-foot { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-top: 4px; }
+
+/* PR links in answers and their hover card */
+.prose a.pr-link { color: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 2px; }
+.prose a.pr-link:hover { text-decoration-color: currentColor; }
+.pr-peek { position: fixed; z-index: 45; width: min(340px, calc(100vw - 16px)); display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); box-shadow: var(--shadow-pop); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.pr-peek-repo { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.pr-peek-title { font-size: 14px; font-weight: 600; }
+.pr-peek-state { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pr-peek-branch { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-peek-branch code { padding: 1px 4px; border-radius: 4px; background: var(--fill); font-size: 11px; }
+.pr-pill { flex: none; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+.pr-pill-open { background: var(--add); color: var(--ok-ink); }
+.pr-pill-draft { background: var(--fill); color: var(--muted); }
+.pr-pill-merged { background: var(--merged-fill); color: var(--merged-ink); }
+.pr-pill-closed { background: var(--del); color: var(--bad-ink); }
+.pr-peek-facts { display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.pr-peek-failing { color: var(--muted); }
+.pr-peek-lines { font-family: var(--mono); font-size: 11px; }
+.pr-peek-error { color: var(--bad-ink); }
 
 /* hosts */
 .hosts { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }

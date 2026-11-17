@@ -3,11 +3,19 @@
 //! Read-only. Everything goes through the user's own `gh` login, run in the
 //! session folder, so yardd never holds a GitHub token.
 
-use std::{sync::Arc, time::Duration};
+use std::{
+    collections::HashMap,
+    path::Path,
+    sync::{Arc, LazyLock, Mutex},
+    time::{Duration, Instant},
+};
 
 use anyhow::{bail, Context, Result};
 use serde_json::{json, Value};
-use tokio::{process::Command, sync::mpsc};
+use tokio::{
+    process::Command,
+    sync::{mpsc, OnceCell},
+};
 
 use crate::state::App;
 
@@ -19,6 +27,21 @@ const MAX_BODY_CHARS: usize = 4_000;
 
 const PR_FIELDS: &str =
     "number,title,url,state,isDraft,baseRefName,headRefName,reviewDecision,mergeable,mergeStateStatus,statusCheckRollup";
+
+/// What a hover card on a PR link shows (`pr.peek`).
+const PEEK_FIELDS: &str = "number,title,url,state,isDraft,author,baseRefName,headRefName,reviewDecision,mergeStateStatus,additions,deletions,updatedAt,statusCheckRollup";
+/// Hovering down a list of links should not fork a gh per hover.
+const PEEK_FRESH: Duration = Duration::from_secs(60);
+/// A failure (gh logged out, a timeout) is retried sooner than an answer.
+const PEEK_ERROR_FRESH: Duration = Duration::from_secs(10);
+const MAX_FAILING_NAMES: usize = 5;
+const MAX_TITLE_CHARS: usize = 300;
+const MAX_NAME_CHARS: usize = 100;
+
+/// One `pr.peek` per URL: concurrent asks share the gh run, and its answer
+/// (or failure) is kept until it goes stale.
+type Peek = Arc<OnceCell<(Instant, std::result::Result<Value, String>)>>;
+static PEEKS: LazyLock<Mutex<HashMap<String, Peek>>> = LazyLock::new(Default::default);
 
 const THREADS_QUERY: &str = "query($owner: String!, $name: String!, $number: Int!) {
   repository(owner: $owner, name: $name) {
@@ -44,6 +67,26 @@ pub async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg:
                 Err(e) => json!({ "error": format!("{e:#}") }),
             };
             let _ = direct.send(json!({ "op": "pr", "sessionId": sid, "pr": pr }).to_string());
+        }
+        "pr.peek" => {
+            let sid = msg["sessionId"].as_str().context("missing `sessionId`")?;
+            let meta = app.meta(sid).context("no such session")?;
+            let raw = msg["url"].as_str().context("missing `url`")?;
+            let mut reply = json!({ "op": "pr.peek", "sessionId": sid, "url": raw });
+            if !msg["ref"].is_null() {
+                reply["ref"] = msg["ref"].clone();
+            }
+            match canonical_pr_url(raw) {
+                None => reply["error"] = json!("not a GitHub pull request link"),
+                Some(url) => {
+                    reply["url"] = json!(url);
+                    match peek(&meta.cwd, &url).await {
+                        Ok(pr) => reply["pr"] = pr,
+                        Err(e) => reply["error"] = json!(e),
+                    }
+                }
+            }
+            let _ = direct.send(reply.to_string());
         }
         other => bail!("unknown op `{other}`"),
     }
@@ -115,6 +158,115 @@ async fn get_in_repo(cwd: &str) -> Result<Value> {
         Err(e) => out["threadsError"] = json!(format!("{e:#}")),
     }
     Ok(out)
+}
+
+/// `https://github.com/<owner>/<repo>/pull/<number>`, from a link that may
+/// add a tab (`/files`), an anchor or a query. `None` for anything else.
+/// The result goes to gh as an argument, so it is rebuilt from checked
+/// parts rather than passed through.
+pub fn canonical_pr_url(raw: &str) -> Option<String> {
+    if raw.len() > 2048 {
+        return None;
+    }
+    let rest = raw.strip_prefix("https://github.com/")?;
+    let path = rest.split(['#', '?']).next()?;
+    let mut parts = path.split('/');
+    let (owner, repo, pull, number) = (parts.next()?, parts.next()?, parts.next()?, parts.next()?);
+    let owner_ok = (1..=39).contains(&owner.len())
+        && !owner.starts_with('-')
+        && owner.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-');
+    let repo_ok = (1..=100).contains(&repo.len())
+        && repo != "."
+        && repo != ".."
+        && repo.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b'-'));
+    let number_ok = (1..=9).contains(&number.len()) && !number.starts_with('0') && number.bytes().all(|b| b.is_ascii_digit());
+    // A tab of the PR page (`files`, `commits/<sha>`, `checks`), or a trailing slash.
+    let tail_ok = parts.all(|p| p.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b'-')));
+    (owner_ok && repo_ok && pull == "pull" && number_ok && tail_ok).then(|| format!("https://github.com/{owner}/{repo}/pull/{number}"))
+}
+
+async fn peek(cwd: &str, url: &str) -> std::result::Result<Value, String> {
+    let cell = {
+        let mut peeks = PEEKS.lock().unwrap();
+        let now = Instant::now();
+        // Drops stale answers, so a later ask runs gh again; runs still in flight stay.
+        peeks.retain(|_, cell| match cell.get() {
+            None => true,
+            Some((at, Ok(_))) => now.duration_since(*at) < PEEK_FRESH,
+            Some((at, Err(_))) => now.duration_since(*at) < PEEK_ERROR_FRESH,
+        });
+        peeks.entry(url.to_string()).or_default().clone()
+    };
+    let (_, answer) = cell.get_or_init(|| async { (Instant::now(), fetch_peek(cwd, url).await) }).await;
+    answer.clone()
+}
+
+async fn fetch_peek(cwd: &str, url: &str) -> std::result::Result<Value, String> {
+    // A full URL needs no repository; a removed session folder still works.
+    let dir = if Path::new(cwd).is_dir() { cwd.to_string() } else { std::env::temp_dir().to_string_lossy().into_owned() };
+    let out = match gh(&dir, &["pr", "view", url, "--json", PEEK_FIELDS]).await {
+        Err(e) => return Err(format!("{e:#}")),
+        Ok(Err(stderr)) => {
+            let lower = stderr.to_lowercase();
+            // gh says the same for a private repository the login cannot see.
+            if lower.contains("could not resolve to a") {
+                return Err("no such pull request, or no access to it".into());
+            }
+            return Err(short_gh_error(&stderr));
+        }
+        Ok(Ok(out)) => out,
+    };
+    let pr: Value = serde_json::from_str(&out).map_err(|_| "gh returned something that is not JSON".to_string())?;
+    Ok(peek_summary(url, &pr))
+}
+
+/// The hover card's fields. Title and names come from GitHub: capped, and
+/// rendered as text by the UI.
+fn peek_summary(url: &str, pr: &Value) -> Value {
+    let (mut passed, mut failed, mut running) = (0, 0, 0);
+    let mut failing = Vec::new();
+    for c in pr["statusCheckRollup"].as_array().map(Vec::as_slice).unwrap_or_default().iter().map(check) {
+        match c["result"].as_str() {
+            Some("passed") => passed += 1,
+            Some("running") => running += 1,
+            Some("failed") => {
+                failed += 1;
+                if failing.len() < MAX_FAILING_NAMES {
+                    failing.push(clip(c["name"].as_str().unwrap_or("check"), MAX_NAME_CHARS));
+                }
+            }
+            _ => {}
+        }
+    }
+    let repo = url.trim_start_matches("https://github.com/").split("/pull/").next().unwrap_or("");
+    let text = |v: &Value, max: usize| v.as_str().map(|s| json!(clip(s, max))).unwrap_or(Value::Null);
+    json!({
+        "number": pr["number"],
+        "title": text(&pr["title"], MAX_TITLE_CHARS),
+        "url": url,
+        "repo": repo,
+        "state": pr["state"],
+        "isDraft": pr["isDraft"].as_bool().unwrap_or(false),
+        // A deleted account has no author.
+        "author": pr["author"]["login"].as_str().map(|s| clip(s, MAX_NAME_CHARS)).unwrap_or_else(|| "ghost".into()),
+        "base": text(&pr["baseRefName"], MAX_NAME_CHARS * 3),
+        "head": text(&pr["headRefName"], MAX_NAME_CHARS * 3),
+        "reviewDecision": pr["reviewDecision"],
+        "mergeState": pr["mergeStateStatus"],
+        "additions": pr["additions"],
+        "deletions": pr["deletions"],
+        "updatedAt": pr["updatedAt"],
+        "checks": { "passed": passed, "failed": failed, "running": running, "failing": failing },
+    })
+}
+
+fn clip(s: &str, max: usize) -> String {
+    if s.chars().count() <= max {
+        return s.to_string();
+    }
+    let mut out: String = s.chars().take(max - 1).collect();
+    out.push('…');
+    out
 }
 
 /// One row of `statusCheckRollup`, either a CheckRun or a commit StatusContext,
@@ -253,4 +405,81 @@ async fn gh(cwd: &str, args: &[&str]) -> Result<std::result::Result<String, Stri
 async fn git(cwd: &str, args: &[&str]) -> Result<(bool, String)> {
     let out = Command::new("git").arg("-C").arg(cwd).args(args).output().await?;
     Ok((out.status.success(), String::from_utf8_lossy(&out.stdout).into_owned()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_pr_link_is_reduced_to_its_canonical_url() {
+        let canon = "https://github.com/acme-co/my.repo_1/pull/42";
+        for raw in [
+            canon,
+            "https://github.com/acme-co/my.repo_1/pull/42/",
+            "https://github.com/acme-co/my.repo_1/pull/42/files",
+            "https://github.com/acme-co/my.repo_1/pull/42/commits/0a1b2c3",
+            "https://github.com/acme-co/my.repo_1/pull/42#issuecomment-1",
+            "https://github.com/acme-co/my.repo_1/pull/42?w=1",
+            "https://github.com/acme-co/my.repo_1/pull/42/files?diff=split#r9",
+        ] {
+            assert_eq!(canonical_pr_url(raw).as_deref(), Some(canon), "{raw}");
+        }
+    }
+
+    #[test]
+    fn anything_else_is_refused() {
+        for raw in [
+            "",
+            "--repo=x",
+            "-R https://github.com/a/b/pull/1",
+            "http://github.com/a/b/pull/1",
+            "https://github.com.evil.example/a/b/pull/1",
+            "https://gist.github.com/a/b/pull/1",
+            "https://github.com/a/b/issues/1",
+            "https://github.com/a/b/pull/",
+            "https://github.com/a/b/pull/0",
+            "https://github.com/a/b/pull/012",
+            "https://github.com/a/b/pull/1x",
+            "https://github.com/a/b/pull/1234567890",
+            "https://github.com/a/b",
+            "https://github.com//b/pull/1",
+            "https://github.com/-a/b/pull/1",
+            "https://github.com/a_b/c/pull/1",
+            "https://github.com/a/../pull/1",
+            "https://github.com/a/b c/pull/1",
+            "https://github.com/a/b/pull/1/files evil",
+            " https://github.com/a/b/pull/1",
+        ] {
+            assert_eq!(canonical_pr_url(raw), None, "{raw}");
+        }
+        // The tail never reaches gh: the URL is rebuilt without it.
+        assert_eq!(canonical_pr_url("https://github.com/a/b/pull/1/--json").as_deref(), Some("https://github.com/a/b/pull/1"));
+        assert_eq!(canonical_pr_url(&format!("https://github.com/a/b/pull/1#{}", "x".repeat(3000))), None);
+    }
+
+    #[test]
+    fn the_peek_counts_checks_and_names_the_failing_ones() {
+        let pr = json!({
+            "number": 7, "title": "Fix it", "state": "OPEN", "isDraft": true,
+            "author": { "login": "octo" }, "baseRefName": "main", "headRefName": "fix",
+            "reviewDecision": "APPROVED", "mergeStateStatus": "CLEAN",
+            "additions": 12, "deletions": 3, "updatedAt": "2026-11-16T10:00:00Z",
+            "statusCheckRollup": [
+                { "__typename": "CheckRun", "name": "test", "status": "COMPLETED", "conclusion": "SUCCESS" },
+                { "__typename": "CheckRun", "name": "lint", "status": "COMPLETED", "conclusion": "FAILURE" },
+                { "__typename": "CheckRun", "name": "build", "status": "IN_PROGRESS" },
+                { "__typename": "CheckRun", "name": "docs", "status": "COMPLETED", "conclusion": "SKIPPED" },
+                { "__typename": "StatusContext", "context": "ci/legacy", "state": "ERROR" },
+            ],
+        });
+        let p = peek_summary("https://github.com/o/r/pull/7", &pr);
+        assert_eq!(p["repo"], "o/r");
+        assert_eq!(p["author"], "octo");
+        assert_eq!(p["isDraft"], true);
+        assert_eq!(p["checks"], json!({ "passed": 1, "failed": 2, "running": 1, "failing": ["lint", "ci/legacy"] }));
+        let ghost = peek_summary("https://github.com/o/r/pull/7", &json!({ "title": "x".repeat(400) }));
+        assert_eq!(ghost["author"], "ghost");
+        assert_eq!(ghost["title"].as_str().unwrap().chars().count(), MAX_TITLE_CHARS);
+    }
 }

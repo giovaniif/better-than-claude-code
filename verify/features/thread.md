@@ -213,6 +213,52 @@ yv drive 'session:{{wl}}' --viewport desktop --steps '[{"expect":"css:.thread","
 yv drive 'session:{{wl}}' --viewport mobile --steps '[{"expect":"css:.thread","text":"TEST-filler 10"},{"wait":500},{"eval":"(()=>{const d=document.createElement('\''div'\'');d.id='\''grow'\'';d.style.height='\''240px'\'';document.querySelector('\''.column'\'').appendChild(d);return 1})()"},{"wait":300},{"eval":"(()=>{const s=document.querySelector('\''.scroll'\'');const gap=Math.round(s.scrollHeight-s.scrollTop-s.clientHeight);return gap<2||('\''the thread grew and was left '\''+gap+'\'' px above the bottom'\'')})()","equals":true},{"eval":"(()=>{document.getElementById('\''grow'\'').remove();return 1})()"},{"wait":300},{"eval":"(()=>{window.__cut=[];const t0=performance.now();const tick=()=>{const w=document.querySelector('\''.working'\'');const s=document.querySelector('\''.scroll'\'');if(w){const d=w.getBoundingClientRect().bottom-s.getBoundingClientRect().bottom;if(d>1)window.__cut.push(Math.round(d))};if(performance.now()-t0<4000)requestAnimationFrame(tick)};requestAnimationFrame(tick);return 1})()"},{"fill":"label:Message","value":"[steps] TEST-working in view, mobile"},{"click":"role:button:Send"},{"wait":3500},{"eval":"window.__cut.length===0||('\''Working was cut by '\''+window.__cut.slice(0,5).join('\'','\'')+'\'' px'\'')","equals":true},{"shot":"working-in-view"}]'
 ```
 
+### pr-link-hover-card
+Viewports: both
+A GitHub PR link in an answer is a real link (a bare URL shows as
+`owner/repo#number`, as on GitHub; a local file link stays code). A mouse
+resting on it opens a card after a moment with the PR's title, an Open pill,
+"1 of 3 checks failed: lint", the review decision, +12 −3, the author and
+"updated 3 h ago", inside the window at 390 px too. Moving away closes it.
+The PR is #4242 from the fake gh, asked through `pr.peek`.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-pr links\n\nOpened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code."}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose a.pr-link","hasText":"test-owner/test-demo-app#4242"}},{"expect":{"css":".prose code","hasText":"src/greet.ts"}},{"eval":"[...document.querySelectorAll(\".prose a.pr-link\")].slice(-4).map((a) => a.getAttribute(\"href\") + \" \" + a.target).join(\"|\")","equals":"https://github.com/test-owner/test-demo-app/pull/4242 _blank|https://github.com/test-owner/test-demo-app/pull/4100 _blank|https://github.com/test-owner/test-demo-app/pull/4243/files _blank|https://github.com/test-owner/test-demo-app/pull/9999 _blank"},{"hover":{"css":".prose a.pr-link","hasText":"test-owner/test-demo-app#4242"}},{"expect":"role:tooltip","text":"TEST-fix the greeting"},{"expect":"role:tooltip","text":"1 of 3 checks failed: lint"},{"expect":"role:tooltip","text":"Review required"},{"expect":"role:tooltip","text":"+12"},{"expect":"role:tooltip","text":"@test-author · updated 3 h ago"},{"expect":{"css":".pr-pill","hasText":"Open"}},{"expect":"role:tooltip","inViewport":true},{"eval":"document.documentElement.scrollWidth <= window.innerWidth","equals":true},{"shot":"pr-card"},{"hover":"css:.thread .bar h1"},{"expect":"role:tooltip","visible":false}]'
+```
+
+### pr-link-card-states
+Viewports: desktop
+A merged PR gets a Merged pill, a draft a Draft pill and "No checks", and a
+long title wraps inside the card. Hovering one link after another swaps the card.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-pr links\n\nOpened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code."}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"hover":{"css":".prose a.pr-link","hasText":"the greeting module"}},{"expect":"role:tooltip","text":"TEST-add the greeting module"},{"expect":{"css":".pr-pill","hasText":"Merged"}},{"expect":"role:tooltip","text":"1 check passed"},{"shot":"pr-card-merged"},{"hover":{"css":".prose a.pr-link","hasText":"#4243"}},{"expect":"role:tooltip","text":"much longer pull request title"},{"expect":{"css":".pr-pill","hasText":"Draft"}},{"expect":"role:tooltip","text":"No checks"},{"expect":"role:tooltip","inViewport":true},{"expect":"role:tooltip","count":1},{"shot":"pr-card-draft"}]'
+```
+
+### pr-link-card-error
+Viewports: both
+A PR gh cannot find shows the card with why, not a page banner. The failed
+`pr.peek` reply is the point here, so errors are allowed.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-pr links\n\nOpened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code."}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --allow-errors --steps '[{"hover":{"css":".prose a.pr-link","hasText":"#9999"}},{"expect":"role:tooltip","text":"no such pull request, or no access to it"},{"expect":"role:tooltip","inViewport":true},{"expect":"css:.banner-error","visible":false},{"shot":"pr-card-error"}]'
+```
+
+### pr-link-keyboard-and-touch
+Viewports: both
+Keyboard focus on a PR link opens its card and Escape closes it. A tap is
+not a hover: it follows the link (here caught before it leaves the page)
+and opens no card.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-pr links\n\nOpened https://github.com/test-owner/test-demo-app/pull/4242. It builds on [the greeting module](https://github.com/test-owner/test-demo-app/pull/4100); see also [#4243](https://github.com/test-owner/test-demo-app/pull/4243/files) and https://github.com/test-owner/test-demo-app/pull/9999 (gone). Local [`src/greet.ts`](src/greet.ts) stays code."}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"press":"Tab","target":{"css":".prose a.pr-link","hasText":"the greeting module"}},{"expect":"role:tooltip","text":"much longer pull request title"},{"expect":"role:tooltip","count":1},{"press":"Escape"},{"expect":"role:tooltip","visible":false}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"eval":"document.addEventListener(\"click\", (e) => { const a = e.target.closest(\"a\"); if (a) { e.preventDefault(); window.__followed = a.href; } }, true); true","equals":true},{"tap":{"css":".prose a.pr-link","hasText":"test-owner/test-demo-app#4242"}},{"wait":800},{"expect":"role:tooltip","visible":false},{"eval":"window.__followed","equals":"https://github.com/test-owner/test-demo-app/pull/4242"}]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order, and several send to `sid_echo`: by `reply-to-part-of-answer` its first answer is scrolled out of view at 390 px, so that recipe scrolls the paragraph into view before selecting it (a user only selects what they see).
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.
