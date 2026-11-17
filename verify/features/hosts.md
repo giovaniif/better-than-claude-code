@@ -32,6 +32,17 @@ The heading, this host's card with its stats and both engines logged in. (At
 yv drive hosts --viewport desktop --steps '[{"expect":"role:heading:Hosts"},{"expect":{"role":"region","name":"iso-host"},"text":"CPU"},{"expect":{"role":"region","name":"iso-host"},"text":"logged in as me@example.com"},{"expect":{"role":"region","name":"iso-host"},"text":"Codex"},{"shot":"hosts"}]'
 ```
 
+### sessions-list-collapsed
+Each host card's Sessions list (what each session uses) starts collapsed: one
+line with how many sessions use the host, their CPU and memory, and how many
+are queued. The queue rule below it stays visible. A click opens the table;
+the choice is kept per browser across a reload; another click closes it.
+Here the scripted Claude sidecar is the one session using the host.
+
+```sh
+yv drive hosts --steps '[{"expect":{"css":"section.usage button.list-toggle[aria-expanded=\"false\"]","hasText":"Sessions"}},{"expect":{"css":"section.usage button.list-toggle","hasText":"Sessions"},"text":"1 session"},{"expect":"css:section.usage table","count":0},{"expect":{"css":"section.usage","hasText":"New sessions are queued while load is above"}},{"shot":"sessions-collapsed"},{"click":{"css":"section.usage button.list-toggle","hasText":"Sessions"}},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"reload":true},{"expect":{"css":"section.usage td","hasText":"TEST-hello from Claude"}},{"shot":"sessions-open"},{"click":{"css":"section.usage button.list-toggle","hasText":"Sessions"}},{"expect":"css:section.usage table","count":0}]'
+```
+
 ### add-direct-host
 A direct host connects; its card and sidebar row appear.
 

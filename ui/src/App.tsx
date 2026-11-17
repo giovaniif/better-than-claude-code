@@ -3064,18 +3064,65 @@ const size = (bytes: number) => (bytes < 1024 ** 3 ? `${Math.round(bytes / 1024 
 const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1)));
 
 /** What each session's processes use, and the sessions waiting to start. */
-function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
+/** Host ids whose Sessions list is open, per browser. Collapsed by default:
+ *  on a busy server the list runs to dozens of rows. */
+const SESSIONS_OPEN_KEY = "yard.hosts.sessionsOpen";
+
+function useSessionsOpen(hostId: string): [boolean, () => void] {
+  const read = () => {
+    try {
+      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      return Array.isArray(v) && v.includes(hostId);
+    } catch {
+      return false;
+    }
+  };
+  const [open, setOpen] = useState(read);
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    try {
+      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      const list = (Array.isArray(v) ? v : []).filter((h: unknown) => h !== hostId);
+      localStorage.setItem(SESSIONS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
+    } catch {
+      // A private window may refuse storage; the list still toggles.
+    }
+  };
+  return [open, toggle];
+}
+
+function SessionUse({ hostId, host, sessions }: { hostId: string; host: Host; sessions: Record<string, SessionMeta> }) {
   const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
   const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
   const queued = Object.values(sessions)
     .filter((s) => s.status === "queued")
     .sort((a, b) => a.createdAt - b.createdAt);
   const limits = host.limits;
+  const [open, toggle] = useSessionsOpen(hostId);
+  const cores = rows.reduce((n, u) => n + u.cpuCores, 0);
+  const mem = rows.reduce((n, u) => n + u.memBytes, 0);
+  const any = rows.length > 0 || queued.length > 0;
   return (
     <section className="usage" aria-label="Sessions">
-      <h2>Sessions</h2>
-      {rows.length === 0 && queued.length === 0 && <div className="muted small">No session is running anything.</div>}
-      {(rows.length > 0 || queued.length > 0) && (
+      {any ? (
+        <h2>
+          <button className="list-toggle usage-toggle" aria-expanded={open} onClick={toggle}>
+            <span>Sessions</span>
+            <span className="muted usage-summary">
+              {rows.length > 0 && ` · ${rows.length} ${rows.length === 1 ? "session" : "sessions"}, ${cores.toFixed(1)} cores, ${size(mem)}`}
+            </span>
+            {queued.length > 0 && <span className="warn usage-summary"> · {queued.length} queued</span>}
+            <span className={`tool-chevron ${open ? "open" : ""}`}>
+              <Icon d={CHEVRON_RIGHT} size={11} />
+            </span>
+          </button>
+        </h2>
+      ) : (
+        <h2>Sessions</h2>
+      )}
+      {!any && <div className="muted small">No session is running anything.</div>}
+      {any && open && (
         <table>
           <thead>
             <tr>
@@ -3592,7 +3639,7 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
             />
           </div>
           <Sparkline values={host.cpuHistory ?? []} />
-          <SessionUse host={host} sessions={sessions} />
+          <SessionUse hostId={id} host={host} sessions={sessions} />
         </>
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
