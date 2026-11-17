@@ -22,6 +22,11 @@ drift (fix the recipe to match what the app really does) or a product bug
 (keep it failing, add a Gotcha, queue a finding). Every fixed bug adds a
 recipe with its repro.
 
+A `hasText` target matches case-insensitively, as a substring: a check that
+some output is absent (`"count":0`) must use words the prompt itself does not
+contain, or the user's own message matches it (`"Late"` matched a `[late] …`
+prompt).
+
 | Area | What it covers |
 |---|---|
 | [new-session](new-session.md) | The new-session page: prompt, model, effort, permission, folder, host, base branch, worktree note |
