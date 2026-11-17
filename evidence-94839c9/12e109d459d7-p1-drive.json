@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "92d96325a8bb6585fe2916d02422ff0bb71cb0b9",
+    "short": "92d9632",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T03:44:55.424Z"
+  },
+  "dir": ".verify/evidence/host-ip-name-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4798,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/host-ip-name-base/first-label-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/host-ip-name-base/second-refused-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "host.add",
+          "message": "a host named 100 already exists"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

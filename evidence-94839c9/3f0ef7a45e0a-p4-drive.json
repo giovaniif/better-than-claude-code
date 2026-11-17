@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+    "short": "94839c9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T03:45:30.868Z"
+  },
+  "dir": ".verify/evidence/host-ip-name-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6142,
+      "steps": 16,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/host-ip-name-head/first-label-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/host-ip-name-head/second-added-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/host-ip-name-head/dns-name-unchanged-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

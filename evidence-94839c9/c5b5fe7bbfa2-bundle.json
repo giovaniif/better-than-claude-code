@@ -1,0 +1,215 @@
+{
+  "v": 1,
+  "claim": "Add host names an IP destination by its first octet: me@100.99.215.28 offers 'Add 100', and a second tailnet host (100.x) is refused as 'a host named 100 already exists'",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-1d43",
+  "base": "c83f81ac6f38cec66808ce5ab14a1627e42d9ddc",
+  "head": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/addHost.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/addHost.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T03:44:53.100Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "92d96325a8bb6585fe2916d02422ff0bb71cb0b9",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "12e109d459d765fe389971887724c068a45a18513b0a2ea7a46408d1d8b9caaa"
+        },
+        {
+          "path": "p1-first-label-desktop.png",
+          "sha256": "ec28e4e6c1be86b4125064ef1045e53922311bee8413128ddde46aef2c3b54a7"
+        },
+        {
+          "path": "p1-second-refused-desktop.png",
+          "sha256": "3271c2b43e335a6a635b57ecf3f8641fce13fbb3643d9eb279aeecb5285cb693"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:03.818Z",
+      "failedApi": [
+        "host.add: a host named 100 already exists"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "92d96325a8bb6585fe2916d02422ff0bb71cb0b9",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "5a37e902a8063b6f9d56828deaaf1119d6630c125eb9b1fb1c2c9fd26263ea36"
+        },
+        {
+          "path": "p2-label-mobile.png",
+          "sha256": "b96fe7d8613ba58b4da958e381cad889915dc304c8b35d5a2d057a89cc32f843"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:03.868Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "92d96325a8bb6585fe2916d02422ff0bb71cb0b9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4f7c78d7ee3c2ac87a7570c75636964e5952eaad44ed1e9c37165e0929019290"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:03.915Z",
+      "cmd": "verify/yv map run hosts --recipe ip-destination-keeps-the-whole-address",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "3f0ef7a45e0ac5e436408de7371dc40a86bb2c444248da78932e6c235c8e3f24"
+        },
+        {
+          "path": "p4-first-label-desktop.png",
+          "sha256": "822a4b7093004476ec50731f8a2d0335375831202c165b0065cdf5c5639402d0"
+        },
+        {
+          "path": "p4-second-added-desktop.png",
+          "sha256": "66fd5e61508bac2fa5d05747d08a4e0aac74cf294aa87ef8e752656bda2b0f79"
+        },
+        {
+          "path": "p4-dns-name-unchanged-desktop.png",
+          "sha256": "50bd82dd452fe0328104f0f2e6d5cb435c7f1a8a0eeef06bec3722a05992757f"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:42.190Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "af0f06bee65d4db1bd3f56481bcfb88eb4cc7bcdfb295695b9db0cccea93fee8"
+        },
+        {
+          "path": "p5-label-mobile.png",
+          "sha256": "27c494ea8254fe7bd93f595c8dfc43417082a18356d58b4a666cbc7d88ef9870"
+        },
+        {
+          "path": "p5-added-mobile.png",
+          "sha256": "6eb59e7f9e6d86a2300124f40529456ea75f05edda0af50a52187b7247a3023b"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:42.241Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "255b5fc487dcd0b33179e977f0e308633fee79fdcc8f219549b84d89d2fe4df9"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:42.286Z",
+      "cmd": "verify/yv design-check --base c83f81ac6f38",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-hosts.json",
+          "sha256": "a06dff93049298aab7d874f98c80ef002ef0c550a4a73ef5a9612e4814d04db6"
+        }
+      ],
+      "addedAt": "2026-11-17T03:45:42.371Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "94839c98d7da2f2e79e0ff39c0122c41715e7d1c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "2590ffb896e5edd4c33e71d76d567cb6a81cc80216654972d9d06533b1e0e718"
+        }
+      ],
+      "addedAt": "2026-11-17T03:46:32.911Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test) && verify/yv map run hosts --recipe ip-destination-keeps-the-whole-address",
+      "exit": 0
+    }
+  ]
+}
