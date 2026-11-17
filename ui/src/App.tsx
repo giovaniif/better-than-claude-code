@@ -1843,6 +1843,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   }, [cwd, target, state.connected]);
   useEffect(() => setBase(""), [cwd, target]);
   const isRepo = !!branchList?.current;
+  // A remembered folder can be deleted since; Send would only be refused.
+  const gone = !!branchList?.missing;
 
   const start = (text: string, attachments: Attachment[]) => {
     if (/^\/login\s*$/.test(text.trim()) && !attachments.length) {
@@ -1880,7 +1882,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          busy={pending || !state.connected || !choice.model || !cwd}
+          busy={pending || !state.connected || !choice.model || !cwd || gone}
         >
           <ModelPicker
             models={models}
@@ -1910,9 +1912,11 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />
           )}
           <span className="spacer" />
-          {cwd && branchList && (
+          {cwd && branchList && (gone ? (
+            <span className="bad small">This folder no longer exists</span>
+          ) : (
             <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
-          )}
+          ))}
         </div>
         <EngineNotice state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onLogin={() => setLoggingIn(true)} />
         {loggingIn && (

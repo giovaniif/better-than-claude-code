@@ -305,13 +305,20 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         }
         "git.branches" => {
             let cwd = str_field(msg, "cwd")?;
-            let reply = match git::branches(cwd).await {
-                Ok(mut v) => {
-                    v["op"] = json!("git.branches");
-                    v["cwd"] = json!(cwd);
-                    v
+            // New session asks this for the folder it remembers, which may be
+            // gone since. Say so, so the page can tell before the user writes
+            // a task that `session.create` would then refuse.
+            let reply = if !Path::new(cwd).is_dir() {
+                json!({ "op": "git.branches", "cwd": cwd, "missing": true })
+            } else {
+                match git::branches(cwd).await {
+                    Ok(mut v) => {
+                        v["op"] = json!("git.branches");
+                        v["cwd"] = json!(cwd);
+                        v
+                    }
+                    Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
                 }
-                Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
             };
             let _ = direct.send(reply.to_string());
         }
