@@ -1,0 +1,80 @@
+{
+  "v": 1,
+  "claim": "The acp-engines recipe queued-message-waits-for-next-turn says Stop gives the queued message back to the reply box, but its steps did not check it (verifier note on #133).",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-3629",
+  "base": "e3d1dce2c1bbe5d6ff0289d8873a08ac2d70e416",
+  "head": "cead20a46263b71a0477de2750de3bb9d2486472",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T00:57:59.955Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "cead20a46263b71a0477de2750de3bb9d2486472",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T00:57:59.993Z",
+      "text": "no-repro: map-only change; the recipe gains two expect steps the app already satisfies"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "cead20a46263b71a0477de2750de3bb9d2486472",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T00:58:00.032Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cead20a46263b71a0477de2750de3bb9d2486472",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-acp-head.json",
+          "sha256": "d790b74aff289df8c648ef73bb2cff0b07d19fd02f7edd892950738cac975f7a"
+        }
+      ],
+      "addedAt": "2026-11-17T00:58:34.391Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "cead20a46263b71a0477de2750de3bb9d2486472",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "10936e3a5621e09309c96b040236c9f31af63eda6c7bb7bd95ec7fbf3e6cd872"
+        }
+      ],
+      "addedAt": "2026-11-17T00:58:34.432Z",
+      "cmd": "verify/yv map run acp-engines --recipe queued-message-waits-for-next-turn",
+      "exit": 0
+    }
+  ]
+}

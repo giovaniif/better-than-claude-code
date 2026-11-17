@@ -1,0 +1,26 @@
+$ verify/yv map run acp-engines --recipe queued-message-waits-for-next-turn
+# exit 0 after 10668 ms at cead20a46263b71a0477de2750de3bb9d2486472
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-17T00:58:45.096Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "queued-message-waits-for-next-turn",
+          "status": "pass",
+          "ms": 9810
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
