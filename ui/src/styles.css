@@ -446,6 +446,9 @@ h1, h2, h3, p { margin: 0; }
 /* per-session usage */
 .usage { display: flex; flex-direction: column; gap: 8px; margin-top: 28px; }
 .usage h2 { font-size: 14px; font-weight: 600; }
+.usage-toggle { display: flex; align-items: center; gap: 0; width: 100%; padding: 0; border: 0; background: transparent; font: inherit; color: inherit; text-align: left; }
+.usage-summary { font-weight: 400; font-size: 13px; white-space: pre; }
+.usage-toggle .tool-chevron { margin-left: 6px; }
 .usage table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .usage th { padding: 0 2px 6px; font-weight: 500; color: var(--muted); text-align: left; }
 .usage td { padding: 6px 2px; border-top: 1px solid var(--line); vertical-align: baseline; }
