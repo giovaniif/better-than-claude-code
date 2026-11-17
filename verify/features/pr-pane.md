@@ -29,6 +29,16 @@ PR #4242 with one failed, one passed and one running check, and one unresolved t
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"role:heading:TEST-fix the greeting"},{"expect":"role:link:#4242"},{"expect":{"role":"region","name":"Checks"},"text":"1 failed"},{"expect":{"role":"region","name":"Review comments"},"text":"1 unresolved"},{"shot":"pr"}]'
 ```
 
+### title-and-number-open-github
+Viewports: desktop
+Both the PR title and its number are links to the PR that open in a new tab
+(the desktop app hands new-tab links to the browser). Before, only the small
+number was a link.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"role:link:TEST-fix the greeting"},{"expect":"role:link:#4242"},{"eval":"[...document.querySelectorAll(\".pr-head a\")].map((a) => a.getAttribute(\"href\") + \" \" + a.getAttribute(\"target\")).join(\" | \")","equals":"https://github.com/test-owner/test-demo-app/pull/4242 _blank | https://github.com/test-owner/test-demo-app/pull/4242 _blank"},{"shot":"pr-links"}]'
+```
+
 ### no-pr
 Viewports: desktop
 A branch without a PR says so and names the branch.

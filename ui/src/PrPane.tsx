@@ -169,8 +169,17 @@ function PrView({ pr, busy, onSend }: { pr: PullRequest; busy: boolean; onSend(t
   return (
     <>
       <div className="pr-head">
-        <h2>{pr.title}</h2>
-        <a href={safeUrl(pr.url)} target="_blank" rel="noreferrer">
+        {/* The title is the big target people click; it opens the PR like the number does. */}
+        <h2>
+          {safeUrl(pr.url) ? (
+            <a className="pr-title-link" href={safeUrl(pr.url)} target="_blank" rel="noreferrer" title="Open on GitHub">
+              {pr.title}
+            </a>
+          ) : (
+            pr.title
+          )}
+        </h2>
+        <a href={safeUrl(pr.url)} target="_blank" rel="noreferrer" title="Open on GitHub">
           #{pr.number}
         </a>
       </div>

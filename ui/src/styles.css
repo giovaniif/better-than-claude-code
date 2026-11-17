@@ -384,6 +384,8 @@ h1, h2, h3, p { margin: 0; }
 .pr-head { display: flex; align-items: baseline; gap: 8px; }
 .pr-head h2 { flex: 1 1 0; min-width: 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
 .pr-head a { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.pr-head a.pr-title-link { color: inherit; font-family: inherit; font-size: inherit; text-decoration: none; }
+.pr-head a.pr-title-link:hover { text-decoration: underline; }
 .pr-section { display: flex; flex-direction: column; }
 .pr-label { padding-bottom: 6px; font-size: 12px; font-weight: 500; }
 .pr-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 2px; border-top: 1px solid var(--line); font-size: 12px; }
