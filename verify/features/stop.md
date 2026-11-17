@@ -47,6 +47,17 @@ yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","eff
 yv drive 'session:{{cstuck_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"css:.thread","text":"Claude Code did not stop, so its process was ended.","timeout":15000},{"fill":"label:Message","value":"TEST-after stop"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-after stop"}]'
 ```
 
+### stop-stuck-opencode-turn
+An OpenCode turn that ignores Stop is ended by yardd within about 5 s, with a
+note. What it had written stays in that turn: the next answer starts clean
+(it used to read "WorkingEcho: …").
+Viewports: desktop
+
+```sh
+yv api '{"op":"session.create","engine":"opencode","model":"opencode/fake-free","effort":"","cwd":"{{repo}}","worktree":true,"text":"[stuck] TEST-opencode ignores stop"}' --wait '{"op":"created"}' --save ocstuck_sid=sessionId
+yv drive 'session:{{ocstuck_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working","timeout":15000},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"css:.thread","text":"OpenCode did not stop the turn, so it was ended here.","timeout":15000},{"fill":"label:Message","value":"TEST-after the stuck turn"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-after the stuck turn","timeout":15000},{"expect":{"css":".thread","hasText":"WorkingEcho"},"count":0},{"shot":"after"}]'
+```
+
 ### stop-while-asking
 Stop also ends a turn that is waiting for an approval: the card's buttons go
 away and the session is idle. (The fake Codex does not answer the interrupt

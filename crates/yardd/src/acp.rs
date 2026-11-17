@@ -823,7 +823,12 @@ pub fn interrupt(app: &Arc<App>, sid: &str) -> Result<()> {
 }
 
 /// The turn did not end after Stop: forget it, so a late answer says nothing.
-pub fn end_turn_here(app: &App, sid: &str) {
+/// Its open text is closed here, or the next turn's first words would be
+/// appended to it.
+pub fn end_turn_here(app: &Arc<App>, sid: &str) {
+    if let Ok((c, _)) = current(app, sid) {
+        c.flush(app, sid);
+    }
     if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
         if let Backend::Acp { turn, .. } = &mut s.backend {
             *turn = None;
