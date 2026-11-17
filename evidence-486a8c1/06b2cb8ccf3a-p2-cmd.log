@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe send-stays-at-the-right
+# exit 1 after 6520 ms at fee14bc72774a8f1220ecd5320e88c18e821f226
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-17T01:57:02.387Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "send-stays-at-the-right",
+          "status": "fail",
+          "ms": 3470,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"(() => { const row = document.querySelector(\\\".composer-row\\\").getBoundingClientRect(); const send = document.querySelector(\\\".composer-row .send\\\").getBoundingClientRect(); return Math.round(row.right - send.right); })()\",\"equals\":0}: eval returned 304, expected 0",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33/.verify/drives/2026-11-17T01-56-59-122Z/fail-mobile-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1e738c0016\",\n  \"build\": {\n    \"sha\": \"fee14bc72774a8f1220ecd5320e88c18e821f226\",\n    \"short\": \"fee14bc\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-17T01:56:58.138Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33/.verify/drives/2026-11-17T01-56-59-122Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"mobile\",\n      \"ms\": 2955,\n      \"steps\": 3,\n      \"failed\": {\n        \"step\": 1,\n        \"action\": {\n          \"eval\": \"(() => { const row = document.querySelector(\\\".composer-row\\\").getBoundingClientRect(); const send = document.querySelector(\\\".composer-row .send\\\").getBoundingClientRect(); return Math.round(row.right - send.right); })()\",\n          \"equals\": 0\n        },\n        \"reason\": \"eval returned 304, expected 0\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33/.verify/drives/2026-11-17T01-56-59-122Z/fail-mobile-step1.png\",\n        \"aria\": \"- main:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-fea5\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Fake Fast Low\\\"\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const row = document.querySelector(\\\".composer-row\\\").getBoundingClientRect(); const send = document.querySelector(\\\".composer-row .send\\\").getBoundingClientRect(); return Math.round(row.right - send.right); })()\",\n          \"value\": 304\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"(() => { const row = document.querySelector(\\\\\\\".composer-row\\\\\\\").getBoundingClientRect(); const send = document.querySelector(\\\\\\\".composer-row .send\\\\\\\").getBoundingClientRect(); return Math.round(row.right - send.right); })()\\\",\\\"equals\\\":0}: eval returned 304, expected 0\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-16-ff33/.verify/drives/2026-11-17T01-56-59-122Z/fail-mobile-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/send-stays-at-the-right",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

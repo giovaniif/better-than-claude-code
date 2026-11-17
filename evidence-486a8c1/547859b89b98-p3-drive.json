@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1e729fd3b6",
+  "build": {
+    "sha": "486a8c119c486f32f52d7c3fd06f2d652a02fddc",
+    "short": "486a8c1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T01:57:04.936Z"
+  },
+  "dir": ".verify/evidence/mobile-send-right-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2358,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-send-right-head/reply-box-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2208,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/mobile-send-right-head/reply-box-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

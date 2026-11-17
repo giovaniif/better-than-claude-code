@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e729fd3b6",
+  "build": {
+    "sha": "2358f5c4d33756de6352f3729de5b4ae56bd5a01",
+    "short": "2358f5c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T01:56:52.803Z"
+  },
+  "dir": ".verify/evidence/mobile-send-right-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2329,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/mobile-send-right-base/reply-box-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

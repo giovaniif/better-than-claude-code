@@ -1,0 +1,66 @@
+$ verify/yv map run layout
+# exit 0 after 38844 ms at 486a8c119c486f32f52d7c3fd06f2d652a02fddc
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-17T01:57:49.195Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-three-columns",
+          "status": "pass",
+          "ms": 2870
+        },
+        {
+          "label": "narrow-hides-pane",
+          "status": "pass",
+          "ms": 3567
+        },
+        {
+          "label": "mobile-main-column-usable",
+          "status": "pass",
+          "ms": 2942
+        },
+        {
+          "label": "mobile-hosts-page",
+          "status": "pass",
+          "ms": 2292
+        },
+        {
+          "label": "mobile-drawer-opens-and-closes",
+          "status": "pass",
+          "ms": 6864
+        },
+        {
+          "label": "mobile-menu-on-every-page",
+          "status": "pass",
+          "ms": 3977
+        },
+        {
+          "label": "mobile-delete-confirm-fits-the-bar",
+          "status": "pass",
+          "ms": 3755
+        },
+        {
+          "label": "send-stays-at-the-right",
+          "status": "pass",
+          "ms": 9179
+        },
+        {
+          "label": "desktop-sidebar-is-a-column",
+          "status": "pass",
+          "ms": 2546
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
