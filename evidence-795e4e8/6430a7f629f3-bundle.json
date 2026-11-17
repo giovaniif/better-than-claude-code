@@ -1,0 +1,110 @@
+{
+  "v": 1,
+  "claim": "The feature map had no recipe for the automation form's interval and weekly schedules, nor for the sidebar's working-run dot on Automations; PR 158 adds both recipes to verify/features/automations.md.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-158-2026-11-a653",
+  "base": "5188356fe0d5b46be2f9dc75c739a77af1cbc80f",
+  "head": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T06:55:55.285Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T06:55:55.324Z",
+      "text": "no-repro: map-only PR (verify/features markdown); no product behaviour changes, so there is nothing to reproduce on base"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T06:55:55.363Z",
+      "text": "no-failing-test: map-only PR; the new recipes are the tests and they describe behaviour main already has"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-automations.json",
+          "sha256": "64e782dcb1e4d55adc9c1662f213e2798a7a0274bbd46b137611b5cab4b13142"
+        }
+      ],
+      "addedAt": "2026-11-17T06:55:55.401Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "7d334b05134e48872071c4fbabcc9fbdab343421d3db5eb39bddba0fe2ed2e71"
+        }
+      ],
+      "addedAt": "2026-11-17T06:56:00.398Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "795e4e8e08ea1d4dcd1110557e1489c7a9e5b24a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-automations.json",
+          "sha256": "f422afdb3501d1548d72665ef8745ba5725d8c44916f9f928f6aaf5622c19572"
+        }
+      ],
+      "addedAt": "2026-11-17T06:56:11.092Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button"
+      ]
+    }
+  ]
+}
