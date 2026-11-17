@@ -1,0 +1,245 @@
+{
+  "v": 1,
+  "claim": "The Processes tab lists a session's processes but cannot stop any: a runaway dev server or a stuck command started by the agent or in the terminal can only be ended by hand outside Switchyard.",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-aaf3a56c84cf7a3f4",
+  "base": "45faba54d1c9af7ca36215cc9a44f403f71e4444",
+  "head": "2444b48e7573130466f42eb402c16ee59df02c6e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/guard.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/kill.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ProcPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/procs.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/procs.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T12:34:58.995Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b69030d2f41a105ea531b3d0d4c993bbffef25ee",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c98e21fed6ebd90d4305d35ca3431fc61bb71e3f348815396beab7cf5d2d5882"
+        },
+        {
+          "path": "p1-no-stop-desktop.png",
+          "sha256": "f3cf2af02cb0bff3b084617bd10f9a29efd80228612af89f3c54b0f0689c54e2"
+        }
+      ],
+      "addedAt": "2026-11-17T12:35:19.236Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b69030d2f41a105ea531b3d0d4c993bbffef25ee",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "305dbe305be3c0b3c1fbf005d651fb0d63bd48ef2115f6900082ba462f902be7"
+        }
+      ],
+      "addedAt": "2026-11-17T12:35:22.683Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test kill && (cd ui && bun test src/procs.test.ts src/store.test.ts)",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3bce2149635092f63dbf65aa5e25310ce4758d204dac3c00c0e16a219ce8a314"
+        },
+        {
+          "path": "p3-stop-armed-desktop.png",
+          "sha256": "8a20bd9d2fbc561cba5517c0a5ec89655dfe37a152e8f0cf0d1bead826c14bd5"
+        },
+        {
+          "path": "p3-stopped-desktop.png",
+          "sha256": "4ae16b63e8221179953fe6463713d5a8fd5027bf7027cf9135758fcece5aae1f"
+        },
+        {
+          "path": "p3-still-running-desktop.png",
+          "sha256": "11f46a443f2520ef78f99d25c5ae6ff07c9ee247f9e83e0cd9d7acd3b17c93f7"
+        },
+        {
+          "path": "p3-force-armed-desktop.png",
+          "sha256": "4d8292cc5c20ca85286dc8ba97100a42bc34b7c0c67e1826059235b3e1efb519"
+        },
+        {
+          "path": "p3-force-killed-desktop.png",
+          "sha256": "cc45f8b582c89b8ef1061816464e07740f6b186fc33305213c2ad115c77a8c25"
+        }
+      ],
+      "addedAt": "2026-11-17T12:36:37.856Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "c641c56becd1e07f0f40d06e755709323f9b960d46223a567e52ed87b28632e7"
+        },
+        {
+          "path": "p4-agent-row-no-stop-desktop.png",
+          "sha256": "ca76bd3036a548b0c65830ca9e1e67bd9030113cf91c8230e16b2990c8a8381f"
+        }
+      ],
+      "addedAt": "2026-11-17T12:36:50.001Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "8df18bc8efae5d1b205643c86285f5e4b31a03c3f3fef0fe888423c0937033ba"
+        },
+        {
+          "path": "p5-mobile-no-pane-mobile.png",
+          "sha256": "a9255f3480ddd0e2fcb16c682996ebbdc7d932275ed260a340c5595b434d54a3"
+        }
+      ],
+      "addedAt": "2026-11-17T12:36:52.981Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "453ea499fd36e37c0eba1168f38be273bf7d4ede352280d6e9694ded5259f615"
+        }
+      ],
+      "addedAt": "2026-11-17T12:36:59.473Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "e14745ff7e99bc24e3e09e6831aff5fb4ddfaf2c7d546da1255e99bb7028e493"
+        }
+      ],
+      "addedAt": "2026-11-17T12:37:26.295Z",
+      "cmd": "verify/yv design-check --base 45faba54d1c9",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2444b48e7573130466f42eb402c16ee59df02c6e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-processes.json",
+          "sha256": "e1338affaecc5886676c0eac9873c305a43e3a62d7df7640ee210c1618a59c8a"
+        }
+      ],
+      "addedAt": "2026-11-17T12:37:26.373Z",
+      "cmd": "verify/yv map run processes",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "processes/lists-the-process-tree",
+        "processes/nothing-running",
+        "processes/terminal-shell-is-listed",
+        "processes/stop-a-terminal-command",
+        "processes/force-kill-what-ignores-sigterm",
+        "processes/stop-with-children",
+        "processes/agent-offers-no-stop",
+        "processes/refused-outside-the-session",
+        "processes/hidden-on-mobile"
+      ]
+    }
+  ]
+}

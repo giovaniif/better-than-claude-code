@@ -1,0 +1,78 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test kill && (cd ui && bun test src/procs.test.ts src/store.test.ts)
+# exit 101 after 33786 ms at b69030d2f41a105ea531b3d0d4c993bbffef25ee
+
+
+running 6 tests
+test stopping_with_children_ends_the_whole_subtree ... FAILED
+test stopping_a_command_in_the_sessions_terminal_ends_it ... FAILED
+test a_process_that_ignores_sigterm_is_still_running_until_force_killed ... FAILED
+test refuses_a_pid_that_is_not_the_sessions ... FAILED
+test the_agents_own_process_is_refused_and_its_commands_are_not ... FAILED
+test session_kill_goes_through_the_hub ... FAILED
+
+failures:
+
+---- stopping_with_children_ends_the_whole_subtree stdout ----
+
+thread 'stopping_with_children_ends_the_whole_subtree' (2386517) panicked at crates/yardd/tests/kill.rs:54:5:
+assertion `left == right` failed: {"for":"session.kill","message":"unknown op `session.kill`","op":"error"}
+  left: String("error")
+ right: "session.killed"
+kept /tmp/yardd-test-2386512-kill-tree-3 for inspection
+
+---- stopping_a_command_in_the_sessions_terminal_ends_it stdout ----
+
+thread 'stopping_a_command_in_the_sessions_terminal_ends_it' (2386516) panicked at crates/yardd/tests/kill.rs:78:5:
+assertion `left == right` failed
+  left: Null
+ right: false
+kept /tmp/yardd-test-2386512-kill-term-2 for inspection
+
+---- a_process_that_ignores_sigterm_is_still_running_until_force_killed stdout ----
+
+thread 'a_process_that_ignores_sigterm_is_still_running_until_force_killed' (2386513) panicked at crates/yardd/tests/kill.rs:54:5:
+assertion `left == right` failed: {"for":"session.kill","message":"unknown op `session.kill`","op":"error"}
+  left: String("error")
+ right: "session.killed"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2386512-kill-force-0 for inspection
+
+---- refuses_a_pid_that_is_not_the_sessions stdout ----
+
+thread 'refuses_a_pid_that_is_not_the_sessions' (2386514) panicked at crates/yardd/tests/kill.rs:54:5:
+assertion `left == right` failed: {"for":"session.kill","message":"unknown op `session.kill`","op":"error"}
+  left: String("error")
+ right: "session.killed"
+kept /tmp/yardd-test-2386512-kill-refuse-1 for inspection
+
+---- the_agents_own_process_is_refused_and_its_commands_are_not stdout ----
+
+thread 'the_agents_own_process_is_refused_and_its_commands_are_not' (2386518) panicked at crates/yardd/tests/kill.rs:211:5:
+assertion `left == right` failed: {"ageSecs":4,"cmd":"bun /home/giovani/www/better-than-claude-code/.claude/worktrees/agent-aaf3a56c84cf7a3f4/crates/yardd/tests/fake-codex/yard-claude","cpu":0.0,"memBytes":25579520,"name":"bun","origin":"agent","pid":2386948,"ppid":2386521}
+  left: Null
+ right: true
+kept /tmp/yardd-test-2386512-kill-agent-5 for inspection
+
+---- session_kill_goes_through_the_hub stdout ----
+
+thread 'session_kill_goes_through_the_hub' (2386515) panicked at crates/yardd/tests/kill.rs:257:60:
+the sidecar is listed
+kept /tmp/yardd-test-2386512-kill-hub-6 for inspection
+kept /tmp/yardd-test-2386512-kill-remote-4 for inspection
+
+
+failures:
+    a_process_that_ignores_sigterm_is_still_running_until_force_killed
+    refuses_a_pid_that_is_not_the_sessions
+    session_kill_goes_through_the_hub
+    stopping_a_command_in_the_sessions_terminal_ends_it
+    stopping_with_children_ends_the_whole_subtree
+    the_agents_own_process_is_refused_and_its_commands_are_not
+
+test result: FAILED. 0 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.92s
+
+
+   Compiling yardd v0.6.0 (/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-aaf3a56c84cf7a3f4/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.49s
+     Running tests/kill.rs (target/debug/build/yardd/2a9cd614500b4276/out/kill-2a9cd614500b4276)
+error: test failed, to rerun pass `-p yardd --test kill`

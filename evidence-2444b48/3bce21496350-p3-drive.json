@@ -1,0 +1,69 @@
+{
+  "ok": true,
+  "route": "session:s1a1e97d83f52",
+  "build": {
+    "sha": "2444b48e7573130466f42eb402c16ee59df02c6e",
+    "short": "2444b48",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:36:06.200Z"
+  },
+  "dir": ".verify/evidence/processes-kill-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 23828,
+      "steps": 25,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/processes-kill-head/stop-armed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/processes-kill-head/stopped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/processes-kill-head/still-running-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/processes-kill-head/force-armed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/processes-kill-head/force-killed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

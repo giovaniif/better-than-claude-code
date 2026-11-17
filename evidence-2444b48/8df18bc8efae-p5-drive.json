@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e97d84c36",
+  "build": {
+    "sha": "2444b48e7573130466f42eb402c16ee59df02c6e",
+    "short": "2444b48",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:36:06.200Z"
+  },
+  "dir": ".verify/evidence/processes-kill-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2444,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/processes-kill-head-mobile/mobile-no-pane-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
