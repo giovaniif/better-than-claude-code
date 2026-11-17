@@ -181,7 +181,8 @@ export function fenceSegments(message: string): FenceSegment[] {
 
 // A session's reply box as it was when the user looked away. The session
 // view remounts on every switch, so without this a half-written reply, its
-// quotes and its files would be dropped. Memory only: a reload clears it.
+// quotes and its files would be dropped. The New session box keeps its
+// half-typed task the same way, under a fixed key. Memory only: a reload clears it.
 const drafts = new Map<string, unknown>();
 
 export function keepDraft<D>(sessionId: string, draft: D | null) {

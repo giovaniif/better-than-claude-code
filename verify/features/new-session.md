@@ -86,6 +86,16 @@ Enter does not take it: the chip keeps the folder it had.
 yv drive new --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{work}}/TEST-no-such-folder"},{"expect":"css:.picker-empty","text":"No folder in"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"shot":"no-match"},{"press":"Enter"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"press":"Escape"},{"expect":{"role":"button","name":"work","exact":true}}]'
 ```
 
+### task-draft-survives-opening-a-session
+A half-typed task stays in the box while you look at a session and come back
+through New session. Once that task has started a session, the box is empty
+again.
+
+```sh
+yv drive new --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-half a task"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo:"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":"TEST-half a task"},{"shot":"task-kept"},{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-half a task"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":""}]'
+yv drive new --viewport mobile --steps '[{"press":"Escape"},{"fill":"label:Message","value":"TEST-task on the phone"},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo:"},{"click":"role:button:Open sessions"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":"TEST-task on the phone"},{"shot":"task-kept-mobile"}]'
+```
+
 ### folder-picker-lists-folders (manual: the Finder dialog only exists in the desktop app)
 "Choose in Finder…" opens the macOS dialog through Tauri. The typed-path
 browsing is covered by worktree-note.

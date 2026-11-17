@@ -1166,6 +1166,8 @@ function Composer(props: {
   keepText?: boolean;
   /** Session whose terminal can add text here (see compose.ts). */
   appendFor?: string;
+  /** Key the box's draft is kept under while it is not shown; defaults to appendFor. */
+  draft?: string;
   /** Where attached files are stored: the host the prompt will run on. */
   target: UploadTarget;
   upload(file: File, target: UploadTarget): Promise<Attachment>;
@@ -1174,7 +1176,8 @@ function Composer(props: {
   voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
   children: ReactNode;
 }) {
-  const [kept] = useState(() => draftOf<ComposerDraft>(props.appendFor));
+  const draftKey = props.draft ?? props.appendFor;
+  const [kept] = useState(() => draftOf<ComposerDraft>(draftKey));
   const [text, setText] = useState(kept?.text ?? "");
   // Parts of answers being replied to: cards above the text, sent as
   // blockquotes before it (compose.ts).
@@ -1245,10 +1248,10 @@ function Composer(props: {
   }, []);
 
   useEffect(() => {
-    if (!props.appendFor) return;
+    if (!draftKey) return;
     const empty = text === "" && quotes.length === 0 && snippets.length === 0 && files.length === 0;
-    keepDraft<ComposerDraft>(props.appendFor, empty ? null : { text, quotes, snippets, files, uploads: uploads.current });
-  }, [props.appendFor, text, quotes, snippets, files]);
+    keepDraft<ComposerDraft>(draftKey, empty ? null : { text, quotes, snippets, files, uploads: uploads.current });
+  }, [draftKey, text, quotes, snippets, files]);
 
   const addFiles = (list: File[]) => {
     if (!list.length) return;
@@ -1288,7 +1291,7 @@ function Composer(props: {
   // them in a draft (then removing or sending the file frees them).
   const live = useRef(files);
   live.current = files;
-  useEffect(() => () => !props.appendFor && live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
+  useEffect(() => () => !draftKey && live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
 
   const failed = files.some((f) => f.state === "error");
   // Quotes alone can go, like files alone: "this" with the part pointed at.
@@ -1318,7 +1321,7 @@ function Composer(props: {
         uploads.current.clear();
         setFiles([]);
         // Cleared here too: the box may have unmounted while the send waited on uploads.
-        if (props.appendFor) keepDraft(props.appendFor, null);
+        if (draftKey) keepDraft(draftKey, null);
       }
     } catch {
       // The chip that failed says why.
@@ -1640,6 +1643,9 @@ function remember(host: string, folder: string) {
   localStorage.setItem(recentKey(host), JSON.stringify([folder, ...readRecent(host).filter((p) => p !== folder)].slice(0, 12)));
 }
 
+/** The New session box's draft key: it has no session yet (compose.ts). */
+const NEW_TASK_DRAFT = "new";
+
 function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // Where the session runs. A remote host can be picked only while connected.
   const [host, setHost] = useState("local");
@@ -1677,6 +1683,19 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // session; on failure the task stays in the box so nothing is retyped.
   const [pending, setPending] = useState(false);
   useEffect(() => setPending(false), [state.errorCount, state.connected]);
+  // The box keeps a half-typed task while another page is open (keepText
+  // leaves it in place after Send). Leaving while the create is in flight
+  // means the session took it: the reply opened it, so drop the draft.
+  const sent = useRef(false);
+  sent.current = pending;
+  useEffect(
+    () => () => {
+      if (!sent.current) return;
+      draftOf<ComposerDraft>(NEW_TASK_DRAFT)?.files.forEach((f) => f.preview && URL.revokeObjectURL(f.preview));
+      keepDraft(NEW_TASK_DRAFT, null);
+    },
+    [],
+  );
   // Models and the home folder arrive after the first render, and differ per host.
   useEffect(() => {
     if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
@@ -1737,6 +1756,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           rows={1}
           large
           keepText
+          draft={NEW_TASK_DRAFT}
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
