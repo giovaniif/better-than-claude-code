@@ -2,6 +2,22 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.7.0 (2026-11-17)
+
+- **Stop a session's processes.** The Processes tab has a × on each row: a second click stops the process, Force kill follows if it is still running, and Stop with children takes its whole branch. Only the session's own processes can be stopped, never the agent itself, a process another session shares, or anything else on the machine.
+- **Automations as a compact grid.** Small cards show the schedule, the next run, and either the run that is working or how the last one went. A strip of marks lists the recent runs; each opens its run. Runs is the full list, with pinning.
+- **Verifier and babysit runs leave the sidebar.** They now run under "Loop verify" and "Loop babysit" on the Automations page, as automations with a new **Manual** schedule that only run when started.
+- **Your drafts stay.** A half-written reply stays in its session when you switch away and back, and a half-typed new-session task stays in its box.
+- **Fixed:**
+  - After Send, the "Working" line is no longer cut off at the bottom of the thread.
+  - A command waiting for approval reads "Waiting to run", and a denied one reads "Did not run", not "failed".
+  - Changes pane: a renamed file reads old → new. A session in a subfolder lists every new file.
+  - OpenCode and Grok: after Stop, a stuck turn's text no longer runs into the next answer. A queued message says it is sent when the turn ends.
+  - Adding a host by IP address names it by the whole address, so a second tailnet host is no longer refused.
+  - Review with an engine works in a repository without a remote, and stays when the pull request cannot be read.
+  - Hand-off notes keep their link when an earlier hand-off's session is deleted.
+  - Mobile: the Send button, Add account and the worktree delete confirmation stay in place.
+
 ## 0.6.0 (2026-11-16)
 
 - **OpenCode and Grok as engines.** Start sessions on OpenCode (`opencode-ai`) or xAI's Grok CLI (`@xai-official/grok`) next to Claude Code and Codex: streaming, thinking, tool calls, diffs, approvals, permission modes, Stop, resume and added accounts. Install them on a host with `npm i -g opencode-ai @xai-official/grok`; Switchyard lists an engine only where it is installed. Neither reports plan usage, so they have no limit meters. A message sent mid-turn waits for the next turn.
