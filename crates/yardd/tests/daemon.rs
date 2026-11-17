@@ -1868,6 +1868,96 @@ async fn a_run_is_skipped_while_the_previous_one_is_still_going() {
     c.send(json!({ "op": "session.interrupt", "sessionId": third["sessionId"] })).await;
 }
 
+/// Run with a per-run prompt and title suffix; returns the reply (or the error).
+async fn run_automation_with(c: &mut Client, id: &str, prompt: &str, title: &str) -> Value {
+    let from = c.mark();
+    c.send(json!({ "op": "automation.run", "id": id, "force": true, "prompt": prompt, "title": title, "ref": "run" })).await;
+    c.wait_after(from, "automation.ran", |m| m["ref"] == "run" && (m["op"] == "automation.ran" || m["op"] == "error"))
+        .await
+}
+
+#[tokio::test]
+async fn a_run_can_carry_its_own_prompt_and_title() {
+    // The per-PR loops (a verifier for #161) are one automation whose every run
+    // has its own prompt; the saved prompt is only for Run now.
+    let sb = Sandbox::new("auto-prompt");
+    let repo = make_repo(&sb, "repo");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&repo, json!({ "name": "Loop verify", "prompt": "the saved prompt", "permission": "full" })))
+        .await
+        .unwrap();
+    let id = a["id"].as_str().unwrap().to_string();
+
+    let ran = run_automation_with(&mut c, &id, "  verify pull request 161  ", "#161").await;
+    assert_eq!(ran["outcome"], "started", "{ran}");
+    let sid = ran["sessionId"].as_str().unwrap().to_string();
+    let meta = c.wait_for("the run's session", |m| m["op"] == "session" && m["session"]["id"] == sid).await["session"].clone();
+    let title = meta["title"].as_str().unwrap();
+    assert!(title.starts_with("Loop verify #161 · "), "{title}");
+    assert_eq!(meta["automation"], id, "a run, so the sidebar leaves it out");
+    c.wait_for("the run's permission", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["permission"] == "full").await;
+    assert!(meta["branch"].as_str().unwrap().starts_with("yard/"), "a worktree: {meta}");
+    assert_eq!(c.wait_event(&sid, "user_message", 0).await["text"], "verify pull request 161");
+    c.wait_for("the run archived", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["archived"] == true).await;
+
+    // The automation keeps its saved prompt for the next Run now.
+    let plain = run_automation(&mut c, &id, true).await;
+    let plain_sid = plain["sessionId"].as_str().unwrap().to_string();
+    assert_eq!(c.wait_event(&plain_sid, "user_message", 0).await["text"], "the saved prompt");
+    let plain_meta = c.wait_for("the plain run", |m| m["op"] == "session" && m["session"]["id"] == plain_sid).await["session"].clone();
+    assert!(plain_meta["title"].as_str().unwrap().starts_with("Loop verify · "), "{plain_meta}");
+
+    // Refused, and no session started: an empty or oversized prompt, a title that is not one short line.
+    let before = c.log.iter().filter(|m| m["op"] == "created").count();
+    for (prompt, title, why) in [
+        ("   ", "#1", "empty"),
+        (&"x".repeat(200_001)[..], "#1", "too long"),
+        ("ok", "#1\nsecond line", "one line"),
+        ("ok", &"t".repeat(81)[..], "too long"),
+    ] {
+        let r = run_automation_with(&mut c, &id, prompt, title).await;
+        assert_eq!(r["op"], "error", "{why}: {r}");
+        assert!(r["message"].as_str().unwrap().contains(why), "{why}: {r}");
+    }
+    c.drain_for(Duration::from_millis(300)).await;
+    let runs = c.log.iter().filter(|m| m["op"] == "session" && m["session"]["automation"] == id).map(|m| m["session"]["id"].clone()).collect::<std::collections::HashSet<_>>();
+    assert_eq!(runs.len(), 2, "{runs:?}");
+    assert_eq!(c.log.iter().filter(|m| m["op"] == "created").count(), before);
+}
+
+#[tokio::test]
+async fn a_manual_automation_never_fires_on_its_own() {
+    let sb = Sandbox::new("auto-manual");
+    let repo = make_repo(&sb, "repo");
+    let d = sb.start_with(&[("YARD_AUTOMATION_TICK_MS", "100")]);
+    let mut c = d.client().await;
+    let a = save_automation(&mut c, automation_of(&repo, json!({ "name": "Loop babysit", "schedule": { "kind": "manual" } }))).await.unwrap();
+    let id = a["id"].as_str().unwrap().to_string();
+    assert_eq!(a["schedule"], json!({ "kind": "manual" }));
+    assert_eq!(a["enabled"], true);
+    assert!(a["nextRun"].is_null(), "nothing is due: {a}");
+
+    // Many ticks: no run.
+    c.drain_for(Duration::from_millis(800)).await;
+    assert!(!c.log.iter().any(|m| m["op"] == "session" && m["session"]["automation"] == id));
+
+    // Started by hand (or by `yv loop run`), it runs like any other.
+    let ran = run_automation_with(&mut c, &id, "babysit pull request 7", "#7").await;
+    assert_eq!(ran["outcome"], "started", "{ran}");
+    let sid = ran["sessionId"].as_str().unwrap().to_string();
+    c.wait_turn_done(&sid, 0).await;
+    let list = automations_of(&c);
+    let saved = list.iter().find(|x| x["id"] == id).unwrap();
+    assert!(saved["nextRun"].is_null(), "still nothing due after a run: {saved}");
+
+    // Switching it off and on keeps it manual, with no next run.
+    let off = save_automation(&mut c, json!({ "id": id, "enabled": false })).await.unwrap();
+    assert!(off["nextRun"].is_null());
+    let on = save_automation(&mut c, json!({ "id": id, "enabled": true })).await.unwrap();
+    assert!(on["nextRun"].is_null(), "{on}");
+}
+
 #[tokio::test]
 async fn a_run_is_skipped_when_engine_usage_is_above_the_limit() {
     let sb = Sandbox::new("auto-usage");

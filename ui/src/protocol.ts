@@ -665,11 +665,15 @@ export interface ClaudeSessionList {
 }
 
 
-/** When an automation runs, in its host's local time zone. `day` is 0 (Sunday) to 6. */
+/**
+ * When an automation runs, in its host's local time zone. `day` is 0 (Sunday) to 6.
+ * `manual` never runs on its own: Run now, or a script's `automation.run`.
+ */
 export type Schedule =
   | { kind: "interval"; every: number; unit: "minutes" | "hours" }
   | { kind: "daily"; time: string }
-  | { kind: "weekly"; day: number; time: string };
+  | { kind: "weekly"; day: number; time: string }
+  | { kind: "manual" };
 
 export interface LastRun {
   at: number;
@@ -698,7 +702,7 @@ export interface Automation {
   maxWeek: number | null;
   enabled: boolean;
   createdAt: number;
-  /** Null while disabled. */
+  /** Null while disabled, and always for a manual schedule. */
   nextRun: number | null;
   lastRun?: LastRun | null;
 }
