@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1eb2009c16",
+  "build": {
+    "sha": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+    "short": "f8bbe4f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:08:27.471Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-03-403Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 9263,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-03-403Z/existing-session-defaults-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

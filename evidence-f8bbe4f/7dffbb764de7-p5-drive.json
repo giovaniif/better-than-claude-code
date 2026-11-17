@@ -1,0 +1,101 @@
+{
+  "ok": false,
+  "route": "hosts",
+  "build": {
+    "sha": "456731113327ef2fd29c1ce94e535f6a72f183f3",
+    "short": "4567311",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:09:24.409Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-32-379Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2711,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-32-379Z/wrapped-status-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); b.querySelector(\".host-engine-label, .host-engine\").append(document.createTextNode(\" · not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.append(b); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=cards.at(-1).getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1804,
+      "steps": 5,
+      "failed": {
+        "step": 3,
+        "action": {
+          "eval": "(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=cards.at(-1).getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-32-379Z/fail-desktop-step3.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 11% · 44%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iso-host\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy This machine CPU 11% load 1.7 of 28 Memory 10.2 GB of 23.4 GB Disk 67.1 GB of 97.9 GB\n  - list \"Engines on iso-host\":\n    - 'listitem \"Claude Code: logged in as me@example.com\"': Claude Code\n    - 'listitem \"Codex: logged in as me@example.com\"': Codex\n    - 'listitem \"OpenCode: providers: opencode\"': OpenCode\n    - 'listitem \"Grok: logged in as default@grok.example\"': Grok\n  - text: 1 session, 0.0 cores, 25 MB\n  - 'button \"Details: iso-host\"': Details\n- region \"TEST-wrapped-status\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy This machine CPU 11% load 1.7 of 28 Memory 10.2 GB of 23.4 GB Disk 67.1 GB of 97.9 GB\n  - list \"Engines on iso-host\":\n    - 'listitem \"Claude Code: logged in as me@example.com\"': Claude Code · not logged in\n    - 'listitem \"Codex: logged in as me@example.com\"': Codex\n    - 'listitem \"OpenCode: providers: opencode\"': OpenCode\n    - 'listitem \"Grok: logged in as default@grok.example\"': Grok\n  - text: 1 session, 0.0 cores, 25 MB\n  - 'button \"Details: iso-host\"': Details"
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-32-379Z/wrapped-status-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); b.querySelector(\".host-engine-label, .host-engine\").append(document.createTextNode(\" · not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.append(b); return true; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=cards.at(-1).getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 3 {\"eval\":\"(() => { const cards=[...document.querySelectorAll(\\\".host-grid > .host-card\\\")]; const a=cards[0].getBoundingClientRect(), b=cards.at(-1).getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see /home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a/.verify/drives/2026-11-17T20-09-32-379Z/fail-desktop-step3.png and the aria snapshot"
+    }
+  ]
+}

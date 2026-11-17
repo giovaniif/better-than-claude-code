@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "1839e70072594c1bfc9c530202f65604f22510f3",
+    "short": "1839e70",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T19:49:21.983Z"
+  },
+  "dir": ".verify/base-connectors",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/base-connectors/connectors-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2427,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/base-connectors/connectors-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2207,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

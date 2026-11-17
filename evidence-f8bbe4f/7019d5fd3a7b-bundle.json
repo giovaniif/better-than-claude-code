@@ -1,0 +1,572 @@
+{
+  "v": 1,
+  "claim": "Host cards misalign when engine status wraps; unused connectors overwhelm the page; remote session defaults are forgotten; chats cannot be marked unread.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-this-is-misaligned-ensure-it-cc6a",
+  "base": "1839e70072594c1bfc9c530202f65604f22510f3",
+  "head": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/connectors.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/connectors.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/rowState.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/rowState.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sessionDefaults.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/sessionDefaults.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/session-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T20:02:57.120Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1839e70072594c1bfc9c530202f65604f22510f3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-connectors.json",
+          "sha256": "54a3ed368ad313b0cad1a4f03e00917aebe2b931db11340b2eb17264d74bd986"
+        },
+        {
+          "path": "p1-connectors-mobile.png",
+          "sha256": "065772ec576b12b00d822c0f78c6301dad32d20ed6f604bfda381bd5d2182cc4"
+        },
+        {
+          "path": "p1-connectors-desktop.png",
+          "sha256": "aee0b8cb4b69255afa927de1978ddc9c40e4148c49af14e51860dd731b6d1118"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.882Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "99fe4e79b5fccaf01ea13797586d571da8b04fba",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "4494c1c8e68b913ba55829fc9224294b218571ca2a5fcae4df3e13b8ee801fc8"
+        },
+        {
+          "path": "p2-fail-mobile-step16.png",
+          "sha256": "d5a25d5a5ecc8faa14aed7a6a35cd51e780d406a53e3b28647598433262977f2"
+        },
+        {
+          "path": "p2-fail-desktop-step16.png",
+          "sha256": "3502762c8dcc0b7d5d303f6f8e3b10e4c71d16e3fc1bcac0f2534d39ffa3578d"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.923Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "99fe4e79b5fccaf01ea13797586d571da8b04fba",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "7b8e569f283a2f040322e45236da680b87dd45729dd81f5e045132a78e265707"
+        },
+        {
+          "path": "p3-fail-desktop-step1.png",
+          "sha256": "0f567b2b7314f26abb3f0e63f73703266de6d34310a5c95bd737ad1d9f9b6284"
+        }
+      ],
+      "addedAt": "2026-11-17T20:08:48.970Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "456731113327ef2fd29c1ce94e535f6a72f183f3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "7ada52dfbf70537da511fad68c66487b8603a1384bc74ca7c5da1bc355f8f6d4"
+        }
+      ],
+      "addedAt": "2026-11-17T20:09:20.448Z",
+      "cmd": "CARGO_BUILD_JOBS=2 verify/yv map run session-defaults --recipe remembers-remote-session",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "repro",
+      "at": "456731113327ef2fd29c1ce94e535f6a72f183f3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "7dffbb764de703b31a9f7cacd9a29c36af2fb899e916d38577fb562dfc15e639"
+        },
+        {
+          "path": "p5-wrapped-status-mobile.png",
+          "sha256": "dabe28a3292ee9225e0dba40f9c683c3dd5ce3a5f442dba6edc838904e744a79"
+        },
+        {
+          "path": "p5-wrapped-status-desktop.png",
+          "sha256": "93d4b1ada122fa5171a40855721bc772091125e768bf7f34abdba35af996c95b"
+        },
+        {
+          "path": "p5-fail-desktop-step3.png",
+          "sha256": "2cd10ece51603b88e01af669d81252ff3c0e2d5716e429e339ae0b94b122e494"
+        }
+      ],
+      "addedAt": "2026-11-17T20:11:01.443Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "d0dc3fcfcba0fd2ee8dd1e7c3c7120b871e1343373d2c73c306a6cd1fee05626"
+        }
+      ],
+      "addedAt": "2026-11-17T20:11:01.484Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "351e9c52e8fdac3bd7d549622b4d22e53178ee6b52ddb9c0385502cf65ea501a"
+        },
+        {
+          "path": "p7-wrapped-status-mobile.png",
+          "sha256": "b189da305caa1200ba145c169f068b7924b620c9e8fedc2aa68a6ed1b244deb9"
+        },
+        {
+          "path": "p7-wrapped-status-desktop.png",
+          "sha256": "2320f95db7e45abf9177eaf754d187add9c0fbbcf00cc1b0dd9e55bf979c02f0"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:08.819Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "41f6e1f4b1f664c6648a187d9ff838e23c65ce691f7b5e39c4393f23e3ad95ce"
+        },
+        {
+          "path": "p8-empty-search-mobile.png",
+          "sha256": "062099326c37ef4753c1d5729179e19195b219e1fe85428f8808751c610b258e"
+        },
+        {
+          "path": "p8-connected-filter-mobile.png",
+          "sha256": "d3c4d9f8d055393ec95b64acbdbad99dd8d84356da32942c7d3527c8ae9f3ca0"
+        },
+        {
+          "path": "p8-empty-search-desktop.png",
+          "sha256": "62c12e136f8216fe13c5de205f8ccb02aa3b6581da9d08bddfee157feb3f75f7"
+        },
+        {
+          "path": "p8-connected-filter-desktop.png",
+          "sha256": "4405b064c17512e761eb14ffb8c1722ca1a5cf0619ddde6c8a828ee3f49c552c"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:08.919Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "291b3d205efa4fb339f9b10937fbfb59dbad8353edd2b1629607f380c139881d"
+        },
+        {
+          "path": "p9-marked-unread-desktop.png",
+          "sha256": "1329177f11a0c57135380fadecd75d899b125459e99bbc78a84be7aa6ff5b1e3"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.015Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-drive.json",
+          "sha256": "317538bb2950b4b265738aec3594c8112be47760330225c41437fea72a867cce"
+        },
+        {
+          "path": "p10-marked-unread-mobile.png",
+          "sha256": "2e06689e33241c7751cd22e97d4e29c1178a316e9a81f7d229931ba1646e90ba"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.109Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p11-drive.json",
+          "sha256": "5f4d4d33b3ff47e5ed075de2aef6b5859f95bebf7bab3253c0f9652fce9e391f"
+        },
+        {
+          "path": "p11-remembered-defaults-mobile.png",
+          "sha256": "64bfb3785750993b63ebeb15d9fcb601eb537450ca236b9f4b09b6552472cba2"
+        },
+        {
+          "path": "p11-remembered-defaults-desktop.png",
+          "sha256": "30760f88c09a6c2c3498d72dc738a283a475c2efaebd97fe1de8f1e807938a6b"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.208Z",
+      "failedApi": []
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p12-drive.json",
+          "sha256": "716a3fb90bd12314429c4c15258a0829b3094248195e49b4173c9bdccc13286a"
+        },
+        {
+          "path": "p12-existing-session-defaults-mobile.png",
+          "sha256": "b13d0fcf25a705eb96fd26ac1230a368166f88882c7d55c1a83cf731bc6c765e"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.310Z",
+      "failedApi": []
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p13-drive.json",
+          "sha256": "bc6d9fd1ccbfbcb9f5a0dd9bef8b0a2466369d63c81557092e99ca0efff027b2"
+        },
+        {
+          "path": "p13-existing-session-defaults-desktop.png",
+          "sha256": "edc52824dec84ee450998781e55e40caa864cb0e3610c057ef2a22c97fc6f8fb"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.410Z",
+      "failedApi": []
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-head-hosts-map.json",
+          "sha256": "4d68cb842076920547459688ee0bcd25367fac2b5bef2a0cc32a27dc0ba88138"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.508Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned"
+      ]
+    },
+    {
+      "id": 15,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p15-head-connectors-map.json",
+          "sha256": "8c8713ee44d0372c6b770c0b4db6a5b7e6f09139fabfa9a983fad9ab143273e3"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.612Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/connectors-list",
+        "connectors/focused-search-and-status",
+        "connectors/claude-sign-in",
+        "connectors/codex-sign-in-pasted",
+        "connectors/add-linear",
+        "connectors/codex-chart",
+        "connectors/claude-chart",
+        "connectors/large-catalog-stays-bounded"
+      ]
+    },
+    {
+      "id": 16,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p16-head-new-session-map.json",
+          "sha256": "643c35c01549ba6ea671eeadb076faa24f883397cfe234ccc16df6c13c119e9e"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.707Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    },
+    {
+      "id": 17,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p17-head-defaults-map.json",
+          "sha256": "c1d01c6c0cd93ed935dfe2c13094d9f81d61e2667583acd5a5aab3cf7f02fb12"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.804Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "session-defaults/remembers-remote-session",
+        "session-defaults/remembers-changes-in-existing-chat"
+      ]
+    },
+    {
+      "id": 18,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p18-head-sidebar-map.json",
+          "sha256": "6452bccdf6dcacd2331cfac5b5c97b76014500e3efe6075e52694cf6614185e1"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.900Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/mark-chat-unread",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/archiving-the-open-session-keeps-the-list-closed",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group"
+      ]
+    },
+    {
+      "id": 19,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p19-head-large-catalog-map.json",
+          "sha256": "7992ba586f310d67de8f62ce8911df83008de3b341f1121fe631343d29bd18c5"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:09.996Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/large-catalog-stays-bounded"
+      ]
+    },
+    {
+      "id": 20,
+      "ref": "head",
+      "kind": "design",
+      "at": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p20-design.json",
+          "sha256": "092743bafe3868fe874647201e9a7bb2ab3cf0ab6f7b18cce266dae98f1d0c52"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:10.092Z",
+      "cmd": "verify/yv design-check --base 1839e7007259",
+      "exit": 0
+    }
+  ]
+}

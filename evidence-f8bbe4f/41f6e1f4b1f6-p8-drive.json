@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "f8bbe4fb9d73de4a6da290015bc1ada60f124079",
+    "short": "f8bbe4f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:10:41.294Z"
+  },
+  "dir": ".verify/proof-connectors-final",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2583,
+      "steps": 17,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/proof-connectors-final/empty-search-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/proof-connectors-final/connected-filter-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3233,
+      "steps": 17,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/proof-connectors-final/empty-search-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/proof-connectors-final/connected-filter-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
