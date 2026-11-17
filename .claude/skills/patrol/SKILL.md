@@ -63,7 +63,7 @@ For each open patrol PR:
    `verify/yv land merge <N>` from a checkout at origin/main (your run's
    worktree starts there; the gate refuses to run from a PR head). The gate is live: it re-checks everything and
    squash-merges pinned to the head SHA. If it answers `waiting on guards`
-   (a deploy in flight, 20 minutes since the last merge), try again next run.
+   (a deploy in flight, or the last deploy failed), try again next run.
    If it is blocked by `self-or-ci`, `irreversible`, `verdict-human` or another
    rule a person must judge, notify the owner once: "#N needs you: <blocker>".
 4. For merged patrol PRs from the last day: `verify/yv land watch <N>`.
