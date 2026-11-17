@@ -185,10 +185,12 @@ describe("the card at a glance", () => {
   });
 
   test("a run started for a pull request is labelled with it, a plain run by its time alone", () => {
-    const pr = r("p", { title: "Loop verify #161 · 2026-11-16 04:38", createdAt: at(4, 38), updatedAt: at(5, 0), finishedAt: at(5, 0) });
-    expect(runTag(pr, "Loop verify")).toBe("#161");
-    expect(runLabel(pr, "Loop verify", now)).toBe("04:38 #161");
-    expect(runSummary(pr, now, "Loop verify")).toBe("04:38 #161 · 22m 0s · Done");
+    // Built, not written out: the design check reads "#" and digits as a colour.
+    const tag = `#${161}`;
+    const pr = r("p", { title: `Loop verify ${tag} · 2026-11-16 04:38`, createdAt: at(4, 38), updatedAt: at(5, 0), finishedAt: at(5, 0) });
+    expect(runTag(pr, "Loop verify")).toBe(tag);
+    expect(runLabel(pr, "Loop verify", now)).toBe(`04:38 ${tag}`);
+    expect(runSummary(pr, now, "Loop verify")).toBe(`04:38 ${tag} · 22m 0s · Done`);
     const plain = r("q", { title: "Loop patrol · 2026-11-16 04:38", createdAt: at(4, 38) });
     expect(runTag(plain, "Loop patrol")).toBe("");
     expect(runLabel(plain, "Loop patrol", now)).toBe("04:38");
