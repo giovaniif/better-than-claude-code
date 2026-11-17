@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "034fcc4217004c9c5df2e4ee8f7438e98dc9f6ea",
+    "short": "034fcc4",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T20:13:04.014Z"
+  },
+  "dir": ".verify/null-config-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3795,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/null-config-head/null-config-fixed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3028,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/null-config-head/null-config-fixed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

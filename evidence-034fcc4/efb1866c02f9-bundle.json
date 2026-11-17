@@ -1,0 +1,128 @@
+{
+  "v": 1,
+  "claim": "Switchy fails before answering when Codex returns nullable MCP settings",
+  "repo": "/tmp/switchy-config-fix",
+  "base": "de364c87be07641b42cc4b145c6db63c11a82c72",
+  "head": "034fcc4217004c9c5df2e4ee8f7438e98dc9f6ea",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/switchy.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-17T20:10:47.612Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "098aa1978bf0265fe28924436bc1733b19692b07",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "b90bbf24fde05006b336d85d00c6b228f1790ea45168fa3e17709db9b5273149"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:22.513Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test switchy codex_nullable_config",
+      "exit": 101
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "098aa1978bf0265fe28924436bc1733b19692b07",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "eba835ef02748c50d49f9f3f9a6f9816a2303eb56070493073c32f0ea115385e"
+        },
+        {
+          "path": "p2-null-config-failure-mobile.png",
+          "sha256": "2cb1e7a247615267b3aaeafbdb3de38240ff8b20bd11e5e70cddfaed6c21ab0d"
+        },
+        {
+          "path": "p2-null-config-failure-desktop.png",
+          "sha256": "45ebc25fbe5c1acf0d00abd453af215787c1eb0f27feb68bdee491c5dbcab446"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:45.928Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "034fcc4217004c9c5df2e4ee8f7438e98dc9f6ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "b7e83c08ac99860b882f19b36fc743303cd6ba2b1eb7213c11b9c7510dae48b8"
+        }
+      ],
+      "addedAt": "2026-11-17T20:12:45.988Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "034fcc4217004c9c5df2e4ee8f7438e98dc9f6ea",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "abba3e288678e2705fc99e2922ece922cc436947026c52be5e6a7066b79c61b8"
+        },
+        {
+          "path": "p4-null-config-fixed-mobile.png",
+          "sha256": "466077293616b789b7cf3d977646428a24941cfa59eb5b947544b6132bc01598"
+        },
+        {
+          "path": "p4-null-config-fixed-desktop.png",
+          "sha256": "5cc802bddbdee475012b382d23bcf6bf0d2738def8ce61f97ebd46c604a1b282"
+        }
+      ],
+      "addedAt": "2026-11-17T20:13:56.507Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "034fcc4217004c9c5df2e4ee8f7438e98dc9f6ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T20:13:56.551Z",
+      "text": "Real installed Codex app-server reproduced the exact tool_timeout_sec error with an isolated synthetic MCP config. Replaying the fixed daemon-generated thread/start request was accepted. No turn/start request or model inference was used. Global user config was untouched."
+    }
+  ]
+}

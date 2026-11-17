@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test switchy codex_nullable_config
+# exit 101 after 1815 ms at 098aa1978bf0265fe28924436bc1733b19692b07
+
+
+running 1 test
+test codex_nullable_config_does_not_prevent_switchy_answers ... FAILED
+
+failures:
+
+---- codex_nullable_config_does_not_prevent_switchy_answers stdout ----
+
+thread 'codex_nullable_config_does_not_prevent_switchy_answers' (873336) panicked at crates/yardd/tests/switchy.rs:326:5:
+{"op":"switchy.state","state":{"engine":"codex","model":"fake-fast","revision":3,"scope":"local","status":"idle","turns":[{"answer":"","at":1794946344211,"coverage":["giovani: Bounded snapshot: up to four repositories under known work folders and YARD_CONTEXT_ROOTS. Saved shell history may lag. Earlier observations exist only from previous questions. No environment, credential files or full filesystem crawl."],"engine":"codex","error":"codex thread/start: invalid type: string \"\", expected f64 in mcp_servers.linear.tool_timeout_sec","id":"switchy-1a1eb23a5131","model":"fake-fast","question":"What is happening on my server?","sources":[{"at":1794946344214,"host":"local","id":"local:1","text":"Host statistics have not been sampled yet","title":"giovani · Host resources","unavailable":true},{"at":1794946344214,"host":"local","id":"local:2","text":"PID PPID %CPU %MEM COMMAND\n42 1 12.0 2.0 TEST-api\n43 1 3.0 1.0 TEST-worker","title":"giovani · Processes (including outside Switchyard)","unavailable":false},{"at":1794946344214,"host":"local","id":"local:3","text":"User services:\nTEST-api.service loaded active running TEST API\nTEST-worker.service loaded active running TEST worker\nSystem services:\nTEST-api.service loaded active running TEST API\nTEST-worker.service loaded active running TEST worker","title":"giovani · Services","unavailable":false},{"at":1794946344214,"host":"local","id":"local:4","text":"TEST-api\tUp 10 minutes (healthy)\t127.0.0.1:8080->3000/tcp","title":"giovani · Containers","unavailable":false},{"at":1794946344214,"host":"local","id":"local:5","text":"State Local Address:Port\nLISTEN 127.0.0.1:8080","title":"giovani · Listening TCP ports","unavailable":false},{"at":1794946344214,"host":"local","id":"local:6","text":"No readable saved shell history; open-shell activity is not captured","title":"giovani · Recent saved terminal activity","unavailable":true},{"at":1794946344214,"host":"local","id":"local:7","text":"","title":"giovani · Relevant Switchyard history","unavailable":false}],"status":"failed"}]},"total":1}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-873335-switchy-null-config-0 for inspection
+
+
+failures:
+    codex_nullable_config_does_not_prevent_switchy_answers
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.16s
+
+
+   Compiling yardd v0.9.0 (/tmp/switchy-config-fix/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.60s
+     Running tests/switchy.rs (target/debug/build/yardd/8bf604cb1ac348d6/out/switchy-8bf604cb1ac348d6)
+error: test failed, to rerun pass `-p yardd --test switchy`
