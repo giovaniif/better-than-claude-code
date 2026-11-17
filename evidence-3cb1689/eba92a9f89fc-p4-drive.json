@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "3cb1689c47649b7d362a2d077386399fba18db0d",
+    "short": "3cb1689",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T19:43:48.655Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-44-18-498Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2503,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-44-18-498Z/shared-composer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.querySelector(\".composer textarea\").rows",
+          "value": 1
+        },
+        {
+          "step": 5,
+          "eval": "document.querySelector(\".composer textarea\").clientHeight > 60",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2819,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-44-18-498Z/shared-composer-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.querySelector(\".composer textarea\").rows",
+          "value": 1
+        },
+        {
+          "step": 5,
+          "eval": "document.querySelector(\".composer textarea\").clientHeight > 60",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

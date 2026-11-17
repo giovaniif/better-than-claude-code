@@ -1,0 +1,68 @@
+{
+  "ok": false,
+  "route": "switchy",
+  "build": {
+    "sha": "87080f264276c24e78e832570111305ff72ad2c4",
+    "short": "87080f2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T19:40:56.746Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-40-57-730Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 12932,
+      "steps": 7,
+      "failed": {
+        "step": 0,
+        "action": {
+          "expect": "css:.composer-row .send svg"
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-40-57-730Z/fail-mobile-step0.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - heading \"What would you like to know?\" [level=2]\n  - paragraph: Ask Switchy about your servers and your work.\n  - button \"What’s happening on my server?\"\n  - button \"What changed since yesterday?\"\n  - button \"Where is the API deployed?\"\n  - textbox \"Ask Switchy\":\n    - /placeholder: Ask about your servers or your work…\n  - combobox \"Host scope\":\n    - option \"All hosts\" [selected]\n    - option \"iso-host\"\n  - combobox \"Switchy model\":\n    - option \"Codex · Fake Fast\" [selected]\n    - option \"Codex · Fake Deep\"\n    - option \"Claude · Opus 5.5\"\n    - option \"Claude · Sonnet 5.5\"\n    - option \"Claude · Haiku 5.5\"\n  - text: Read only\n  - button \"Send question\" [disabled]: ↑\n  - paragraph: Answers use selected host evidence. Expand sources to see what was checked."
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 12242,
+      "steps": 7,
+      "failed": {
+        "step": 0,
+        "action": {
+          "expect": "css:.composer-row .send svg"
+        },
+        "reason": "for: Timeout 10000ms exceeded.",
+        "screenshot": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-40-57-730Z/fail-desktop-step0.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 7% · 42%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - heading \"What would you like to know?\" [level=2]\n  - paragraph: Ask Switchy about your servers and your work.\n  - button \"What’s happening on my server?\"\n  - button \"What changed since yesterday?\"\n  - button \"Where is the API deployed?\"\n  - textbox \"Ask Switchy\":\n    - /placeholder: Ask about your servers or your work…\n  - combobox \"Host scope\":\n    - option \"All hosts\" [selected]\n    - option \"iso-host\"\n  - combobox \"Switchy model\":\n    - option \"Codex · Fake Fast\" [selected]\n    - option \"Codex · Fake Deep\"\n    - option \"Claude · Opus 5.5\"\n    - option \"Claude · Sonnet 5.5\"\n    - option \"Claude · Haiku 5.5\"\n  - text: Read only\n  - button \"Send question\" [disabled]: ↑\n  - paragraph: Answers use selected host evidence. Expand sources to see what was checked."
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 0 {\"expect\":\"css:.composer-row .send svg\"}: for: Timeout 10000ms exceeded.",
+      "hint": "see /home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-40-57-730Z/fail-mobile-step0.png and the aria snapshot"
+    },
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 0 {\"expect\":\"css:.composer-row .send svg\"}: for: Timeout 10000ms exceeded.",
+      "hint": "see /home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T19-40-57-730Z/fail-desktop-step0.png and the aria snapshot"
+    }
+  ]
+}

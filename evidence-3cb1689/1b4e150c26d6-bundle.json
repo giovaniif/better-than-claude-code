@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "claim": "Switchy used a separate input with different sizing and controls instead of the session Composer",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac",
+  "base": "1839e70072594c1bfc9c530202f65604f22510f3",
+  "head": "3cb1689c47649b7d362a2d077386399fba18db0d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T19:42:31.056Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "87080f264276c24e78e832570111305ff72ad2c4",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "4f1e091c6bd2026edf7f10f4d42b10774abacdca014eb5e04f148508ea94f605"
+        },
+        {
+          "path": "p1-fail-mobile-step0.png",
+          "sha256": "466f044693421bbd4c9e24a22652d9ab1d2d9a376bafce6483005598acd7415e"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "c22086ffe7196b823472a65b13b5eac444addb2bc19ba0e1fb206719352f3c0c"
+        }
+      ],
+      "addedAt": "2026-11-17T19:42:41.752Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "87080f264276c24e78e832570111305ff72ad2c4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e28300e980def34a890af592b106de52d28e12e798c66ddbc7a2bae7c63743c3"
+        }
+      ],
+      "addedAt": "2026-11-17T19:42:41.797Z",
+      "cmd": "verify/yv map run switchy --recipe shared-composer",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "3cb1689c47649b7d362a2d077386399fba18db0d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "5601e0070a0ac9b2176f6165521354cdff35dc50faaa281077bcbac569444d88"
+        }
+      ],
+      "addedAt": "2026-11-17T19:43:30.464Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3cb1689c47649b7d362a2d077386399fba18db0d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "eba92a9f89fc23e231af4ca37cfd350a5508829c5b2d462e5e43f69f7178aca4"
+        },
+        {
+          "path": "p4-shared-composer-mobile.png",
+          "sha256": "0fb43035aea15abcb8c298ab27eb6083e2f8b2bbefaee0fb9eec405f892f1abe"
+        },
+        {
+          "path": "p4-shared-composer-desktop.png",
+          "sha256": "61d17360549005bd33b6439567751fe69f57f160825910025a06dc9de743772c"
+        }
+      ],
+      "addedAt": "2026-11-17T19:44:59.652Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "3cb1689c47649b7d362a2d077386399fba18db0d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "46ac5823114b9498802aa86edd08154b18132a5c6892b63d3c9c0889cb0f6412"
+        }
+      ],
+      "addedAt": "2026-11-17T19:44:59.693Z",
+      "cmd": "verify/yv design-check --base 1839e7007259",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3cb1689c47649b7d362a2d077386399fba18db0d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-session_s1a1eb0a338c6.json",
+          "sha256": "2c2a248f1b29ccfa841697d47b518a034218e6e09b145777afee2baba6f30c0f"
+        },
+        {
+          "path": "p6-session_s1a1eb0a338c6-mobile.png",
+          "sha256": "895217f0693d2f2c91d019a20ebf1a4aa99f48a0d2fafb84915a583dafcf4f54"
+        },
+        {
+          "path": "p6-session_s1a1eb0a338c6-desktop.png",
+          "sha256": "d0cf8838ab0947b00b096c10431d834419c7b7313950da7f99ea3e6205d84fdb"
+        }
+      ],
+      "addedAt": "2026-11-17T19:45:26.272Z",
+      "failedApi": []
+    }
+  ]
+}
