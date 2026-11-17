@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Automation, SessionMeta } from "./protocol";
-import { describeSchedule, describeNext, describeLast, runsOf, hiddenFromSidebar, scheduleProblem } from "./automations";
+import { describeSchedule, describeNext, describeLast, runsOf, hiddenFromSidebar, scheduleProblem, runTime, runOutcome, RUN_LABEL, runSummary, stripRuns, scheduleLine, cardStatus } from "./automations";
 import { initial, reduce } from "./store";
 
 const MIN = 60_000;
@@ -127,5 +127,92 @@ describe("automations in the store", () => {
     expect(s.automations.h).toHaveLength(1);
     s = reduce(s, { t: "server", msg: { op: "host.snapshot", hostId: "h", sessions: [] } });
     expect(s.automations.h).toEqual([]);
+  });
+});
+
+describe("the card at a glance", () => {
+  const now = at(10, 0);
+  const a = (over: Partial<Automation> = {}): Automation => ({ ...auto("x"), name: "Loop patrol", ...over });
+  const r = (id: string, over: Partial<SessionMeta> = {}) => run(id, "x", { title: `Loop patrol · ${id}`, ...over });
+
+  test("a run is named by its time, with the day once it is not today, and the date after a week", () => {
+    expect(runTime(at(4, 38), now)).toBe("04:38");
+    expect(runTime(at(3, 38, 15), now)).toBe("Sun 03:38");
+    expect(runTime(at(3, 38, 10), now)).toBe("Tue 03:38");
+    expect(runTime(at(3, 38, 9), now)).toBe("9 Nov 03:38");
+  });
+
+  test("a run's outcome, from its status and how its turn ended", () => {
+    expect(runOutcome(r("a", { status: "running" }))).toBe("working");
+    expect(runOutcome(r("a", { status: "needs_approval" }))).toBe("approval");
+    expect(runOutcome(r("a", { status: "queued" }))).toBe("queued");
+    expect(runOutcome(r("a", { status: "error" }))).toBe("failed");
+    expect(runOutcome(r("a", { lastTurn: "failed" }))).toBe("failed");
+    expect(runOutcome(r("a", { lastTurn: "interrupted" }))).toBe("stopped");
+    expect(runOutcome(r("a", { lastTurn: "completed" }))).toBe("done");
+    expect(runOutcome(r("a"))).toBe("done");
+    expect(RUN_LABEL.done).toBe("Done");
+  });
+
+  test("a run's tooltip says when, how long and how it ended; a live one how long so far", () => {
+    const done = r("a", { createdAt: at(4, 38), finishedAt: at(4, 38) + 22 * MIN + 33_000, updatedAt: at(9, 0) });
+    expect(runSummary(done, now)).toBe("04:38 · 22m 33s · Done");
+    const live = r("b", { status: "running", createdAt: now - 3 * MIN - 12_000, updatedAt: now - 3 * MIN });
+    expect(runSummary(live, now)).toBe("09:56 · 3m 12s · Running");
+    // A run saved before yardd kept finishedAt falls back to its last change.
+    expect(runSummary(r("c", { createdAt: at(8, 0), updatedAt: at(8, 1), lastTurn: "failed" }), now)).toBe("08:00 · 1m 0s · Failed");
+  });
+
+  test("the strip holds the newest runs, oldest first so the newest is on the right", () => {
+    const runs = [r("c", { createdAt: 3 }), r("b", { createdAt: 2 }), r("a", { createdAt: 1 })];
+    expect(stripRuns(runs, 2).map((s) => s.id)).toEqual(["b", "c"]);
+    expect(stripRuns(runs, 10).map((s) => s.id)).toEqual(["a", "b", "c"]);
+  });
+
+  test("the schedule line: when it runs and when next, or off", () => {
+    expect(scheduleLine(a({ schedule: { kind: "interval", every: 1, unit: "hours" }, nextRun: now + 30 * MIN }), now)).toBe("Every hour · next in 30 min");
+    expect(scheduleLine(a({ schedule: { kind: "daily", time: "03:30" }, nextRun: at(3, 30, 17) }), now)).toBe("Daily at 03:30 · next tomorrow 03:30");
+    expect(scheduleLine(a({ enabled: false, nextRun: null }), now)).toBe("Daily at 09:00 · off");
+  });
+
+  test("a working run is what the card says first, with how long it has run, and it opens that run", () => {
+    const running = r("b", { status: "running", createdAt: now - 3 * MIN - 12_000 });
+    const s = cardStatus(a({ lastRun: { at: now - 3 * MIN, outcome: "skipped", reason: "the previous run is still going: Loop patrol · b" } }), [running, r("a", { createdAt: 1 })], now);
+    expect(s).toEqual({ tone: "live", text: "Running · 3m 12s", title: "Running since 09:56", runId: "b" });
+    expect(cardStatus(a(), [r("b", { status: "needs_approval", createdAt: now - 60_000 })], now)).toMatchObject({ tone: "approval", text: "Needs approval · 1m 0s", runId: "b" });
+    expect(cardStatus(a(), [r("b", { status: "queued", createdAt: now - 60_000 })], now)).toMatchObject({ tone: "live", text: "Queued", runId: "b" });
+  });
+
+  test("the last run: how long it took and when, without the automation's name", () => {
+    const last = r("a", { createdAt: now - 60 * MIN, finishedAt: now - 60 * MIN + 22 * MIN + 33_000, lastTurn: "completed" });
+    expect(cardStatus(a({ lastRun: { at: now - 60 * MIN, outcome: "started", sessionId: "a" } }), [last], now)).toEqual({
+      tone: "ok",
+      text: "Last: 22m 33s · 1 h ago",
+      title: "Last run 09:00 · 22m 33s · Done",
+      runId: "a",
+    });
+    const failed = { ...last, lastTurn: "failed" as const };
+    expect(cardStatus(a({ lastRun: { at: now - 60 * MIN, outcome: "started", sessionId: "a" } }), [failed], now)).toMatchObject({ tone: "bad", text: "Failed · 22m 33s · 1 h ago", runId: "a" });
+    const stopped = { ...last, lastTurn: "interrupted" as const };
+    expect(cardStatus(a(), [stopped], now)).toMatchObject({ tone: "quiet", text: "Stopped · 22m 33s · 1 h ago", runId: "a" });
+    // Its session was deleted: only when is known.
+    expect(cardStatus(a({ lastRun: { at: now - 5 * MIN, outcome: "started", sessionId: "gone" } }), [], now)).toEqual({ tone: "ok", text: "Last: 5 min ago", title: "Last run 09:55", runId: null });
+  });
+
+  test("a skip or a failure to start says why on one line, the whole reason in the tooltip", () => {
+    const skipped = cardStatus(a({ lastRun: { at: now - 29 * MIN, outcome: "skipped", reason: "the previous run is still going: Loop patrol · 2026-11-17 04:38" } }), [], now);
+    expect(skipped).toEqual({
+      tone: "warn",
+      text: "Skipped 29 min ago · previous run busy",
+      title: "Skipped 29 min ago: the previous run is still going: Loop patrol · 2026-11-17 04:38",
+      runId: null,
+    });
+    expect(cardStatus(a({ lastRun: { at: now - 3 * 3600_000, outcome: "skipped", reason: "Claude 5-hour usage 47% is above 10%" } }), [], now).text).toBe("Skipped 3 h ago · 5-hour usage 47%");
+    const failed = cardStatus(a({ lastRun: { at: now - 20_000, outcome: "failed", reason: "/w/moved is not a folder" } }), [], now);
+    expect(failed).toEqual({ tone: "bad", text: "Failed · /w/moved is not a folder", title: "Failed just now: /w/moved is not a folder", runId: null });
+  });
+
+  test("never run", () => {
+    expect(cardStatus(a(), [], now)).toEqual({ tone: "quiet", text: "No runs yet", title: "No runs yet", runId: null });
   });
 });
