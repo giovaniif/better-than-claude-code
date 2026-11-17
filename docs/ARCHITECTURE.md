@@ -467,6 +467,9 @@ path is implemented. No worktree, sidebar session or engine resume is created.
   removed after each answer. Codex receives an ephemeral, read-only thread with
   approvals disabled, shell/exec, apps, browser, computer, JS/code-mode, hooks,
   multi-agent and configured MCP/plugin tools disabled by thread-local overrides.
+  Null optional fields from `config/read` are omitted from copied overrides: Codex
+  converts JSON nulls to empty TOML strings, which breaks typed fields such as MCP
+  timeouts. Transport settings and concrete values are retained.
   Claude receives a fresh sidecar with no tools, strict empty MCP configuration,
   no setting sources/plugins/hooks, no persisted engine session, and a denying
   permission callback. Coding-session settings are untouched. Grok/OpenCode,
