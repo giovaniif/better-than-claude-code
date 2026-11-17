@@ -395,6 +395,30 @@ async fn new_file_diff(cwd: &str, path: &str, room: usize) -> String {
     out
 }
 
+/// `git diff --numstat -z`. Without `-z` a rename is one compact path,
+/// `src/{a.ts => b.ts}`; with it, the old and new names come apart: the row
+/// ends with an empty path, then the old name and the new one, NUL-separated.
+fn parse_numstat(out: &str) -> Vec<Value> {
+    let mut fields = out.split('\0');
+    let mut files = Vec::new();
+    while let Some(row) = fields.next() {
+        let mut parts = row.splitn(3, '\t');
+        let (Some(added), Some(removed), Some(path)) = (parts.next(), parts.next(), parts.next()) else { continue };
+        let mut file = json!({
+            "path": path,
+            "added": added.parse::<u64>().ok(),
+            "removed": removed.parse::<u64>().ok(),
+        });
+        if path.is_empty() {
+            let (Some(from), Some(to)) = (fields.next(), fields.next()) else { break };
+            file["path"] = json!(to);
+            file["from"] = json!(from);
+        }
+        files.push(file);
+    }
+    files
+}
+
 pub async fn changes(cwd: &str) -> Result<Value> {
     ensure_folder(cwd)?;
     let (is_repo, top) = git(cwd, &["rev-parse", "--show-toplevel"]).await?;
@@ -410,21 +434,8 @@ pub async fn changes(cwd: &str) -> Result<Value> {
     let (has_head, _) = git(cwd, &["rev-parse", "--verify", "HEAD"]).await?;
     let base: &[&str] = if has_head { &["HEAD"] } else { &[] };
 
-    let (_, numstat) = git(cwd, &[&["diff", "--numstat"], base].concat()).await?;
-    let mut files: Vec<Value> = numstat
-        .lines()
-        .filter_map(|l| {
-            let mut parts = l.splitn(3, '\t');
-            let added = parts.next()?;
-            let removed = parts.next()?;
-            let path = parts.next()?;
-            Some(json!({
-                "path": path,
-                "added": added.parse::<u64>().ok(),
-                "removed": removed.parse::<u64>().ok(),
-            }))
-        })
-        .collect();
+    let (_, numstat) = git(cwd, &[&["diff", "--numstat", "-z"], base].concat()).await?;
+    let mut files = parse_numstat(&numstat);
 
     let (_, untracked) = git(top, &["ls-files", "--others", "--exclude-standard"]).await?;
     let untracked: Vec<&str> = untracked.lines().take(200).collect();
@@ -464,6 +475,16 @@ pub async fn changes(cwd: &str) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn numstat_names_a_rename_by_its_old_and_new_path() {
+        let out = "1\t1\t\0src/greet.ts\0src/hello.ts\03\t0\tREADME.md\0-\t-\tlogo.png\0";
+        let files = parse_numstat(out);
+        assert_eq!(files.len(), 3);
+        assert_eq!(files[0], json!({ "path": "src/hello.ts", "from": "src/greet.ts", "added": 1, "removed": 1 }));
+        assert_eq!(files[1], json!({ "path": "README.md", "added": 3, "removed": 0 }));
+        assert_eq!(files[2], json!({ "path": "logo.png", "added": null, "removed": null }));
+    }
 
     #[test]
     fn keeps_the_last_non_empty_lines() {

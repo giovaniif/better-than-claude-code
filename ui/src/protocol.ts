@@ -136,6 +136,8 @@ export interface AccountEntry {
 
 export interface ChangedFile {
   path: string;
+  /** A rename's old path; `path` is the new one. */
+  from?: string;
   diff?: string;
   kind?: string;
   added?: number | null;

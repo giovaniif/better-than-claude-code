@@ -2817,7 +2817,7 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
           <div className="file-list">
             {files.map((f) => (
               <div key={f.path} className="file-row">
-                <code>{f.path}</code>
+                <code>{f.from ? `${f.from} → ${f.path}` : f.path}</code>
                 {/* git counts no lines in a binary file; "+0 −0" would read as unchanged. */}
                 <code className="muted">
                   {f.untracked ? "new" : f.added == null && f.removed == null ? "binary" : `+${f.added ?? 0} −${f.removed ?? 0}`}
