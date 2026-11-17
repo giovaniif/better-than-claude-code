@@ -1,0 +1,222 @@
+{
+  "v": 1,
+  "claim": "Switchy replaces a scripted design preview with persistent model answers grounded in bounded cross-host server evidence, using the shared rounded session composer.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac",
+  "base": "616a45fc72ec53b65a0bdeb6c0fde19f4ac24ba1",
+  "head": "72d595828a6aa8fefdff674fb71e2017eabad163",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/claude.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/switchy.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/switchy_context.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/common/mod.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/docker"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/launchctl"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/lsof"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/ps"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/ss"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/host-context/systemctl"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/yard-claude"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/switchy.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "sidecar/yard-claude/src/main.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/switchy.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T15:21:02.363Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "0edfc0bcca25c6a1cae1b1fb11ff4e7278fd895c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-17T15:21:02.401Z",
+      "text": "no-repro: This is a new feature replacing an explicitly labeled design preview. The test-only commit proves the missing switchy API with failing integration tests."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "aa395ca03e005e5be46fdf61b70e33c2f3c3063a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "708a8a71fbe23ea128ca16097a56b24f6faacecad567f437b7a2f2933bc7098e"
+        }
+      ],
+      "addedAt": "2026-11-17T15:22:37.193Z",
+      "cmd": "CARGO_TARGET_DIR=/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/target CARGO_BUILD_JOBS=2 cargo test -p yardd --test switchy",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "72d595828a6aa8fefdff674fb71e2017eabad163",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "fc78289c51794144ae281bf93e8bc1b3728b774014944351233ca4b67d28d8ce"
+        }
+      ],
+      "addedAt": "2026-11-17T18:18:18.920Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test switchy && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "72d595828a6aa8fefdff674fb71e2017eabad163",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-2-drive.json",
+          "sha256": "5f04378914134a48b84b4e1196e04b5b1e97105e8652fd8da385df6b2e3eec7d"
+        },
+        {
+          "path": "p4-2-switchy-answer-mobile.png",
+          "sha256": "2f15be2d703c52183e947b88ecc893f832fb75aa18d33495250a89a6c8f12855"
+        },
+        {
+          "path": "p4-2-switchy-answer-desktop.png",
+          "sha256": "49d164c95133599dce27ec3ea0841780a6eb66014ada682dbb9cbcb06ece7e5d"
+        }
+      ],
+      "addedAt": "2026-11-17T18:18:32.272Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "72d595828a6aa8fefdff674fb71e2017eabad163",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "0660edf844c8ec0b09486355756f27b49432065c40240a19c70234180d1a5d25"
+        }
+      ],
+      "addedAt": "2026-11-17T18:18:32.311Z",
+      "cmd": "verify/yv design-check --base 616a45fc72ec",
+      "exit": 0
+    }
+  ]
+}

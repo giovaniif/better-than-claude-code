@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "72d595828a6aa8fefdff674fb71e2017eabad163",
+    "short": "72d5958",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T18:17:36.726Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T18-17-37-734Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4967,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T18-17-37-734Z/switchy-answer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 12,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose\")).borderRadius",
+          "value": "16px"
+        },
+        {
+          "step": 13,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose textarea\")).resize",
+          "value": "none"
+        },
+        {
+          "step": 14,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4203,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/.verify/drives/2026-11-17T18-17-37-734Z/switchy-answer-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 12,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose\")).borderRadius",
+          "value": "16px"
+        },
+        {
+          "step": 13,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose textarea\")).resize",
+          "value": "none"
+        },
+        {
+          "step": 14,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
