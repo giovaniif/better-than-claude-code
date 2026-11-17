@@ -55,6 +55,16 @@ Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is deriv
 - Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
 - The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
 
+**Chat diagrams.** Markdown fences labelled `mermaid` automatically show a
+diagram once the fence closes, with a Show source / Show diagram toggle.
+`ui/src/markdown.ts` recognises backtick and tilde fences, including open
+fences during streaming; `MermaidDiagram.tsx` lazy-loads the bundled Mermaid
+renderer. Invalid, empty and incomplete diagrams keep their source visible.
+Rendering uses strict security, disabled HTML labels and protected security
+and CSS settings. The result is a blob-backed SVG image, never inline HTML or
+SVG in the chat DOM; object URLs are revoked on changes and unmount. Diagrams
+fit the thread width on mobile. No service or engine-specific event is needed.
+
 ## Persistence
 
 yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard` when that is unset.
