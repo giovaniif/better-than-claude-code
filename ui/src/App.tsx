@@ -7,6 +7,7 @@ import { UsageMeters, UsageStrip } from "./UsageMeters";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
 import { AssistantPage } from "./AssistantPage";
+import { engineGlance, sessionGlance, size, stateText } from "./hosts";
 import { SettingsPage } from "./SettingsPage";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
@@ -3126,19 +3127,18 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-const size = (bytes: number) => (bytes < 1024 ** 3 ? `${Math.round(bytes / 1024 ** 2)} MB` : `${gb(bytes)} GB`);
 /** `8` or `0.2`, without a trailing `.0`. */
 const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1)));
 
-/** What each session's processes use, and the sessions waiting to start. */
-/** Host ids whose Sessions list is open, per browser. Collapsed by default:
- *  on a busy server the list runs to dozens of rows. */
-const SESSIONS_OPEN_KEY = "yard.hosts.sessionsOpen";
+/** Host ids whose card details are open, per browser. Closed by default, like
+ *  an automation's runs: the grid stays a page of small cards, and on a busy
+ *  server the sessions alone run to dozens of rows. */
+const DETAILS_OPEN_KEY = "yard.hosts.detailsOpen";
 
-function useSessionsOpen(hostId: string): [boolean, () => void] {
+function useDetailsOpen(hostId: string): [boolean, () => void] {
   const read = () => {
     try {
-      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
       return Array.isArray(v) && v.includes(hostId);
     } catch {
       return false;
@@ -3149,47 +3149,31 @@ function useSessionsOpen(hostId: string): [boolean, () => void] {
     const next = !open;
     setOpen(next);
     try {
-      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
       const list = (Array.isArray(v) ? v : []).filter((h: unknown) => h !== hostId);
-      localStorage.setItem(SESSIONS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
+      localStorage.setItem(DETAILS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
     } catch {
-      // A private window may refuse storage; the list still toggles.
+      // A private window may refuse storage; the details still toggle.
     }
   };
   return [open, toggle];
 }
 
-function SessionUse({ hostId, host, sessions }: { hostId: string; host: Host; sessions: Record<string, SessionMeta> }) {
+/** What each session's processes use, the sessions waiting to start, and the
+ *  rule that queues them: the details under a card's one-line summary. */
+function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
   const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
   const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
   const queued = Object.values(sessions)
     .filter((s) => s.status === "queued")
     .sort((a, b) => a.createdAt - b.createdAt);
   const limits = host.limits;
-  const [open, toggle] = useSessionsOpen(hostId);
-  const cores = rows.reduce((n, u) => n + u.cpuCores, 0);
-  const mem = rows.reduce((n, u) => n + u.memBytes, 0);
-  const any = rows.length > 0 || queued.length > 0;
   return (
     <section className="usage" aria-label="Sessions">
-      {any ? (
-        <h2>
-          <button className="list-toggle usage-toggle" aria-expanded={open} onClick={toggle}>
-            <span>Sessions</span>
-            <span className="muted usage-summary">
-              {rows.length > 0 && ` · ${rows.length} ${rows.length === 1 ? "session" : "sessions"}, ${cores.toFixed(1)} cores, ${size(mem)}`}
-            </span>
-            {queued.length > 0 && <span className="warn usage-summary"> · {queued.length} queued</span>}
-            <span className={`tool-chevron ${open ? "open" : ""}`}>
-              <Icon d={CHEVRON_RIGHT} size={11} />
-            </span>
-          </button>
-        </h2>
+      <h2>Sessions</h2>
+      {rows.length === 0 && queued.length === 0 ? (
+        <div className="muted small">No session is running anything.</div>
       ) : (
-        <h2>Sessions</h2>
-      )}
-      {!any && <div className="muted small">No session is running anything.</div>}
-      {any && open && (
         <table>
           <thead>
             <tr>
@@ -3645,6 +3629,11 @@ interface AccountActions {
   remove(id: string): void;
 }
 
+/** A host as a small card in the Hosts grid, like an automation's: its state,
+ *  CPU, memory and disk, one line for its sessions and a mark per engine.
+ *  Details opens the rest under it, as an automation's Runs do: the CPU
+ *  history, the sessions table and queue rule, each engine's accounts with
+ *  their logins, and Update or Remove for a remote host. */
 function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void; accountActions?: AccountActions }) {
   const { state, id, onRemove, onInstall, onLogin, accountActions } = props;
   const install = state.installs[id];
@@ -3653,17 +3642,27 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
   const host = status === "down" || status === "connecting" ? undefined : state.host[id];
   const sessions = Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
   const name = hostName(state, id);
-  const where = entry ? (entry.kind === "ssh" ? entry.destination : entry.url) : "";
+  const where = entry ? ((entry.kind === "ssh" ? entry.destination : entry.url) ?? "") : "This machine";
   const problem = entry && status === "down" ? explainHostError(entry) : null;
+  const engines = host ? state.engines[id] : undefined;
+  const accounts = accountsOn(state, id);
+  const glance = host ? sessionGlance(host, sessions) : null;
+  const [open, toggle] = useDetailsOpen(id);
   return (
     <section className="host-card" aria-label={name}>
       <div className="host-head">
         <span className={`dot host-dot-${status}`} aria-hidden="true" />
-        <h2>{name}</h2>
-        {entry && <Cloud size={14} />}
-        {where && <span className="muted small host-where">{where}</span>}
+        <h2 className="host-card-name" title={name}>
+          {name}
+        </h2>
+        {entry && <Cloud size={13} />}
         <span className="spacer" />
-        <span className={`small host-state-${status}`}>{HOST_STATE_LABEL[status]}</span>
+        <span className={`small host-state-${status}`} title={host?.pressure ?? undefined}>
+          {HOST_STATE_LABEL[status]}
+        </span>
+      </div>
+      <div className="muted small host-where" title={where}>
+        {where}
       </div>
       {install && (install.running || !install.ok || status !== "ok") && <InstallLog install={install} machine={name} />}
       {problem && !install?.running && !install?.ok && (
@@ -3687,35 +3686,68 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
       )}
       {status === "connecting" && <div className="muted small">Opening the SSH tunnel…</div>}
       {host && (
-        <>
-          <div className="stat-grid">
-            <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
-            <Stat
-              label="Memory"
-              value={(host.memUsed / host.memTotal) * 100}
-              big={`${gb(host.memUsed)} GB`}
-              detail={`of ${gb(host.memTotal)} GB`}
-              warn={host.memUsed / host.memTotal > 0.9}
-            />
-            <Stat
-              label="Disk"
-              value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
-              big={`${gb(host.diskUsed)} GB`}
-              detail={`of ${gb(host.diskTotal)} GB`}
-              warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
-            />
-          </div>
-          <Sparkline values={host.cpuHistory ?? []} />
-          <SessionUse hostId={id} host={host} sessions={sessions} />
-        </>
+        <div className="stat-grid">
+          <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
+          <Stat
+            label="Memory"
+            value={(host.memUsed / host.memTotal) * 100}
+            big={`${gb(host.memUsed)} GB`}
+            detail={`of ${gb(host.memTotal)} GB`}
+            warn={host.memUsed / host.memTotal > 0.9}
+          />
+          <Stat
+            label="Disk"
+            value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
+            big={`${gb(host.diskUsed)} GB`}
+            detail={`of ${gb(host.diskTotal)} GB`}
+            warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
+          />
+        </div>
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
-      {host && state.engines[id] ? (
-        <Engines engines={state.engines[id]} accounts={accountsOn(state, id)} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />
+      {engines ? (
+        <ul className="host-engines" aria-label={`Engines on ${name}`}>
+          {engineGlance(engines, accounts).map((e) => (
+            <li key={e.engine} className={`host-engine engine-${e.tone}`} title={e.title}>
+              <span className={`dot ${e.tone === "ok" ? "host-dot-ok" : e.tone === "warn" ? "host-dot-busy" : "host-dot-down"}`} aria-hidden="true" />
+              {e.label}
+              {e.note && <span className="host-engine-note">{e.note}</span>}
+            </li>
+          ))}
+        </ul>
       ) : (
         install?.ok && !install.running && <EngineSummary install={install} machine={name} />
       )}
-      {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
+      <div className="host-card-foot">
+        {glance && (
+          <span className="small host-sessions" title={`Sessions on ${name}: ${glance.text}${glance.queued ? `, ${glance.queued} queued` : ""}`}>
+            <span className="muted">{glance.text}</span>
+            {glance.queued > 0 && <span className="warn"> · {glance.queued} queued</span>}
+          </span>
+        )}
+        <span className="spacer" />
+        <button
+          className="btn-text host-more"
+          aria-expanded={open}
+          aria-label={`Details: ${name}`}
+          title={open ? "Hide the details" : "Sessions, engine accounts and logins"}
+          onClick={toggle}
+        >
+          Details
+          <span className={`tool-chevron ${open ? "open" : ""}`}>
+            <Icon d={CHEVRON_RIGHT} size={11} />
+          </span>
+        </button>
+      </div>
+      {open && (
+        <div className="host-details">
+          {host && <Sparkline values={host.cpuHistory ?? []} />}
+          {host && <SessionUse host={host} sessions={sessions} />}
+          {engines && <Engines engines={engines} accounts={accounts} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />}
+          {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
+          {!host && !onRemove && <div className="muted small">Nothing more until the first sample.</div>}
+        </div>
+      )}
     </section>
   );
 }
@@ -3786,7 +3818,7 @@ function Engines(props: {
             <div className="engine-row">
               <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
               <span>{ENGINE_LABEL[engine]}</span>
-              <span className="muted small">{engineStateText(st)}</span>
+              <span className="muted small">{stateText(st)}</span>
               {/* Either the install command or one action group sits at the right: a narrow row wraps the group whole instead of
                   leaving Add account at the left, and an empty group would share the free space with the install command. */}
               {!st.installed ? (
@@ -3835,14 +3867,6 @@ function Engines(props: {
   );
 }
 
-function engineStateText(st: EngineState): string {
-  if (!st.installed) return "not installed";
-  if (st.loggedIn === true && st.providers?.length) return `providers: ${st.providers.join(", ")}`;
-  if (st.loggedIn === true) return st.account ? `logged in as ${st.account}` : "logged in";
-  if (st.loggedIn === false) return "not logged in";
-  return st.error || "status unknown";
-}
-
 /** An added account under its engine: its login state, Log in and Remove
  *  (which asks for a second click, like removing a host). */
 function AccountRow({ account, state: st, onLogin, onRemove }: { account: AccountEntry; state?: EngineState; onLogin?(): void; onRemove?(): void }) {
@@ -3857,7 +3881,7 @@ function AccountRow({ account, state: st, onLogin, onRemove }: { account: Accoun
     <div className="account-row">
       <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
       <span className="account-name">{account.name}</span>
-      <span className="muted small">{st ? engineStateText(st) : "checking…"}</span>
+      <span className="muted small">{st ? stateText(st) : "checking…"}</span>
       {st?.installed && (st.loggedIn !== true || addsProviders(account.engine)) && onLogin && (
         <button className="btn engine-login" aria-label={`Log in ${account.name}`} onClick={onLogin}>
           {addsProviders(account.engine) && st.loggedIn === true ? "Add provider" : "Log in"}
@@ -4071,30 +4095,32 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
         )}
       </header>
       <div className="scroll">
-        <div className="hosts-inner">
+        <div className="hosts-inner host-list">
           {adding && <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />}
-          <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
-          {state.hosts.map((h) => (
-            <HostCard
-              key={h.id}
-              state={state}
-              id={h.id}
-              onRemove={() => actions.removeHost(h.id)}
-              onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
-              accountActions={accountActions(h.id)}
-              onLogin={(engine) => setLogin({ host: h.id, engine })}
-            />
-          ))}
+          <div className="host-grid">
+            <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
+            {state.hosts.map((h) => (
+              <HostCard
+                key={h.id}
+                state={state}
+                id={h.id}
+                onRemove={() => actions.removeHost(h.id)}
+                onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
+                accountActions={accountActions(h.id)}
+                onLogin={(engine) => setLogin({ host: h.id, engine })}
+              />
+            ))}
+            {state.hosts.length === 0 && !adding && (
+              <button className="host-empty" onClick={() => setAdding(true)}>
+                <Icon d={CLOUD} size={16} />
+                <span>
+                  <strong>Run sessions on another machine</strong>
+                  <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
+                </span>
+              </button>
+            )}
+          </div>
           {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} account={login.account} onClose={() => setLogin(null)} />}
-          {state.hosts.length === 0 && !adding && (
-            <button className="host-empty" onClick={() => setAdding(true)}>
-              <Icon d={CLOUD} size={16} />
-              <span>
-                <strong>Run sessions on another machine</strong>
-                <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
-              </span>
-            </button>
-          )}
         </div>
       </div>
     </div>

@@ -525,7 +525,29 @@ h1, h2, h3, p { margin: 0; }
 .host-dot-connecting { border: 1.5px solid var(--warn); }
 .hosts-inner { max-width: 640px; gap: 16px; }
 .hosts .bar .btn { display: flex; align-items: center; gap: 6px; height: 30px; }
-.host-card { gap: 14px; padding: 18px 20px; }
+.add-host { gap: 14px; padding: 18px 20px; }
+/* A host card matches an automation's: small, so hosts sit side by side in
+   the grid, with the details opening under it. */
+.hosts-inner.host-list { max-width: none; }
+.host-list > .add-host { max-width: 560px; }
+.host-grid > .host-card { min-width: 0; gap: 8px; padding: 12px 10px 6px 14px; border-radius: 12px; background: var(--bg); }
+.host-grid > .host-empty { min-width: 0; }
+.host-grid .host-head { min-height: 22px; padding-right: 4px; }
+.host-grid .host-head h2 { min-width: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.host-grid .host-where { margin-top: -6px; }
+.host-grid .stat-grid { gap: 12px; padding-right: 4px; }
+.host-grid .stat { gap: 3px; }
+.host-grid .stat-big { font-size: 15px; }
+.host-grid .stat .muted { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.host-engines { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0; padding: 0; list-style: none; font-size: 12px; }
+.host-engine { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.host-engine.engine-off { color: var(--muted); }
+.host-engine-note { color: var(--warn-ink); }
+.host-card-foot { display: flex; align-items: center; gap: 2px; min-height: 32px; padding-top: 4px; border-top: 1px solid var(--line); }
+.host-sessions { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-text.host-more { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px; font-size: 12px; }
+.host-more[aria-expanded="true"] { color: var(--ink); }
+.host-details { display: flex; flex-direction: column; gap: 14px; padding: 10px 4px 10px 0; border-top: 1px solid var(--line); }
 .host-head { align-items: center; }
 .host-head h2 { font-size: 15px; }
 .host-head .dot { width: 8px; height: 8px; }
@@ -689,7 +711,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .hosts-inner.automation-list { max-width: none; gap: 24px; }
 /* The empty state keeps the Hosts page's width; only the grid spreads out. */
 .automation-list > .host-empty { max-width: 496px; }
-.automation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; align-items: start; }
+.automation-grid, .host-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; align-items: start; }
 .automation-host { display: flex; flex-direction: column; gap: 10px; }
 .automation-host-name { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted); }
 .automation { min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 12px 10px 6px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
@@ -818,7 +840,7 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
   .dock { padding: 0 12px 12px; }
   .new { padding: 32px 16px; }
   .hosts-inner { padding: 20px 16px; }
-  .automation-grid { grid-template-columns: 1fr; }
+  .automation-grid, .host-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) { .sidebar, .app.drawer-open .sidebar { transition: none; } }
 
