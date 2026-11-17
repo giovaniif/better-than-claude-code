@@ -160,9 +160,6 @@ yv drive hosts --viewport desktop --steps '[{"click":"role:button:Add host"},{"f
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
 
-## Gotchas
-- Isolated environments replace `ssh` with `verify/fakes/ssh`, which always fails like an unreachable host.
-
 ### engine-status-keeps-cards-aligned
 A longer engine status cannot move the footer below its neighbour. On mobile
 the cards stack without horizontal overflow. The second card is a DOM fixture
@@ -171,3 +168,7 @@ with the same engine status text that wrapped in the reported screenshot.
 ```sh
 yv drive hosts --steps '[{"eval":"(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); b.querySelector(\".host-engine\").append(document.createTextNode(\" \u00b7 not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.append(b); return true; })()","equals":true},{"shot":"wrapped-status"},{"eval":"(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=cards.at(-1).getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()","equals":true},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true}]'
 ```
+
+
+## Gotchas
+- Isolated environments replace `ssh` with `verify/fakes/ssh`, which always fails like an unreachable host.

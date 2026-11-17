@@ -188,9 +188,6 @@ yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-hello from Claud
 yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-handoff"},"text":"2"}]'
 ```
 
-## Gotchas
-- Row menus render on document.body (a portal), so find menu items by role, not inside the row.
-
 ### mark-chat-unread
 Marking a chat unread persists across reloads, including the open chat. Opening
 it deliberately or choosing Mark as read clears it.
@@ -199,3 +196,7 @@ it deliberately or choosing Mark as read clears it.
 yv drive new --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
 ```
+
+
+## Gotchas
+- Row menus render on document.body (a portal), so find menu items by role, not inside the row.
