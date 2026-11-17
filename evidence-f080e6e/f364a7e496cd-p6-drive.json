@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "f080e6e6c13fab5fa1b05cf38e5c10d58147934e",
+    "short": "f080e6e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:52:31.910Z"
+  },
+  "dir": ".verify/evidence/cw8-signin",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8034,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cw8-signin/claude-signed-in-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "mcp.auth",
+          "message": "Invalid callback URL: missing authorization code. Please paste the full redirect URL including the code parameter."
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
