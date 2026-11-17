@@ -1,5 +1,9 @@
 # Switchyard for iPhone and iPad
 
+Build operations, the server's existing Apple/EAS credentials, and TestFlight
+setup: [docs/IOS_BUILDS.md](../docs/IOS_BUILDS.md). Read that before creating
+new certificates or assuming the repository's secrets are the only source.
+
 An iOS shell around the **same live UI served by your yardd**. The editor,
 attachments, model/engine switching, approvals, queued messages, terminals,
 changes, pull requests, processes, hosts, accounts, connectors and automations
@@ -66,11 +70,12 @@ The workflow uses macOS 26 and the iOS 26+ SDK to meet
 
 ## TestFlight first
 
-Create an iOS app record in App Store Connect, register the bundle ID, and create
-an **App Store distribution** provisioning profile covering it and an **Apple
-Distribution** certificate (the desktop Developer ID certificate cannot sign
-iOS distribution). Add these GitHub Actions secrets, preferably to the
-`testflight` environment:
+Create the iOS app record in App Store Connect once. Switchyard's bundle ID and
+App Store provisioning profile have been registered; the server's EAS account
+already holds a valid **iPhone Distribution** certificate and Admin API key.
+Reuse those following [the build guide](../docs/IOS_BUILDS.md); the desktop
+Developer ID certificate cannot sign iOS distribution. The workflow uses these
+GitHub Actions secrets, either on the repository or the `testflight` environment:
 
 | Secret | Value |
 | --- | --- |

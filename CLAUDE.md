@@ -9,6 +9,8 @@ One UI for Claude Code, Codex, OpenCode and Grok sessions. Read [docs/ARCHITECTU
 
 ## Build and run
 
+- iOS/TestFlight: read [docs/IOS_BUILDS.md](docs/IOS_BUILDS.md) before building or declaring credentials missing. The server's Expo/EAS account holds reusable iOS signing credentials; `~/signing.p12` is for the desktop app. Never print or commit secret values.
+
 - Rust is not on `PATH` on the Mac: `export PATH=/opt/homebrew/opt/rustup/bin:$PATH` before any `cargo`. The Linux server (where the agent loops run) has it on `PATH`.
 - `CARGO_BUILD_JOBS=2 cargo build -p yardd`. Keep the job cap: the machine has 8 cores, 16 GB and other work running.
 - UI: `cd ui && bun install && bunx vite build`. Sidecar: `cd sidecar/yard-claude && bun install`.

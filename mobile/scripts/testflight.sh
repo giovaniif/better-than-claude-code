@@ -40,10 +40,13 @@ security unlock-keychain -p "$keychain_password" "$keychain"
 security import "$signing_dir/certificate.p12" -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain"
 security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychain_password" "$keychain" >/dev/null
 security list-keychains -d user -s "$keychain" "$HOME/Library/Keychains/login.keychain-db"
+# EAS may hold an older iPhone Distribution identity; both certificate types
+# can sign App Store builds. Match the imported key, rather than its label.
+signing_identity=$(security find-identity -v -p codesigning "$keychain" | python3 -c 'import re,sys; ids=re.findall(r"\b[0-9A-Fa-f]{40}\b",sys.stdin.read()); assert len(ids)==1, "Expected one valid iOS signing identity"; print(ids[0])')
 bash scripts/prepare.sh
 xcodebuild archive -project Switchyard.xcodeproj -scheme Switchyard -configuration Release \
   -destination 'generic/platform=iOS' -archivePath build/Switchyard.xcarchive -jobs 2 \
-  CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY='Apple Distribution' DEVELOPMENT_TEAM="$MACOS_TEAM_ID" \
+  CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="$signing_identity" DEVELOPMENT_TEAM="$MACOS_TEAM_ID" \
   PROVISIONING_PROFILE_SPECIFIER="$profile_name" CURRENT_PROJECT_VERSION="$build_number"
 export MACOS_TEAM_ID profile_name
 python3 - <<'PY'
