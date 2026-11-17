@@ -1,0 +1,241 @@
+{
+  "v": 1,
+  "claim": "Stopping a turn that has only streamed text leaves the cut-off text with no Stopped mark, so it reads as a full answer; a turn that did work gets 'Stopped after Ns' on its fold",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-4614",
+  "base": "b2f1cfd35edf1fb68c9b62399f95701a5e6bfabd",
+  "head": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/stop.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T22:44:41.800Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "37336fc0a051a2db1c85a60d974b82ae155d73d8",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "616a4682faab41516df96b0a7355ede1775e5df6096d2fc51e49625da3bd029a"
+        },
+        {
+          "path": "p1-stopped-desktop.png",
+          "sha256": "cd9ddc769a64ef0f98df654cbc921b7a0d60c8231c45baade0d5d8de40b46f0a"
+        }
+      ],
+      "addedAt": "2026-11-17T22:44:50.643Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "37336fc0a051a2db1c85a60d974b82ae155d73d8",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "3d43f214a9380fa1dd08bf1642ef41d3f5cc4c7b867d505607b9cbb679da0541"
+        },
+        {
+          "path": "p2-stopped-mobile.png",
+          "sha256": "4349e7f08c37128c6ce8fe2dc9af05ce8a06aa0e879bee1198e808f301b2e6c3"
+        }
+      ],
+      "addedAt": "2026-11-17T22:44:55.980Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "37336fc0a051a2db1c85a60d974b82ae155d73d8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "9a6f2b7ab4380fe78329f7e29c0a4120f8904679d30db0d9de2e6117a8be47c7"
+        }
+      ],
+      "addedAt": "2026-11-17T22:44:56.021Z",
+      "cmd": "cd ui && bun test src/thread.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "f1292d097ab139587725c89b2f72f19e01081eb756aaeca4f06ca99b11513dbc"
+        },
+        {
+          "path": "p4-stopped-desktop.png",
+          "sha256": "f74cf1ab36b1ce5a1d069dba8fc640fa6d81b22367ecd7d9a0db48edb4238f15"
+        }
+      ],
+      "addedAt": "2026-11-17T22:45:11.391Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "64ec6a47ea54219c71214d14374f48d6762ec30d603e774c052eeb0fc2f521fb"
+        },
+        {
+          "path": "p5-stopped-mobile.png",
+          "sha256": "73267fcb6bceb0a52fffeea14666b75abac96083e613e3c8db6bf9e05fbd66f1"
+        }
+      ],
+      "addedAt": "2026-11-17T22:45:16.309Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "2c42f66423b4272e30b3552077534d5f25e8c01e91fe535a1e4f7452aefe2573"
+        }
+      ],
+      "addedAt": "2026-11-17T22:45:16.349Z",
+      "cmd": "verify/yv design-check --base b2f1cfd35edf",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "80f055bfbcc9620596d5b30f4f2e1b0b09ab906f8792f57d0f40806715aff2ec"
+        }
+      ],
+      "addedAt": "2026-11-17T22:45:23.324Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-stop.json",
+          "sha256": "4879096b68797d42c8c661725ab777aa2c8553405d64c481353802de365e4a76"
+        }
+      ],
+      "addedAt": "2026-11-17T22:45:23.476Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn",
+        "stop/stop-stuck-opencode-turn",
+        "stop/stop-while-asking",
+        "stop/stop-while-asking-says-not-answered"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-thread.json",
+          "sha256": "d76cbf49396233096b19e0d3dcc66d8c8d7fabcccc2b19df72f168c4c21036aa"
+        }
+      ],
+      "addedAt": "2026-11-17T22:46:17.436Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/subagent-nests-and-expands",
+        "thread/working-line-stays-in-view",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch"
+      ]
+    }
+  ]
+}

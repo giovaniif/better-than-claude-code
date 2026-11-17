@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1ebaf86bb4",
+  "build": {
+    "sha": "fee5309a6000ffd59a0fd6509f2ddb2c4b1e0211",
+    "short": "fee5309",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T22:45:06.850Z"
+  },
+  "dir": ".verify/evidence/stopped-text-turn-fix-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4256,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/stopped-text-turn-fix-mobile/stopped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

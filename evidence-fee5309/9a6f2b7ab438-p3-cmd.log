@@ -1,0 +1,31 @@
+$ cd ui && bun test src/thread.test.ts
+# exit 1 after 18 ms at 37336fc0a051a2db1c85a60d974b82ae155d73d8
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+77 |       { type: "turn_started", at: 1_000 },
+78 |       { type: "assistant_message", itemId: "m", text: "Working" },
+79 |       { type: "turn_completed", status: "interrupted", at: 5_000 },
+80 |     ]);
+81 |     const rows = layout(items, false);
+82 |     expect(shape(rows)).toEqual(["user", "assistant", "stopped"]);
+                             ^
+error: expect(received).toEqual(expected)
+
+@@ -3,3 +3,2 @@
+    "assistant",
+-   "stopped",
+  ]
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-4614/ui/src/thread.test.ts:82:25)
+(fail) layout > a stopped turn with only text is marked stopped under its text, with its duration [0.52ms]
+
+ 20 pass
+ 1 fail
+ 34 expect() calls
+Ran 21 tests across 1 file. [13.00ms]
