@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { AgentEvent, SessionMeta } from "./protocol";
-import { cleanGroupName, go, hostName, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
+import { cleanGroupName, go, hostErrorText, hostName, initial, parseHash, reduce, routeHash, sidebarLayout, type State } from "./store";
 
 const server = (state: State, msg: any) => reduce(state, { t: "server", msg });
 const event = (sessionId: string, seq: number, ev: AgentEvent) => ({ op: "event", sessionId, seq, event: ev });
@@ -300,6 +300,16 @@ describe("session.procs", () => {
     let s = server(initial, { op: "session.procs", sessionId: "s1", procs: [] });
     s = server(s, { op: "session.deleted", sessionId: "s1" });
     expect(s.procs.s1).toBeUndefined();
+  });
+
+  test("a remote yardd that does not know session.kill reads as a host to update", () => {
+    const s = server(initial, { op: "hosts", hosts: [{ id: "h1", name: "TEST-box", kind: "direct", status: "connected" }] });
+    expect(hostErrorText(s, "h1", "unknown op `session.kill`")).toBe(
+      "TEST-box runs an older Switchyard. Use Update Switchyard on its card in Hosts, then try again.",
+    );
+    // This machine's own refusals pass through.
+    expect(hostErrorText(s, undefined, "no such session")).toBe("no such session");
+    expect(hostErrorText(s, "local", "unknown op `session.kill`")).toBe("unknown op `session.kill`");
   });
 });
 

@@ -53,3 +53,58 @@ export function procSummary(rows: ProcRow[]): string {
   const mem = rows.reduce((sum, r) => sum + r.memBytes, 0);
   return `${rows.length} ${rows.length === 1 ? "process" : "processes"} · ${Math.round(cpu)}% CPU · ${memText(mem)}`;
 }
+
+export type KillSignal = "term" | "kill";
+
+/** Where a row's Stop stands, kept by the tab per pid. `start` is the row's
+ *  start time when it was asked, so a reused pid does not inherit it. */
+export type KillState = { signal: KillSignal; tree: boolean; start?: number } & (
+  | { phase: "sending" }
+  | { phase: "done"; result: "killed" | "running" | "refused" | "failed"; reason?: string }
+);
+
+/** The stop controls a row offers. */
+export interface RowActions {
+  /** The × that asks to stop it with SIGTERM. */
+  stop: boolean;
+  /** Also "Stop with children": it has children in the list. */
+  withChildren: boolean;
+  /** SIGTERM did not end it: "Force kill" (SIGKILL). */
+  force: boolean;
+  /** Force kill the children too, as the Stop before it did. */
+  forceTree: boolean;
+  /** A line under the row: under way, still running, or why not. */
+  note?: { text: string; bad?: boolean };
+}
+
+/** The engine's own process is not offered a Stop: yardd refuses it, and the
+ *  session's Stop and Delete are the ways to end an agent. */
+export const ENGINE_HINT = "The session's agent. Use Stop or Delete to end it.";
+
+/** What a row of the Processes tab offers, given the tab's last kill of it. */
+export function rowActions(row: ProcRow, rows: ProcRow[], kill?: KillState): RowActions {
+  const none: RowActions = { stop: false, withChildren: false, force: false, forceTree: false };
+  if (row.engine) return none;
+  const k = kill && (kill.start === undefined || row.start === undefined || kill.start === row.start) ? kill : undefined;
+  const children = rows.some((r) => r.ppid === row.pid && r.pid !== row.pid);
+  const idle: RowActions = { ...none, stop: true, withChildren: children };
+  if (!k) return idle;
+  if (k.phase === "sending") return { ...none, note: { text: k.signal === "kill" ? "Force killing…" : "Stopping…" } };
+  switch (k.result) {
+    case "killed":
+      return { ...none, note: { text: k.tree ? "Stopped with its children." : "Stopped." } };
+    case "running":
+      return { ...none, force: true, forceTree: k.tree, note: { text: `Still running after ${k.signal === "kill" ? "SIGKILL" : "SIGTERM"}.` } };
+    case "refused":
+      return { ...idle, note: { text: `Not stopped: ${k.reason ?? "refused"}.`, bad: true } };
+    case "failed":
+      return { ...idle, note: { text: k.reason ?? "Not stopped.", bad: true } };
+  }
+}
+
+/** Forget kills of processes that left the list, except one under way. */
+export function pruneKills(kills: Record<number, KillState>, rows: ProcRow[]): Record<number, KillState> {
+  const listed = new Set(rows.map((r) => r.pid));
+  const kept = Object.entries(kills).filter(([pid, k]) => listed.has(Number(pid)) || k.phase === "sending");
+  return kept.length === Object.keys(kills).length ? kills : Object.fromEntries(kept);
+}

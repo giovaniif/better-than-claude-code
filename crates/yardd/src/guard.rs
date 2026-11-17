@@ -1,16 +1,18 @@
 //! Resource guard: what each session's processes use, and a queue that holds
 //! new sessions while the host is busy. Nothing running is ever stopped for
 //! its size: a per-session memory cap was tried and removed (2026-11-15).
+//! The only kill here is one the user asks for (`kill`), checked against the
+//! session's process tree read at that moment.
 
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     path::PathBuf,
     sync::{Arc, Mutex},
-    time::{SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
 use serde_json::{json, Value};
-use sysinfo::{Pid, System};
+use sysinfo::{Pid, ProcessRefreshKind, ProcessStatus, Signal, System, UpdateKind};
 
 use crate::{pty, sessions, state::App};
 
@@ -63,6 +65,9 @@ struct ProcRow {
     start: u64,
     /// `agent`: what the engine runs. `terminal`: the session's shells.
     origin: &'static str,
+    /// The engine's own process (the Claude sidecar or its CLI), which
+    /// `kill` refuses: the session's Stop and Delete are the ways to end it.
+    engine: bool,
 }
 
 #[derive(Default)]
@@ -176,7 +181,9 @@ impl Guard {
                     "cpu": p.cpu,
                     "memBytes": p.mem,
                     "ageSecs": now.saturating_sub(p.start),
+                    "start": p.start,
                     "origin": p.origin,
+                    "engine": p.engine,
                 })
             })
             .collect()
@@ -258,86 +265,9 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
         ));
     }
 
-    let (sidecars, codex_servers, commands) = {
-        let mut inner = guard.inner.lock().unwrap();
-        inner.pressure = (!reasons.is_empty()).then(|| reasons.join("; "));
-        (inner.sidecars.clone(), inner.codex_servers.values().copied().collect::<Vec<u32>>(), inner.commands.clone())
-    };
+    guard.inner.lock().unwrap().pressure = (!reasons.is_empty()).then(|| reasons.join("; "));
 
-    let procs = sys.processes();
-    let mut children: HashMap<Pid, Vec<Pid>> = HashMap::new();
-    for (pid, p) in procs {
-        // On Linux sysinfo also lists every thread, with its process as the
-        // parent and the process's whole memory as its own. Counted, a CLI
-        // with 30 threads looked 30 times its size; killed, a thread id takes
-        // the whole process down, which is how the cap killed Claude Code.
-        if p.thread_kind().is_some() {
-            continue;
-        }
-        if let Some(parent) = p.parent() {
-            children.entry(parent).or_default().push(*pid);
-        }
-    }
-
-    let mut usage: HashMap<String, SessionUse> = HashMap::new();
-    let mut listed: HashMap<String, Vec<ProcRow>> = HashMap::new();
-    let mut add = |sid: &str, root: u32, origin: &'static str| {
-        let u = usage.entry(sid.to_string()).or_default();
-        let rows = listed.entry(sid.to_string()).or_default();
-        let mut pids = Vec::new();
-        tree(&children, Pid::from_u32(root), &mut pids, &mut HashSet::new());
-        // Children come first in `pids`; the list reads better parent first,
-        // and the UI orders it anyway.
-        for pid in pids {
-            let Some(p) = procs.get(&pid) else { continue };
-            u.cpu += p.cpu_usage();
-            u.mem += p.memory();
-            if rows.iter().any(|r| r.pid == pid.as_u32()) {
-                continue;
-            }
-            let cmd = p.cmd().join(" ");
-            rows.push(ProcRow {
-                pid: pid.as_u32(),
-                ppid: p.parent().map_or(0, |pp| pp.as_u32()),
-                name: p.name().to_string(),
-                cmd: if cmd.is_empty() { p.name().to_string() } else { cmd.chars().take(400).collect() },
-                cpu: p.cpu_usage(),
-                mem: p.memory(),
-                start: p.start_time(),
-                origin,
-            });
-        }
-    };
-    // The whole sidecar tree: the sidecar, the CLI and what it runs.
-    for (sid, pid) in &sidecars {
-        add(sid, *pid, "agent");
-    }
-    // Codex reports an id of its own as `processId`, not an OS pid. So each
-    // child of the app-server goes to the session with a running command in
-    // that folder (or above it, for a shell that ran `cd`) that started no
-    // later than the process did, the latest when several match. Helpers the
-    // server keeps for itself match no command. Two sessions running
-    // commands in one folder at the same moment can be mixed up.
-    for server in codex_servers {
-        for child in children.get(&Pid::from_u32(server)).into_iter().flatten() {
-            let Some(p) = procs.get(child) else { continue };
-            let Some(cwd) = p.cwd() else { continue };
-            let cwd = std::fs::canonicalize(cwd).unwrap_or_else(|_| cwd.to_path_buf());
-            let owner = commands
-                .iter()
-                .flat_map(|(sid, items)| items.values().map(move |c| (sid, c)))
-                .filter(|(_, c)| cwd.starts_with(&c.cwd) && c.since <= p.start_time() + 2)
-                .max_by_key(|(_, c)| c.since)
-                .map(|(sid, _)| sid.clone());
-            if let Some(sid) = owner {
-                add(&sid, child.as_u32(), "agent");
-            }
-        }
-    }
-    for (sid, pid) in pty::shell_pids(app) {
-        add(&sid, pid, "terminal");
-    }
-    // The closure holds `usage` and `listed` until here.
+    let (listed, usage, _) = attribute(app, sys);
     guard.inner.lock().unwrap().procs = listed;
 
     // One per sample, so a burst of starts cannot push the host straight
@@ -376,4 +306,347 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
             "forced": limits.forced,
         },
     })
+}
+
+/// Each session's processes in `sys`, what they use, and the engines' own
+/// pids: Claude sidecars and their CLIs, and the shared Codex app-servers and
+/// ACP agents.
+fn attribute(app: &Arc<App>, sys: &System) -> (HashMap<String, Vec<ProcRow>>, HashMap<String, SessionUse>, HashSet<u32>) {
+    let (sidecars, codex_servers, commands) = {
+        let inner = app.guard.inner.lock().unwrap();
+        (inner.sidecars.clone(), inner.codex_servers.values().copied().collect::<Vec<u32>>(), inner.commands.clone())
+    };
+
+    let procs = sys.processes();
+    let mut children: HashMap<Pid, Vec<Pid>> = HashMap::new();
+    for (pid, p) in procs {
+        // On Linux sysinfo also lists every thread, with its process as the
+        // parent and the process's whole memory as its own. Counted, a CLI
+        // with 30 threads looked 30 times its size; killed, a thread id takes
+        // the whole process down, which is how the cap killed Claude Code.
+        if p.thread_kind().is_some() {
+            continue;
+        }
+        if let Some(parent) = p.parent() {
+            children.entry(parent).or_default().push(*pid);
+        }
+    }
+
+    // A sidecar's own child is the Claude CLI the SDK starts; the agent's
+    // commands run below that. The CLI is told apart by name, so a process
+    // the sidecar runs directly (the scripted sidecar's `sleep`) stays the
+    // session's to stop.
+    let mut engines: HashSet<u32> = codex_servers.iter().copied().collect();
+    for pid in sidecars.values() {
+        engines.insert(*pid);
+        for kid in children.get(&Pid::from_u32(*pid)).into_iter().flatten() {
+            let Some(p) = procs.get(kid) else { continue };
+            if p.name().contains("claude") || p.cmd().iter().any(|arg| arg.contains("claude")) {
+                engines.insert(kid.as_u32());
+            }
+        }
+    }
+
+    let mut usage: HashMap<String, SessionUse> = HashMap::new();
+    let mut listed: HashMap<String, Vec<ProcRow>> = HashMap::new();
+    let mut add = |sid: &str, root: u32, origin: &'static str| {
+        let u = usage.entry(sid.to_string()).or_default();
+        let rows = listed.entry(sid.to_string()).or_default();
+        let mut pids = Vec::new();
+        tree(&children, Pid::from_u32(root), &mut pids, &mut HashSet::new());
+        // Children come first in `pids`; the list reads better parent first,
+        // and the UI orders it anyway.
+        for pid in pids {
+            let Some(p) = procs.get(&pid) else { continue };
+            u.cpu += p.cpu_usage();
+            u.mem += p.memory();
+            if rows.iter().any(|r| r.pid == pid.as_u32()) {
+                continue;
+            }
+            let cmd = p.cmd().join(" ");
+            rows.push(ProcRow {
+                pid: pid.as_u32(),
+                ppid: p.parent().map_or(0, |pp| pp.as_u32()),
+                name: p.name().to_string(),
+                cmd: if cmd.is_empty() { p.name().to_string() } else { cmd.chars().take(400).collect() },
+                cpu: p.cpu_usage(),
+                mem: p.memory(),
+                start: p.start_time(),
+                origin,
+                engine: engines.contains(&pid.as_u32()),
+            });
+        }
+    };
+    // The whole sidecar tree: the sidecar, the CLI and what it runs.
+    for (sid, pid) in &sidecars {
+        add(sid, *pid, "agent");
+    }
+    // Codex reports an id of its own as `processId`, not an OS pid. So each
+    // child of the app-server goes to the session with a running command in
+    // that folder (or above it, for a shell that ran `cd`) that started no
+    // later than the process did, the latest when several match. Helpers the
+    // server keeps for itself match no command. Two sessions running
+    // commands in one folder at the same moment can be mixed up.
+    for server in codex_servers {
+        for child in children.get(&Pid::from_u32(server)).into_iter().flatten() {
+            let Some(p) = procs.get(child) else { continue };
+            let Some(cwd) = p.cwd() else { continue };
+            let cwd = std::fs::canonicalize(cwd).unwrap_or_else(|_| cwd.to_path_buf());
+            let owner = commands
+                .iter()
+                .flat_map(|(sid, items)| items.values().map(move |c| (sid, c)))
+                .filter(|(_, c)| cwd.starts_with(&c.cwd) && c.since <= p.start_time() + 2)
+                .max_by_key(|(_, c)| c.since)
+                .map(|(sid, _)| sid.clone());
+            if let Some(sid) = owner {
+                add(&sid, child.as_u32(), "agent");
+            }
+        }
+    }
+    for (sid, pid) in pty::shell_pids(app) {
+        add(&sid, pid, "terminal");
+    }
+    // The closure holds `usage` and `listed` until here.
+    (listed, usage, engines)
+}
+
+/// The signal `session.kill` sends.
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Sig {
+    Term,
+    Kill,
+}
+
+impl Sig {
+    pub fn parse(name: &str) -> Option<Sig> {
+        match name {
+            "term" => Some(Sig::Term),
+            "kill" => Some(Sig::Kill),
+            _ => None,
+        }
+    }
+
+    fn name(self) -> &'static str {
+        match self {
+            Sig::Term => "term",
+            Sig::Kill => "kill",
+        }
+    }
+
+    /// How long the process gets to end before the reply says it is still
+    /// running. SIGTERM gives it time to clean up; SIGKILL cannot be caught.
+    fn grace(self) -> Duration {
+        match self {
+            Sig::Term => Duration::from_secs(3),
+            Sig::Kill => Duration::from_secs(2),
+        }
+    }
+}
+
+/// What `session.kill` may signal: `pid`, and with `tree` every process below
+/// it in the session's list, children before parents, each with its start
+/// time. `Err` says why the request is refused.
+///
+/// Only a process the session's tree lists right now qualifies, and never
+/// pid 0 or 1, yardd itself, an engine's own process (a Claude sidecar or its
+/// CLI, a Codex app-server or ACP agent, which other sessions may share), or
+/// a process another session lists too. A `start` that differs from the
+/// listed one means the pid was reused since the UI saw it.
+fn targets(
+    listed: &HashMap<String, Vec<ProcRow>>,
+    engines: &HashSet<u32>,
+    own: u32,
+    sid: &str,
+    pid: u32,
+    start: Option<u64>,
+    tree: bool,
+) -> Result<Vec<(u32, u64)>, String> {
+    if pid <= 1 {
+        return Err(format!("pid {pid} belongs to the system, not to this session"));
+    }
+    if pid == own {
+        return Err(format!("pid {pid} is Switchyard's own daemon"));
+    }
+    let engine = || "it is the session's agent, which may serve other sessions too. Use Stop, or delete the session".to_string();
+    if engines.contains(&pid) {
+        return Err(engine());
+    }
+    let rows: &[ProcRow] = listed.get(sid).map(Vec::as_slice).unwrap_or(&[]);
+    let Some(row) = rows.iter().find(|r| r.pid == pid) else {
+        return Err(format!("pid {pid} is not one of this session's processes (it may have ended)"));
+    };
+    if row.engine {
+        return Err(engine());
+    }
+    if start.is_some_and(|s| s != row.start) {
+        return Err(format!("pid {pid} is now a different process"));
+    }
+
+    // Children before parents, so a parent that waits on its children sees
+    // them go rather than restarting them; all are signalled in one pass.
+    fn below(rows: &[ProcRow], row: &ProcRow, out: &mut Vec<(u32, u64)>, seen: &mut HashSet<u32>) {
+        if !seen.insert(row.pid) {
+            return;
+        }
+        for kid in rows.iter().filter(|r| r.ppid == row.pid && r.pid != row.pid) {
+            below(rows, kid, out, seen);
+        }
+        out.push((row.pid, row.start));
+    }
+    let mut picked = Vec::new();
+    if tree {
+        below(rows, row, &mut picked, &mut HashSet::new());
+    } else {
+        picked.push((row.pid, row.start));
+    }
+    for (p, _) in &picked {
+        if engines.contains(p) || rows.iter().any(|r| r.pid == *p && r.engine) {
+            return Err(engine());
+        }
+        if listed.iter().any(|(other, rows)| other != sid && rows.iter().any(|r| r.pid == *p)) {
+            return Err(format!("pid {p} is shared with another session"));
+        }
+    }
+    Ok(picked)
+}
+
+/// Still there as the same process, and not a zombie waiting to be reaped.
+fn alive(sys: &mut System, pid: u32, start: u64) -> bool {
+    let pid = Pid::from_u32(pid);
+    sys.refresh_process_specifics(pid, ProcessRefreshKind::new())
+        && sys
+            .process(pid)
+            .is_some_and(|p| p.start_time() == start && !matches!(p.status(), ProcessStatus::Zombie | ProcessStatus::Dead))
+}
+
+/// `session.kill`: read the process table now, check the request against the
+/// session's tree in it (`targets`), signal from that same read, then wait a
+/// moment to tell whether the processes ended. Answers `session.killed` with
+/// `result` `killed`, `running` (still there: SIGKILL is the next step) or
+/// `refused` with a `reason`.
+pub async fn kill(app: &Arc<App>, sid: &str, pid: u32, start: Option<u64>, sig: Sig, tree: bool) -> Value {
+    let reply = |result: &str, reason: Option<String>, running: &[u32]| {
+        let mut out = json!({
+            "op": "session.killed",
+            "sessionId": sid,
+            "pid": pid,
+            "signal": sig.name(),
+            "tree": tree,
+            "result": result,
+            "running": running,
+        });
+        if let Some(reason) = reason {
+            out["reason"] = json!(reason);
+        }
+        out
+    };
+
+    let checked = {
+        let app = app.clone();
+        let sid = sid.to_string();
+        tokio::task::spawn_blocking(move || {
+            let mut sys = System::new();
+            sys.refresh_processes_specifics(
+                ProcessRefreshKind::new().with_cmd(UpdateKind::Always).with_cwd(UpdateKind::Always),
+            );
+            let (listed, _, engines) = attribute(&app, &sys);
+            let picked = targets(&listed, &engines, std::process::id(), &sid, pid, start, tree)?;
+            let signal = match sig {
+                Sig::Term => Signal::Term,
+                Sig::Kill => Signal::Kill,
+            };
+            let mut sent = 0;
+            for (p, st) in &picked {
+                let Some(proc_) = sys.process(Pid::from_u32(*p)) else { continue };
+                if proc_.start_time() != *st {
+                    continue;
+                }
+                if proc_.kill_with(signal).unwrap_or(false) {
+                    sent += 1;
+                }
+            }
+            Ok::<_, String>((sys, picked, sent))
+        })
+        .await
+    };
+    let (mut sys, picked, sent) = match checked {
+        Ok(Ok(found)) => found,
+        Ok(Err(reason)) => return reply("refused", Some(reason), &[]),
+        Err(e) => return reply("refused", Some(format!("the process list could not be read: {e}")), &[]),
+    };
+    let pids: Vec<u32> = picked.iter().map(|(p, _)| *p).collect();
+    eprintln!("yardd: session {sid}: SIG{} to {pids:?} ({sent} sent)", sig.name().to_uppercase());
+
+    let deadline = Instant::now() + sig.grace();
+    let running = loop {
+        let running: Vec<u32> = picked.iter().filter(|(p, st)| alive(&mut sys, *p, *st)).map(|(p, _)| *p).collect();
+        if running.is_empty() || Instant::now() >= deadline {
+            break running;
+        }
+        tokio::time::sleep(Duration::from_millis(100)).await;
+    };
+
+    // The list the UI refreshes from is the last sample, up to 3 s old: drop
+    // what ended so the row goes at once.
+    if let Some(rows) = app.guard.inner.lock().unwrap().procs.get_mut(sid) {
+        rows.retain(|r| !pids.contains(&r.pid) || running.contains(&r.pid));
+    }
+    if running.is_empty() {
+        reply("killed", None, &running)
+    } else if sent == 0 {
+        reply("refused", Some("the system refused the signal (the process may belong to another user)".to_string()), &running)
+    } else {
+        reply("running", None, &running)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn row(pid: u32, ppid: u32, start: u64, engine: bool) -> ProcRow {
+        ProcRow { pid, ppid, name: "p".into(), cmd: "p".into(), cpu: 0.0, mem: 0, start, origin: "agent", engine }
+    }
+
+    /// Sidecar 10 (engine) -> CLI 11 (engine) -> shell 12 -> 13, 14; terminal 20.
+    fn fixture() -> (HashMap<String, Vec<ProcRow>>, HashSet<u32>) {
+        let mut listed = HashMap::new();
+        listed.insert(
+            "s1".to_string(),
+            vec![row(10, 1, 100, true), row(11, 10, 101, true), row(12, 11, 102, false), row(13, 12, 103, false), row(14, 12, 104, false), row(20, 5, 200, false)],
+        );
+        listed.insert("s2".to_string(), vec![row(30, 1, 300, false)]);
+        (listed, [10, 11, 99].into_iter().collect())
+    }
+
+    #[test]
+    fn a_listed_process_is_signalled_alone_unless_its_tree_is_asked_for() {
+        let (listed, engines) = fixture();
+        assert_eq!(targets(&listed, &engines, 7, "s1", 12, Some(102), false), Ok(vec![(12, 102)]));
+        assert_eq!(targets(&listed, &engines, 7, "s1", 12, None, true), Ok(vec![(13, 103), (14, 104), (12, 102)]));
+        assert_eq!(targets(&listed, &engines, 7, "s1", 20, None, true), Ok(vec![(20, 200)]));
+    }
+
+    #[test]
+    fn refuses_what_is_not_the_sessions_to_kill() {
+        let (mut listed, engines) = fixture();
+        let refused = |listed: &HashMap<String, Vec<ProcRow>>, pid: u32, start: Option<u64>| {
+            targets(listed, &engines, 7, "s1", pid, start, false).expect_err("refused")
+        };
+        assert!(refused(&listed, 1, None).contains("system"));
+        assert!(refused(&listed, 0, None).contains("system"));
+        assert!(refused(&listed, 7, None).contains("own daemon"));
+        assert!(refused(&listed, 10, None).contains("agent"));
+        assert!(refused(&listed, 11, None).contains("agent"));
+        // A shared app-server is never in a session's list, and still refused by name.
+        assert!(refused(&listed, 99, None).contains("agent"));
+        // Another session's process.
+        assert!(refused(&listed, 30, None).contains("not one of this session's"));
+        // The pid now names a process that started later.
+        assert!(refused(&listed, 12, Some(999)).contains("different process"));
+        // Listed by two sessions.
+        listed.get_mut("s2").unwrap().push(row(13, 12, 103, false));
+        assert!(refused(&listed, 13, None).contains("shared"));
+        assert!(targets(&listed, &engines, 7, "s1", 12, None, true).unwrap_err().contains("shared"));
+    }
 }
