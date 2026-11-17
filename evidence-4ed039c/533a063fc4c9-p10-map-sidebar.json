@@ -1,0 +1,97 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-17T12:35:49.652Z",
+      "counts": {
+        "pass": 16
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-show-status",
+          "status": "pass",
+          "ms": 4640
+        },
+        {
+          "label": "rows-mark-what-needs-you",
+          "status": "pass",
+          "ms": 10974
+        },
+        {
+          "label": "pin-and-unpin",
+          "status": "pass",
+          "ms": 6250
+        },
+        {
+          "label": "archive-and-restore",
+          "status": "pass",
+          "ms": 6086
+        },
+        {
+          "label": "delete-keeps-worktree",
+          "status": "pass",
+          "ms": 3736
+        },
+        {
+          "label": "group-new",
+          "status": "pass",
+          "ms": 3533
+        },
+        {
+          "label": "group-move-to-existing",
+          "status": "pass",
+          "ms": 2961
+        },
+        {
+          "label": "group-drag-out-to-ungrouped",
+          "status": "pass",
+          "ms": 5617
+        },
+        {
+          "label": "group-drag-into-group",
+          "status": "pass",
+          "ms": 4660
+        },
+        {
+          "label": "group-drag-noop",
+          "status": "pass",
+          "ms": 2949
+        },
+        {
+          "label": "group-collapse-persists",
+          "status": "pass",
+          "ms": 3527
+        },
+        {
+          "label": "group-rename",
+          "status": "pass",
+          "ms": 3369
+        },
+        {
+          "label": "group-remove-from-group",
+          "status": "pass",
+          "ms": 3035
+        },
+        {
+          "label": "group-ungroup",
+          "status": "pass",
+          "ms": 3012
+        },
+        {
+          "label": "archived-header-stays-at-bottom",
+          "status": "pass",
+          "ms": 8995
+        },
+        {
+          "label": "hand-off-keeps-the-group",
+          "status": "pass",
+          "ms": 2869
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
