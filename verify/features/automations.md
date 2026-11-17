@@ -4,9 +4,12 @@ Scheduled work: an automation is a prompt, a folder on a host, an engine,
 model, effort and permission, a base branch and a schedule in the host's local
 time. Each run is an ordinary session in its own worktree with `automation`
 set in its metadata. Runs stay out of the sidebar; a finished run archives
-itself; the Automations page lists every automation with its schedule in words,
-next and last run, an enabled switch, Run now, and its runs newest first, each
-opening its session. Pinning a run brings it back to the sidebar. Scheduled
+itself; the Automations page is a grid of small cards (side by side on a wide
+window, stacked below 700 px), each with the schedule in words and the next
+run, an enabled switch, one status line (a working run, else how the last one
+went), a strip of marks for the recent runs (each opens its session), and
+Run now, Runs (every run, with a pin) and Edit. Pinning a run brings it back
+to the sidebar. Scheduled
 runs skip while the previous one is still going and, when set, while the
 engine's usage is above a limit.
 
@@ -27,11 +30,11 @@ yv iso down
 ## Recipes
 
 ### list-shows-schedule-next-and-last
-The seeded automation is listed with its schedule in words, a next run, "never" as its last run, and the enabled switch on. At 390 px Automations is in the sidebar drawer, and the heading is on screen.
+The seeded automation is listed with its schedule in words, a next run, "No runs yet" as its status, and the enabled switch on. At 390 px Automations is in the sidebar drawer, and the heading is on screen.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"expect":{"css":".automation","hasText":"TEST-Patrol"}},{"expect":{"css":".automation","hasText":"Daily at 09:30"}},{"expect":{"css":".automation","hasText":"Last run never"}},{"expect":"role:switch:Enabled: TEST-Patrol"},{"shot":"list"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":"role:heading:Automations","inViewport":true},{"expect":{"css":".automation","hasText":"Daily at 09:30"}},{"expect":{"css":".automation","hasText":"Last run never"}},{"shot":"list"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"expect":{"css":".automation","hasText":"TEST-Patrol"}},{"expect":{"css":".automation","hasText":"Daily at 09:30 · next "}},{"expect":{"css":".automation-status","hasText":"No runs yet"}},{"expect":"role:switch:Enabled: TEST-Patrol"},{"shot":"list"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":"role:heading:Automations","inViewport":true},{"expect":{"css":".automation","hasText":"Daily at 09:30 · next "}},{"expect":{"css":".automation-status","hasText":"No runs yet"}},{"shot":"list"}]'
 ```
 
 ### create-from-the-form
@@ -46,35 +49,49 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 ```
 
 ### run-now-archives-and-lists-the-run
-Run now starts a session; when it ends it is archived, so it is not in the sidebar, but it is listed under its automation and opens.
+Run now starts a session; when it ends it is archived, so it is not in the sidebar, but it is a mark in its card's run strip (named by its time, not the automation's name again, with "Done" in its tooltip), the status line reads "Last:", and both the mark and the Runs list open it.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":{"css":".automation-run","hasText":"Idle"},"timeout":90000},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"},"visible":false},{"shot":"runs"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark"},{"expect":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark[title$=\" · Done\"]","timeout":90000},{"expect":{"css":".automation[aria-label=\"TEST-Patrol\"] .automation-status","hasText":"Last: "}},{"eval":"document.querySelector(\".automation[aria-label=\\\"TEST-Patrol\\\"] .run-mark\").title.replace(/^\\d\\d:\\d\\d · \\d+s · Done$/, \"time · duration · Done\")","equals":"time · duration · Done"},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"},"visible":false},{"shot":"runs"}]'
 yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"id":"{{auto_id}}","lastRun":{"outcome":"started"}}]}' --save run_sid='automations[id={{auto_id}}].lastRun.sessionId'
 yv state --expect '{"sessions":[{"id":"{{run_sid}}","title":"~TEST-Patrol · ","archived":true,"status":"idle"}]}'
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"shot":"runs"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark"},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Runs: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"Done"}},{"expect":{"css":".automation-run","hasText":"TEST-Patrol"},"visible":false},{"click":"css:.automation-run"},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark"},{"expect":{"css":".automation[aria-label=\"TEST-Patrol\"] .automation-status","hasText":"Last: "}},{"click":"role:button:Runs: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"Done"}},{"shot":"runs"}]'
 ```
 
 ### pinning-a-run-brings-it-back
-Pinning a run from the Automations page puts it under Pinned in the sidebar.
+Pinning a run from its card's Runs list puts it under Pinned in the sidebar, and its pin then says it is pinned.
 
 ```sh
-yv api '{"op":"session.update","sessionId":"{{run_sid}}","pinned":true}'
-yv drive new --viewport desktop --steps '[{"expect":"css:.list-head","text":"Pinned"},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"}}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Runs: TEST-Patrol"},{"click":"css:.automation[aria-label=\"TEST-Patrol\"] .automation-pin"},{"expect":"css:.automation-pin[aria-label$=\" is pinned\"]"},{"expect":"css:.list-head","text":"Pinned"},{"expect":{"css":".session-row","hasText":"TEST-Patrol ·"}},{"shot":"pinned"}]'
+yv state --expect '{"sessions":[{"id":"{{run_sid}}","pinned":true}]}'
 ```
 
 ### run-time-is-how-long-it-ran
 Viewports: both
 A run's time on the Automations page is how long it ran, not how long since
 it last changed: moving the run into a group a few seconds later (a pin, a
-rename, a reply also count) leaves the fake's under-a-second run at 0-2 s.
+rename, a reply also count) leaves the fake's under-a-second run at 0-2 s, in
+the Runs list, in each strip mark's tooltip and on the "Last:" line.
 
 ```sh
 yv drive new --viewport desktop --steps '[{"wait":4000}]'
 yv api '{"op":"session.update","sessionId":"{{run_sid}}","group":"TEST-later"}' --wait '{"op":"session","session":{"id":"{{run_sid}}","group":"TEST-later"}}'
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"eval":"[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).filter((t) => !/^[0-2]s$/.test(t)).join(\", \") || \"all short\"","equals":"all short"},{"shot":"run-times"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"eval":"[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).filter((t) => !/^[0-2]s$/.test(t)).join(\", \") || \"all short\"","equals":"all short"},{"shot":"run-times"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Runs: TEST-Patrol"},{"expect":"css:.automation-run"},{"eval":"[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).concat([...document.querySelectorAll(\".run-mark\")].map((e) => e.title.split(\" · \")[1])).filter((t) => !/^[0-2]s$/.test(t)).join(\", \") || \"all short\"","equals":"all short"},{"expect":{"css":".automation[aria-label=\"TEST-Patrol\"] .automation-status","hasText":"Last: "}},{"eval":"/^Last: [0-2]s · /.test(document.querySelector(\".automation[aria-label=\\\"TEST-Patrol\\\"] .automation-status\").textContent)","equals":true},{"shot":"run-times"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Runs: TEST-Patrol"},{"expect":"css:.automation-run"},{"eval":"[...document.querySelectorAll(\".automation-run-time\")].map((e) => e.textContent).concat([...document.querySelectorAll(\".run-mark\")].map((e) => e.title.split(\" · \")[1])).filter((t) => !/^[0-2]s$/.test(t)).join(\", \") || \"all short\"","equals":"all short"},{"shot":"run-times"}]'
+```
+
+### grid-of-cards-and-the-run-strip
+Viewports: both
+The page is a grid of small cards: on a wide window (1440 px) two cards sit
+side by side on the first row; at 390 px they stack in one column, each as
+wide as the page. A card holds no run titles (a run is named by its time).
+The newest mark is the last one in the strip and opens that run.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":{"css":".automation","hasText":"TEST-desktop one"}},{"eval":"(() => { const [a, b] = [...document.querySelectorAll(\".automation\")].map((e) => e.getBoundingClientRect()); return a.top === b.top && b.left > a.right && a.width >= 280 && a.width < 600 })()","equals":true},{"expect":{"css":".automation","hasText":"TEST-Patrol ·"},"visible":false},{"shot":"grid"},{"click":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark:last-child"},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"expect":{"css":".automation","hasText":"TEST-desktop one"}},{"eval":"(() => { const [a, b] = [...document.querySelectorAll(\".automation\")].map((e) => e.getBoundingClientRect()); return b.top >= a.bottom && a.left === b.left && a.width > 300 && a.right <= window.innerWidth })()","equals":true},{"shot":"grid"},{"click":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark:last-child"},{"expect":"css:.thread","text":"Echo: TEST-say hello"}]'
 ```
 
 ### edit-changes-the-schedule
@@ -101,16 +118,16 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 Turning the switch off shows "off" as the next run and stores `enabled: false`; turning it back on schedules again.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:switch:Enabled: TEST-Patrol"},{"expect":{"css":".automation","hasText":"Next run off"}}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:switch:Enabled: TEST-Patrol"},{"expect":{"css":".automation[aria-label=\"TEST-Patrol\"] .automation-when","hasText":" · off"}}]'
 yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":"automations","automations":[{"id":"{{auto_id}}","enabled":false,"nextRun":null}]}'
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:switch:Enabled: TEST-Patrol"},{"expect":{"css":".automation","hasText":"Next run off"},"visible":false}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:switch:Enabled: TEST-Patrol"},{"expect":{"css":".automation-when","hasText":" · off"},"visible":false},{"expect":{"css":".automation[aria-label=\"TEST-Patrol\"] .automation-when","hasText":" · next "}}]'
 ```
 
 ### reload-and-back-keep-the-page
 A reload keeps the Automations page, and the Edit form with its saved values (not a blank "New automation" that would save a copy); Back from a run opened there returns to the page.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"reload":true},{"expect":"role:heading:Automations"},{"click":"role:button:Edit: TEST-Patrol"},{"reload":true},{"expect":"role:heading:Edit automation"},{"expect":{"css":"input","value":"TEST-Patrol"}},{"click":"role:button:Cancel"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":{"css":".automation-run","hasText":"Idle"},"timeout":90000},{"click":{"css":".automation-run","hasText":"TEST-Patrol ·"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"history.back()"},{"expect":"role:heading:Automations"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":"role:heading:Automations"},{"reload":true},{"expect":"role:heading:Automations"},{"click":"role:button:Edit: TEST-Patrol"},{"reload":true},{"expect":"role:heading:Edit automation"},{"expect":{"css":"input","value":"TEST-Patrol"}},{"click":"role:button:Cancel"},{"click":"role:button:Run now: TEST-Patrol"},{"expect":"css:.automation[aria-label=\"TEST-Patrol\"] .run-mark[title$=\" · Done\"]","count":2,"timeout":90000},{"click":"css:.automation[aria-label=\"TEST-Patrol\"] button.automation-status"},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"eval":"history.back()"},{"expect":"role:heading:Automations"}]'
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"reload":true},{"expect":{"css":".automation","hasText":"TEST-Patrol"}},{"click":"role:button:Edit: TEST-Patrol"},{"reload":true},{"expect":{"css":"input","value":"TEST-Patrol"}},{"shot":"edit-after-reload"}]'
 ```
 
@@ -131,14 +148,14 @@ yv api '{"op":"automation.run","id":"{{claude_capped}}","force":false}' --wait '
 ```
 
 ### run-now-failure-says-why-once
-Run now on an automation whose folder has gone: the card says "Last run failed" and gives the reason once, not a second time as "Failed: …" under it. Both viewports, one Run now each.
+Run now on an automation whose folder has gone: the card's status line says "Failed" and gives the reason once, not a second time as "Failed: …" under it. Both viewports, one Run now each.
 
 ```sh
 mkdir -p "$(v work)/TEST-moved"
 yv api '{"op":"automation.save","automation":{"name":"TEST-Moved","prompt":"TEST-moved","cwd":"{{work}}/TEST-moved","engine":"codex","model":"fake-fast","effort":"low","permission":"ask","enabled":false,"schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}'
 rmdir "$(v work)/TEST-moved"
-yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"expect":{"css":".automation","hasText":"Last run failed"}},{"wait":1000},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"wait":1000},{"expect":{"css":".automation","hasText":"Last run failed"}},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"expect":{"css":".automation[aria-label=\"TEST-Moved\"] .automation-status","hasText":"Failed · "}},{"wait":1000},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Run now: TEST-Moved"},{"wait":1000},{"expect":{"css":".automation[aria-label=\"TEST-Moved\"] .automation-status","hasText":"Failed · "}},{"expect":{"css":".automation-reason","hasText":"TEST-moved is not a folder"},"count":1},{"shot":"failed"}]'
 ```
 
 ### interval-and-weekly-schedules-from-the-form
@@ -153,14 +170,14 @@ yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"op":
 ```
 
 ### a-working-run-dots-the-automations-button
-While a run is working, the sidebar's Automations button carries a dot named "A run is working" (the run itself stays out of the sidebar); Stop ends the run and the dot goes. At 390 px the button is in the drawer.
+While a run is working, the sidebar's Automations button carries a dot named "A run is working" (the run itself stays out of the sidebar), and its card leads with "Running · <elapsed>" behind a turning mark that opens the run, its strip mark saying "Running"; Stop ends the run and the dot goes. At 390 px the button is in the drawer.
 
 ```sh
 yv api '{"op":"automation.save","automation":{"name":"TEST-Long run","prompt":"[slow] TEST-long run","cwd":"{{repo}}","engine":"codex","model":"fake-fast","effort":"low","permission":"ask","enabled":false,"schedule":{"kind":"daily","time":"09:30"}}}' --wait '{"op":"automation.saved"}' --save long_id=automation.id
 yv api '{"op":"automation.run","id":"{{long_id}}","force":true}' --wait '{"op":"automation.ran"}' --expect '{"op":"automation.ran","outcome":"started"}' --save long_sid=sessionId
 yv state --expect '{"sessions":[{"id":"{{long_sid}}","status":"running"}]}'
-yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":"Automations"}},{"expect":"role:img:A run is working"},{"expect":{"css":".session-row","hasText":"TEST-Long run ·"},"visible":false},{"shot":"working"}]'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:img:A run is working"},{"shot":"working"}]'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":"Automations"}},{"expect":"role:img:A run is working"},{"expect":{"css":".session-row","hasText":"TEST-Long run ·"},"visible":false},{"shot":"working"},{"click":"role:button:Automations"},{"expect":{"css":".automation[aria-label=\"TEST-Long run\"] .automation-status.status-live","hasText":"Running · "}},{"expect":"css:.automation[aria-label=\"TEST-Long run\"] .automation-status .mark-working"},{"expect":"css:.automation[aria-label=\"TEST-Long run\"] .run-mark[title$=\" · Running\"]"},{"shot":"working-card"},{"click":"css:.automation[aria-label=\"TEST-Long run\"] button.automation-status"},{"expect":"css:.thread","text":"TEST-long run"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:img:A run is working"},{"shot":"working"},{"click":"role:button:Automations"},{"expect":{"css":".automation[aria-label=\"TEST-Long run\"] .automation-status","hasText":"Running · "}},{"shot":"working-card"}]'
 yv api '{"op":"session.interrupt","sessionId":"{{long_sid}}"}'
 yv state --expect '{"sessions":[{"id":"{{long_sid}}","status":"idle"}]}'
 yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":"Automations"}},{"expect":"role:img:A run is working","visible":false}]'
@@ -169,5 +186,5 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".nav-row","hasText":
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
-- `disable-stops-the-schedule` expects no card to read "Next run off" once TEST-Patrol is back on, so a recipe before it must leave its own automations enabled (a daily slot will not fire during a run); recipes after it may add disabled ones.
+- `disable-stops-the-schedule` expects no card to read "· off" after its schedule once TEST-Patrol is back on, so a recipe before it must leave its own automations enabled (a daily slot will not fire during a run); recipes after it may add disabled ones.
 - The form's selects (Schedule type, Repeat unit, Day of the week) are set with an `eval` that sets the value and fires `change`, since `yv drive` has no select step; `fill` refuses a `<select>`.

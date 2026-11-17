@@ -1,5 +1,6 @@
 // Words for automations: schedules, next and last run, and which sessions are runs.
-import type { LastRun, Schedule, SessionMeta } from "./protocol";
+import type { Automation, LastRun, Schedule, SessionMeta } from "./protocol";
+import { duration } from "./thread";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -69,6 +70,104 @@ function ago(at: number, now: number): string {
 export function describeLast(last: LastRun | null | undefined, now: number): string {
   if (!last) return "never";
   return last.outcome === "started" ? ago(last.at, now) : `${last.outcome} ${ago(last.at, now)}`;
+}
+
+/** A run by when it started: the time today, the day this week, the date before that.
+ *  Its title would only repeat the automation's name. */
+export function runTime(at: number, now: number): string {
+  const when = new Date(at);
+  const days = Math.round((dayStart(new Date(now)) - dayStart(when)) / (24 * HOUR));
+  if (days === 0) return clock(when);
+  if (days > 0 && days < 7) return `${DAYS[when.getDay()].slice(0, 3)} ${clock(when)}`;
+  return `${when.getDate()} ${MONTHS[when.getMonth()]} ${clock(when)}`;
+}
+
+export type RunOutcome = "working" | "approval" | "queued" | "failed" | "stopped" | "done";
+
+export const RUN_LABEL: Record<RunOutcome, string> = {
+  working: "Running",
+  approval: "Needs approval",
+  queued: "Queued",
+  failed: "Failed",
+  stopped: "Stopped",
+  done: "Done",
+};
+
+export function runOutcome(s: SessionMeta): RunOutcome {
+  if (s.status === "running") return "working";
+  if (s.status === "needs_approval") return "approval";
+  if (s.status === "queued") return "queued";
+  if (s.status === "error" || s.lastTurn === "failed") return "failed";
+  if (s.lastTurn === "interrupted") return "stopped";
+  return "done";
+}
+
+const isLive = (s: SessionMeta) => s.status === "running" || s.status === "needs_approval" || s.status === "queued";
+
+/** How long a run ran, or has run so far. Runs saved before yardd kept
+ *  `finishedAt` fall back to their last change. */
+export function runTook(s: SessionMeta, now: number): number {
+  return Math.max(0, (isLive(s) ? now : s.finishedAt ?? s.updatedAt) - s.createdAt);
+}
+
+export const runSummary = (s: SessionMeta, now: number): string => `${runTime(s.createdAt, now)} · ${duration(runTook(s, now))} · ${RUN_LABEL[runOutcome(s)]}`;
+
+/** The newest `max` runs, oldest first, so the newest sits at the right end of the strip. */
+export const stripRuns = (runs: SessionMeta[], max: number): SessionMeta[] => runs.slice(0, max).reverse();
+
+export function scheduleLine(a: Automation, now: number): string {
+  const next = a.enabled && a.nextRun != null ? `next ${describeNext(a.nextRun, true, now)}` : "off";
+  return `${describeSchedule(a.schedule)} · ${next}`;
+}
+
+/** yardd's skip reasons, cut to what fits a card's line; the tooltip keeps the whole one. */
+function shortReason(reason: string): string {
+  if (reason.startsWith("the previous run is still going")) return "previous run busy";
+  const usage = reason.match(/^\S+ (5-hour|weekly) usage (\d+%) is above/);
+  return usage ? `${usage[1]} usage ${usage[2]}` : reason;
+}
+
+export interface CardStatus {
+  /** live and approval: a run is going; ok, warn, bad and quiet: how the last one went. */
+  tone: "live" | "approval" | "ok" | "warn" | "bad" | "quiet";
+  text: string;
+  /** The whole story, for the tooltip. */
+  title: string;
+  /** The run the line opens, if it has one. */
+  runId: string | null;
+}
+
+/** The one line a card leads with: a run going now, else how the last one went. `runs` newest first. */
+export function cardStatus(a: Automation, runs: SessionMeta[], now: number): CardStatus {
+  const live = runs.find(isLive);
+  if (live) {
+    const since = runTime(live.createdAt, now);
+    const took = duration(runTook(live, now));
+    if (live.status === "needs_approval") return { tone: "approval", text: `Needs approval · ${took}`, title: `Waiting for approval, started ${since}`, runId: live.id };
+    if (live.status === "queued") return { tone: "live", text: "Queued", title: `Queued since ${since}`, runId: live.id };
+    return { tone: "live", text: `Running · ${took}`, title: `Running since ${since}`, runId: live.id };
+  }
+  const last = a.lastRun;
+  if (last && last.outcome !== "started") {
+    const when = ago(last.at, now);
+    if (last.outcome === "skipped") {
+      return { tone: "warn", text: last.reason ? `Skipped ${when} · ${shortReason(last.reason)}` : `Skipped ${when}`, title: last.reason ? `Skipped ${when}: ${last.reason}` : `Skipped ${when}`, runId: null };
+    }
+    return { tone: "bad", text: `Failed · ${last.reason ?? "could not start"}`, title: `Failed ${when}: ${last.reason ?? "could not start"}`, runId: null };
+  }
+  // A remote run's session id carries its host prefix; the saved one may not.
+  const sid = last?.sessionId;
+  const run = sid ? runs.find((s) => s.id === sid || s.id.endsWith(`~${sid}`)) : runs[0];
+  if (!run) {
+    if (!last) return { tone: "quiet", text: "No runs yet", title: "No runs yet", runId: null };
+    return { tone: "ok", text: `Last: ${ago(last.at, now)}`, title: `Last run ${runTime(last.at, now)}`, runId: null };
+  }
+  const outcome = runOutcome(run);
+  const facts = `${duration(runTook(run, now))} · ${ago(run.createdAt, now)}`;
+  const title = `Last run ${runSummary(run, now)}`;
+  if (outcome === "failed") return { tone: "bad", text: `Failed · ${facts}`, title, runId: run.id };
+  if (outcome === "stopped") return { tone: "quiet", text: `Stopped · ${facts}`, title, runId: run.id };
+  return { tone: "ok", text: `Last: ${facts}`, title, runId: run.id };
 }
 
 /** An automation's runs on its host, newest first. Session ids on a remote host carry its prefix, so match on `host` too. */

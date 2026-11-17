@@ -1,10 +1,11 @@
 // The Automations page and its form. Each host keeps its own automations;
-// this page lists them all, with the runs of each (ordinary sessions whose
-// metadata names the automation, kept out of the sidebar).
+// this page lists them all as a grid of small cards, with the runs of each
+// (ordinary sessions whose metadata names the automation, kept out of the
+// sidebar) as a strip of marks.
 import { useEffect, useMemo, useState } from "react";
 import type { Automation, Engine, Permission, Schedule, SessionMeta } from "./protocol";
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, type Actions, type State } from "./store";
-import { describeLast, describeNext, describeSchedule, runsOf, scheduleProblem } from "./automations";
+import { cardStatus, describeSchedule, runOutcome, runsOf, runSummary, runTime, runTook, RUN_LABEL, scheduleLine, scheduleProblem, stripRuns, type CardStatus, type RunOutcome } from "./automations";
 import { duration } from "./thread";
 import { ENGINE_NAME, pickerEngines } from "./engines";
 import { metersFor } from "./usage";
@@ -20,57 +21,81 @@ import {
   PermissionPicker,
   PIN,
   PLUS,
-  STATUS_LABEL,
   effortFor,
   loadChoice,
   readRecent,
 } from "./App";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const SHOWN_RUNS = 5;
+/** Marks in a card's run strip; the runs list holds the rest. Ten fit beside the actions on the narrowest card. */
+const STRIP = 10;
+const PLAY = "M7 5v14l11-7Z";
+const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
+const LIST = "M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01";
 
-/** The current time, refreshed so "in 12 min" does not go stale on an open page. */
-function useNow(): number {
+/** The status line's mark: the session row marks, plus done (filled) and skipped (amber ring) for runs. */
+const STATUS_MARK: Record<CardStatus["tone"], string> = { live: "working", approval: "approval", ok: "done", bad: "failed", warn: "skipped", quiet: "idle" };
+
+const live = (s: SessionMeta) => s.status === "running" || s.status === "needs_approval" || s.status === "queued";
+
+/** The current time, refreshed so "in 12 min" does not go stale on an open
+ *  page; every second while a run's elapsed time is shown. */
+function useNow(every: number): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 15_000);
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), every);
     return () => clearInterval(t);
-  }, []);
+  }, [every]);
   return now;
 }
 
-function RunRow({ run, state, actions }: { run: SessionMeta; state: State; actions: Actions }) {
-  const live = run.status === "running" || run.status === "needs_approval" || run.status === "queued";
-  // Runs saved before yardd kept `finishedAt` fall back to their last change.
-  const took = Math.max(0, (run.finishedAt ?? run.updatedAt) - run.createdAt);
+function Mark({ kind }: { kind: RunOutcome | string }) {
   return (
-    <div className="automation-run-item">
-      <button className="automation-run" onClick={() => actions.go({ page: "session", id: run.id })}>
-        <span className={`dot dot-${run.status}`} aria-hidden="true" />
-        <span className="automation-run-title">{run.title}</span>
-        <span className="muted small">{STATUS_LABEL[run.status]}</span>
-        <span className="muted small automation-run-time">{live ? "running" : duration(took)}</span>
-      </button>
-      <button
-        className="btn-icon"
-        aria-label={`Pin ${run.title}`}
-        title={run.pinned ? "Pinned: it is in the sidebar" : "Pin: bring it back to the sidebar"}
-        disabled={!!run.pinned || !hostOnline(state, hostOf(run))}
-        onClick={() => actions.setPinned(run.id, true)}
-      >
-        <Icon d={PIN} size={14} />
-      </button>
-    </div>
+    <span className={`mark mark-${kind}`} aria-hidden="true">
+      {kind === "approval" && <span className="mark-bang">!</span>}
+    </span>
+  );
+}
+
+/** Every run, newest first, with how long it took and a pin: pinning is how a run goes back to the sidebar. */
+function RunList({ runs, state, actions, now }: { runs: SessionMeta[]; state: State; actions: Actions; now: number }) {
+  return (
+    <ul className="automation-runs" aria-label="Runs, newest first">
+      {runs.map((run) => {
+        const outcome = runOutcome(run);
+        const when = runTime(run.createdAt, now);
+        return (
+          <li key={run.id} className="automation-run-item">
+            <button className="btn-quiet automation-run" title={run.title} onClick={() => actions.go({ page: "session", id: run.id })}>
+              <Mark kind={outcome} />
+              <span className="automation-run-when">{when}</span>
+              <span className={`automation-run-outcome run-${outcome}`}>{RUN_LABEL[outcome]}</span>
+              <span className="automation-run-time">{duration(runTook(run, now))}</span>
+            </button>
+            <button
+              className="btn-icon automation-pin"
+              aria-label={run.pinned ? `Run ${when} is pinned` : `Pin run ${when}`}
+              title={run.pinned ? "Pinned: it is in the sidebar" : "Pin: bring it back to the sidebar"}
+              disabled={!!run.pinned || !hostOnline(state, hostOf(run))}
+              onClick={() => actions.setPinned(run.id, true)}
+            >
+              <Icon d={PIN} size={13} />
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
 function AutomationCard({ state, actions, host, a, now }: { state: State; actions: Actions; host: string; a: Automation; now: number }) {
   const online = hostOnline(state, host);
   const runs = useMemo(() => runsOf(state.sessions, host, a.id), [state.sessions, host, a.id]);
-  const [all, setAll] = useState(false);
+  const [open, setOpen] = useState(false);
   const [starting, setStarting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const last = a.lastRun;
+  const status = cardStatus(a, runs, now);
   const run = async () => {
     setStarting(true);
     setMessage(null);
@@ -80,11 +105,21 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
     // only a request yardd refused needs its own line.
     if (r.error) setMessage(r.error);
   };
-  const shown = all ? runs : runs.slice(0, SHOWN_RUNS);
+  // Skips and failures to start come from yardd's last run, with its reason.
+  const reason = status.runId === null && (status.tone === "warn" || status.tone === "bad");
+  const statusClass = `automation-status status-${status.tone}${reason ? " automation-reason" : ""}`;
+  const statusBody = (
+    <>
+      <Mark kind={STATUS_MARK[status.tone]} />
+      <span className="automation-status-text">{status.text}</span>
+    </>
+  );
   return (
-    <section className="automation host-card" aria-label={a.name}>
+    <section className="automation" aria-label={a.name}>
       <div className="automation-head">
-        <strong className="automation-name">{a.name}</strong>
+        <strong className="automation-name" title={a.name}>
+          {a.name}
+        </strong>
         {host !== "local" && <Cloud size={13} label={`Runs on ${hostName(state, host)}`} />}
         <span className="spacer" />
         <button
@@ -92,56 +127,70 @@ function AutomationCard({ state, actions, host, a, now }: { state: State; action
           role="switch"
           aria-checked={a.enabled}
           aria-label={`Enabled: ${a.name}`}
+          title={a.enabled ? "On: runs on its schedule" : "Off: runs only with Run now"}
           disabled={!online}
           onClick={() => void actions.saveAutomation(host, { id: a.id, enabled: !a.enabled })}
         >
           <span className="switch-knob" />
         </button>
       </div>
-      <div className="automation-facts muted">
-        <span>{describeSchedule(a.schedule)}</span>
-        <span>Next run {describeNext(a.nextRun, a.enabled, now)}</span>
-        <span>Last run {describeLast(last, now)}</span>
-      </div>
-      {last && last.outcome !== "started" && last.reason && (
-        <div className="muted small automation-reason" role="status">
-          {last.reason}
+      <div className="automation-when muted small">{scheduleLine(a, now)}</div>
+      {status.runId ? (
+        <button className={`btn-quiet ${statusClass}`} title={`${status.title}. Open it`} onClick={() => actions.go({ page: "session", id: status.runId! })}>
+          {statusBody}
+        </button>
+      ) : (
+        // No live region: "2 min ago" changes every minute and would be read out each time.
+        <div className={statusClass} title={status.title}>
+          {statusBody}
         </div>
       )}
-      {message && <div className="small automation-reason" role="status">{message}</div>}
-      <div className="row">
-        <button className="btn" aria-label={`Run now: ${a.name}`} disabled={!online || starting} onClick={run}>
-          {starting ? "Starting" : "Run now"}
-        </button>
-        <button className="btn-text" aria-label={`Edit: ${a.name}`} disabled={!online} onClick={() => actions.go({ page: "automation", host, id: a.id })}>
-          Edit
-        </button>
-      </div>
-      <div className="automation-runs">
-        {runs.length === 0 ? (
-          <div className="muted small">No runs yet.</div>
-        ) : (
-          <>
-            <div className="muted small">Runs, newest first</div>
-            {shown.map((r) => (
-              <RunRow key={r.id} run={r} state={state} actions={actions} />
-            ))}
-            {runs.length > SHOWN_RUNS && (
-              <button className="btn-text" onClick={() => setAll(!all)}>
-                {all ? "Show fewer" : `Show all ${runs.length} runs`}
+      {message && (
+        <div className="small automation-reason automation-message" role="status">
+          {message}
+        </div>
+      )}
+      <div className="automation-foot">
+        <div className="automation-strip" role="group" aria-label={`Recent runs of ${a.name}, newest last`}>
+          {stripRuns(runs, STRIP).map((r) => {
+            const summary = runSummary(r, now);
+            return (
+              <button key={r.id} className="btn-icon run-mark" aria-label={`Open run ${summary}`} title={summary} onClick={() => actions.go({ page: "session", id: r.id })}>
+                <Mark kind={runOutcome(r)} />
               </button>
-            )}
-          </>
+            );
+          })}
+        </div>
+        <span className="spacer" />
+        <button className="btn-icon" aria-label={`Run now: ${a.name}`} title={starting ? "Starting" : "Run now"} disabled={!online || starting} onClick={run}>
+          <Icon d={PLAY} size={14} />
+        </button>
+        {runs.length > 0 && (
+          <button className="btn-icon" aria-label={`Runs: ${a.name}`} aria-expanded={open} title={open ? "Hide the runs" : `All ${runs.length} runs, to open or pin one`} onClick={() => setOpen(!open)}>
+            <Icon d={LIST} size={14} />
+          </button>
         )}
+        <button className="btn-icon" aria-label={`Edit: ${a.name}`} title="Edit" disabled={!online} onClick={() => actions.go({ page: "automation", host, id: a.id })}>
+          <Icon d={PENCIL} size={14} />
+        </button>
       </div>
+      {open && runs.length > 0 && <RunList runs={runs} state={state} actions={actions} now={now} />}
     </section>
   );
 }
 
 export function AutomationsPage({ state, actions }: { state: State; actions: Actions }) {
-  const now = useNow();
+  const working = useMemo(() => Object.values(state.sessions).some((s) => !!s.automation && live(s)), [state.sessions]);
+  const now = useNow(working ? 1000 : 15_000);
   const hosts = ["local", ...state.hosts.map((h) => h.id)];
-  const all = hosts.flatMap((host) => (state.automations[host] ?? []).map((a) => ({ host, a })));
+  const groups = hosts.map((host) => ({ host, list: state.automations[host] ?? [] })).filter((g) => g.list.length > 0);
+  const grid = (host: string, list: Automation[]) => (
+    <div className="automation-grid">
+      {list.map((a) => (
+        <AutomationCard key={`${host}/${a.id}`} state={state} actions={actions} host={host} a={a} now={now} />
+      ))}
+    </div>
+  );
   return (
     <div className="hosts automations">
       <header className="bar">
@@ -154,8 +203,8 @@ export function AutomationsPage({ state, actions }: { state: State; actions: Act
         </button>
       </header>
       <div className="scroll">
-        <div className="hosts-inner">
-          {all.length === 0 && (
+        <div className="hosts-inner automation-list">
+          {groups.length === 0 && (
             <div className="host-empty">
               <span>
                 <strong>No automations yet</strong>
@@ -165,9 +214,17 @@ export function AutomationsPage({ state, actions }: { state: State; actions: Act
               </span>
             </div>
           )}
-          {all.map(({ host, a }) => (
-            <AutomationCard key={`${host}/${a.id}`} state={state} actions={actions} host={host} a={a} now={now} />
-          ))}
+          {groups.length === 1 && grid(groups[0].host, groups[0].list)}
+          {groups.length > 1 &&
+            groups.map(({ host, list }) => (
+              <section key={host} className="automation-host" aria-label={hostName(state, host)}>
+                <h2 className="automation-host-name">
+                  {hostName(state, host)}
+                  {host !== "local" && <Cloud size={13} />}
+                </h2>
+                {grid(host, list)}
+              </section>
+            ))}
         </div>
       </div>
     </div>

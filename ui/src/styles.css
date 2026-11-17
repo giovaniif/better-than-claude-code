@@ -632,19 +632,45 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .import-title { font-weight: 500; }
 .import-modal .popover { top: calc(100% + 6px); bottom: auto; }
 
-/* automations: the page, its cards and the form */
+/* automations: the page, a grid of small cards, and the form */
 .nav-row .dot { margin-left: auto; }
-.automation { gap: 10px; }
-.automation-head { display: flex; align-items: center; gap: 8px; }
+.hosts-inner.automation-list { max-width: none; gap: 24px; }
+/* The empty state keeps the Hosts page's width; only the grid spreads out. */
+.automation-list > .host-empty { max-width: 496px; }
+.automation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; align-items: start; }
+.automation-host { display: flex; flex-direction: column; gap: 10px; }
+.automation-host-name { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.automation { min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 12px 10px 6px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.automation-head { display: flex; align-items: center; gap: 6px; min-height: 22px; padding-right: 4px; }
 .automation-name { font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.automation-facts { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+.automation-when { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .automation-reason { color: var(--warn-ink); overflow-wrap: anywhere; }
-.automation-runs { display: flex; flex-direction: column; gap: 2px; padding-top: 8px; border-top: 1px solid var(--line); }
-.automation-run-item { display: flex; align-items: center; gap: 4px; }
-.automation-run { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; }
-.automation-run:hover { background: var(--fill); }
-.automation-run-title { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.automation-run-time { min-width: 44px; text-align: right; }
+/* One line: what is going on now, or how the last run went. */
+.automation-status, .btn-quiet.automation-status { display: flex; align-items: center; gap: 6px; min-width: 0; height: 26px; margin: 2px 0 0 -4px; padding: 0 4px; border-radius: 6px; font-size: 12px; color: var(--muted); text-align: left; }
+.automation-status-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal; }
+.automation-status.status-live { color: var(--ok-ink); }
+.automation-status.status-approval, .automation-status.status-warn { color: var(--warn-ink); }
+.automation-status.status-bad, .automation-message { color: var(--bad-ink); }
+.automation-foot { display: flex; align-items: center; gap: 2px; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--line); }
+.automation-foot > .btn-icon { width: 28px; height: 28px; }
+.automation-strip { display: flex; align-items: center; min-width: 0; margin-left: -3px; overflow: hidden; }
+.btn-icon.run-mark { flex: none; width: 14px; height: 24px; border-radius: 4px; }
+/* Run outcomes next to the row marks: done is a filled dot, a failure a
+   square, a skip an amber ring, so they read without colour too. */
+.mark-done::before { width: 8px; height: 8px; background: var(--ok); }
+.mark-stopped::before { border: 1.5px solid var(--muted); opacity: 0.6; }
+.mark-skipped::before { border: 1.5px solid var(--warn); }
+.automation .mark-failed::before { border-radius: 2px; }
+.automation-runs { list-style: none; margin: 4px 0 4px; padding: 4px 0 0; max-height: 240px; overflow: auto; display: flex; flex-direction: column; gap: 1px; border-top: 1px solid var(--line); }
+.automation-run-item { display: flex; align-items: center; gap: 2px; }
+.btn-quiet.automation-run { flex: 1 1 0; min-width: 0; height: 28px; margin-left: -4px; padding: 0 4px; border-radius: 6px; font-size: 12px; text-align: left; font-variant-numeric: tabular-nums; }
+.automation-run-when { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.automation-run-outcome { color: var(--muted); }
+.automation-run-outcome.run-working { color: var(--ok-ink); }
+.automation-run-outcome.run-approval { color: var(--warn-ink); }
+.automation-run-outcome.run-failed { color: var(--bad-ink); }
+.automation-run-time { min-width: 52px; text-align: right; color: var(--muted); }
+.btn-icon.automation-pin { width: 28px; height: 28px; }
 .switch { position: relative; flex: none; width: 34px; height: 20px; padding: 0; border: 0; border-radius: 10px; background: var(--line-strong); transition: background 0.15s; }
 .switch[aria-checked="true"] { background: var(--ok); }
 .switch-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 8px; background: var(--bg); transition: transform 0.15s; }
@@ -695,6 +721,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
   .dock { padding: 0 12px 12px; }
   .new { padding: 32px 16px; }
   .hosts-inner { padding: 20px 16px; }
+  .automation-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) { .sidebar, .app.drawer-open .sidebar { transition: none; } }
 
