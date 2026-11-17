@@ -109,3 +109,19 @@ export function newServerProblem(name: string, url: string): string | null {
 
 /** Servers in the account's own config, which "Remove" can take out. */
 export const removable = (s: McpServer) => !s.app && (s.source === "user" || s.source === "config");
+
+
+export type ConnectorFilter = "connected" | "available" | "failed" | "all";
+export const CONNECTOR_PAGE_SIZE = 8;
+
+/** Unused catalog entries are only shown when the user asks for them. */
+export function filterServers(servers: McpServer[], query: string, filter: ConnectorFilter): McpServer[] {
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return sortServers(servers).filter((server) => {
+    const matches = filter === "all" || (filter === "connected" ? ["connected", "pending"].includes(server.status)
+      : filter === "available" ? ["needs-auth", "disabled"].includes(server.status) : server.status === "failed");
+    const { name, via } = displayName(server);
+    const text = `${name} ${via}`.toLowerCase();
+    return matches && words.every((word) => text.includes(word));
+  });
+}

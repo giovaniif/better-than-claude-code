@@ -115,12 +115,12 @@ h1, h2, h3, p { margin: 0; }
 .mark-working::before { width: 11px; height: 11px; border: 2px solid var(--ok-soft); border-top-color: var(--ok); animation: spin 0.9s linear infinite; }
 .mark-approval::before { width: 14px; height: 14px; background: var(--warn); animation: breathe 1.6s ease-in-out infinite; }
 .mark-bang { position: absolute; inset: 0; display: grid; place-items: center; color: var(--bg); font-size: 10px; font-weight: 700; line-height: 1; }
-.mark-answered::before { width: 9px; height: 9px; background: var(--info); box-shadow: 0 0 0 3px var(--info-soft); }
+.mark-answered::before, .mark-unread::before { width: 9px; height: 9px; background: var(--info); box-shadow: 0 0 0 3px var(--info-soft); }
 .mark-failed::before { width: 9px; height: 9px; background: var(--bad-ink); }
 @keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 var(--warn-glow); } 50% { box-shadow: 0 0 0 4px var(--warn-clear); } }
 @media (prefers-reduced-motion: reduce) { .mark-working::before, .mark-approval::before { animation: none; } }
 .row-status-approval { color: var(--warn-ink); font-weight: 500; }
-.row-status-answered { color: var(--info); font-weight: 500; }
+.row-status-answered, .row-status-unread { color: var(--info); font-weight: 500; }
 .row-status-failed { color: var(--bad-ink); }
 .row-status-working { color: var(--ok-ink); }
 .session-row.unread .session-title { font-weight: 600; }
@@ -526,20 +526,24 @@ h1, h2, h3, p { margin: 0; }
    the grid, with the details opening under it. */
 .hosts-inner.host-list { max-width: none; }
 .host-list > .add-host { max-width: 560px; }
+/* Closed cards share a row height; expanded details grow independently. */
+.host-grid:not(:has(.host-details)) { align-items: stretch; }
 .host-grid > .host-card { min-width: 0; gap: 8px; padding: 12px 10px 6px 14px; border-radius: 12px; background: var(--bg); }
 .host-grid > .host-empty { min-width: 0; }
 .host-grid .host-head { min-height: 22px; padding-right: 4px; }
+.host-grid .host-head > .small { flex: none; white-space: nowrap; }
 .host-grid .host-head h2 { min-width: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .host-grid .host-where { margin-top: -6px; }
 .host-grid .stat-grid { gap: 12px; padding-right: 4px; }
 .host-grid .stat { gap: 3px; }
 .host-grid .stat-big { font-size: 15px; }
 .host-grid .stat .muted { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.host-engines { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0; padding: 0; list-style: none; font-size: 12px; }
-.host-engine { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.host-engines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; margin: 0; padding: 0; list-style: none; font-size: 12px; }
+.host-engine { min-width: 0; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.host-engine-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .host-engine.engine-off { color: var(--muted); }
 .host-engine-note { color: var(--warn-ink); }
-.host-card-foot { display: flex; align-items: center; gap: 2px; min-height: 32px; padding-top: 4px; border-top: 1px solid var(--line); }
+.host-card-foot { margin-top: auto; display: flex; align-items: center; gap: 2px; min-height: 32px; padding-top: 4px; border-top: 1px solid var(--line); }
 .host-sessions { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn-text.host-more { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px; font-size: 12px; }
 .host-more[aria-expanded="true"] { color: var(--ink); }
@@ -763,20 +767,27 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .danger { color: var(--bad-ink); }
 
 /* Connectors page */
+.hosts-inner.connectors-inner { max-width: 880px; }
+.connector-scope { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.connector-scope .field { min-width: 0; font-family: inherit; text-overflow: ellipsis; }
+.connector-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.connector-filters .btn-text { gap: 6px; }
+.connector-filters [aria-pressed="true"] { background: var(--fill); font-weight: 600; }
+.connector-search.field { font-family: inherit; }
+.connectors-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0; }
+.connector-pagination { display: flex; align-items: center; gap: 8px; }
 .connectors-intro { margin: 0; line-height: 1.55; }
-.connectors-host { display: flex; flex-direction: column; gap: 12px; }
-.connectors-host-name { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .connectors-card { gap: 10px; padding: 14px 16px; }
 .connectors-card-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
 .connectors-note { line-height: 1.5; }
-.connector-list { list-style: none; margin: 0 -16px -14px; padding: 0; border-top: 1px solid var(--line); }
+.connector-list { list-style: none; margin: 0 -16px; padding: 0; border-top: 1px solid var(--line); }
 .connector { display: flex; flex-direction: column; gap: 6px; padding: 9px 16px; border-bottom: 1px solid var(--line); }
 .connector:last-child { border-bottom: 0; }
 .connector-row { display: flex; align-items: center; justify-content: space-between; gap: 4px 8px; min-height: 28px; flex-wrap: wrap; }
 .connector-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
-.connector-side { display: flex; align-items: center; gap: 8px; margin-left: auto; white-space: nowrap; }
+.connector-side { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; max-width: 100%; }
 .connector-name { font-weight: 500; overflow-wrap: anywhere; }
-.connector-via { white-space: nowrap; }
+.connector-via { overflow-wrap: anywhere; }
 .connector-badge { padding: 1px 6px; border-radius: 6px; background: var(--fill); color: var(--muted); font-size: 11px; }
 .connector-status { font-size: 12px; color: var(--muted); white-space: nowrap; }
 .connector-status-needs-auth { color: var(--warn-ink); }
@@ -805,7 +816,7 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .widget-note { display: flex; align-items: center; justify-content: center; padding: 12px; }
 .widget-status { padding: 6px 12px; border-top: 1px solid var(--line); }
 @media (prefers-reduced-motion: reduce) { .widget-frame { transition: none; } }
-@media (max-width: 700px) { .connector-paste .row { flex-wrap: wrap; } .connector-auth { margin-left: 0; } }
+@media (max-width: 700px) { .connector-scope { grid-template-columns: 1fr; } .connector-paste .row { flex-wrap: wrap; } .connector-auth { margin-left: 0; } }
 
 /* Narrow windows (phones): the sidebar is a drawer over the page, opened by
    the menu button first in each page's bar, so the page keeps the full width.

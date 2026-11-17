@@ -4,10 +4,11 @@
 // for Claude that starts Claude Code with no prompt, so it spends no usage.
 import { useEffect, useState } from "react";
 import { accountChoices, DEFAULT_ACCOUNT } from "./accounts";
-import { actionFor, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
+import { actionFor, CONNECTOR_PAGE_SIZE, filterServers, type ConnectorFilter, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
 import type { Engine, McpServer } from "./protocol";
 import { accountsOn, hostName, hostOnline, mcpAuthKey, mcpKey, type Actions, type State } from "./store";
-import { Cloud, Icon, MenuButton, PLUS } from "./App";
+import { Icon, MenuButton, PLUS } from "./App";
+import { loadHost } from "./sessionDefaults";
 import { ENGINE_NAME } from "./engines";
 
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
@@ -20,11 +21,17 @@ export function ConnectorsPage({ state, actions }: { state: State; actions: Acti
       accountChoices(accountsOn(state, host), engine).map((a) => ({ host, engine, account: a.id, accountName: a.name })),
     ),
   );
-  const key = targets.map((t) => mcpKey(t.host, t.engine, t.account)).join("|");
-  const refresh = () => targets.forEach((t) => actions.mcpStatus(t.host, t.engine, t.account));
-  // List again whenever the page opens or a host or account appears.
-  useEffect(refresh, [key]);
-  const loading = targets.some((t) => state.mcp[mcpKey(t.host, t.engine, t.account)]?.loading);
+  const [pickedHost, setHost] = useState(loadHost);
+  const host = hosts.includes(pickedHost) ? pickedHost : hosts[0];
+  const accounts = targets.filter((t) => t.host === host);
+  const [pickedAccount, setAccount] = useState("");
+  const target = accounts.find((t) => mcpKey(t.host, t.engine, t.account) === pickedAccount) ?? accounts[0];
+  const key = target ? mcpKey(target.host, target.engine, target.account) : "";
+  const refresh = () => target && actions.mcpStatus(target.host, target.engine, target.account);
+  // Inspect only the selected account. Merely opening this page should not
+  // start connector discovery for every unused account on every host.
+  useEffect(() => { refresh(); }, [key]);
+  const loading = !!state.mcp[key]?.loading;
 
   return (
     <div className="hosts connectors">
@@ -32,30 +39,29 @@ export function ConnectorsPage({ state, actions }: { state: State; actions: Acti
         <MenuButton />
         <h1>Connectors</h1>
         <span className="spacer" />
-        <button className="btn" onClick={refresh} disabled={loading}>
+        <button className="btn" onClick={refresh} disabled={loading || !target}>
           <Icon d={REFRESH} size={13} />
           {loading ? "Checking…" : "Check again"}
         </button>
       </header>
       <div className="scroll">
-        <div className="hosts-inner">
-          <p className="muted connectors-intro">
-            The MCP servers each engine account has on each host: claude.ai connectors, plugins, config files and ChatGPT apps. A session can use a server once it shows
-            Connected here; one that needs sign-in fails until you connect it.
-          </p>
-          {hosts.map((host) => (
-            <section key={host} className="connectors-host" aria-label={hostName(state, host)}>
-              <h2 className="connectors-host-name">
-                {hostName(state, host)}
-                {host !== "local" && <Cloud size={13} />}
-              </h2>
-              {targets
-                .filter((t) => t.host === host)
-                .map((t) => (
-                  <AccountCard key={mcpKey(t.host, t.engine, t.account)} state={state} actions={actions} {...t} />
-                ))}
-            </section>
-          ))}
+        <div className="hosts-inner connectors-inner">
+          <p className="muted connectors-intro">Connected services are ready for your sessions. Browse Available when you need to connect something new.</p>
+          <div className="connector-scope">
+            <label className="automation-field">
+              <span className="small muted">Host</span>
+              <select className="field" aria-label="Connector host" value={host ?? ""} disabled={!hosts.length} onChange={(e) => setHost(e.target.value)}>
+                {hosts.map((id) => <option key={id} value={id}>{hostName(state, id)}</option>)}
+              </select>
+            </label>
+            <label className="automation-field">
+              <span className="small muted">Engine account</span>
+              <select className="field" aria-label="Connector account" value={key} disabled={!target} onChange={(e) => setAccount(e.target.value)}>
+                {accounts.map((t) => <option key={mcpKey(t.host, t.engine, t.account)} value={mcpKey(t.host, t.engine, t.account)}>{ENGINE_NAME[t.engine]} · {t.accountName}</option>)}
+              </select>
+            </label>
+          </div>
+          {target ? <AccountCard key={key} state={state} actions={actions} {...target} /> : <p className="muted">Connect to a host to view its connectors.</p>}
         </div>
       </div>
     </div>
@@ -68,6 +74,27 @@ function AccountCard(props: { state: State; actions: Actions; host: string; engi
   const engineState = account === DEFAULT_ACCOUNT ? state.engines[host]?.[engine] : state.engines[host]?.accounts?.[account];
   const servers = sortServers(status?.servers ?? []);
   const added = account !== DEFAULT_ACCOUNT;
+  const [filter, setFilter] = useState<ConnectorFilter>("connected");
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
+  // Keep an in-progress or completed sign-in visible until dismissed, even
+  // when its new status moves it out of the current filter.
+  const authenticating = servers.filter((s) => state.mcpAuth[mcpAuthKey(host, engine, account, s.name)] && filterServers([s], query, "all").length);
+  const filtered = sortServers([...new Map([...filterServers(servers, query, filter), ...authenticating].map((s) => [s.name, s] as const)).values()]);
+  const pages = Math.max(1, Math.ceil(filtered.length / CONNECTOR_PAGE_SIZE));
+  const currentPage = Math.min(page, pages - 1);
+  const visible = filtered.slice(currentPage * CONNECTOR_PAGE_SIZE, (currentPage + 1) * CONNECTOR_PAGE_SIZE);
+  const filters: { id: ConnectorFilter; label: string }[] = [
+    { id: "connected", label: "Connected" },
+    { id: "available", label: "Available" },
+    { id: "failed", label: "Not working" },
+    { id: "all", label: "All" },
+  ];
+  const reveal = (name: string) => {
+    setFilter("all");
+    setQuery(name);
+    setPage(0);
+  };
   return (
     <div className="host-card connectors-card">
       <div className="connectors-card-head">
@@ -79,19 +106,42 @@ function AccountCard(props: { state: State; actions: Actions; host: string; engi
       {engineState?.loggedIn === false && <div className="muted small connectors-note">Not logged in, so its connectors cannot be listed. Log in on the Hosts page first.</div>}
       {status?.error && <div className="bad small connectors-note">{status.error}</div>}
       {added && engine === "claude" && (
-        <div className="muted small connectors-note">
-          An added account has its own Claude Code folder: its claude.ai connectors come with its login, but plugins and servers from your Default setup are not shared. Add the ones it needs here.
-        </div>
+        <details className="muted small connectors-note">
+          <summary>About this account’s connectors</summary>
+          Its claude.ai connectors come with its login. Plugins and config from Default are not shared; add the services you need here.
+        </details>
       )}
-      {status?.servers && servers.length === 0 && <div className="muted small connectors-note">No MCP servers for this account.</div>}
-      {servers.length > 0 && (
-        <ul className="connector-list">
-          {servers.map((s) => (
-            <ServerRow key={s.name} server={s} {...props} />
-          ))}
-        </ul>
+      {status?.servers && (
+        <>
+          <div className="connector-filters" role="group" aria-label="Show connectors">
+            {filters.map((f) => (
+              <button key={f.id} className="btn-text btn-small" aria-label={f.label} aria-pressed={filter === f.id} onClick={() => { setFilter(f.id); setPage(0); }}>
+                {f.label}<span className="muted">{filterServers(servers, "", f.id).length}</span>
+              </button>
+            ))}
+          </div>
+          <input className="field connector-search" aria-label="Search connectors" type="search" placeholder="Search connectors" value={query} onChange={(e) => { setQuery(e.target.value); setPage(0); }} />
+          {visible.length ? (
+            <ul className="connector-list">
+              {visible.map((s) => <ServerRow key={s.name} server={s} {...props} />)}
+            </ul>
+          ) : (
+            <div className="connectors-empty muted" role="status">
+              {query.trim() ? "No connectors match your search." : servers.length === 0 ? "No connectors for this account yet." : filter === "connected" ? "No connected services yet. Choose Available to connect one, or add a connector below." : filter === "failed" ? "No connectors are reporting a problem." : "No connectors in this view."}
+              {query && <button className="btn-text btn-small" onClick={() => { setQuery(""); setPage(0); }}>Clear search</button>}
+            </div>
+          )}
+          {filtered.length > CONNECTOR_PAGE_SIZE && (
+            <nav className="connector-pagination" aria-label="Connector pages">
+              <span className="muted small" aria-live="polite">{currentPage * CONNECTOR_PAGE_SIZE + 1}–{Math.min((currentPage + 1) * CONNECTOR_PAGE_SIZE, filtered.length)} of {filtered.length}</span>
+              <span className="spacer" />
+              <button className="btn btn-small" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>Previous</button>
+              <button className="btn btn-small" disabled={currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}>Next</button>
+            </nav>
+          )}
+        </>
       )}
-      {status?.servers && engineState?.loggedIn !== false && <AddConnector {...props} servers={servers} />}
+      {status?.servers && engineState?.loggedIn !== false && <AddConnector {...props} servers={servers} onAdded={reveal} />}
     </div>
   );
 }
@@ -231,7 +281,7 @@ function SignIn(props: {
 
 /** "Add connector": a catalog server (Linear first) or any https address,
  *  added to this account's own config; its sign-in opens right after. */
-function AddConnector(props: { state: State; actions: Actions; host: string; engine: Engine; account: string; servers: McpServer[] }) {
+function AddConnector(props: { state: State; actions: Actions; host: string; engine: Engine; account: string; servers: McpServer[]; onAdded(name: string): void }) {
   const { state, actions, host, engine, account } = props;
   const [open, setOpen] = useState(false);
   const [other, setOther] = useState(false);
@@ -250,6 +300,7 @@ function AddConnector(props: { state: State; actions: Actions; host: string; eng
   // Added: go straight to its sign-in, as Connect would.
   useEffect(() => {
     if (pending && change?.state === "done") {
+      props.onAdded(pending);
       actions.mcpAuth(host, engine, account, pending);
       close();
     }

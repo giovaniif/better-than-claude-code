@@ -2,7 +2,9 @@
 
 The Hosts page is a grid of small host cards, this machine first, like the
 Automations page: each card shows the host's state, CPU, memory and disk, one
-line for its sessions and a mark per engine with its login. Details (one per
+line for its sessions and a mark per engine with its login. Engine marks use
+a fixed two-column grid; long login notes truncate with their full tooltip so
+wrapping cannot move a card’s footer below its neighbour. Details (one per
 card, closed by default and kept per browser) opens the CPU sparkline, the
 sessions table and queue rule, each engine's accounts with Log in, Add account
 and Remove, and Update or Remove host. A remote is added by SSH destination
@@ -159,6 +161,16 @@ yv drive hosts --viewport desktop --steps '[{"click":"role:button:Add host"},{"f
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
+
+### engine-status-keeps-cards-aligned
+A longer engine status cannot move the footer below its neighbour. On mobile
+the cards stack without horizontal overflow. The second card is a DOM fixture
+with the same engine status text that wrapped in the reported screenshot.
+
+```sh
+yv drive hosts --steps '[{"expect":"css:.host-engine"},{"eval":"(() => { const grid=document.querySelector(\".host-grid\"); const a=grid.querySelector(\".host-card\"); const b=a.cloneNode(true); b.setAttribute(\"aria-label\",\"TEST-wrapped-status\"); (b.querySelector(\".host-engine-label\") || b.querySelector(\".host-engine\")).append(document.createTextNode(\" \u00b7 not logged in\")); grid.querySelector(\".host-empty\")?.remove(); grid.insertBefore(b,a.nextSibling); return true; })()","equals":true},{"shot":"wrapped-status"},{"eval":"(() => { const cards=[...document.querySelectorAll(\".host-grid > .host-card\")]; const a=cards[0].getBoundingClientRect(), b=document.querySelector(\"section[aria-label=TEST-wrapped-status]\").getBoundingClientRect(); return Math.round(a.top)!==Math.round(b.top) || Math.abs(a.bottom-b.bottom)<1; })()","equals":true},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true}]'
+```
+
 
 ## Gotchas
 - Isolated environments replace `ssh` with `verify/fakes/ssh`, which always fails like an unreachable host.
