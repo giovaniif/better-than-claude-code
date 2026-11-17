@@ -1,0 +1,246 @@
+{
+  "v": 1,
+  "claim": "PR pane: \"Review with <engine>\" is enabled while a session works in its folder, and every click is refused with a red banner (yardd allows one working session per folder)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-5867",
+  "base": "3616ed0edb499b1cc4ee2064b90072bae51364f6",
+  "head": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/prPane.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T13:44:12.212Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e1693b551f625ed5ab9fe65282be65face75ced4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "9fffa2dd1bceaa5d2288c2c3c3675537631982d9f8f1eef947fe84dd0091aec5"
+        },
+        {
+          "path": "p1-before-click-desktop.png",
+          "sha256": "3d140f2b471fe6159f811fa4df531672b80100617324037fa988b7cd31c972f4"
+        },
+        {
+          "path": "p1-refused-desktop.png",
+          "sha256": "241e534aaba38c1868392d911ad687c34316bd96dc936a73e3a534934cd59a77"
+        }
+      ],
+      "addedAt": "2026-11-17T13:45:04.416Z",
+      "failedApi": [
+        "session.create: \"[slow] TEST-busy base\" is working in this folder. Stop it or let it finish first."
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e1693b551f625ed5ab9fe65282be65face75ced4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "114353c6077cb8c552d257954ed325b704324dd348cce3264af6303c1f8dfa35"
+        }
+      ],
+      "addedAt": "2026-11-17T13:45:04.467Z",
+      "cmd": "cd ui && bun test src/prPane.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "e1693b551f625ed5ab9fe65282be65face75ced4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "30f3bd0e70988d9de150dd83b5d5095a10c0a43fa468e82ba6c187ec92a8a5e4"
+        }
+      ],
+      "addedAt": "2026-11-17T13:45:04.560Z",
+      "cmd": "verify/yv map run pr-pane --recipe review-waits-while-the-folder-is-busy",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "ba14c73e7757b624f2ea2c1d1afc69b5f2615d7af2e91487c7602054e6e2d543"
+        },
+        {
+          "path": "p4-other-busy-desktop.png",
+          "sha256": "deeaabe9afaf3d8129db1e1cc1844bc15795c1e01a6930d3ae8f1a787f57dd7a"
+        },
+        {
+          "path": "p4-own-busy-desktop.png",
+          "sha256": "83fb499084567a400758be6f7bda8a18a19b2342801f9cabca66934c5522c276"
+        }
+      ],
+      "addedAt": "2026-11-17T13:46:51.623Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "3442e99a37a44524013c90b8e479386c865359f1754b0865bc08a133569bf970"
+        },
+        {
+          "path": "p5-free-desktop.png",
+          "sha256": "2cfaba6aab5fc279e72bb717ec7ebef4510870d63fb9057308eecf7f7cd9b710"
+        },
+        {
+          "path": "p5-review-started-desktop.png",
+          "sha256": "aa30a074cd62dae47dc840f239311a517bd0c0f819bc2f0d2bc690b61241a6a7"
+        }
+      ],
+      "addedAt": "2026-11-17T13:46:51.671Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "367df8ab96fbd559e8cdcd464b723238079c18ede417448e802accb87a62174a"
+        },
+        {
+          "path": "p6-mobile-owner-mobile.png",
+          "sha256": "43fdb7e06bb627e71923c1ea09fdaee8fe71f04b917d3b6462523b013145f49a"
+        }
+      ],
+      "addedAt": "2026-11-17T13:46:51.718Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "e4698dceacf7903434975cae3af0a2aa65b267fd68b758d13ddb2387642e606e"
+        }
+      ],
+      "addedAt": "2026-11-17T13:46:51.764Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "7be688e9e1209eaa4a2d2b66520762976768d4158383e02360bade83b720f99f"
+        }
+      ],
+      "addedAt": "2026-11-17T13:46:51.920Z",
+      "cmd": "verify/yv map run pr-pane --recipe review-waits-while-the-folder-is-busy",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "3bccbde5d005e9f49867f297582beea446947424ca69145508fe1c29da8dc04e"
+        }
+      ],
+      "addedAt": "2026-11-17T13:47:02.237Z",
+      "cmd": "verify/yv design-check --base 3616ed0edb49",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-pr-pane.json",
+          "sha256": "4bbe58bfe6d1d1054f1afe84baefba65be59882100718be86294a6719b9c80a6"
+        }
+      ],
+      "addedAt": "2026-11-17T13:47:02.323Z",
+      "cmd": "verify/yv map run pr-pane",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "pr-pane/shows-pr",
+        "pr-pane/title-and-number-open-github",
+        "pr-pane/no-pr",
+        "pr-pane/send-thread-to-session",
+        "pr-pane/review-with-other-engine",
+        "pr-pane/double-click-send-to-session",
+        "pr-pane/double-click-review-with-other-engine",
+        "pr-pane/review-offered-when-the-pr-cannot-be-read",
+        "pr-pane/review-without-a-remote-names-a-local-base",
+        "pr-pane/review-waits-while-the-folder-is-busy"
+      ]
+    }
+  ]
+}

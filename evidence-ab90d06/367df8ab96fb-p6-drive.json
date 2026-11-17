@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9c23b162",
+  "build": {
+    "sha": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+    "short": "ab90d06",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:46:22.656Z"
+  },
+  "dir": ".verify/evidence/review-busy-folder-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2426,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/review-busy-folder-mobile/mobile-owner-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

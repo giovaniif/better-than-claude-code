@@ -1,0 +1,26 @@
+$ verify/yv map run pr-pane --recipe review-waits-while-the-folder-is-busy
+# exit 0 after 10271 ms at ab90d0603bcae5a980b8d322bb29d62f6d415c5e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "pr-pane",
+      "at": "2026-11-17T13:47:02.177Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "review-waits-while-the-folder-is-busy",
+          "status": "pass",
+          "ms": 9407
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

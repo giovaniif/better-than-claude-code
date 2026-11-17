@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9c23b162",
+  "build": {
+    "sha": "ab90d0603bcae5a980b8d322bb29d62f6d415c5e",
+    "short": "ab90d06",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:46:22.656Z"
+  },
+  "dir": ".verify/evidence/review-busy-folder-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5987,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/review-busy-folder-head/other-busy-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/review-busy-folder-head/own-busy-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

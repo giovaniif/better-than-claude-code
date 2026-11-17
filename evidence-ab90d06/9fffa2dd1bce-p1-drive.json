@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1e9c047752",
+  "build": {
+    "sha": "e1693b551f625ed5ab9fe65282be65face75ced4",
+    "short": "e1693b5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T13:44:14.769Z"
+  },
+  "dir": ".verify/evidence/review-busy-folder-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4412,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/review-busy-folder-base/before-click-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/review-busy-folder-base/refused-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.create",
+          "message": "\"[slow] TEST-busy base\" is working in this folder. Stop it or let it finish first."
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
