@@ -647,6 +647,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .work-toggle:hover, .fold-row:hover, .work-more:hover, .tool-row:not(:disabled):hover { color: var(--ink); }
 .work-more { font-size: 12px; padding: 0; }
 .work-list { display: flex; flex-direction: column; gap: 2px; padding-left: 12px; border-left: 1px solid var(--line); margin-left: 5px; }
+.stopped-mark { margin-top: -8px; }
 .fold { display: flex; flex-direction: column; gap: 16px; margin: -8px 0; }
 .fold-body { display: flex; flex-direction: column; gap: 16px; padding-left: 14px; border-left: 1px solid var(--line); margin-left: 5px; }
 .thought-line { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); opacity: 0.8; }

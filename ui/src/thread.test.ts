@@ -6,7 +6,7 @@ import { duration, handoffLinks, layout, summarize, thoughtLine, type ToolItem, 
 const fold = (events: AgentEvent[]): Item[] => events.reduce((acc, ev, i) => applyEvent(acc, ev, i), [] as Item[]);
 const shape = (rows: ReturnType<typeof layout>) =>
   rows.map((r) =>
-    r.type === "item" ? r.item.kind : r.type === "work" ? `work(${r.entries.length}${r.live ? ",live" : ""})` : r.type === "widget" ? `widget(${r.tool.app?.id})` : `fold(${r.summary})`,
+    r.type === "item" ? r.item.kind : r.type === "work" ? `work(${r.entries.length}${r.live ? ",live" : ""})` : r.type === "widget" ? `widget(${r.tool.app?.id})` : r.type === "stopped" ? "stopped" : `fold(${r.summary})`,
   );
 
 const turn: AgentEvent[] = [
@@ -69,6 +69,28 @@ describe("layout", () => {
     expect(shape(rows)).toEqual(["user", "fold(1 other step, read 1 file)", "widget(w1)", "assistant"]);
     const f = rows[1];
     expect(f.type === "fold" && shape(f.rows)).toEqual(["work(1)", "work(1)"]);
+  });
+
+  test("a stopped turn with only text is marked stopped under its text, with its duration", () => {
+    const items = fold([
+      { type: "user_message", text: "long job" },
+      { type: "turn_started", at: 1_000 },
+      { type: "assistant_message", itemId: "m", text: "Working" },
+      { type: "turn_completed", status: "interrupted", at: 5_000 },
+    ]);
+    const rows = layout(items, false);
+    expect(shape(rows)).toEqual(["user", "assistant", "stopped"]);
+    const mark = rows[2];
+    expect(mark.type === "stopped" && mark.ms).toBe(4_000);
+    // A completed turn and a turn still running get no mark.
+    const done = fold([
+      { type: "user_message", text: "hi" },
+      { type: "turn_started", at: 1_000 },
+      { type: "assistant_message", itemId: "m", text: "Hello" },
+      { type: "turn_completed", status: "completed", at: 2_000 },
+    ]);
+    expect(shape(layout(done, false))).toEqual(["user", "assistant"]);
+    expect(shape(layout(items.filter((it) => it.kind !== "turn"), true))).toEqual(["user", "assistant"]);
   });
 
   test("a turn with no tools is left alone, and errors stay in view", () => {
