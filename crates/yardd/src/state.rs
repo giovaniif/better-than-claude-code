@@ -353,12 +353,19 @@ impl App {
             let mut map = self.sessions.lock().unwrap();
             if exclusive {
                 let here = same_folder_key(cwd);
-                let busy = map.values().any(|s| {
+                let busy = map.values().find(|s| {
                     matches!(s.meta.status.as_str(), "running" | "needs_approval" | "queued")
                         && same_folder_key(&s.meta.cwd) == here
                 });
-                if busy {
-                    anyhow::bail!("Another session is working in this folder. Stop it first, or tick New worktree.");
+                // Only a folder that cannot have a worktree (or a review in a
+                // session's own one) gets here, so a worktree is no way out:
+                // name the session so the user can find it.
+                if let Some(s) = busy {
+                    let who = match s.meta.title.trim() {
+                        "" => "Another session".to_string(),
+                        t => format!("\"{t}\""),
+                    };
+                    anyhow::bail!("{who} is working in this folder. Stop it or let it finish first.");
                 }
             }
             self.store.meta(&meta);
