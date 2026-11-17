@@ -1,0 +1,64 @@
+$ CARGO_TARGET_DIR=/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/target CARGO_BUILD_JOBS=2 cargo test -p yardd --test switchy
+# exit 101 after 20351 ms at aa395ca03e005e5be46fdf61b70e33c2f3c3063a
+
+
+running 3 tests
+test invalid_questions_and_models_do_not_start_an_engine_turn ... ok
+test context_is_bounded_and_carries_host_provenance ... FAILED
+test switchy_answers_without_creating_a_sidebar_session_and_survives_restart ... FAILED
+
+failures:
+
+---- context_is_bounded_and_carries_host_provenance stdout ----
+
+thread 'context_is_bounded_and_carries_host_provenance' (3558910) panicked at crates/yardd/tests/common/mod.rs:355:27:
+timed out after 20s waiting for host context; last messages:
+{"accounts":[],"automations":[],"home":"/tmp/yardd-test-3558909-switchy-context-0/home","host":null,"hostName":"giovani","hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts
+{"for":"switchy.context","message":"unknown op `switchy.context`","op":"error","ref":"context"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794936787,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795202587,"usedPercent":34,"windowDurationMins":10080}}}}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+kept /tmp/yardd-test-3558909-switchy-context-0 for inspection
+
+---- switchy_answers_without_creating_a_sidebar_session_and_survives_restart stdout ----
+
+thread 'switchy_answers_without_creating_a_sidebar_session_and_survives_restart' (3558912) panicked at crates/yardd/tests/common/mod.rs:355:27:
+timed out after 20s waiting for Switchy answer; last messages:
+{"accounts":[],"automations":[],"home":"/tmp/yardd-test-3558909-switchy-2/home","host":null,"hostName":"giovani","hosts":[],"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low"
+{"for":"switchy.send","message":"unknown op `switchy.send`","op":"error","ref":"ask"}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+{"op":"usage","usage":{"codex":{"limitId":"codex","primary":{"resetsAt":1794936787,"usedPercent":12,"windowDurationMins":300},"secondary":{"resetsAt":1795202587,"usedPercent":34,"windowDurationMins":10080}}}}
+{"models":{"claude":[{"defaultEffort":"high","efforts":["low","medium","high","xhigh","max"],"id":"claude-opus-5-5","name":"Opus 5.5"},{"defaultEffort":"medium","efforts":["low","medium","high","xhigh","max"],"id":"claude-sonnet-5-5","name":"Sonnet 5.5"},{"defaultEffort":"medium","efforts":["low","m
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-3558909-switchy-2 for inspection
+
+
+failures:
+    context_is_bounded_and_carries_host_provenance
+    switchy_answers_without_creating_a_sidebar_session_and_survives_restart
+
+test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.13s
+
+
+warning: unused import: `Value`
+ --> crates/yardd/tests/switchy.rs:4:24
+  |
+4 | use serde_json::{json, Value};
+  |                        ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+ --> crates/yardd/tests/switchy.rs:9:9
+  |
+9 |     let mut daemon = sb.start();
+  |         ----^^^^^^
+  |         |
+  |         help: remove this `mut`
+  |
+  = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `yardd` (test "switchy") generated 2 warnings (run `cargo fix --test "switchy" -p yardd` to apply 2 suggestions)
+    Finished `test` profile [unoptimized] target(s) in 0.19s
+     Running tests/switchy.rs (/home/giovani/.yard/wt/better-than-claude-code/yard-we-need-to-build-a-5eac/target/debug/build/yardd/320dcd094563d94e/out/switchy-320dcd094563d94e)
+error: test failed, to rerun pass `-p yardd --test switchy`

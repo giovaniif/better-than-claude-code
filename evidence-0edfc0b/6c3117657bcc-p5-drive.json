@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "0edfc0bcca25c6a1cae1b1fb11ff4e7278fd895c",
+    "short": "0edfc0b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T15:26:46.124Z"
+  },
+  "dir": ".verify/switchy-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4542,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/switchy-head/switchy-answer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 12,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose\")).borderRadius",
+          "value": "16px"
+        },
+        {
+          "step": 13,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose textarea\")).resize",
+          "value": "none"
+        },
+        {
+          "step": 14,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4711,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/switchy-head/switchy-answer-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 12,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose\")).borderRadius",
+          "value": "16px"
+        },
+        {
+          "step": 13,
+          "eval": "getComputedStyle(document.querySelector(\".assistant-compose textarea\")).resize",
+          "value": "none"
+        },
+        {
+          "step": 14,
+          "eval": "document.documentElement.scrollWidth <= innerWidth",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
