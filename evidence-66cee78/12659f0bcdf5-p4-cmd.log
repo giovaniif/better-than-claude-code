@@ -1,0 +1,26 @@
+$ verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar-without-worktree
+# exit 0 after 4697 ms at 66cee78eb763a641634a4f571f3ab90e5e8d82d5
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-17T23:55:05.966Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-delete-confirm-fits-the-bar-without-worktree",
+          "status": "pass",
+          "ms": 3842
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

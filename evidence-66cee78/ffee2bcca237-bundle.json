@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "claim": "Mobile: with a long title, the armed 'Delete session?' button (session without a worktree) wraps onto two lines and spills out of its pill",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-a31a",
+  "base": "62a60a2e12212c6804a084f97ff4b478a67dbabb",
+  "head": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T23:54:27.365Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "8a997dd71734a3e5d7bff8962b548b841ba309aa",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "bb5900905b2117ee4dab905a0fc6cf7068551e8594a93503206e3addf594019e"
+        },
+        {
+          "path": "p1-delete-armed-mobile.png",
+          "sha256": "4c5c8b6d5ac11235f7896581f13b8a8f67ccfaf8b3c80109f06c64e38d72bd32"
+        }
+      ],
+      "addedAt": "2026-11-17T23:54:34.422Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "8a997dd71734a3e5d7bff8962b548b841ba309aa",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "454342612715896e1a871239a63a7a1de8d8e93a0e967fb0fd7758b0a70af4ff"
+        }
+      ],
+      "addedAt": "2026-11-17T23:54:34.470Z",
+      "cmd": "verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar-without-worktree",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "211acdcb64dbf566969b3fd372dea9885edb05e47e78ee58deece9d7cfd2e66b"
+        },
+        {
+          "path": "p3-delete-armed-mobile.png",
+          "sha256": "852e93ef2e50f63022c54f0e87bf73400445346949585846fe017d68cb45009a"
+        },
+        {
+          "path": "p3-delete-lapsed-mobile.png",
+          "sha256": "7e3ddf8eb75893d326134d9264d5c656f6f5e75da20269f8d1e304447b0a10b2"
+        },
+        {
+          "path": "p3-delete-armed-desktop.png",
+          "sha256": "c21450b738a9d31931bd5c860a7eb0429379244f734f3e6b73534d29aa43fd3d"
+        },
+        {
+          "path": "p3-delete-lapsed-desktop.png",
+          "sha256": "874505955d3501dc96d213049ddb764721de422424d6b2262d32301a9a176e7c"
+        }
+      ],
+      "addedAt": "2026-11-17T23:55:01.224Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "12659f0bcdf551baf1608d42bdca92b587485b26daccda8bc6befdca0e90c82c"
+        }
+      ],
+      "addedAt": "2026-11-17T23:55:01.272Z",
+      "cmd": "verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar-without-worktree",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "f923d9e70a530cd38e3c4cabc36ff8bbc9bcaac9280ce6bfe1c30e5bc37dfe48"
+        }
+      ],
+      "addedAt": "2026-11-17T23:55:06.022Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "751f1ee2655b60ca1ba85fd34cafeccc344050cf4a672a3be0510d6dafccdc41"
+        }
+      ],
+      "addedAt": "2026-11-17T23:55:06.189Z",
+      "cmd": "verify/yv design-check --base 62a60a2e1221",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-layout.json",
+          "sha256": "64ea64677835709bb8ee38372ecb06ed6a0e2a529bfb83e9bda02fc63367cad1"
+        }
+      ],
+      "addedAt": "2026-11-17T23:55:19.785Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/desktop-sidebar-is-a-column"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "session:s1a1ebe8f6603",
+  "build": {
+    "sha": "66cee78eb763a641634a4f571f3ab90e5e8d82d5",
+    "short": "66cee78",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T23:54:47.854Z"
+  },
+  "dir": ".verify/evidence/delete-confirm-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6478,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/delete-confirm-head/delete-armed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/delete-confirm-head/delete-lapsed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 6211,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/delete-confirm-head/delete-armed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/delete-confirm-head/delete-lapsed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
