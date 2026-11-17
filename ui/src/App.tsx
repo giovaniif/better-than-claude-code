@@ -2633,6 +2633,7 @@ function RowView({ row, render, widget }: { row: Row; render(item: Item): ReactN
   if (row.type === "item") return <>{render(row.item)}</>;
   if (row.type === "work") return <WorkGroup entries={row.entries} live={row.live} />;
   if (row.type === "widget") return <>{widget?.(row.tool) ?? null}</>;
+  if (row.type === "stopped") return <div className="stopped-mark muted">{row.ms != null ? `Stopped after ${duration(row.ms)}` : "Stopped"}</div>;
   return <TurnFold row={row} render={render} />;
 }
 

@@ -14,7 +14,10 @@ export type Row =
   | { type: "fold"; key: string; rows: Row[]; ms: number | null; status: string; summary: string }
   /** A tool call's widget (MCP Apps: a chart, a table). It stays in view
    *  when its turn folds, between the fold and the answer. */
-  | { type: "widget"; key: string; tool: ToolItem };
+  | { type: "widget"; key: string; tool: ToolItem }
+  /** A stopped turn that did no work has no fold to say so: this marks its
+   *  cut-off text, so it does not read as a full answer. */
+  | { type: "stopped"; key: string; ms: number | null };
 
 const isWork = (it: Item): it is WorkItem => it.kind === "tool" || it.kind === "reasoning";
 
@@ -87,8 +90,11 @@ export function layout(items: Item[], running: boolean): Row[] {
     const cut = nextHead?.kind === "user" && nextHead.steered ? nextHead.at : undefined;
     const from = own?.start ?? (steered && head?.kind === "user" ? head.at : undefined);
     const to = cut ?? marker?.end;
+    const ms = from != null && to != null ? to - from : null;
+    // Only the part that runs to the stop is marked, not each steered part.
+    const stoppedMark = (): Row[] => (!live && own && cut === undefined && own.status === "interrupted" ? [{ type: "stopped", key: `stopped-${own.key}`, ms }] : []);
     if (live || !body.some(isWork)) {
-      rows.push(...group(body, live));
+      rows.push(...group(body, live), ...stoppedMark());
       return;
     }
     // The answer is the last message; errors after it stay in view too.
@@ -103,10 +109,9 @@ export function layout(items: Item[], running: boolean): Row[] {
     const shown = body.filter((it, i) => (answer >= 0 && i >= answer) || (it.kind === "error" && !folded.includes(it)) || goingOn(it));
     const work = folded.filter(isWork);
     if (!work.length) {
-      rows.push(...group(body, false));
+      rows.push(...group(body, false), ...stoppedMark());
       return;
     }
-    const ms = from != null && to != null ? to - from : null;
     rows.push({
       type: "fold",
       key: `fold-${folded[0]?.key ?? body[0].key}`,
