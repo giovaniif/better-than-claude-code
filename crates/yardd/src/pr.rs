@@ -58,15 +58,9 @@ async fn get(cwd: &str) -> Result<Value> {
     }
     // Past this point the folder is a repository, so the pane can still offer
     // a review (it reads `git diff`, not GitHub) when the PR cannot be read.
-    // That review needs a base this repository has; a repo with no origin
-    // has no origin/HEAD.
     match get_in_repo(cwd).await {
         Ok(pr) => Ok(pr),
-        Err(e) => Ok(json!({
-            "error": format!("{e:#}"),
-            "repo": true,
-            "defaultBranch": crate::git::local_base(cwd).await,
-        })),
+        Err(e) => Ok(json!({ "error": format!("{e:#}"), "repo": true })),
     }
 }
 
@@ -80,10 +74,12 @@ async fn get_in_repo(cwd: &str) -> Result<Value> {
     let view = match gh(cwd, &["pr", "view", "--json", PR_FIELDS]).await? {
         Ok(out) => out,
         Err(stderr) if stderr.contains("no pull requests found") => {
+            let (_, default) = git(cwd, &["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"]).await?;
+            let default = default.trim();
             return Ok(json!({
                 "none": true,
                 "branch": branch,
-                "defaultBranch": crate::git::local_base(cwd).await,
+                "defaultBranch": if default.is_empty() { Value::Null } else { json!(default) },
             }));
         }
         Err(stderr) => bail!("{}", short_gh_error(&stderr)),

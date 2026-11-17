@@ -97,25 +97,5 @@ yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"lo
 yv drive 'session:{{plainpr_sid}}' --viewport desktop --allow-errors --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"text:Cannot read the pull request: not a git repository."},{"expect":"role:button:Review with Claude","visible":false}]'
 ```
 
-### review-without-a-remote-names-a-local-base
-Viewports: desktop
-A repository with no remote (`git init` and a `feature` branch) has no
-`origin/HEAD`. The fake gh finds no PR, so the pane offers "Review with
-Claude", and the review session's prompt must diff against `main`, the
-branch the repository has. (It read `git diff origin/HEAD...HEAD`, a command
-that fails there, and told the reviewer to fetch from a remote that does not
-exist.)
-
-```sh
-nr=$(mktemp -d /tmp/TEST-no-remote-XXXXXX)
-yv var set noremote "$nr"
-git -C "$nr" init -q -b main
-git -C "$nr" -c user.name=TEST -c user.email=test@example.invalid commit -q --allow-empty -m "TEST first"
-git -C "$nr" checkout -q -b feature
-yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{noremote}}","worktree":false,"text":"TEST-no-remote"}' --wait '{"op":"created"}' --save nr_sid=sessionId
-yv drive 'session:{{nr_sid}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"role:button:Review with Claude","enabled":true},{"click":"role:button:Review with Claude"},{"expect":"role:heading:Review this branch","timeout":15000},{"expect":"text:git diff main...HEAD"},{"shot":"review-prompt"}]'
-rm -rf "$nr"
-```
-
 ## Gotchas
 - The PR pane polls every 60 s while visible; Refresh pull request forces a reload.

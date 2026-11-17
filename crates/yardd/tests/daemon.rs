@@ -2403,33 +2403,6 @@ async fn the_page_is_sent_so_a_web_view_rechecks_it() {
 }
 
 #[tokio::test]
-async fn pr_get_names_a_local_base_for_a_review_in_a_repo_without_a_remote() {
-    // The pane offers a review here (no PR to read), and its prompt diffs
-    // against this base: a repo with no origin has no origin/HEAD to name.
-    let sb = Sandbox::new("pr-no-remote");
-    let d = sb.start();
-    let mut c = d.client().await;
-    let home = sb.home();
-    let repo = make_repo(&sb, "proj");
-    git(&repo, &["checkout", "-q", "feature"], &home);
-    let sid = c.create(&repo, "hello", json!({ "worktree": false })).await;
-    c.wait_turn_done(&sid, 0).await;
-    let from = c.mark();
-    c.send(json!({ "op": "pr.get", "sessionId": sid })).await;
-    let reply = c.wait_after(from, "a pr reply", |m| m["op"] == "pr" && m["sessionId"] == sid).await;
-    assert_eq!(reply["pr"]["repo"], true, "{reply}");
-    assert_eq!(reply["pr"]["defaultBranch"], "main", "{reply}");
-
-    // Nothing to fall back on: no base is named rather than a guessed one.
-    git(&repo, &["branch", "-q", "-m", "main", "trunk"], &home);
-    let from = c.mark();
-    c.send(json!({ "op": "pr.get", "sessionId": sid })).await;
-    let reply = c.wait_after(from, "a pr reply", |m| m["op"] == "pr" && m["sessionId"] == sid).await;
-    assert_eq!(reply["pr"]["repo"], true, "{reply}");
-    assert!(reply["pr"]["defaultBranch"].is_null(), "{reply}");
-}
-
-#[tokio::test]
 async fn pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for() {
     let sb = Sandbox::new("pr-detached");
     let d = sb.start();
