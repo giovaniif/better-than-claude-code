@@ -188,8 +188,9 @@ Scheduled work, built into yardd (`crates/yardd/src/automations.rs`, UI in `ui/s
   opens a session and page palette from anywhere, including the composer and
   terminal (Ctrl-K on non-Mac platforms). The Switchyard heading opens it too.
   Search matches title, engine, host, folder, branch and group, including
-  archived sessions and automation runs; an empty search shows eight recent
-  sessions and the pages. Arrow keys select, Enter opens, Escape closes and
+  archived sessions and automation runs; an empty search shows the eight most
+  recent sessions the sidebar lists (no archived sessions or runs) and the
+  pages. Arrow keys select, Enter opens, Escape closes and
   returns focus. Pages include New session, Automations, Connectors, Settings,
   Hosts and Import; Import opens the existing dialog.
 - **Mac app menu:** Settings… (Cmd-,), Import Sessions… and Go to… (Cmd-K)
