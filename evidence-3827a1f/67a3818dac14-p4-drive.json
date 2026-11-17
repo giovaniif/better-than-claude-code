@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+    "short": "3827a1f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T19:45:56.568Z"
+  },
+  "dir": ".verify/evidence/new-session-gone-folder-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6523,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/new-session-gone-folder-head/gone-folder-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/new-session-gone-folder-head/picked-another-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-504037-mwl3kjel/work/TEST-gone-later3\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4292,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/new-session-gone-folder-head/gone-folder-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/new-session-gone-folder-head/picked-another-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-504037-mwl3kjel/work/TEST-gone-later3\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

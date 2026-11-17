@@ -1,0 +1,26 @@
+$ verify/yv map run new-session --recipe remembered-folder-that-is-gone-says-so
+# exit 0 after 7543 ms at 3827a1f741132d95b2c235d28f0f304b92e70a5d
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-17T19:47:13.363Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "remembered-folder-that-is-gone-says-so",
+          "status": "pass",
+          "ms": 6684
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

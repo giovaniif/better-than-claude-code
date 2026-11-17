@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon branches_of_a_missing_folder_say_it_is_missing
+# exit 101 after 3180 ms at 7103600dbfac2ac85755116b6ad29c2a44f0103c
+
+
+running 1 test
+test branches_of_a_missing_folder_say_it_is_missing ... FAILED
+
+failures:
+
+---- branches_of_a_missing_folder_say_it_is_missing stdout ----
+
+thread 'branches_of_a_missing_folder_say_it_is_missing' (553680) panicked at crates/yardd/tests/daemon.rs:654:5:
+assertion `left == right` failed: {"cwd":"/tmp/yardd-test-553679-branches-missing-0/work/plain-gone","error":"/tmp/yardd-test-553679-branches-missing-0/work/plain-gone is not a git repository","op":"git.branches"}
+  left: Null
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-553679-branches-missing-0 for inspection
+
+
+failures:
+    branches_of_a_missing_folder_say_it_is_missing
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 75 filtered out; finished in 0.10s
+
+
+   Compiling yardd v0.9.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3151/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 3.02s
+     Running tests/daemon.rs (target/debug/build/yardd/8835d94a529b1ca2/out/daemon-8835d94a529b1ca2)
+error: test failed, to rerun pass `-p yardd --test daemon`

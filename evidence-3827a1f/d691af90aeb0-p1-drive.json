@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "7103600dbfac2ac85755116b6ad29c2a44f0103c",
+    "short": "7103600",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T19:45:06.498Z"
+  },
+  "dir": ".verify/evidence/new-session-gone-folder-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4490,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/new-session-gone-folder-base/gone-folder-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-504037-mwl3kjel/work/TEST-gone-later\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4038,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/new-session-gone-folder-base/gone-folder-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-504037-mwl3kjel/work/TEST-gone-later\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,209 @@
+{
+  "v": 1,
+  "claim": "New session reopens on the folder last used; when that folder was deleted since, the note says 'Works in the folder itself' and only Send fails with '<path> is not a folder' (#171). Expected: the page says the folder no longer exists and keeps Send disabled until another folder is picked.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3151",
+  "base": "1839e70072594c1bfc9c530202f65604f22510f3",
+  "head": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T19:45:01.580Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7103600dbfac2ac85755116b6ad29c2a44f0103c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d691af90aeb0d495bc959bf83f22a1c01fe9e92f2108407f0e54d1ce34a215e2"
+        },
+        {
+          "path": "p1-gone-folder-mobile.png",
+          "sha256": "dce3976beaf60416605e9dc4b7543ed83837bd95f838441a598cd707a716005c"
+        },
+        {
+          "path": "p1-gone-folder-desktop.png",
+          "sha256": "752c1424f03f06d722cfedc72c2c45753ab92c961d79249054652b19787851e0"
+        }
+      ],
+      "addedAt": "2026-11-17T19:45:15.699Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "7103600dbfac2ac85755116b6ad29c2a44f0103c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "4e765b476393db7d0eb65eaddfd486ea09b550a53c989a6d4d47f6015bc4b00c"
+        }
+      ],
+      "addedAt": "2026-11-17T19:45:15.747Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon branches_of_a_missing_folder_say_it_is_missing",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "7103600dbfac2ac85755116b6ad29c2a44f0103c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "fbee816578f8f0aea75e3d6f9bb3b84ce86aab9cd9df4016c34f733ace274053"
+        }
+      ],
+      "addedAt": "2026-11-17T19:45:18.969Z",
+      "cmd": "verify/yv map run new-session --recipe remembered-folder-that-is-gone-says-so",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "67a3818dac14c074f9359cc6d8f35bf9df6db2f2e6f4722bcb715e067769acdb"
+        },
+        {
+          "path": "p4-gone-folder-mobile.png",
+          "sha256": "93823d63b3ec121d8e4b166bd5a46c9296bdedcf37b6121658fcb66c665b5aed"
+        },
+        {
+          "path": "p4-picked-another-mobile.png",
+          "sha256": "d16ea29416f78fdd2fc713af943d19891b1606e15491cd7ecf6ae19966eed4a2"
+        },
+        {
+          "path": "p4-gone-folder-desktop.png",
+          "sha256": "d33a950e89c288368913b009b183671771247a8449b40bff2d4899e1489390e3"
+        },
+        {
+          "path": "p4-picked-another-desktop.png",
+          "sha256": "dc4ff3efb088e04ea9a7b13c0e55e2cd1c7bb9edda2957cee20b553e8296acd4"
+        }
+      ],
+      "addedAt": "2026-11-17T19:46:14.938Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "6f53b56536a26a8053a7f9638b04a4199bd4e2e0c72c421b39b3b5754d6529be"
+        }
+      ],
+      "addedAt": "2026-11-17T19:46:14.986Z",
+      "cmd": "verify/yv design-check --base 1839e7007259",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "499ebb0dc111852e933cb604818de71d3688d2ac011c0be3d4582aa7b4b74ca4"
+        }
+      ],
+      "addedAt": "2026-11-17T19:46:15.070Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "45aa913918b4d320472ce41bc84e2d11f8cf600c530b7b2959d02c98d7a61fb7"
+        }
+      ],
+      "addedAt": "2026-11-17T19:47:05.823Z",
+      "cmd": "verify/yv map run new-session --recipe remembered-folder-that-is-gone-says-so",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3827a1f741132d95b2c235d28f0f304b92e70a5d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-new-session.json",
+          "sha256": "f4acfbdc238c0c4e36b72a00dfd6621e1ec8d7573649d7a49047435029327136"
+        }
+      ],
+      "addedAt": "2026-11-17T19:47:13.415Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    }
+  ]
+}
