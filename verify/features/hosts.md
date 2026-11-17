@@ -102,6 +102,19 @@ yv drive hosts --iso map-hosts-nomem --steps '[{"expect":{"css":"section.usage",
 yv iso down --name map-hosts-nomem
 ```
 
+### ip-destination-keeps-the-whole-address
+Viewports: both
+An SSH destination that is an IP address names the host by the whole address,
+not its first part: `test@100.64.0.7` offers "Add 100.64.0.7" and saves that
+name, and a second host on the same tailnet (`test@100.64.0.8`) is added too,
+not refused as "a host named 100 already exists". A host name still gives its
+first label (`TEST-devbox` in refused-add-keeps-the-form).
+
+```sh
+yv drive hosts --viewport mobile --steps '[{"click":"role:button:Add host"},{"fill":"label:SSH destination","value":"test@100.64.0.9"},{"expect":{"css":".add-host .btn-primary"},"text":"Add 100.64.0.9"},{"shot":"ip-label"}]'
+yv drive hosts --viewport desktop --steps '[{"click":"role:button:Add host"},{"fill":"label:SSH destination","value":"test@100.64.0.7"},{"click":"role:button:Add 100.64.0.7"},{"expect":"role:region:100.64.0.7"},{"click":"role:button:Add host"},{"fill":"label:SSH destination","value":"test@100.64.0.8"},{"click":"role:button:Add 100.64.0.8"},{"expect":"role:region:100.64.0.8"},{"expect":{"css":".host-row","hasText":"100.64.0.8"}},{"expect":"css:.banner-error","count":0},{"shot":"two-ip-hosts"}]'
+```
+
 ### install-on-host (manual: needs a real SSH server)
 "Install Switchyard" runs scripts/remote-install.sh over ssh; the daemon suite
 covers it with a fake ssh and a file:// release.
