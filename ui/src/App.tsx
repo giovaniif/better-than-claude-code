@@ -27,6 +27,8 @@ import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, E
 import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
+import { NavigationPalette } from "./NavigationPalette";
+import { navigationShortcut, type NavigationEntry } from "./navigation";
 
 /** Permission modes, as Claude Code names them, and what each means per engine. */
 export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, string>)[] = [
@@ -130,11 +132,64 @@ const DrawerContext = createContext<{ open: boolean; show(): void }>({ open: fal
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
+  const [importing, setImporting] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+  const navigationOrigin = useRef<HTMLElement | null>(null);
+  useLayoutEffect(() => {
+    // The app is no longer inert after the palette unmounts. A destination
+    // dialog may already have focused its own input; leave that focus alone.
+    if (!navigating && navigationOrigin.current?.isConnected && document.activeElement === document.body) navigationOrigin.current.focus({ preventScroll: true });
+  }, [navigating]);
+  // Older shells and browsers still need the sidebar's entry points.
+  const nativeMenu = (window as any).__SWITCHYARD_APP_MENU__ === true;
   const [sidebarW, setSidebarW] = useWidth("yard.sidebarWidth", SIDEBAR_W);
   // Below NARROW the sidebar is a drawer over the page. Picking anything in
   // it, the backdrop or Escape closes it; so does crossing the breakpoint, so
   // it never comes back open by surprise.
   const [drawer, setDrawer] = useState(false);
+  const openNavigation = () => {
+    if (!navigating) navigationOrigin.current = document.activeElement as HTMLElement | null;
+    setDrawer(false);
+    setImporting(false);
+    setNavigating(true);
+  };
+  const openImport = () => {
+    setDrawer(false);
+    setNavigating(false);
+    setImporting(true);
+  };
+  const pickNavigation = (entry: NavigationEntry) => {
+    setNavigating(false);
+    if (entry.action === "import") openImport();
+    else if (entry.route) actions.go(entry.route);
+  };
+  useEffect(() => {
+    const key = (e: globalThis.KeyboardEvent) => {
+      if (!navigationShortcut(e, /Mac|iPhone|iPad/.test(navigator.platform))) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (navigating) setNavigating(false);
+      else openNavigation();
+    };
+    const menu = (e: Event) => {
+      setDrawer(false);
+      switch ((e as CustomEvent).detail) {
+        case "navigation": openNavigation(); break;
+        case "import": openImport(); break;
+        case "settings":
+          setNavigating(false);
+          setImporting(false);
+          actions.go({ page: "settings" });
+          break;
+      }
+    };
+    window.addEventListener("keydown", key, true);
+    window.addEventListener("switchyard:navigate", menu);
+    return () => {
+      window.removeEventListener("keydown", key, true);
+      window.removeEventListener("switchyard:navigate", menu);
+    };
+  }, [actions, navigating]);
   useEscape(drawer, () => setDrawer(false));
   useEffect(() => {
     const mq = window.matchMedia(NARROW);
@@ -171,8 +226,8 @@ export function App() {
   }, []);
   return (
     <DrawerContext.Provider value={drawerCtx}>
-      <div className={`app ${drawer ? "drawer-open" : ""}`} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-        <Sidebar state={state} actions={sidebarActions} open={drawer} />
+      <div className={`app ${drawer ? "drawer-open" : ""}`} inert={navigating || undefined} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
+        <Sidebar state={state} actions={sidebarActions} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
         {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
         <Resizer
           width={sidebarW}
@@ -231,6 +286,8 @@ export function App() {
           )}
         </div>
       </div>
+      {navigating && <NavigationPalette state={state} onPick={pickNavigation} onClose={() => setNavigating(false)} />}
+      {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
     </DrawerContext.Provider>
   );
 }
@@ -701,7 +758,7 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions, open }: { state: State; actions: Actions; open: boolean }) {
+function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -776,7 +833,6 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const openId = route.page === "session" ? route.id : null;
   const openArchived = !!openId && !!state.sessions[openId]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
-  const [importing, setImporting] = useState(false);
   useEffect(() => {
     if (openArchived) setShowArchived(true);
   }, [openId]);
@@ -802,7 +858,9 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
     <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">
-      <div className="brand">Switchyard</div>
+      <button className="brand btn-text" onClick={onNavigate} aria-label="Go to session or page" aria-keyshortcuts={/Mac|iPhone|iPad/.test(navigator.platform) ? "Meta+K" : "Control+K"}>
+        Switchyard <kbd>{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"}</kbd>
+      </button>
       <div className="sidebar-top">
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
           <Icon d={PLUS} />
@@ -817,15 +875,18 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
           <Icon d={PLUG} />
           Connectors
         </button>
-        <button className="nav-row" onClick={() => setImporting(true)}>
-          <Icon d={IMPORT} />
-          Import
-        </button>
-        {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
-        <button className={`nav-row ${route.page === "settings" ? "active" : ""}`} onClick={() => actions.go({ page: "settings" })}>
-          <Icon d={GEAR} />
-          Settings
-        </button>
+        {!nativeMenu && (
+          <>
+            <button className="nav-row" onClick={onImport}>
+              <Icon d={IMPORT} />
+              Import
+            </button>
+            <button className={`nav-row ${route.page === "settings" ? "active" : ""}`} onClick={() => actions.go({ page: "settings" })}>
+              <Icon d={GEAR} />
+              Settings
+            </button>
+          </>
+        )}
       </div>
       <div className="session-list">
         {pinned.length > 0 && (
