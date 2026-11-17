@@ -16,6 +16,7 @@ import {
   HostPicker,
   Icon,
   MenuButton,
+  EffortPicker,
   ModelPicker,
   PERMISSIONS,
   PermissionPicker,
@@ -354,7 +355,8 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
               {isRepo && <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />}
             </div>
             <div className="automation-pickers">
-              <ModelPicker models={models} usage={usageOn(state, target)} value={choice} engines={pickerEngines(models)} onChange={setChoice} />
+              <ModelPicker models={models} value={choice} engines={pickerEngines(models)} onChange={setChoice} />
+              <EffortPicker models={models} value={choice} onChange={(effort) => setChoice({ ...choice, effort })} />
               <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
             </div>
             <span className="muted small">

@@ -3,13 +3,13 @@ import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
-import { UsageMeters, UsageStrip } from "./UsageMeters";
+import { UsageStrip } from "./UsageMeters";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
 import { AssistantPage } from "./AssistantPage";
 import { engineGlance, sessionGlance, size, stateText } from "./hosts";
 import { SettingsPage } from "./SettingsPage";
-import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
+import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -1029,9 +1029,48 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
   );
 }
 
+/** Effort for the chosen model, its own chip next to the model's. A model
+ *  without efforts (some OpenCode and Grok ones) runs as it is: no chip. */
+export function EffortPicker({ models, value, onChange }: { models: Models; value: Choice; onChange(effort: string): void }) {
+  const [open, setOpen] = useState(false);
+  useEscape(open, () => setOpen(false));
+  const efforts = models[value.engine]?.find((m) => m.id === value.model)?.efforts ?? [];
+  if (efforts.length === 0) return null;
+  return (
+    <div className="picker">
+      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} aria-label={`Effort ${capitalize(value.effort)}`} onClick={() => setOpen(!open)}>
+        <span>{capitalize(value.effort)}</span>
+        <span className="muted">
+          <Icon d={CHEVRON_DOWN} size={12} />
+        </span>
+      </button>
+      {open && (
+        <>
+          <div className="scrim" onClick={() => setOpen(false)} />
+          <div className="popover effort-menu" role="menu" aria-label="Effort">
+            {efforts.map((e) => (
+              <button
+                key={e}
+                role="menuitemradio"
+                aria-checked={e === value.effort}
+                className={`picker-item ${e === value.effort ? "active" : ""}`}
+                onClick={() => {
+                  onChange(e);
+                  setOpen(false);
+                }}
+              >
+                {capitalize(e)}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ModelPicker(props: {
   models: Models;
-  usage: Usage;
   value: Choice;
   engines: Engine[];
   /** The host's added accounts. An engine with any gets an account row; shown only where there is a choice. */
@@ -1044,10 +1083,13 @@ export function ModelPicker(props: {
   /** In a session, a model of another engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
-  const { models, usage, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
+  const { models, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
   const choicesOf = (engine: Engine): AccountChoice[] => accountChoices(accounts, engine);
   const pickOf = (engine: Engine) => picks?.[engine] ?? DEFAULT_ACCOUNT;
-  const triggerAccount = choicesOf(value.engine).length > 1 ? accountName(accounts, value.engine, pickOf(value.engine)) : null;
+  const several = (engine: Engine) => choicesOf(engine).length > 1;
+  // Which account the models run on: named wherever the engine has more than one.
+  const accountFor = (engine: Engine) => (several(engine) ? accountName(accounts, engine, pickOf(engine)) : null);
+  const triggerAccount = accountFor(value.engine);
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
@@ -1072,10 +1114,14 @@ export function ModelPicker(props: {
   useEscape(open, close);
   return (
     <div className="picker">
-      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
+      <button
+        className="btn-quiet"
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-label={`Model ${current?.name ?? value.model}${triggerAccount ? ` · ${triggerAccount}` : ""}`}
+        onClick={() => (open ? close() : setOpen(true))}
+      >
         <span>{current?.name ?? value.model}</span>
-        {/* A model without efforts (some OpenCode and Grok ones) runs as it is. */}
-        {(!current || current.efforts.length > 0) && <span className="muted">{capitalize(value.effort)}</span>}
         {triggerAccount && <span className="muted picker-account">{triggerAccount}</span>}
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
@@ -1110,7 +1156,6 @@ export function ModelPicker(props: {
                 </div>
               </div>
             )}
-            <UsageMeters usage={usage} first={value.engine} />
             {ordered.map((engine) => {
               const isHandoff = !!handoff && engine !== value.engine;
               const disabled = isHandoff && handoff.blocked;
@@ -1122,7 +1167,8 @@ export function ModelPicker(props: {
                   {folded ? (
                     <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                       <span>
-                        {ENGINE_NAME[engine]} · {list.length} {list.length === 1 ? "model" : "models"}
+                        {ENGINE_NAME[engine]}
+                        {accountFor(engine) ? ` (${accountFor(engine)})` : ""} · {list.length} {list.length === 1 ? "model" : "models"}
                         {handoff ? " · switching hands off" : ""}
                       </span>
                       <span className="muted">
@@ -1133,9 +1179,11 @@ export function ModelPicker(props: {
                     <>
                       <div className="picker-head">
                         <span>{ENGINE_NAME[engine]}</span>
+                        {accountFor(engine) && !isHandoff && <span className="picker-head-account">{accountFor(engine)} account</span>}
                       </div>
                       {choicesOf(engine).length > 1 && onAccount && !isHandoff && (
                         <div className="picker-accounts" role="group" aria-label={`${ENGINE_NAME[engine]} account`}>
+                          <span className="muted small picker-accounts-label">Account</span>
                           {choicesOf(engine).map((a) => (
                             <button
                               key={a.id}
@@ -1196,20 +1244,6 @@ export function ModelPicker(props: {
                 </div>
               );
             })}
-            {current && current.efforts.length > 0 && (
-              <div className="picker-group">
-                <div className="picker-head">
-                  <span>Effort</span>
-                </div>
-                <div className="efforts">
-                  {current.efforts.map((e) => (
-                    <button key={e} className={`effort ${e === value.effort ? "active" : ""}`} onClick={() => onChange({ ...value, effort: e })}>
-                      {capitalize(e)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </>
       )}
@@ -1850,7 +1884,6 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
         >
           <ModelPicker
             models={models}
-            usage={usageForPicks(usageOn(state, target), picks)}
             value={choice}
             engines={pickerEngines(models)}
             accounts={accounts}
@@ -1858,6 +1891,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             onAccount={pickAccount}
             onChange={setChoice}
           />
+          <EffortPicker models={models} value={choice} onChange={(effort) => setChoice({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
         <div className="new-chips">
@@ -2385,7 +2419,6 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           >
             <ModelPicker
               models={models}
-              usage={usageForPicks(usageOn(state, host), { [meta.engine]: accountOf(meta) })}
               accounts={accounts}
               picks={{ [meta.engine]: accountOf(meta) }}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
@@ -2393,6 +2426,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
+            <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
         </div>

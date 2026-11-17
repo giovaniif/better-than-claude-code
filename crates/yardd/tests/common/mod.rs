@@ -185,6 +185,8 @@ impl Daemon {
             // A busy test machine must not queue sessions on its own; the
             // queue test forces pressure instead.
             .env("YARD_MIN_FREE_GB", "0")
+            // No background Claude usage reads, except where a test asks for them.
+            .env("YARD_CLAUDE_USAGE_EVERY_MS", "0")
             .env_remove("YARD_FORCE_PRESSURE")
             .env_remove("YARD_ALLOW_ORIGIN")
             .env_remove("YARD_HOST_NAME")

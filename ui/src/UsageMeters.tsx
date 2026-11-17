@@ -1,7 +1,8 @@
-// Plan-usage meters: a full one for the model picker (bar, percent, when it
-// resets) and a compact strip for the sidebar. Both read the same Meter list.
+// Plan-usage meters: the strip at the foot of the sidebar, one block per
+// engine account. The model picker shows none: limits are read here, per
+// account, and the picker only says which account a model runs on.
 import { Fragment, useEffect, useState } from "react";
-import type { Engine, Usage } from "./protocol";
+import type { Engine } from "./protocol";
 import { formatReset, metersFor, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
 import { ENGINES as ENGINE_IDS, ENGINE_NAME } from "./engines";
 
@@ -28,61 +29,26 @@ const Bar = ({ meter }: { meter: Meter }) => (
 const describe = (engineName: string, m: Meter, now: number) =>
   [`${engineName} ${m.label}: ${percentText(m.percent)} used`, formatReset(m.resetsAt, now)].filter(Boolean).join(", ");
 
-function UsageMeter({ engineName, meter, now }: { engineName: string; meter: Meter; now: number }) {
-  const reset = formatReset(meter.resetsAt, now);
-  return (
-    <div
-      className={`usage-meter level-${meter.level}`}
-      role="meter"
-      aria-label={`${engineName} ${meter.label}`}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(meter.percent)}
-      aria-valuetext={describe(engineName, meter, now)}
-    >
-      <span className="usage-label">{meter.label}</span>
-      <Bar meter={meter} />
-      <span className="usage-percent">{percentText(meter.percent)}</span>
-      {reset && <span className="usage-reset">{reset}</span>}
-    </div>
-  );
-}
-
-/** Every engine that has reported limits, with all its meters. For the picker's header. */
-export function UsageMeters({ usage, first }: { usage: Usage; first?: Engine }) {
-  const now = useNow();
-  const engines = [...ENGINES].sort((a, b) => Number(b.id === first) - Number(a.id === first));
-  const shown = engines.map((e) => ({ ...e, meters: metersFor(e.id, usage, now) })).filter((e) => e.meters.length > 0);
-  if (shown.length === 0) return null;
-  return (
-    <div className="picker-usage" role="group" aria-label="Plan usage">
-      {shown.map((e) => (
-        <div key={e.id} className="usage-engine">
-          <div className="usage-engine-name">{e.name}</div>
-          {e.meters.map((m) => (
-            <UsageMeter key={m.key} engineName={e.name} meter={m} now={now} />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /** The meters worth a line in the strip: the 5-hour window and the week,
  *  plus any other window that is running high. */
 const forStrip = (meters: Meter[]) => meters.filter((m, i) => i < 2 || m.level !== "ok");
 
-/** Always visible: one line per window, no reset times (they are in the
- *  tooltip). Each engine and account once, from the hosts the sidebar shows;
- *  an added account gets a line with its name above its meters. */
+/** Always visible: one line per window; when each resets is in the line's
+ *  tooltip. Each engine and account once, from the hosts the sidebar shows.
+ *  Where an engine has more than one account, each gets its name above its
+ *  meters, Default included, and an account with nothing reported yet says
+ *  so instead of being left out. */
 export function UsageStrip({ sources }: { sources: UsageSource[] }) {
   const now = useNow();
-  const shown = stripGroups(sources, ENGINES.map((e) => e.id))
+  const groups = stripGroups(sources, ENGINES.map((e) => e.id));
+  const several = new Set(groups.filter((g) => g.account !== null).map((g) => g.engine));
+  const shown = groups
     .map((g) => {
       const engine = ENGINES.find((e) => e.id === g.engine)?.name ?? g.engine;
-      return { ...g, engine, name: g.account ? `${engine} (${g.account})` : engine, meters: forStrip(metersFor(g.engine, g.usage, now)) };
+      const account = g.account ?? (several.has(g.engine) ? "Default" : null);
+      return { ...g, engine, account, name: account ? `${engine} (${account})` : engine, meters: forStrip(metersFor(g.engine, g.usage, now)) };
     })
-    .filter((g) => g.meters.length > 0);
+    .filter((g) => g.meters.length > 0 || !g.reported);
   if (shown.length === 0) return null;
   return (
     <div className="usage-strip" role="group" aria-label="Plan usage">
@@ -93,6 +59,7 @@ export function UsageStrip({ sources }: { sources: UsageSource[] }) {
               {g.engine} · {g.account}
             </div>
           )}
+          {!g.reported && <div className="usage-line-none muted">No limits reported yet</div>}
           {g.meters.map((m, i) => (
             <div key={`${g.name}-${m.key}`} className={`usage-line level-${m.level}`} title={describe(g.name, m, now)}>
               <span className="usage-line-engine">{i === 0 && !g.account ? g.engine : ""}</span>
