@@ -1273,7 +1273,7 @@ type ComposerDraft = {
   uploads: Map<string, Upload>;
 };
 
-function Composer(props: {
+export function Composer(props: {
   placeholder: string;
   rows: number;
   large?: boolean;
@@ -1290,8 +1290,11 @@ function Composer(props: {
   draft?: string;
   /** Where attached files are stored: the host the prompt will run on. */
   target: UploadTarget;
-  upload(file: File, target: UploadTarget): Promise<Attachment>;
-  onSubmit(text: string, attachments: Attachment[]): void;
+  /** Omit for text-only endpoints; the shared attachment control is disabled. */
+  upload?(file: File, target: UploadTarget): Promise<Attachment>;
+  maxLength?: number;
+  /** False leaves the draft in place when the endpoint rejects a submission. */
+  onSubmit(text: string, attachments: Attachment[]): void | boolean | Promise<void | boolean>;
   /** Hands-free voice mode for a session: what it has to say, numbered. */
   voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
   children: ReactNode;
@@ -1351,7 +1354,7 @@ function Composer(props: {
     );
 
   const startUpload = (f: PendingFile) => {
-    const promise = props.upload(f.file, props.target);
+    const promise = props.upload!(f.file, props.target);
     const entry = { target: targetKey, promise };
     uploads.current.set(f.key, entry);
     patch(f.key, { state: "uploading", error: undefined });
@@ -1374,7 +1377,7 @@ function Composer(props: {
   }, [draftKey, text, quotes, snippets, files]);
 
   const addFiles = (list: File[]) => {
-    if (!list.length) return;
+    if (!props.upload || !list.length) return;
     const added = list.map((file): PendingFile => {
       const big = tooLarge(file.size);
       return {
@@ -1431,7 +1434,7 @@ function Composer(props: {
           return u && u.target === targetKey ? u.promise : startUpload(f);
         }),
       );
-      props.onSubmit(value, attachments);
+      if ((await props.onSubmit(value, attachments)) === false) return;
       voice.sent();
       if (!props.keepText) {
         setText("");
@@ -1477,7 +1480,7 @@ function Composer(props: {
     <div
       className={`composer ${props.large ? "composer-large" : ""} ${dragging ? "composer-drop" : ""}`}
       onDragOver={(e) => {
-        if (!dragHasFiles(e.dataTransfer)) return;
+        if (!props.upload || !dragHasFiles(e.dataTransfer)) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
         setDragging(true);
@@ -1542,6 +1545,7 @@ function Composer(props: {
         ref={area}
         aria-label="Message"
         rows={props.rows}
+        maxLength={props.maxLength}
         placeholder={props.placeholder}
         value={text}
         onChange={(e) => {
@@ -1550,6 +1554,7 @@ function Composer(props: {
         }}
         onKeyDown={onKeyDown}
         onPaste={(e) => {
+          if (!props.upload) return;
           const pasted = pastedFiles(e.clipboardData);
           if (!pasted.length) return;
           e.preventDefault();
@@ -1558,7 +1563,7 @@ function Composer(props: {
         autoFocus
       />
       <div className="composer-row">
-        <button className="btn-icon attach-btn" aria-label="Attach files" title="Attach files" onClick={() => picker.current?.click()}>
+        <button className="btn-icon attach-btn" aria-label="Attach files" disabled={!props.upload} title={props.upload ? "Attach files" : "Attachments are not supported here"} onClick={() => picker.current?.click()}>
           <Icon d={PAPERCLIP} size={16} />
         </button>
         {!voiceOn && (
@@ -1587,6 +1592,7 @@ function Composer(props: {
         <input
           ref={picker}
           type="file"
+          disabled={!props.upload}
           multiple
           hidden
           aria-label="Attach files"

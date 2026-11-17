@@ -413,7 +413,9 @@ Next:
 ## Switchy
 
 `#/assistant` is Switchy, a persistent quick-question conversation separate from
-coding sessions. Its composer shares the session `.composer` styling. Context
+coding sessions. It uses the session `Composer` and `ModelPicker` components, including auto-grow,
+dictation, draft retention and the send control. Host scope is in the header;
+attachments remain disabled because the Switchy protocol accepts text only. Context
 opens the host rail. Model and host scope are independent: inference runs on the
 hub's default Claude or Codex account; evidence comes from Local, a selected
 remote, or All hosts. Other engines are omitted until a supported tool restriction
