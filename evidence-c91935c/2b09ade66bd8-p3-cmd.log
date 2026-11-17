@@ -1,0 +1,18 @@
+$ cd ui && bun test src/automations.test.ts
+# exit 1 after 19 ms at 77ed1cb7a406ca0807b23793e5d5fb1643467538
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/automations.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+SyntaxError: Export named 'runTime' not found in module '/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ac2fb9236b437f472/ui/src/automations.ts'.
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [14.00ms]

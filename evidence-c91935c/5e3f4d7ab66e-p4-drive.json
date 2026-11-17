@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+    "short": "c91935c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:24:06.147Z"
+  },
+  "dir": ".verify/evidence/automations-grid-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4178,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automations-grid-head-desktop/automations-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/automations-grid-head-desktop/runs-open-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "(() => { const c = [...document.querySelectorAll(\".automation\")].map((e) => e.getBoundingClientRect()); return c.length })()",
+          "value": 4
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const [a, b] = [...document.querySelectorAll(\".automation\")].map((e) => e.getBoundingClientRect()); return a.top === b.top && b.left > a.right })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

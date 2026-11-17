@@ -1,0 +1,219 @@
+{
+  "v": 1,
+  "claim": "The Automations page stacks one large full-width card per automation, each listing its runs as long rows that repeat the automation's name ('Loop patrol · 2026-11-17 04:38   Running running'), so three automations fill more than a screen and the useful facts are hard to see. Owner asked for a compact grid that shows only useful information.",
+  "repo": "/home/giovani/www/better-than-claude-code/.claude/worktrees/agent-ac2fb9236b437f472",
+  "base": "09c5481b6221f5594aaacd74283c6ff781d507f2",
+  "head": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T12:23:36.058Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "77ed1cb7a406ca0807b23793e5d5fb1643467538",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "18fefdff7dece983164b18e34726e0671deeb105d1da3f1a27eee17421dd6b59"
+        },
+        {
+          "path": "p1-automations-desktop.png",
+          "sha256": "324cef6c73d20c126c31c91908be7dc7ce3c5d4a1daec3c9d4b2298e084313f6"
+        }
+      ],
+      "addedAt": "2026-11-17T12:23:47.402Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "77ed1cb7a406ca0807b23793e5d5fb1643467538",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "f7372891aceb1e5a4de649a087cc3370c1c904c70c309cee3108b6eac816c84e"
+        },
+        {
+          "path": "p2-automations-mobile.png",
+          "sha256": "9f5adfc731489586ead56a437a0f5e80f9df8995948422e0fdcb266ca9cacf0b"
+        }
+      ],
+      "addedAt": "2026-11-17T12:23:47.443Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "77ed1cb7a406ca0807b23793e5d5fb1643467538",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2b09ade66bd8ae797ee5d2b1999a4389cdece5dbaf44fb69bee87d069b41b5c4"
+        }
+      ],
+      "addedAt": "2026-11-17T12:23:47.488Z",
+      "cmd": "cd ui && bun test src/automations.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "5e3f4d7ab66ed904ededa1a1cb03e9229bbbfa14af25aa0b015f03bade291041"
+        },
+        {
+          "path": "p4-automations-desktop.png",
+          "sha256": "6d9493149259762ac46e76925a0b4199237d935dd1a443f4162ea13d311f4086"
+        },
+        {
+          "path": "p4-runs-open-desktop.png",
+          "sha256": "d8b4677bc25d5c4c7cd539488b2c89c6ecdd32b006d7fc3ccec1fc7d9c4c1f00"
+        }
+      ],
+      "addedAt": "2026-11-17T12:24:16.260Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "1345d9e0cde42f25c717e0458cfe76995c69a6c8f518a6abfb64748cfcfbf12b"
+        },
+        {
+          "path": "p5-automations-mobile.png",
+          "sha256": "bd305fed87bf19afe2d74fa7cfeab8b9dda057b4532db75dca638eb7bf51dfcc"
+        },
+        {
+          "path": "p5-runs-open-mobile.png",
+          "sha256": "da99cdd505f607a0a5d9a71a2b5624839aaf54f7a8bc8def17abf74319fbad89"
+        }
+      ],
+      "addedAt": "2026-11-17T12:24:16.301Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "e4d7633ff1cb80b434538e774bde3f4268ead7452a589a8f5a27d462ed391eed"
+        }
+      ],
+      "addedAt": "2026-11-17T12:24:16.340Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "8bda750f253b104811e148db675e59d7c933facd3f13fb9b8448b0b2ae1c6b45"
+        }
+      ],
+      "addedAt": "2026-11-17T12:24:16.464Z",
+      "cmd": "verify/yv design-check --base 09c5481b6221",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-automations.json",
+          "sha256": "9c62f12b8cba2e7dce229ab1f7f6df97cf3e10c58103a9fb935a7a5ff6df37fb"
+        }
+      ],
+      "addedAt": "2026-11-17T12:24:16.538Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/grid-of-cards-and-the-run-strip",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "c91935c52b3ad61afdffe82acce0f5db3abb03f6",
+    "short": "c91935c",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T12:24:06.147Z"
+  },
+  "dir": ".verify/evidence/automations-grid-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4506,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automations-grid-head-mobile/automations-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/automations-grid-head-mobile/runs-open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const [a, b] = [...document.querySelectorAll(\".automation\")].map((e) => e.getBoundingClientRect()); return b.top >= a.bottom && a.left === b.left })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
