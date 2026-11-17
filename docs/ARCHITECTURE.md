@@ -381,3 +381,17 @@ Next:
 - ACP's `session/resume` and `configOptions` are recent; Grok's ACP has `x.ai/` extensions and changes with its near-daily releases.
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
+
+## Assistant design preview
+
+The `#/assistant` tab is an interactive UI study, not a connected agent. It
+uses explicitly labelled sample hosts and three example answers with expandable
+source evidence. Free-form questions show a preview notice and never start an
+engine or inspect a host. The host selector is illustrative, not a data filter.
+
+The intended scope includes server context outside Switchyard sessions:
+services, containers, repositories/files and terminal activity. A conversation
+area sits beside a host context rail; on mobile, Server context toggles that
+rail into view. Retrieval, host collectors, permissions, conversation persistence
+and model execution remain unimplemented. No real host state is implied by the
+sample metrics or freshness labels.
