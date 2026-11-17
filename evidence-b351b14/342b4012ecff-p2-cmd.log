@@ -1,0 +1,18 @@
+$ cd ui && bun test src/mobile.test.ts
+# exit 1 after 9 ms at 5f0afab6afd72301d5554f682b8cd3e8eb570c89
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/mobile.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module './mobile' from '/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916/ui/src/mobile.test.ts'
+-------------------------------
+
+
+ 0 pass
+ 1 fail
+ 1 error
+Ran 1 test across 1 file. [4.00ms]
