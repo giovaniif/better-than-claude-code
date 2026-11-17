@@ -27,6 +27,15 @@ and dismiss an empty search with Escape while restoring focus.
 yv drive 'session:{{sid_echo}}' --steps '[{"click":"label:Message"},{"fill":"label:Message","value":"TEST-unsent navigation draft"},{"press":"Meta+k"},{"expect":"role:dialog:Go to session or page"},{"expect":"role:combobox:Search sessions and pages"},{"eval":"window.__firstOption = document.querySelector(\"[role=option][aria-selected=true]\").id; true","equals":true},{"press":"ArrowDown"},{"eval":"document.querySelector(\"[role=option][aria-selected=true]\").id !== window.__firstOption","equals":true},{"press":"ArrowUp"},{"press":"Tab"},{"eval":"document.activeElement.getAttribute(\"aria-label\")","equals":"Close"},{"press":"Tab"},{"eval":"document.activeElement.getAttribute(\"role\")","equals":"combobox"},{"press":"Escape"},{"eval":"document.activeElement.getAttribute(\"aria-label\")","equals":"Message"},{"expect":"label:Message","value":"TEST-unsent navigation draft"},{"press":"Meta+k"},{"shot":"palette"},{"fill":"role:combobox:Search sessions and pages","value":"TEST-hello from Claude"},{"expect":"role:option","count":1},{"press":"Enter"},{"expect":"css:.thread","text":"Echo: TEST-hello from Claude"},{"press":"Meta+k"},{"fill":"role:combobox:Search sessions and pages","value":"settings"},{"press":"Enter"},{"expect":"role:heading:Settings"},{"press":"Meta+k"},{"fill":"role:combobox:Search sessions and pages","value":"connectors"},{"press":"Enter"},{"expect":"role:heading:Connectors"},{"press":"Meta+k"},{"fill":"role:combobox:Search sessions and pages","value":"automations"},{"press":"Enter"},{"expect":"role:heading:Automations"},{"press":"Meta+k"},{"fill":"role:combobox:Search sessions and pages","value":"no-such-destination-xyz"},{"expect":"role:status","text":"No sessions or pages match."},{"shot":"empty"},{"press":"Escape"},{"expect":"role:dialog:Go to session or page","visible":false}]'
 ```
 
+### command-k-finds-switchy
+Viewports: both
+Switchy is a sidebar page, so the palette lists it too: typing its name finds
+it and Enter opens it (#197: it said "No sessions or pages match.").
+
+```sh
+yv drive new --steps '[{"press":"Meta+k"},{"expect":"role:dialog:Go to session or page"},{"fill":"role:combobox:Search sessions and pages","value":"Switchy"},{"expect":{"css":".navigation-option","hasText":"Switchy"}},{"shot":"switchy-search"},{"press":"Enter"},{"expect":"role:heading:Switchy"},{"expect":"role:dialog:Go to session or page","visible":false},{"shot":"switchy-page"}]'
+```
+
 ### recent-list-skips-automation-runs
 Viewports: both
 Finished automation runs are archived and live on the Automations page. Nine
