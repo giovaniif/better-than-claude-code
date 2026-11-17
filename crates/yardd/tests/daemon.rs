@@ -2396,3 +2396,31 @@ async fn the_page_is_sent_so_a_web_view_rechecks_it() {
     let page = http_get(d.port, "/").unwrap().to_lowercase();
     assert!(page.contains("cache-control: no-cache\r\n"), "{}", page.lines().take(12).collect::<Vec<_>>().join("\n"));
 }
+
+#[tokio::test]
+async fn pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for() {
+    let sb = Sandbox::new("pr-detached");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let home = sb.home();
+    let repo = make_repo(&sb, "proj");
+    let sid = c.create(&repo, "hello", json!({ "worktree": false })).await;
+    c.wait_turn_done(&sid, 0).await;
+    // No branch, so there is no PR to look up, but there is still a diff to review.
+    git(&repo, &["checkout", "-q", "--detach"], &home);
+    let from = c.mark();
+    c.send(json!({ "op": "pr.get", "sessionId": sid })).await;
+    let reply = c.wait_after(from, "a pr reply", |m| m["op"] == "pr" && m["sessionId"] == sid).await;
+    assert_eq!(reply["pr"]["error"], "no branch is checked out", "{reply}");
+    assert_eq!(reply["pr"]["repo"], true, "{reply}");
+
+    // A plain folder has nothing to review.
+    let plain = sb.folder("plain");
+    let sid = c.create(&plain, "hello", json!({})).await;
+    c.wait_turn_done(&sid, 0).await;
+    let from = c.mark();
+    c.send(json!({ "op": "pr.get", "sessionId": sid })).await;
+    let reply = c.wait_after(from, "a pr reply", |m| m["op"] == "pr" && m["sessionId"] == sid).await;
+    assert_eq!(reply["pr"]["error"], "not a git repository", "{reply}");
+    assert!(reply["pr"]["repo"].is_null(), "{reply}");
+}

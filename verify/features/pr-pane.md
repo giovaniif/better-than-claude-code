@@ -77,5 +77,25 @@ tick New worktree.", a box this pane does not have.)
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"role:button:Review with Claude","enabled":true},{"eval":"(async () => { const b = [...document.querySelectorAll(\"button\")].find((x) => x.textContent.trim() === \"Review with Claude\"); b.click(); await new Promise((r) => setTimeout(r, 0)); b.click(); return \"clicked twice\"; })()","equals":"clicked twice"},{"expect":"role:heading:Review this branch","timeout":15000},{"wait":1500}]'
 ```
 
+### review-offered-when-the-pr-cannot-be-read
+Viewports: desktop
+A session on a detached HEAD (no branch, so `gh` cannot look up a PR) still
+offers "Review with Claude": the review reads `git diff`, not GitHub. (The
+pane said only "Cannot read the pull request: no branch is checked out." and
+hid the button; the same happened when `gh` was logged out or the remote was
+not GitHub.) A folder that is not a git repository has nothing to review, so
+there the button stays hidden. Its own session, so the other recipes keep
+their branches. (yv counts the `pr` reply's error as a failed API call,
+hence `--allow-errors`: that error is the state under test.)
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-detached"}' --wait '{"op":"created"}' --save det_sid=sessionId
+yv state --save det_cwd='sessions[id={{det_sid}}].cwd'
+git -C "$(v det_cwd)" checkout -q --detach
+yv drive 'session:{{det_sid}}' --viewport desktop --allow-errors --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"text:Cannot read the pull request: no branch is checked out."},{"expect":"role:button:Review with Claude","enabled":true},{"shot":"detached"},{"click":"role:button:Review with Claude"},{"expect":"role:heading:Review this branch","timeout":15000}]'
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","worktree":false,"text":"TEST-plain pr"}' --wait '{"op":"created"}' --save plainpr_sid=sessionId
+yv drive 'session:{{plainpr_sid}}' --viewport desktop --allow-errors --steps '[{"click":{"role":"button","name":"Pull request","exact":true}},{"expect":"text:Cannot read the pull request: not a git repository."},{"expect":"role:button:Review with Claude","visible":false}]'
+```
+
 ## Gotchas
 - The PR pane polls every 60 s while visible; Refresh pull request forces a reload.

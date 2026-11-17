@@ -56,6 +56,15 @@ async fn get(cwd: &str) -> Result<Value> {
     if !is_repo {
         bail!("not a git repository");
     }
+    // Past this point the folder is a repository, so the pane can still offer
+    // a review (it reads `git diff`, not GitHub) when the PR cannot be read.
+    match get_in_repo(cwd).await {
+        Ok(pr) => Ok(pr),
+        Err(e) => Ok(json!({ "error": format!("{e:#}"), "repo": true })),
+    }
+}
+
+async fn get_in_repo(cwd: &str) -> Result<Value> {
     let (_, branch) = git(cwd, &["branch", "--show-current"]).await?;
     let branch = branch.trim().to_string();
     if branch.is_empty() {
