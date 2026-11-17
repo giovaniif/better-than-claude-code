@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+    "short": "b232745",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-17T23:42:58.679Z"
+  },
+  "dir": ".verify/evidence/cmdk-switchy-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3423,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/cmdk-switchy-head/switchy-search-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/cmdk-switchy-head/switchy-page-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3104,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cmdk-switchy-head/switchy-search-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cmdk-switchy-head/switchy-page-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

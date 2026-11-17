@@ -1,0 +1,26 @@
+$ verify/yv map run navigation --recipe command-k-finds-switchy
+# exit 0 after 7477 ms at b2327455297979cf3ad60ba5a17ab53fb2e23ff6
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-17T23:43:13.540Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-finds-switchy",
+          "status": "pass",
+          "ms": 6621
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

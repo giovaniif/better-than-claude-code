@@ -1,0 +1,50 @@
+$ cd ui && bun test src/navigation.test.ts
+# exit 1 after 14 ms at cf2df734514e8cb71a898d3a3f55ed147ffaf33c
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/navigation.test.ts:
+ 9 | 
+10 | describe("navigationEntries", () => {
+11 |   test("recent sessions come first, followed by every page and Import", () => {
+12 |     const entries = navigationEntries([session("old"), session("new", { updatedAt: 5 })], context, "");
+13 |     expect(entries.slice(0, 2).map((e) => e.title)).toEqual(["new", "old"]);
+14 |     expect(entries.filter((e) => e.group === "Pages").map((e) => e.title)).toEqual(["New session", "Switchy", "Automations", "Connectors", "Settings", "Hosts", "Import"]);
+                                                                                ^
+error: expect(received).toEqual(expected)
+
+@@ -2,3 +2,2 @@
+    "New session",
+-   "Switchy",
+    "Automations",
+
+- Expected  - 1
++ Received  + 0
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-a31a/ui/src/navigation.test.ts:14:76)
+(fail) navigationEntries > recent sessions come first, followed by every page and Import [1.11ms]
+24 |     expect(entries[0].route).toEqual({ page: "settings" });
+25 |     expect(entries[1].route).toEqual({ page: "session", id: "Settings work" });
+26 |     expect(navigationEntries([], context, "import")[0].action).toBe("import");
+27 |   });
+28 |   test("every sidebar page is a destination, Switchy included", () => {
+29 |     expect(navigationEntries([], context, "switchy")[0]?.route).toEqual({ page: "assistant" });
+                                                                     ^
+error: expect(received).toEqual(expected)
+
+- {
+-   "page": "assistant",
+- }
++ undefined
+
+- Expected  - 3
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-a31a/ui/src/navigation.test.ts:29:65)
+(fail) navigationEntries > every sidebar page is a destination, Switchy included [0.23ms]
+
+ 5 pass
+ 2 fail
+ 22 expect() calls
+Ran 7 tests across 1 file. [10.00ms]

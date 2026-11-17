@@ -1,0 +1,196 @@
+{
+  "v": 1,
+  "claim": "Cmd-K: typing Switchy says 'No sessions or pages match.' though Switchy is a sidebar page, so the palette is a dead end for it",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-a31a",
+  "base": "784963bf6e92a8a686ac3101148aafa5b9b574cd",
+  "head": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-17T23:42:19.951Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "784963bf6e92a8a686ac3101148aafa5b9b574cd",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "946b189d80a010b567d195bec93af7d07dcce5793ff37a56721dbd669d13835b"
+        },
+        {
+          "path": "p1-switchy-search-mobile.png",
+          "sha256": "ee1251a31c4b25060f2e45c42b415462dbae834a7d6e11f73b0a83890f53294d"
+        },
+        {
+          "path": "p1-switchy-search-desktop.png",
+          "sha256": "a7e7593ec01073f4c60afe01d5cddb705c521bfae4e2c919fc5c4281ba5b141b"
+        }
+      ],
+      "addedAt": "2026-11-17T23:42:19.995Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "cf2df734514e8cb71a898d3a3f55ed147ffaf33c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "89b2cb9ab41d5d699036a889f809a652b039fde461b89ffc33afa5a5dc0b26e9"
+        }
+      ],
+      "addedAt": "2026-11-17T23:42:24.173Z",
+      "cmd": "cd ui && bun test src/navigation.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "cf2df734514e8cb71a898d3a3f55ed147ffaf33c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "cfc934a7ed38d23c20ae883cc0427f3a019339ba96f6d8316a0d762400561a99"
+        }
+      ],
+      "addedAt": "2026-11-17T23:42:24.233Z",
+      "cmd": "verify/yv map run navigation --recipe command-k-finds-switchy",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "d5bd019bd3a6f665aad46f0e045b504c1db407413b3929cce1b3bdfbf7843c36"
+        },
+        {
+          "path": "p4-switchy-search-mobile.png",
+          "sha256": "ee34023c258a8dfe9d6f8e98c5d8df03641840c8a1ec0a1fa423b42669fc343f"
+        },
+        {
+          "path": "p4-switchy-page-mobile.png",
+          "sha256": "f2dd6732d1cacc88bca9005051a9750d15ba40cfc542bda2f231fb195409a12b"
+        },
+        {
+          "path": "p4-switchy-search-desktop.png",
+          "sha256": "e9164635fdbd4f98550a80bcf06de2df4b071f0d8125c139c443fd289821653d"
+        },
+        {
+          "path": "p4-switchy-page-desktop.png",
+          "sha256": "4fd322181dad4549e8fbf254ebff99611878642394ed502f873ac462441e1c7d"
+        }
+      ],
+      "addedAt": "2026-11-17T23:43:06.019Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "b23bf1ae51b18ed0c66b4a87ffaf788cb4e397e09864b6dee27c23acdcd79d14"
+        }
+      ],
+      "addedAt": "2026-11-17T23:43:06.066Z",
+      "cmd": "verify/yv map run navigation --recipe command-k-finds-switchy",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "36e1366766c2f4bf30e0688b6e3965c2f8e15d91bb17b8f1e1dfddad5444b932"
+        }
+      ],
+      "addedAt": "2026-11-17T23:43:13.588Z",
+      "cmd": "verify/yv design-check --base 784963bf6e92",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "3b6115307faca39526767ea8b0d62e4f0514faca74a4d7171c70167f2e1a159d"
+        }
+      ],
+      "addedAt": "2026-11-17T23:43:21.425Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b2327455297979cf3ad60ba5a17ab53fb2e23ff6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-navigation.json",
+          "sha256": "a8b811e3b6ea727dc46746f24f1210a631a67e71171e88fe56898665eb5a8a21"
+        }
+      ],
+      "addedAt": "2026-11-17T23:43:21.593Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "navigation/command-k-navigation",
+        "navigation/command-k-finds-switchy",
+        "navigation/recent-list-skips-automation-runs",
+        "navigation/native-app-menu"
+      ]
+    }
+  ]
+}
