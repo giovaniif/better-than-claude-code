@@ -68,7 +68,7 @@ yardd sends it as the next turn). Stop gives it back to the reply box.
 ```sh
 for vp in mobile desktop; do
   yv api '{"op":"session.create","engine":"opencode","model":"opencode/fake-free","effort":"","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-opencode long job '$vp'"}' --wait '{"op":"created"}' --save oc_queue_sid=sessionId
-  yv drive 'session:{{oc_queue_sid}}' --viewport $vp --steps '[{"expect":"css:.thread","text":"Working","timeout":15000},{"fill":"label:Message","value":"TEST-after the opencode job"},{"press":"Enter"},{"expect":{"css":".pending","hasText":"TEST-after the opencode job"}},{"expect":"css:.pending","text":"Queued: sent when the current turn ends"},{"shot":"queued"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false,"timeout":15000}]'
+  yv drive 'session:{{oc_queue_sid}}' --viewport $vp --steps '[{"expect":"css:.thread","text":"Working","timeout":15000},{"fill":"label:Message","value":"TEST-after the opencode job"},{"press":"Enter"},{"expect":{"css":".pending","hasText":"TEST-after the opencode job"}},{"expect":"css:.pending","text":"Queued: sent when the current turn ends"},{"shot":"queued"},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":{"role":"button","name":"Stop","exact":true},"visible":false,"timeout":15000},{"expect":"label:Message","value":"TEST-after the opencode job"},{"expect":"css:.pending","count":0}]'
 done
 ```
 
