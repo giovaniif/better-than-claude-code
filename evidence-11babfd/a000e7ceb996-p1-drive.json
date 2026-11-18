@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "subscriptions",
+  "build": {
+    "sha": "9ca53d639ac203a91b48e8c1fd3a8e35f7b2e3fd",
+    "short": "9ca53d6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:54:51.184Z"
+  },
+  "dir": ".verify/evidence/subs-note-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1812,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/subs-note-base/note-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".subscription-note\").textContent",
+          "value": "One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits."
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1899,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/subs-note-base/note-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".subscription-note\").textContent",
+          "value": "One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits."
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

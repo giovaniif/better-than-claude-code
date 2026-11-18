@@ -1,0 +1,198 @@
+{
+  "v": 1,
+  "claim": "The Subscriptions page says only OpenCode and Grok don't report subscription limits; Gemini (added in #226) doesn't either, so the note reads as if Gemini's limits were among the meters",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f",
+  "base": "f4811d88f8b636df00e79b45ec23053a26682af4",
+  "head": "11babfd6163c4681383150fd4e7dc83fb3399413",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:54:46.810Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "9ca53d639ac203a91b48e8c1fd3a8e35f7b2e3fd",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "a000e7ceb9969e387640b96483dc64581f303747d35b13bfcc1b96fd1977cefa"
+        },
+        {
+          "path": "p1-note-mobile.png",
+          "sha256": "4d7d9d75e7b6204d49df888277e5351885fb5eeeaf70dedd021446257ca98509"
+        },
+        {
+          "path": "p1-note-desktop.png",
+          "sha256": "1ae2c3bbeab47f131ee2c7d7a017aa44f698c911e16a447c335f3909c0f38447"
+        }
+      ],
+      "addedAt": "2026-11-18T02:54:55.600Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "9ca53d639ac203a91b48e8c1fd3a8e35f7b2e3fd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ad6e8afc3073af179b5894928c58b353614bba1844f8017a380fad9c4666512c"
+        }
+      ],
+      "addedAt": "2026-11-18T02:54:55.645Z",
+      "cmd": "verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "956187cc1ad7d02e57582b06a6d9e68c19b6aba080d4046e1e8a3cc5b658c97c"
+        },
+        {
+          "path": "p3-note-mobile.png",
+          "sha256": "65e7098dfdf437d19810452773f97c5f5d9ea3f865a5932b941acb980a509246"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:29.271Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "659729567645f08f7436c71ed6f1efab9406bc0f9871250755e6d8304809e73f"
+        },
+        {
+          "path": "p4-note-desktop.png",
+          "sha256": "f98627d660d92be51f07a17bf2412b1d13e16e169c339f66dea7b42788ae6c26"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:29.310Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "c052f75e8021eeea2c618d666fcb1e277f5ef9506e4a26839b3b98623dc56c33"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:29.350Z",
+      "cmd": "verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "37c995bd82a372d6cf6696cd65d22d22e6f1d5ee566d59960576546b57e7c151"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:34.311Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "a2fe16e88c0354e85fe20224130d3685ab7bd06023968dca0ae60f493b3e1eb3"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:34.485Z",
+      "cmd": "verify/yv design-check --base f4811d88f8b6",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "11babfd6163c4681383150fd4e7dc83fb3399413",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-usage.json",
+          "sha256": "95659d122c9820542cee45a5f4d4dcf737234d403832065cdb8337df030e34d3"
+        }
+      ],
+      "addedAt": "2026-11-18T02:55:34.564Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart",
+        "usage/strip-names-every-account",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    }
+  ]
+}
