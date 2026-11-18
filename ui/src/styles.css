@@ -1049,7 +1049,8 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 
 /* One footer row opens account usage instead of growing for each window. */
 .usage-dock { flex: none; padding: 6px 8px; border-top: 1px solid var(--line); }
-.usage-trigger { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 10px; font-size: 12px; text-align: left; }
+/* A full-width row like the host rows under it: no .btn-quiet -8px. */
+.usage-trigger { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; margin-left: 0; padding: 0 10px; font-size: 12px; text-align: left; }
 .usage-dock + .sidebar-bottom { border-top: 0; padding-top: 0; }
 .anchored-scrim { position: fixed; inset: 0; z-index: 60; }
 .anchored-popover { position: fixed; z-index: 61; width: min(360px, calc(100vw - 16px)); max-height: calc(100dvh - 16px); overflow-y: auto; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); box-shadow: var(--shadow-pop); font-size: 13px; }
