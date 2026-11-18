@@ -3,7 +3,7 @@
 // (ordinary sessions whose metadata names the automation, kept out of the
 // sidebar) as a strip of marks.
 import { useEffect, useMemo, useState } from "react";
-import type { Automation, Engine, Permission, Schedule, SessionMeta } from "./protocol";
+import type { Automation, AutomationWindow, Engine, Permission, Schedule, SessionMeta } from "./protocol";
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, type Actions, type State } from "./store";
 import { cardStatus, describeSchedule, runLabel, runOutcome, runsOf, runSummary, runTook, RUN_LABEL, scheduleLine, scheduleProblem, stripRuns, type CardStatus, type RunOutcome } from "./automations";
 import { duration } from "./thread";
@@ -255,6 +255,10 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
   const [unit, setUnit] = useState<"minutes" | "hours">(existing?.schedule.kind === "interval" ? existing.schedule.unit : "hours");
   const [time, setTime] = useState(existing && "time" in existing.schedule ? existing.schedule.time : "09:00");
   const [day, setDay] = useState(existing?.schedule.kind === "weekly" ? existing.schedule.day : 1);
+  const [limited, setLimited] = useState(!!existing?.window);
+  const [start, setStart] = useState(existing?.window?.start ?? "21:00");
+  const [end, setEnd] = useState(existing?.window?.end ?? "09:00");
+  const [days, setDays] = useState<number[]>(existing?.window?.days ?? []);
   const [skip, setSkip] = useState(existing?.skipWhileRunning ?? true);
   const [fiveHour, setFiveHour] = useState(existing?.maxFiveHour == null ? "" : String(existing.maxFiveHour));
   const [week, setWeek] = useState(existing?.maxWeek == null ? "" : String(existing.maxWeek));
@@ -289,11 +293,12 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
 
   const schedule: Schedule =
     kind === "interval" ? { kind, every: Number(every), unit } : kind === "daily" ? { kind, time } : kind === "weekly" ? { kind, day, time } : { kind };
+  const window: AutomationWindow | null = kind === "interval" && limited ? { start, end, ...(days.length ? { days } : {}) } : null;
   const problem =
     (!name.trim() && "Give it a name.") ||
     (!prompt.trim() && "Write the prompt it runs.") ||
     (!cwd && "Choose a folder.") ||
-    scheduleProblem(schedule) ||
+    scheduleProblem(schedule, window) ||
     ([fiveHour, week].some((t) => t.trim() !== "" && !(Number(t) >= 0 && Number(t) <= 100)) ? "A usage limit is a percentage from 0 to 100." : null);
 
   const save = async () => {
@@ -309,6 +314,7 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
       permission,
       base,
       schedule,
+      window,
       skipWhileRunning: skip,
       maxFiveHour: percent(fiveHour),
       maxWeek: percent(week),
@@ -394,10 +400,31 @@ export function AutomationForm({ state, actions, host: host0, id }: { state: Sta
               )}
               {(kind === "daily" || kind === "weekly") && <input aria-label="Time" className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />}
             </div>
+            {kind === "interval" && (
+              <>
+                <div className="row automation-schedule">
+                  <label className="check">
+                    <input type="checkbox" checked={limited} onChange={(e) => setLimited(e.target.checked)} />
+                    Only between
+                  </label>
+                  {limited && <div className="row">
+                    <input aria-label="Window start" className="field" type="time" value={start} onChange={(e) => setStart(e.target.value)} />
+                    <span className="muted">and</span>
+                    <input aria-label="Window end" className="field" type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
+                  </div>}
+                </div>
+                {limited && <>
+                  <div className="row automation-days" role="group" aria-label="Window start days">
+                    {DAYS.map((d, i) => <button key={d} className="btn-text" aria-label={`Window starts on ${d}`} aria-pressed={days.includes(i)} onClick={() => setDays(days.includes(i) ? days.filter((day) => day !== i) : [...days, i].sort())}>{d.slice(0, 3)}</button>)}
+                  </div>
+                  <span className="muted small">{days.length ? "Selected days" : "Every day"}; days name when the window starts, including overnight runs.</span>
+                </>}
+              </>
+            )}
             <span className="muted small">
               {kind === "manual"
                 ? "Runs only when started, with Run now or by a script."
-                : `${describeSchedule(schedule)}, in ${hostName(state, target)}'s local time zone. A run missed while Switchyard was off starts once when it is back.`}
+                : `${describeSchedule(schedule, window)}, in ${hostName(state, target)}'s local time zone. A run missed while Switchyard was off starts once when it is back${window ? ", only inside the window" : ""}.`}
             </span>
           </div>
           <div className="automation-field">

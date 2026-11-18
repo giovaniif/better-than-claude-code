@@ -13,6 +13,21 @@ describe("the schedule in words", () => {
     expect(describeSchedule({ kind: "interval", every: 1, unit: "hours" })).toBe("Every hour");
     expect(describeSchedule({ kind: "interval", every: 6, unit: "hours" })).toBe("Every 6 hours");
   });
+  test("active windows name hours and start days compactly", () => {
+    const s = { kind: "interval", every: 1, unit: "hours" } as const;
+    expect(describeSchedule(s, { start: "21:00", end: "09:00" })).toBe("Every hour · 21:00–09:00");
+    expect(describeSchedule(s, { start: "21:00", end: "09:00", days: [5, 3, 1, 4, 2] })).toBe("Every hour · 21:00–09:00, Mon–Fri");
+    expect(describeSchedule(s, { start: "09:00", end: "17:00", days: [1, 3, 5] })).toBe("Every hour · 09:00–17:00, Mon, Wed, Fri");
+    expect(describeSchedule(s, { start: "21:00", end: "09:00", days: [0, 6] })).toBe("Every hour · 21:00–09:00, Sat–Sun");
+    expect(describeSchedule(s, { start: "21:00", end: "09:00", days: [0,1,2,3,4,5,6] })).toBe("Every hour · 21:00–09:00");
+    expect(describeSchedule(s, null)).toBe("Every hour");
+  });
+  test("window validation agrees with the daemon", () => {
+    const s = { kind: "interval", every: 1, unit: "hours" } as const;
+    for (const window of [{ start: "9:00", end: "17:00" }, { start: "09:00", end: "09:00" }, { start: "09:00", end: "17:00", days: [1,1] }, { start: "09:00", end: "17:00", days: [7] }, { start: "09:00", end: "17:00", days: [] }]) expect(scheduleProblem(s, window)).not.toBeNull();
+    expect(scheduleProblem(s, { start: "21:00", end: "09:00" })).toBeNull();
+    expect(scheduleProblem({ kind: "manual" }, { start: "21:00", end: "09:00" })).toContain("interval");
+  });
   test("daily and weekly name the time, and weekly the day", () => {
     expect(describeSchedule({ kind: "daily", time: "09:30" })).toBe("Daily at 09:30");
     expect(describeSchedule({ kind: "weekly", day: 1, time: "08:00" })).toBe("Mondays at 08:00");
@@ -175,6 +190,7 @@ describe("the card at a glance", () => {
 
   test("the schedule line: when it runs and when next, or off", () => {
     expect(scheduleLine(a({ schedule: { kind: "interval", every: 1, unit: "hours" }, nextRun: now + 30 * MIN }), now)).toBe("Every hour · next in 30 min");
+    expect(scheduleLine(a({ schedule: { kind: "interval", every: 1, unit: "hours" }, window: { start: "21:00", end: "09:00" }, nextRun: at(21) }), now)).toBe("Every hour · 21:00–09:00 · next today 21:00");
     expect(scheduleLine(a({ schedule: { kind: "daily", time: "03:30" }, nextRun: at(3, 30, 17) }), now)).toBe("Daily at 03:30 · next tomorrow 03:30");
     expect(scheduleLine(a({ enabled: false, nextRun: null }), now)).toBe("Daily at 09:00 · off");
   });

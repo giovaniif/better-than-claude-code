@@ -194,6 +194,21 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".session-row","hasTe
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":{"css":".session-row","hasText":"TEST-Loop verify"},"visible":false},{"click":"role:button:Automations"},{"expect":{"css":".automation[aria-label=\"TEST-Loop verify\"] .automation-when","hasText":"Manual · runs when started"}},{"click":"role:button:Runs: TEST-Loop verify"},{"expect":{"css":".automation-run","hasText":"#4242"}},{"shot":"manual-runs"},{"click":"role:button:Edit: TEST-Loop verify"},{"expect":"label:Schedule type","value":"manual"},{"expect":"label:Time","visible":false},{"shot":"manual-edit"}]'
 ```
 
+### interval-active-window
+An interval can be restricted to overnight hours and start days. Editing keeps
+the saved hours and days, invalid equal boundaries disable Save, the card names
+the window, and enabled toggles preserve it. Clearing with null removes it.
+Viewports: both.
+
+```sh
+yv api '{"op":"automation.save","automation":{"name":"TEST-Overnight","prompt":"TEST-overnight","cwd":"{{repo}}","engine":"codex","model":"fake-fast","effort":"low","enabled":false,"schedule":{"kind":"interval","every":1,"unit":"hours"},"window":{"start":"21:00","end":"09:00"}}}' --wait '{"op":"automation.saved"}' --expect '{"automation":{"window":{"start":"21:00","end":"09:00"},"nextRun":null}}' --save overnight_id=automation.id
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:Edit: TEST-Overnight"},{"expect":"label:Window start","value":"21:00"},{"expect":"label:Window end","value":"09:00"},{"click":"role:button:Window starts on Monday"},{"click":"role:button:Window starts on Tuesday"},{"click":"role:button:Window starts on Wednesday"},{"click":"role:button:Window starts on Thursday"},{"click":"role:button:Window starts on Friday"},{"shot":"window-form"},{"click":"role:button:Save automation"},{"expect":{"css":".automation[aria-label=\"TEST-Overnight\"] .automation-when","hasText":"Every hour · 21:00–09:00, Mon–Fri · off"}},{"shot":"window-card"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"click":"role:button:Edit: TEST-Overnight"},{"expect":"label:Window start","value":"21:00"},{"expect":"label:Window end","value":"09:00"},{"expect":"css:button[aria-label=\"Window starts on Friday\"][aria-pressed=\"true\"]"},{"fill":"label:Window end","value":"21:00"},{"expect":"role:alert","text":"The window start and end must differ."},{"expect":"role:button:Save automation","enabled":false},{"shot":"window-invalid"},{"fill":"label:Window end","value":"09:00"},{"shot":"window-form"},{"click":"role:button:Save automation"},{"click":"role:switch:Enabled: TEST-Overnight"},{"expect":{"css":".automation[aria-label=\"TEST-Overnight\"] .automation-when","hasText":"Every hour · 21:00–09:00, Mon–Fri · next "}},{"shot":"window-card"}]'
+yv api '{"op":"automation.list"}' --wait '{"op":"automations"}' --expect '{"automations":[{"id":"{{overnight_id}}","enabled":true,"window":{"start":"21:00","end":"09:00","days":[1,2,3,4,5]}}]}'
+yv api '{"op":"automation.save","automation":{"id":"{{overnight_id}}","window":null}}' --wait '{"op":"automation.saved"}' --expect '{"automation":{"window":null}}'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Automations"},{"expect":{"css":".automation[aria-label=\"TEST-Overnight\"] .automation-when","hasText":"21:00–09:00"},"visible":false}]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order: later recipes use the automation and run the earlier ones made.
 - A drive at both viewports runs on the same data, so the create recipe uses one drive per viewport.
