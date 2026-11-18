@@ -155,6 +155,16 @@ clipped itself to "Codex · Def…" next to free space.)
 yv drive 'session:{{sid_edit}}' --steps '[{"expect":"css:.composer .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()","equals":true},{"shot":"account-chip"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), row = document.querySelector(\".composer-row\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.width <= 230.5 && b.right <= row.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()","equals":true}]'
 ```
 
+### account-chip-chevron-keeps-its-size
+Viewports: both
+A long account name ends in an ellipsis, and the chip's chevron stays its full
+12 px after it, so the chip still reads as a menu. (The chevron was a flex item
+that could shrink, and a long name squeezed it to a dot at 390 px.)
+
+```sh
+yv drive 'session:{{sid_edit}}' --steps '[{"expect":"css:.composer .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const s = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()","equals":true},{"shot":"account-chip-long"}]'
+```
+
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
