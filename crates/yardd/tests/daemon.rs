@@ -1672,7 +1672,16 @@ async fn claude_code_sessions_are_listed_and_imported_with_their_history() {
     assert!(texts.contains(&"TEST-fix the login redirect"), "{history:?}");
     assert!(texts.contains(&"TEST-added login.test.ts."), "{history:?}");
     assert!(history.iter().any(|e| e["type"] == "note" && e["text"].as_str().unwrap_or("").contains("Imported from Claude Code")), "{history:?}");
-    let meta = saved_meta(&sb, &sid).expect("saved");
+    // Writes reach the database through a batching writer thread, so the row
+    // can land after the `created` reply.
+    let deadline = Instant::now() + WAIT;
+    let meta = loop {
+        if let Some(meta) = saved_meta(&sb, &sid) {
+            break meta;
+        }
+        assert!(Instant::now() < deadline, "the imported session never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    };
     assert_eq!(meta["engine"], "claude");
     assert_eq!(meta["cwd"], work.as_str());
     assert!(meta["branch"].is_null(), "imports run in place: {meta}");
