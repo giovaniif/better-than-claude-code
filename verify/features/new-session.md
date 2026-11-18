@@ -38,6 +38,19 @@ yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"}
 yv state --expect '{"sessions":[{"title":"TEST-new from the page","status":"idle","engine":"codex","branch":"~yard/"}]}'
 ```
 
+### long-prompt-titled-at-a-word
+A first line longer than 60 characters becomes a title cut at a word and
+marked with "…": the desktop header reads "TEST-a very long first prompt
+that becomes the title and…", not "…the title and kee". (It used to stop
+mid-word with no mark, so it read like a typo.)
+
+```sh
+for vp in desktop mobile; do
+  yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-a very long first prompt that becomes the title and keeps going '$vp'"}' --wait '{"op":"created"}' --save long_sid=sessionId
+  yv drive 'session:{{long_sid}}' --viewport $vp --steps '[{"expect":"css:.thread","text":"Echo: TEST-a very long"},{"expect":"role:heading:TEST-a very long first prompt"},{"shot":"long-title-'$vp'"},{"eval":"document.querySelector(\"h1\").textContent","equals":"TEST-a very long first prompt that becomes the title and…"}]'
+done
+```
+
 ### empty-prompt-cannot-send
 Expect Send disabled with nothing typed, enabled after typing, disabled again
 after clearing.
