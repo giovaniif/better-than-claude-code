@@ -1582,12 +1582,13 @@ export function Composer(props: {
             <Icon d={voice.dictating ? STOP : MIC} size={16} />
           </button>
         )}
-        {props.voice && !voice.unavailable && (
+        {props.voice && (
           <button
             className={`btn-icon attach-btn voice-btn${voiceOn ? " on" : ""}`}
             aria-label="Voice mode"
+            aria-disabled={voice.unavailable ? true : undefined}
             aria-pressed={voiceOn}
-            title={voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud"}
+            title={voice.unavailable ?? (voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud")}
             onClick={voice.toggleVoice}
           >
             <Icon d={WAVES} size={16} />
@@ -1962,7 +1963,7 @@ function ChipMenu(props: {
   );
 }
 
-export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void }) {
+export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void; contextScope?: boolean }) {
   const { state, value } = props;
   const [open, setOpen] = useState(false);
   const pick = (host: string) => {
@@ -1973,11 +1974,12 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
   return (
     <ChipMenu
       icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
-      label={remote ? remote.name : hostName(state, "local")}
-      title="Where the session runs"
+      label={props.contextScope && value === "all" ? "All hosts" : remote ? remote.name : hostName(state, "local")}
+      title={props.contextScope ? "Hosts used for context" : "Where the session runs"}
       open={open}
       setOpen={setOpen}
     >
+      {props.contextScope && <button className={`picker-item menu-item ${value === "all" ? "active" : ""}`} onClick={() => pick("all")}><Icon d={CLOUD} /><span>All hosts</span></button>}
       <button className={`picker-item menu-item ${value === "local" ? "active" : ""}`} onClick={() => pick("local")}>
         <Icon d={LAPTOP} />
         <span>{hostName(state, "local")}</span>
@@ -1985,7 +1987,7 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
       {state.hosts.map((h) => {
         const online = hostOnline(state, h.id);
         return (
-          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online} onClick={() => pick(h.id)}>
+          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online && !props.contextScope} onClick={() => pick(h.id)}>
             <Icon d={CLOUD} />
             <span>{h.name}</span>
             {!online && <span className="muted small menu-aside">{h.status === "error" ? "unreachable" : h.status}</span>}
@@ -2789,6 +2791,51 @@ function AgentEntry({ entry }: { entry: ToolItem }) {
   );
 }
 
+export function ApprovalCard({ item, onDecide }: {
+  item: Extract<Item, {kind: "approval"}>;
+  onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
+}) {
+  return (
+        <div className="approval">
+          <div className="approval-title">{item.approvalKind === "command" ? "Allow this command?" : "Allow this?"}</div>
+          <code className="approval-what">{item.title}</code>
+          {item.detail && <div className="muted small">{item.detail}</div>}
+          {item.decision === null && !item.unanswered ? (
+            <div className="row">
+              <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
+                Allow once
+              </button>
+              <button className="btn" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow_always")}>
+                Always allow
+              </button>
+              <button className="btn-text" disabled={item.sending} onClick={() => onDecide(item.requestId, "deny")}>
+                Deny
+              </button>
+            </div>
+          ) : (
+            <div className="muted small">
+              {item.decision === null
+                ? "Not answered before the turn ended"
+                : item.decision === "deny"
+                  ? "Denied"
+                  : item.decision === "allow_always"
+                    ? "Always allowed"
+                    : "Allowed"}
+            </div>
+          )}
+        </div>
+);
+}
+
+export function QueueNotice({ reason, starting, onStart }: {reason: string; starting: boolean; onStart(): void}) {
+  return (
+    <div className="queued-line">
+      <span>Queued: {reason}.</span>
+      <button className="btn" disabled={starting} onClick={onStart}>Start anyway</button>
+    </div>
+  );
+}
+
 function ItemView(props: {
   item: Item;
   /** For a hand-off note: the session on the other side. */
@@ -2843,49 +2890,11 @@ function ItemView(props: {
         </>
       );
     case "approval":
-      return (
-        <div className="approval">
-          <div className="approval-title">{item.approvalKind === "command" ? "Allow this command?" : "Allow this?"}</div>
-          <code className="approval-what">{item.title}</code>
-          {item.detail && <div className="muted small">{item.detail}</div>}
-          {item.decision === null && !item.unanswered ? (
-            <div className="row">
-              <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
-                Allow once
-              </button>
-              <button className="btn" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow_always")}>
-                Always allow
-              </button>
-              <button className="btn-text" disabled={item.sending} onClick={() => onDecide(item.requestId, "deny")}>
-                Deny
-              </button>
-            </div>
-          ) : (
-            <div className="muted small">
-              {item.decision === null
-                ? "Not answered before the turn ended"
-                : item.decision === "deny"
-                  ? "Denied"
-                  : item.decision === "allow_always"
-                    ? "Always allowed"
-                    : "Allowed"}
-            </div>
-          )}
-        </div>
-      );
+      return <ApprovalCard item={item} onDecide={onDecide} />;
     case "error":
       return <div className="error-line">{item.message}</div>;
     case "queued":
-      return (
-        <div className="queued-line">
-          <span>{props.queued ? `Queued: ${item.reason}.` : `Was queued: ${item.reason}.`}</span>
-          {props.queued && (
-            <button className="btn" disabled={props.starting} onClick={props.onStart}>
-              Start anyway
-            </button>
-          )}
-        </div>
-      );
+      return props.queued ? <QueueNotice reason={item.reason} starting={props.starting} onStart={props.onStart} /> : <div className="queued-line">Was queued: {item.reason}.</div>;
   }
 }
 

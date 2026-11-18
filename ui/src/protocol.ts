@@ -795,7 +795,9 @@ export interface SwitchySource {
 export interface SwitchyTurn {
   id: string; question: string; answer: string; engine: string; model: string;
   at: number; status: string; sources: SwitchySource[]; coverage: string[]; error: string | null;
+  approvals?: { requestId: string; kind: string; title: string; detail: string; decision?: "allow" | "allow_always" | "deny" | null }[];
 }
 export interface SwitchyConversation {
   status: string; turns: SwitchyTurn[]; engine: string; model: string; scope: string; revision: number;
+  permission?: Permission; effort?: string; queue_reason?: string | null;
 }

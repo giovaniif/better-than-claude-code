@@ -23,3 +23,44 @@ describe("switchyScope", () => {
     expect(switchyScope("h-gone", "local", hosts)).toBe("all");
   });
 });
+
+import { switchyVoiceCue } from "./switchy";
+import type { SwitchyConversation } from "./protocol";
+
+test("Switchy voice reads completed answers and announces approvals, not streaming tokens", () => {
+  const state: SwitchyConversation = {
+    status: "answering",
+    engine: "codex",
+    model: "test",
+    scope: "all",
+    revision: 1,
+    turns: [
+      {
+        id: "q1",
+        question: "hi",
+        answer: "**Hello**",
+        engine: "codex",
+        model: "test",
+        at: 1,
+        status: "answering",
+        sources: [],
+        coverage: [],
+        error: null,
+      },
+    ],
+  };
+  expect(switchyVoiceCue(state)).toBeNull();
+  state.turns[0].status = "completed";
+  expect(switchyVoiceCue(state)?.cue).toEqual({
+    kind: "answer",
+    text: "Hello",
+  });
+  state.turns[0].status = "needs_approval";
+  state.turns[0].approvals = [
+    { requestId: "r1", kind: "command", title: "echo test", detail: "" },
+  ];
+  expect(switchyVoiceCue(state)?.cue.kind).toBe("approval");
+  state.turns[0].status = "failed";
+  state.turns[0].error = "Stopped by you.";
+  expect(switchyVoiceCue(state)?.cue.kind).toBe("stopped");
+});

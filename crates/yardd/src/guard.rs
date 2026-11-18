@@ -259,7 +259,7 @@ pub fn sample(app: &Arc<App>, sys: &System, load: f64, cores: usize, mem_free: u
     }
     if mem_free < limits.min_free {
         reasons.push(format!(
-            "{:.1} GB of memory free, needs {} GB",
+            "{:.2} GB of memory free, needs {} GB",
             mem_free as f64 / GB,
             gb_text(limits.min_free)
         ));

@@ -320,16 +320,135 @@ async fn codex_nullable_config_does_not_prevent_switchy_answers() {
     let mut c = daemon.client().await;
     ready(&mut c).await;
     c.send(json!({"op":"switchy.send", "text":"What is happening on my server?", "engine":"codex", "model":MODEL, "scope":"local"})).await;
-    let done = c.wait_for("completed question", |m| m["op"] == "switchy.state"
-        && m["state"]["status"] == "idle"
-        && m["state"]["turns"].as_array().is_some_and(|t| !t.is_empty())).await;
+    let done = c
+        .wait_for("completed question", |m| {
+            m["op"] == "switchy.state"
+                && m["state"]["status"] == "idle"
+                && m["state"]["turns"]
+                    .as_array()
+                    .is_some_and(|t| !t.is_empty())
+        })
+        .await;
     assert!(done["state"]["turns"][0]["error"].is_null(), "{done}");
-    assert!(done["state"]["turns"][0]["answer"].as_str().is_some_and(|s| !s.is_empty()));
+    assert!(done["state"]["turns"][0]["answer"]
+        .as_str()
+        .is_some_and(|s| !s.is_empty()));
     let starts = std::fs::read_to_string(sb.fake_state().join("thread-starts.jsonl")).unwrap();
     let start: serde_json::Value = serde_json::from_str(starts.lines().next().unwrap()).unwrap();
     let server = &start["config"]["mcp_servers"]["linear"];
     assert_eq!(server["enabled"], false);
     assert_eq!(server["url"], config["mcp_servers"]["linear"]["url"]);
     assert!(!server.as_object().unwrap().contains_key("tool_timeout_sec"));
-    assert_eq!(serde_json::from_str::<serde_json::Value>(&std::fs::read_to_string(sb.fake_state().join("config-read.json")).unwrap()).unwrap(), config);
+    assert_eq!(
+        serde_json::from_str::<serde_json::Value>(
+            &std::fs::read_to_string(sb.fake_state().join("config-read.json")).unwrap()
+        )
+        .unwrap(),
+        config
+    );
+}
+
+#[tokio::test]
+async fn pressure_queues_questions_and_start_anyway_runs_them() {
+    let sb = Sandbox::new("switchy-pressure");
+    let daemon = sb.start_with(&[("YARD_FORCE_PRESSURE", "1")]);
+    let mut c = daemon.client().await;
+    ready(&mut c).await;
+    c.send(
+        json!({"op":"switchy.send","text":"TEST-queued question","engine":"codex","model":MODEL}),
+    )
+    .await;
+    let queued = c
+        .wait_for("queued", |m| {
+            m["op"] == "switchy.state" && m["state"]["status"] == "queued"
+        })
+        .await;
+    assert!(sb.turn_inputs().is_empty());
+    c.send(json!({"op":"switchy.startNow", "turnId":queued["state"]["turns"][0]["id"]}))
+        .await;
+    let done = c
+        .wait_for("answer after explicit start", |m| {
+            m["op"] == "switchy.state" && m["state"]["turns"][0]["status"] == "completed"
+        })
+        .await;
+    assert!(done["state"]["queue_reason"].is_null());
+    assert_eq!(sb.turn_inputs().len(), 1);
+    c.send(json!({"op":"switchy.send","text":"TEST-cancel queued","engine":"codex","model":MODEL}))
+        .await;
+    c.wait_for("second queued", |m| {
+        m["op"] == "switchy.state" && m["state"]["turns"][1]["status"] == "queued"
+    })
+    .await;
+    c.send(json!({"op":"switchy.stop"})).await;
+    let stopped = c
+        .wait_for("queued question stopped", |m| {
+            m["op"] == "switchy.state" && m["state"]["turns"][1]["status"] == "failed"
+        })
+        .await;
+    assert_eq!(stopped["state"]["turns"][1]["error"], "Stopped by you.");
+    assert_eq!(sb.turn_inputs().len(), 1);
+    c.send(json!({"op":"switchy.startNow","ref":"late"})).await;
+    c.wait_for("stale start refused", |m| {
+        m["op"] == "error" && m["ref"] == "late"
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn switchy_access_modes_reach_codex_and_approvals_are_actionable() {
+    let sb = Sandbox::new("switchy-access");
+    let daemon = sb.start();
+    let mut c = daemon.client().await;
+    ready(&mut c).await;
+    for (i, permission) in ["ask", "acceptEdits", "full"].into_iter().enumerate() {
+        let text = if permission == "ask" {
+            "[cmd] TEST-ask before command"
+        } else {
+            "TEST-check access"
+        };
+        c.send(json!({"op":"switchy.send","text":text,"engine":"codex","model":MODEL,"permission":permission,"effort":"high"})).await;
+        if permission == "ask" {
+            let waiting = c
+                .wait_for("approval shown", |m| {
+                    m["op"] == "switchy.state" && m["state"]["status"] == "needs_approval"
+                })
+                .await;
+            let turn = &waiting["state"]["turns"][i];
+            let request = turn["approvals"][0]["requestId"].clone();
+            c.send(json!({"op":"switchy.approve","turnId":"wrong","requestId":request,"decision":"allow","ref":"stale"})).await;
+            c.wait_for("stale approval refused", |m| {
+                m["op"] == "error" && m["ref"] == "stale"
+            })
+            .await;
+            c.send(json!({"op":"switchy.approve","turnId":turn["id"],"requestId":request,"decision":"allow"})).await;
+        }
+        let done = c
+            .wait_for("completed access turn", |m| {
+                m["op"] == "switchy.state" && m["state"]["turns"][i]["status"] == "completed"
+            })
+            .await;
+        assert_eq!(done["state"]["permission"], permission);
+        assert_eq!(done["state"]["effort"], "high");
+        if i == 0 {
+            assert_eq!(
+                done["state"]["turns"][0]["approvals"][0]["decision"],
+                "allow"
+            );
+        }
+    }
+    let starts: Vec<serde_json::Value> =
+        std::fs::read_to_string(sb.fake_state().join("thread-starts.jsonl"))
+            .unwrap()
+            .lines()
+            .map(|l| serde_json::from_str(l).unwrap())
+            .collect();
+    assert_eq!(starts[0]["sandbox"], "workspace-write");
+    assert_eq!(starts[0]["approvalPolicy"], "on-request");
+    assert_eq!(starts[2]["sandbox"], "danger-full-access");
+    assert_eq!(starts[2]["approvalPolicy"], "never");
+    for start in starts {
+        assert!(start["config"].is_null());
+        assert_eq!(start["ephemeral"], true);
+    }
+    assert!(sb.codex_log().contains("sandboxPolicy=dangerFullAccess"));
 }

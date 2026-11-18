@@ -1,8 +1,20 @@
-import { useEffect, useRef, useState } from "react";
-import { Composer, Icon, Markdown, MenuButton, ModelPicker } from "./App";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ApprovalCard,
+  EffortPicker,
+  PermissionPicker,
+  HostPicker,
+  QueueNotice,
+  effortFor,
+  Composer,
+  Icon,
+  Markdown,
+  MenuButton,
+  ModelPicker,
+} from "./App";
 import { hostName, type Actions, type State } from "./store";
-import type { SwitchyTurn } from "./protocol";
-import { switchyScope } from "./switchy";
+import type { Permission, SwitchyTurn } from "./protocol";
+import { switchyScope, switchyVoiceCue } from "./switchy";
 
 const SPARK = "M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z";
 const SERVER = "M4 3h16v7H4ZM4 14h16v7H4ZM7 6h.01M7 17h.01";
@@ -12,7 +24,15 @@ const questions = [
   "Where is the API deployed?",
 ];
 
-function Answer({ turn }: { turn: SwitchyTurn }) {
+function Answer({
+  turn,
+  actions,
+  active,
+}: {
+  turn: SwitchyTurn;
+  actions: Actions;
+  active: boolean;
+}) {
   return (
     <article className="assistant-answer">
       <div className="assistant-question">{turn.question}</div>
@@ -41,6 +61,29 @@ function Answer({ turn }: { turn: SwitchyTurn }) {
           {turn.error}
         </p>
       )}
+      {turn.approvals?.map((a) => (
+        <ApprovalCard
+          key={a.requestId}
+          item={{
+            kind: "approval",
+            key: a.requestId,
+            requestId: a.requestId,
+            approvalKind: a.kind,
+            title: a.title,
+            detail: a.detail,
+            decision: a.decision ?? null,
+            unanswered: !active,
+          }}
+          onDecide={(requestId, decision) =>
+            actions.post({
+              op: "switchy.approve",
+              turnId: turn.id,
+              requestId,
+              decision,
+            })
+          }
+        />
+      ))}
       {!!turn.sources.length && (
         <details className="assistant-source-list">
           <summary>
@@ -83,6 +126,9 @@ export function AssistantPage({
   actions: Actions;
 }) {
   const conversation = state.switchy;
+  const [selectedPermission, setPermission] = useState<Permission | null>(null);
+  const [selectedEffort, setEffort] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
   const [selection, setSelection] = useState<string | null>(null);
   const [chosenScope, setScope] = useState<string | null>(null);
   const [contextOpen, setContextOpen] = useState(false);
@@ -106,6 +152,39 @@ export function AssistantPage({
   const hosts = ["local", ...state.hosts.map((h) => h.id)];
   const scope = switchyScope(chosenScope, conversation?.scope, hosts);
   const turns = conversation?.turns ?? [];
+  const permission = selectedPermission ?? conversation?.permission ?? "plan";
+  const modelInfo = state.models.local?.[current?.engine]?.find(
+    (m) => m.id === current?.model,
+  );
+  const effort = effortFor(
+    modelInfo,
+    selectedEffort ?? conversation?.effort ?? modelInfo?.defaultEffort ?? "low",
+  );
+  const said = switchyVoiceCue(conversation);
+  const saidKey = useRef<string | null | undefined>(undefined);
+  const [cue, setCue] = useState<{
+    n: number;
+    cue: import("./voice").Cue;
+  } | null>(null);
+  useEffect(() => {
+    const key = said?.key ?? null;
+    if (saidKey.current === undefined) {
+      saidKey.current = key;
+      return;
+    }
+    if (saidKey.current === key) return;
+    saidKey.current = key;
+    if (said) setCue((c) => ({ n: (c?.n ?? 0) + 1, cue: said.cue }));
+  }, [said?.key]);
+  const approval = conversation?.status === "needs_approval";
+  const voice = useMemo(
+    () => ({ scope: "switchy", cue, approval }),
+    [cue, approval],
+  );
+  useEffect(() => {
+    if (conversation?.status !== "queued") setStarting(false);
+  }, [conversation?.status]);
+
   useEffect(() => {
     if (state.connected) actions.post({ op: "switchy.get" });
   }, [state.connected, state.hostEpoch, actions]);
@@ -133,6 +212,8 @@ export function AssistantPage({
         current.engine,
         current.model,
         scope,
+        permission,
+        effort,
       );
       if (reply.error) {
         setError(reply.error);
@@ -156,22 +237,6 @@ export function AssistantPage({
         <Icon d={SPARK} />
         <h1>Switchy</h1>
         <span className="spacer" />
-        <label className="assistant-scope">
-          <Icon d={SERVER} />
-          <select
-            aria-label="Host scope"
-            value={scope}
-            disabled={busy}
-            onChange={(e) => setScope(e.target.value)}
-          >
-            <option value="all">All hosts</option>
-            {hosts.map((id) => (
-              <option key={id} value={id}>
-                {hostName(state, id)}
-              </option>
-            ))}
-          </select>
-        </label>
         {busy && (
           <button
             className="btn"
@@ -231,11 +296,34 @@ export function AssistantPage({
                   </div>
                 </div>
               ) : (
-                turns.map((turn) => <Answer key={turn.id} turn={turn} />)
+                turns.map((turn) => (
+                  <Answer
+                    key={turn.id}
+                    turn={turn}
+                    actions={actions}
+                    active={turn.id === turns.at(-1)?.id && approval}
+                  />
+                ))
               )}
             </div>
           </div>
           <div className="assistant-compose-wrap">
+            {conversation?.status === "queued" && (
+              <QueueNotice
+                reason={
+                  conversation.queue_reason ?? "waiting for room on the host"
+                }
+                starting={starting || !state.connected}
+                onStart={() => {
+                  setStarting(true);
+                  actions.post({
+                    op: "switchy.startNow",
+                    turnId: turns.at(-1)?.id,
+                  });
+                }}
+              />
+            )}
+
             <Composer
               placeholder="Ask about your servers or your work…"
               rows={1}
@@ -244,6 +332,7 @@ export function AssistantPage({
               maxLength={8000}
               busy={busy || !current || !state.connected || !conversation}
               onSubmit={ask}
+              voice={voice}
             >
               {current && (
                 <ModelPicker
@@ -252,22 +341,49 @@ export function AssistantPage({
                   value={{
                     engine: current.engine,
                     model: current.model,
-                    effort: "low",
+                    effort,
                   }}
                   onChange={(choice) =>
                     setSelection(`${choice.engine}:${choice.model}`)
                   }
                 />
               )}
+              {current && (
+                <EffortPicker
+                  models={state.models.local ?? {}}
+                  value={{
+                    engine: current.engine,
+                    model: current.model,
+                    effort,
+                  }}
+                  onChange={setEffort}
+                />
+              )}
+              {current && (
+                <PermissionPicker
+                  engine={current.engine}
+                  value={permission}
+                  onChange={setPermission}
+                />
+              )}
             </Composer>
+            <div className="composer-chips">
+              <HostPicker
+                state={state}
+                value={scope}
+                onChange={setScope}
+                onAddHost={() => actions.go({ page: "hosts" })}
+                contextScope
+              />
+            </div>
             {error && (
               <p className="assistant-notice bad" role="alert">
                 {error}
               </p>
             )}
             <p className="assistant-disclaimer">
-              Answers use selected host evidence. Expand sources to see what was
-              checked.
+              Context comes from selected hosts. Tools run on{" "}
+              {hostName(state, "local")} with the access selected above.
             </p>
           </div>
         </main>

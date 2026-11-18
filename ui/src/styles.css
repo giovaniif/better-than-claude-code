@@ -227,6 +227,7 @@ h1, h2, h3, p { margin: 0; }
 .bubble-code { margin: 0; max-height: 240px; overflow: auto; padding: 8px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); font-family: var(--mono); font-size: 11px; line-height: 1.5; white-space: pre; }
 .queued-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); overflow-wrap: anywhere; }
 .queued-line .btn { height: 28px; }
+.queued-line + .composer { margin-top: 8px; }
 
 /* composer */
 .composer { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px 16px; border: 1px solid var(--line-strong); border-radius: 16px; background: var(--bg); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); }
@@ -494,7 +495,7 @@ h1, h2, h3, p { margin: 0; }
 .form-grid input { font-family: var(--mono); font-size: 12px; }
 
 /* new session: host, folder and branch under the prompt box */
-.new-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 0 6px; min-height: 30px; }
+.new-chips, .composer-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 0 6px; min-height: 30px; }
 .chip { display: flex; align-items: center; gap: 6px; max-width: 260px; height: 28px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 13px; }
 .chip:hover, .chip[aria-expanded="true"] { background: var(--fill); color: var(--ink); }
 .chip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
