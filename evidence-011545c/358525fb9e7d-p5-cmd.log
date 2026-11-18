@@ -1,0 +1,54 @@
+$ verify/yv map run mobile --recipe workspace-button-text-centered && verify/yv map run changes-pane --recipe shows-diff && (cd ui && bun test)
+# exit 0 after 8189 ms at 011545cd532f3a62c37721ab37c5b3fc5946a1ba
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mobile",
+      "at": "2026-11-18T03:57:53.851Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "workspace-button-text-centered",
+          "status": "pass",
+          "ms": 3515
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "changes-pane",
+      "at": "2026-11-18T03:57:57.536Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "shows-diff",
+          "status": "pass",
+          "ms": 2831
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [118.00ms]
