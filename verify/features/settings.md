@@ -14,14 +14,16 @@ when two shown hosts report the same engine and account the one that reported
 last wins (later reset time, then more used), else the first listed. Setup
 gives the remote a Claude account TEST-Work and runs a scripted Claude session
 under it, so only the remote has Claude TEST-Work limits (the fake reports 91%
-for an added account) while This Mac has the seeded Default Claude (47%).
+for an added account) while This Mac has the seeded Default Claude (47%). The
+remote does not read its limits in the background
+(`YARD_CLAUDE_USAGE_EVERY_MS=0`), or it would report Default's 47% too.
 
 ## Setup
 
 ```sh
 yv iso up
 yv iso seed
-yv var set remote_port "$(yv iso up --name map-settings-remote --host-name TEST-server | jq -r .iso.port)"
+yv var set remote_port "$(yv iso up --name map-settings-remote --host-name TEST-server --env YARD_CLAUDE_USAGE_EVERY_MS=0 | jq -r .iso.port)"
 yv var set remote_work "$(yv var get work --iso map-settings-remote | jq -er .value)"
 yv api '{"op":"host.add","name":"TEST-server","kind":"direct","url":"ws://127.0.0.1:{{remote_port}}/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-server","status":"connected"}]}' --save remote_id='hosts[name=TEST-server].id'
 yv api '{"op":"account.add","engine":"claude","name":"TEST-Work","host":"{{remote_id}}"}' --wait '{"op":"accounts","hostId":"{{remote_id}}"}' --save work_acct='accounts[name=TEST-Work].id'

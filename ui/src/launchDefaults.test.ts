@@ -1,0 +1,87 @@
+import { beforeEach, afterEach, expect, test } from "bun:test";
+import { loadDefaults, saveDefaults } from "./launchDefaults";
+import { loadChoice, loadHost, rememberSession } from "./sessionDefaults";
+import type { Models } from "./protocol";
+const original = globalThis.localStorage;
+const choice = { engine: "codex" as const, model: "fast", effort: "high" };
+const models: Models = {
+  codex: [
+    {
+      id: "fast",
+      name: "Fast",
+      efforts: ["low", "high"],
+      defaultEffort: "low",
+    },
+    { id: "other", name: "Other", efforts: ["low"] },
+  ],
+};
+beforeEach(() => {
+  const values = new Map<string, string>();
+  globalThis.localStorage = {
+    getItem: (k: string) => values.get(k) ?? null,
+    setItem: (k: string, v: string) => {
+      values.set(k, v);
+    },
+    removeItem: (k: string) => {
+      values.delete(k);
+    },
+  } as Storage;
+});
+afterEach(() => {
+  globalThis.localStorage = original;
+});
+test("explicit session defaults survive different one-off host/model selections", () => {
+  saveDefaults("sessions", { host: "server", choice });
+  rememberSession({
+    host: "local",
+    engine: "codex",
+    model: "other",
+    effort: "low",
+    cwd: "/test",
+  });
+  expect(loadHost()).toBe("server");
+  expect(loadChoice(models, "server")).toEqual(choice);
+  expect(loadChoice(models, "local").model).toBe("other");
+  expect(loadChoice({}, "server")).toEqual(choice);
+  saveDefaults("sessions", null);
+  expect(loadHost()).toBe("local");
+  expect(loadChoice(models, "server").model).toBe("other");
+});
+test("Switchy and sessions keep independent defaults, including all-host scope", () => {
+  saveDefaults("sessions", { host: "server", choice });
+  saveDefaults("switchy", {
+    host: "all",
+    choice: { ...choice, model: "other" },
+  });
+  expect(loadDefaults("sessions")?.host).toBe("server");
+  expect(loadDefaults("switchy")?.choice.model).toBe("other");
+  saveDefaults("switchy", null);
+  expect(loadDefaults("sessions")).not.toBeNull();
+});
+test("invalid preferences and unavailable storage do not break launch", () => {
+  localStorage.setItem(
+    "yard.defaults.sessions",
+    '{"host":"all","choice":{"engine":"codex","model":"fast","effort":"low"}}',
+  );
+  expect(loadDefaults("sessions")).toBeNull();
+  localStorage.setItem("yard.defaults.switchy", "{broken");
+  expect(loadDefaults("switchy")).toBeNull();
+  globalThis.localStorage = {
+    getItem() {
+      throw Error("blocked");
+    },
+    setItem() {
+      throw Error("blocked");
+    },
+  } as unknown as Storage;
+  expect(loadDefaults("sessions")).toBeNull();
+  expect(saveDefaults("sessions", { host: "local", choice })).toBe(false);
+});
+test("a removed default model falls back without overwriting the saved preference", () => {
+  saveDefaults("sessions", {
+    host: "local",
+    choice: { ...choice, model: "gone" },
+  });
+  expect(loadChoice(models).model).toBe("fast");
+  expect(loadDefaults("sessions")?.choice.model).toBe("gone");
+});

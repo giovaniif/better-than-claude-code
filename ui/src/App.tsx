@@ -1,13 +1,16 @@
+import { loadDefaults } from "./launchDefaults";
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
-import { UsageMeters, UsageStrip } from "./UsageMeters";
+import { UsageStrip } from "./UsageMeters";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
+import { AssistantPage } from "./AssistantPage";
+import { engineGlance, sessionGlance, size, stateText } from "./hosts";
 import { SettingsPage } from "./SettingsPage";
-import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, usageForPicks, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
+import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -16,7 +19,8 @@ import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
 import { draftOf, fenceSegments, keepDraft, lineCount, onAppend, quoteInComposer, quoteSegments, type Snippet, splitQuotes, withQuotes } from "./compose";
-import { blockSegments, type MdTable } from "./markdown";
+import { blockSegments, fencedBlocks, type MdTable } from "./markdown";
+import { MermaidDiagram } from "./MermaidDiagram";
 import { AutomationForm, AutomationsPage } from "./AutomationsPage";
 import { ConnectorsPage } from "./ConnectorsPage";
 import { WidgetFrame } from "./WidgetFrame";
@@ -27,6 +31,11 @@ import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
 import { MobileSetup, MobileSetupButton } from "./MobileSetup";
+import { loadChoice, loadFolder, loadHost, readRecent, rememberSession, validChoice, type Choice } from "./sessionDefaults";
+export { loadChoice, readRecent } from "./sessionDefaults";
+export type { Choice } from "./sessionDefaults";
+import { NavigationPalette } from "./NavigationPalette";
+import { navigationShortcut, type NavigationEntry } from "./navigation";
 
 /** Permission modes, as Claude Code names them, and what each means per engine. */
 export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, string>)[] = [
@@ -130,11 +139,64 @@ const DrawerContext = createContext<{ open: boolean; show(): void }>({ open: fal
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
+  const [importing, setImporting] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+  const navigationOrigin = useRef<HTMLElement | null>(null);
+  useLayoutEffect(() => {
+    // The app is no longer inert after the palette unmounts. A destination
+    // dialog may already have focused its own input; leave that focus alone.
+    if (!navigating && navigationOrigin.current?.isConnected && document.activeElement === document.body) navigationOrigin.current.focus({ preventScroll: true });
+  }, [navigating]);
+  // Older shells and browsers still need the sidebar's entry points.
+  const nativeMenu = (window as any).__SWITCHYARD_APP_MENU__ === true;
   const [sidebarW, setSidebarW] = useWidth("yard.sidebarWidth", SIDEBAR_W);
   // Below NARROW the sidebar is a drawer over the page. Picking anything in
   // it, the backdrop or Escape closes it; so does crossing the breakpoint, so
   // it never comes back open by surprise.
   const [drawer, setDrawer] = useState(false);
+  const openNavigation = () => {
+    if (!navigating) navigationOrigin.current = document.activeElement as HTMLElement | null;
+    setDrawer(false);
+    setImporting(false);
+    setNavigating(true);
+  };
+  const openImport = () => {
+    setDrawer(false);
+    setNavigating(false);
+    setImporting(true);
+  };
+  const pickNavigation = (entry: NavigationEntry) => {
+    setNavigating(false);
+    if (entry.action === "import") openImport();
+    else if (entry.route) actions.go(entry.route);
+  };
+  useEffect(() => {
+    const key = (e: globalThis.KeyboardEvent) => {
+      if (!navigationShortcut(e, /Mac|iPhone|iPad/.test(navigator.platform))) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (navigating) setNavigating(false);
+      else openNavigation();
+    };
+    const menu = (e: Event) => {
+      setDrawer(false);
+      switch ((e as CustomEvent).detail) {
+        case "navigation": openNavigation(); break;
+        case "import": openImport(); break;
+        case "settings":
+          setNavigating(false);
+          setImporting(false);
+          actions.go({ page: "settings" });
+          break;
+      }
+    };
+    window.addEventListener("keydown", key, true);
+    window.addEventListener("switchyard:navigate", menu);
+    return () => {
+      window.removeEventListener("keydown", key, true);
+      window.removeEventListener("switchyard:navigate", menu);
+    };
+  }, [actions, navigating]);
   useEscape(drawer, () => setDrawer(false));
   useEffect(() => {
     const mq = window.matchMedia(NARROW);
@@ -171,8 +233,8 @@ export function App() {
   }, []);
   return (
     <DrawerContext.Provider value={drawerCtx}>
-      <div className={`app ${drawer ? "drawer-open" : ""}`} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-        <Sidebar state={state} actions={sidebarActions} open={drawer} />
+      <div className={`app ${drawer ? "drawer-open" : ""}`} inert={navigating || undefined} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
+        <Sidebar state={state} actions={sidebarActions} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
         {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
         <Resizer
           width={sidebarW}
@@ -214,6 +276,7 @@ export function App() {
               <NewSession state={state} actions={actions} />
             </>
           )}
+          {route.page === "assistant" && <AssistantPage state={state} actions={actions} />}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
@@ -233,6 +296,8 @@ export function App() {
           )}
         </div>
       </div>
+      {navigating && <NavigationPalette state={state} onPick={pickNavigation} onClose={() => setNavigating(false)} />}
+      {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
     </DrawerContext.Provider>
   );
 }
@@ -354,10 +419,10 @@ interface RowDrag {
   end(): void;
 }
 
-function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number; drag?: RowDrag }) {
+function SessionRow({ state, actions, session: s, active, groups, seenAt, unread, onUnread, onRead, drag }: { state: State; actions: Actions; session: SessionMeta; active: boolean; groups: string[]; seenAt: number; unread: boolean; onUnread(): void; onRead(): void; drag?: RowDrag }) {
   const host = hostOf(s);
   const online = host === "local" || hostOnline(state, host);
-  const mark = rowState(s, seenAt, online);
+  const mark = rowState(s, seenAt, online, unread);
   const [menu, setMenu] = useState(false);
   const [confirm, setConfirm] = useState(false);
   // The menu's group pages: the list of groups, then the name field for a new one.
@@ -440,8 +505,8 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }
       }}
     >
       <button
-        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"} ${mark === "answered" ? "unread" : ""}`}
-        onClick={() => actions.go({ page: "session", id: s.id })}
+        className={`session-row ${active ? "active" : ""} ${online ? "" : "offline"} ${mark === "answered" || mark === "unread" ? "unread" : ""}`}
+        onClick={() => { onRead(); actions.go({ page: "session", id: s.id }); }}
       >
         <RowMark state={mark} />
         <span className="session-text">
@@ -496,6 +561,10 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, drag }
               </form>
             ) : !confirm ? (
               <>
+                <button className="picker-item menu-item" role="menuitem" onClick={() => { unread || mark === "answered" ? onRead() : onUnread(); close(); }}>
+                  <Icon d={unread || mark === "answered" ? CHECK : "M4 6h16v12H4ZM4 6l8 6 8-6"} size={14} />
+                  {unread || mark === "answered" ? "Mark as read" : "Mark as unread"}
+                </button>
                 {!s.archived && (
                   <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => (actions.setPinned(s.id, !s.pinned), close())}>
                     <Icon d={PIN} size={14} />
@@ -703,7 +772,7 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions, open }: { state: State; actions: Actions; open: boolean }) {
+function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -771,14 +840,13 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   // Runs of automations live on the Automations page, not in this list.
   const runs = everything.filter(hiddenFromSidebar);
   const inRun = route.page === "session" && !!state.sessions[route.id]?.automation;
-  const seenAt = useSeen(state.sessions, route.page === "session" ? route.id : null);
+  const seen = useSeen(state.sessions, route.page === "session" ? route.id : null, state.restore);
   // Going to an archived session shows the section, so its row stays in
   // view. Only on going there: archiving the session already open leaves the
   // section as it was (it used to spring open on every archive).
   const openId = route.page === "session" ? route.id : null;
   const openArchived = !!openId && !!state.sessions[openId]?.archived;
   const [showArchived, setShowArchived] = useState(openArchived);
-  const [importing, setImporting] = useState(false);
   useEffect(() => {
     if (openArchived) setShowArchived(true);
   }, [openId]);
@@ -795,7 +863,10 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
       session={s}
       groups={groupNames}
       active={route.page === "session" && route.id === s.id}
-      seenAt={seenAt(s.id)}
+      seenAt={seen.seenAt(s.id)}
+      unread={seen.isUnread(s.id)}
+      onUnread={() => seen.markUnread(s.id)}
+      onRead={() => seen.markRead(s.id)}
       // Touch has no HTML5 drag; in the phone drawer the row menu moves sessions.
       drag={narrow ? undefined : rowDrag(s.id)}
     />
@@ -804,11 +875,17 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
   const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
     <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">
-      <div className="brand">Switchyard</div>
+      <button className="brand btn-text" onClick={onNavigate} aria-label="Go to session or page" aria-keyshortcuts={/Mac|iPhone|iPad/.test(navigator.platform) ? "Meta+K" : "Control+K"}>
+        Switchyard <kbd>{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"}</kbd>
+      </button>
       <div className="sidebar-top">
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
           <Icon d={PLUS} />
           New session
+        </button>
+        <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
+          <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
+          Switchy
         </button>
         <button className={`nav-row ${route.page === "automations" || route.page === "automation" || inRun ? "active" : ""}`} onClick={() => actions.go({ page: "automations" })}>
           <Icon d={CLOCK} />
@@ -819,15 +896,18 @@ function Sidebar({ state, actions, open }: { state: State; actions: Actions; ope
           <Icon d={PLUG} />
           Connectors
         </button>
-        <button className="nav-row" onClick={() => setImporting(true)}>
-          <Icon d={IMPORT} />
-          Import
-        </button>
-        {importing && <ImportDialog state={state} actions={actions} onClose={() => setImporting(false)} />}
-        <button className={`nav-row ${route.page === "settings" ? "active" : ""}`} onClick={() => actions.go({ page: "settings" })}>
-          <Icon d={GEAR} />
-          Settings
-        </button>
+        {!nativeMenu && (
+          <>
+            <button className="nav-row" onClick={onImport}>
+              <Icon d={IMPORT} />
+              Import
+            </button>
+            <button className={`nav-row ${route.page === "settings" ? "active" : ""}`} onClick={() => actions.go({ page: "settings" })}>
+              <Icon d={GEAR} />
+              Settings
+            </button>
+          </>
+        )}
       </div>
       <div className="session-list">
         {pinned.length > 0 && (
@@ -905,12 +985,6 @@ const hostPressure = (h: Host) =>
 
 /* ---------- model picker ---------- */
 
-export interface Choice {
-  engine: Engine;
-  model: string;
-  effort: string;
-}
-
 export function effortFor(model: ModelInfo | undefined, wanted: string): string {
   if (!model) return wanted;
   if (model.efforts.includes(wanted)) return wanted;
@@ -963,9 +1037,48 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
   );
 }
 
+/** Effort for the chosen model, its own chip next to the model's. A model
+ *  without efforts (some OpenCode and Grok ones) runs as it is: no chip. */
+export function EffortPicker({ models, value, onChange }: { models: Models; value: Choice; onChange(effort: string): void }) {
+  const [open, setOpen] = useState(false);
+  useEscape(open, () => setOpen(false));
+  const efforts = models[value.engine]?.find((m) => m.id === value.model)?.efforts ?? [];
+  if (efforts.length === 0) return null;
+  return (
+    <div className="picker">
+      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} aria-label={`Effort ${capitalize(value.effort)}`} onClick={() => setOpen(!open)}>
+        <span>{capitalize(value.effort)}</span>
+        <span className="muted">
+          <Icon d={CHEVRON_DOWN} size={12} />
+        </span>
+      </button>
+      {open && (
+        <>
+          <div className="scrim" onClick={() => setOpen(false)} />
+          <div className="popover effort-menu" role="menu" aria-label="Effort">
+            {efforts.map((e) => (
+              <button
+                key={e}
+                role="menuitemradio"
+                aria-checked={e === value.effort}
+                className={`picker-item ${e === value.effort ? "active" : ""}`}
+                onClick={() => {
+                  onChange(e);
+                  setOpen(false);
+                }}
+              >
+                {capitalize(e)}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ModelPicker(props: {
   models: Models;
-  usage: Usage;
   value: Choice;
   engines: Engine[];
   /** The host's added accounts. An engine with any gets an account row; shown only where there is a choice. */
@@ -978,10 +1091,13 @@ export function ModelPicker(props: {
   /** In a session, a model of another engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
-  const { models, usage, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
+  const { models, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
   const choicesOf = (engine: Engine): AccountChoice[] => accountChoices(accounts, engine);
   const pickOf = (engine: Engine) => picks?.[engine] ?? DEFAULT_ACCOUNT;
-  const triggerAccount = choicesOf(value.engine).length > 1 ? accountName(accounts, value.engine, pickOf(value.engine)) : null;
+  const several = (engine: Engine) => choicesOf(engine).length > 1;
+  // Which account the models run on: named wherever the engine has more than one.
+  const accountFor = (engine: Engine) => (several(engine) ? accountName(accounts, engine, pickOf(engine)) : null);
+  const triggerAccount = accountFor(value.engine);
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
@@ -1006,10 +1122,14 @@ export function ModelPicker(props: {
   useEscape(open, close);
   return (
     <div className="picker">
-      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} onClick={() => (open ? close() : setOpen(true))}>
+      <button
+        className="btn-quiet"
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-label={`Model ${current?.name ?? value.model}${triggerAccount ? ` · ${triggerAccount}` : ""}`}
+        onClick={() => (open ? close() : setOpen(true))}
+      >
         <span>{current?.name ?? value.model}</span>
-        {/* A model without efforts (some OpenCode and Grok ones) runs as it is. */}
-        {(!current || current.efforts.length > 0) && <span className="muted">{capitalize(value.effort)}</span>}
         {triggerAccount && <span className="muted picker-account">{triggerAccount}</span>}
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
@@ -1044,7 +1164,6 @@ export function ModelPicker(props: {
                 </div>
               </div>
             )}
-            <UsageMeters usage={usage} first={value.engine} />
             {ordered.map((engine) => {
               const isHandoff = !!handoff && engine !== value.engine;
               const disabled = isHandoff && handoff.blocked;
@@ -1056,7 +1175,8 @@ export function ModelPicker(props: {
                   {folded ? (
                     <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                       <span>
-                        {ENGINE_NAME[engine]} · {list.length} {list.length === 1 ? "model" : "models"}
+                        {ENGINE_NAME[engine]}
+                        {accountFor(engine) ? ` (${accountFor(engine)})` : ""} · {list.length} {list.length === 1 ? "model" : "models"}
                         {handoff ? " · switching hands off" : ""}
                       </span>
                       <span className="muted">
@@ -1067,9 +1187,11 @@ export function ModelPicker(props: {
                     <>
                       <div className="picker-head">
                         <span>{ENGINE_NAME[engine]}</span>
+                        {accountFor(engine) && !isHandoff && <span className="picker-head-account">{accountFor(engine)} account</span>}
                       </div>
                       {choicesOf(engine).length > 1 && onAccount && !isHandoff && (
                         <div className="picker-accounts" role="group" aria-label={`${ENGINE_NAME[engine]} account`}>
+                          <span className="muted small picker-accounts-label">Account</span>
                           {choicesOf(engine).map((a) => (
                             <button
                               key={a.id}
@@ -1130,20 +1252,6 @@ export function ModelPicker(props: {
                 </div>
               );
             })}
-            {current && current.efforts.length > 0 && (
-              <div className="picker-group">
-                <div className="picker-head">
-                  <span>Effort</span>
-                </div>
-                <div className="efforts">
-                  {current.efforts.map((e) => (
-                    <button key={e} className={`effort ${e === value.effort ? "active" : ""}`} onClick={() => onChange({ ...value, effort: e })}>
-                      {capitalize(e)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </>
       )}
@@ -1173,7 +1281,7 @@ type ComposerDraft = {
   uploads: Map<string, Upload>;
 };
 
-function Composer(props: {
+export function Composer(props: {
   placeholder: string;
   rows: number;
   large?: boolean;
@@ -1190,8 +1298,11 @@ function Composer(props: {
   draft?: string;
   /** Where attached files are stored: the host the prompt will run on. */
   target: UploadTarget;
-  upload(file: File, target: UploadTarget): Promise<Attachment>;
-  onSubmit(text: string, attachments: Attachment[]): void;
+  /** Omit for text-only endpoints; the shared attachment control is disabled. */
+  upload?(file: File, target: UploadTarget): Promise<Attachment>;
+  maxLength?: number;
+  /** False leaves the draft in place when the endpoint rejects a submission. */
+  onSubmit(text: string, attachments: Attachment[]): void | boolean | Promise<void | boolean>;
   /** Hands-free voice mode for a session: what it has to say, numbered. */
   voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
   children: ReactNode;
@@ -1251,7 +1362,7 @@ function Composer(props: {
     );
 
   const startUpload = (f: PendingFile) => {
-    const promise = props.upload(f.file, props.target);
+    const promise = props.upload!(f.file, props.target);
     const entry = { target: targetKey, promise };
     uploads.current.set(f.key, entry);
     patch(f.key, { state: "uploading", error: undefined });
@@ -1274,7 +1385,7 @@ function Composer(props: {
   }, [draftKey, text, quotes, snippets, files]);
 
   const addFiles = (list: File[]) => {
-    if (!list.length) return;
+    if (!props.upload || !list.length) return;
     const added = list.map((file): PendingFile => {
       const big = tooLarge(file.size);
       return {
@@ -1331,7 +1442,7 @@ function Composer(props: {
           return u && u.target === targetKey ? u.promise : startUpload(f);
         }),
       );
-      props.onSubmit(value, attachments);
+      if ((await props.onSubmit(value, attachments)) === false) return;
       voice.sent();
       if (!props.keepText) {
         setText("");
@@ -1377,7 +1488,7 @@ function Composer(props: {
     <div
       className={`composer ${props.large ? "composer-large" : ""} ${dragging ? "composer-drop" : ""}`}
       onDragOver={(e) => {
-        if (!dragHasFiles(e.dataTransfer)) return;
+        if (!props.upload || !dragHasFiles(e.dataTransfer)) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
         setDragging(true);
@@ -1442,6 +1553,7 @@ function Composer(props: {
         ref={area}
         aria-label="Message"
         rows={props.rows}
+        maxLength={props.maxLength}
         placeholder={props.placeholder}
         value={text}
         onChange={(e) => {
@@ -1450,6 +1562,7 @@ function Composer(props: {
         }}
         onKeyDown={onKeyDown}
         onPaste={(e) => {
+          if (!props.upload) return;
           const pasted = pastedFiles(e.clipboardData);
           if (!pasted.length) return;
           e.preventDefault();
@@ -1458,7 +1571,7 @@ function Composer(props: {
         autoFocus
       />
       <div className="composer-row">
-        <button className="btn-icon attach-btn" aria-label="Attach files" title="Attach files" onClick={() => picker.current?.click()}>
+        <button className="btn-icon attach-btn" aria-label="Attach files" disabled={!props.upload} title={props.upload ? "Attach files" : "Attachments are not supported here"} onClick={() => picker.current?.click()}>
           <Icon d={PAPERCLIP} size={16} />
         </button>
         {!voiceOn && (
@@ -1473,12 +1586,13 @@ function Composer(props: {
             <Icon d={voice.dictating ? STOP : MIC} size={16} />
           </button>
         )}
-        {props.voice && !voice.unavailable && (
+        {props.voice && (
           <button
             className={`btn-icon attach-btn voice-btn${voiceOn ? " on" : ""}`}
             aria-label="Voice mode"
+            aria-disabled={voice.unavailable ? true : undefined}
             aria-pressed={voiceOn}
-            title={voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud"}
+            title={voice.unavailable ?? (voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud")}
             onClick={voice.toggleVoice}
           >
             <Icon d={WAVES} size={16} />
@@ -1487,6 +1601,7 @@ function Composer(props: {
         <input
           ref={picker}
           type="file"
+          disabled={!props.upload}
           multiple
           hidden
           aria-label="Attach files"
@@ -1636,45 +1751,22 @@ function SentAttachment({ attachment: a, load }: { attachment: Attachment; load(
 
 /* ---------- new session ---------- */
 
-export function loadChoice(models: Models): Choice {
-  try {
-    const saved = JSON.parse(localStorage.getItem("yard.choice") ?? "null") as Choice | null;
-    if (saved && models[saved.engine]?.some((m) => m.id === saved.model)) return saved;
-  } catch {
-    /* fall through to the default */
-  }
-  const first = models.claude?.[0];
-  return { engine: "claude", model: first?.id ?? "", effort: first?.defaultEffort ?? "medium" };
-}
-
-/** Remembered per host: the folder last used there, and recent picks. */
-const cwdKey = (host: string) => (host === "local" ? "yard.cwd" : `yard.cwd.${host}`);
-const recentKey = (host: string) => `yard.recent.${host}`;
-export function readRecent(host: string): string[] {
-  try {
-    const list = JSON.parse(localStorage.getItem(recentKey(host)) ?? "[]");
-    return Array.isArray(list) ? list.filter((p) => typeof p === "string") : [];
-  } catch {
-    return [];
-  }
-}
-function remember(host: string, folder: string) {
-  localStorage.setItem(cwdKey(host), folder);
-  localStorage.setItem(recentKey(host), JSON.stringify([folder, ...readRecent(host).filter((p) => p !== folder)].slice(0, 12)));
-}
-
 /** The New session box's draft key: it has no session yet (compose.ts). */
 const NEW_TASK_DRAFT = "new";
 
 function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // Where the session runs. A remote host can be picked only while connected.
-  const [host, setHost] = useState("local");
-  const target = host === "local" || state.hosts.some((h) => h.id === host && hostOnline(state, h.id)) ? host : "local";
+  const [host, setHost] = useState(loadHost);
+  // A configured host stays selected while reconnecting. Never silently send
+  // a remote task to another machine because its connection briefly dropped.
+  const target = host === "local" || !state.connected || state.hosts.some((h) => h.id === host) ? host : "local";
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
   const workspace = state.workspace[target] || home;
   const [loggingIn, setLoggingIn] = useState(false);
-  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, "local")));
+  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target));
+  const choicePicked = useRef(false);
+  const choose = (next: Choice) => { choicePicked.current = true; setChoice(next); };
   // The account per engine on this host, remembered like the model. One that
   // was removed meanwhile falls back to Default.
   const accounts = accountsOn(state, target);
@@ -1690,13 +1782,14 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     setPicked({ ...picked, [pickKey(engine)]: id });
     // Picking an account under the other engine means running on it.
     const next = engine === choice.engine ? null : choiceOnEngine(models, engine, choice.effort);
-    if (next) setChoice(next);
+    if (next) choose(next);
   };
   const [permission, setPermission] = useState<Permission>(() => {
     const saved = localStorage.getItem("yard.permission");
     return PERMISSIONS.some((p) => p.id === saved) ? (saved as Permission) : "ask";
   });
-  const [cwd, setCwd] = useState("");
+  const [cwd, setCwd] = useState(() => loadFolder(target));
+  const previousTarget = useRef(target);
   // What the worktree is cut from; empty means the folder's current branch.
   const [base, setBase] = useState("");
   // From send until yardd answers. On success this page is replaced by the
@@ -1718,11 +1811,16 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   );
   // Models and the home folder arrive after the first render, and differ per host.
   useEffect(() => {
-    if (!models[choice.engine]?.some((m) => m.id === choice.model)) setChoice(loadChoice(models));
-  }, [models, target]);
-  useEffect(() => {
-    setCwd(localStorage.getItem(cwdKey(target)) || workspace);
-  }, [target, workspace]);
+    const changed = previousTarget.current !== target;
+    if (changed) choicePicked.current = false;
+    setChoice((current) => {
+      const next = changed || (!choicePicked.current && loadDefaults("sessions")?.host === target) ? loadChoice(models, target) : validChoice(models, current);
+      return next.engine === current.engine && next.model === current.model && next.effort === current.effort ? current : next;
+    });
+    if (previousTarget.current !== target) setCwd(loadFolder(target) || workspace);
+    else setCwd((current) => current || loadFolder(target) || workspace);
+    previousTarget.current = target;
+  }, [models, target, workspace]);
 
   // Recent picks first, then the folders of this host's sessions. A worktree
   // session counts as the repository it was cut from.
@@ -1743,15 +1841,16 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   }, [cwd, target, state.connected]);
   useEffect(() => setBase(""), [cwd, target]);
   const isRepo = !!branchList?.current;
+  // A remembered folder can be deleted since; Send would only be refused.
+  const gone = !!branchList?.missing;
 
   const start = (text: string, attachments: Attachment[]) => {
     if (/^\/login\s*$/.test(text.trim()) && !attachments.length) {
       setLoggingIn(true);
       return;
     }
-    if (target === "local") localStorage.setItem("yard.choice", JSON.stringify(choice));
+    rememberSession({ ...choice, host: target, cwd });
     localStorage.setItem("yard.permission", permission);
-    remember(target, cwd);
     setPending(true);
     actions.create({
       ...choice,
@@ -1780,18 +1879,18 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          busy={pending || !state.connected || !choice.model || !cwd}
+          busy={pending || !state.connected || !hostOnline(state, target) || !choice.model || !cwd || gone}
         >
           <ModelPicker
             models={models}
-            usage={usageForPicks(usageOn(state, target), picks)}
             value={choice}
             engines={pickerEngines(models)}
             accounts={accounts}
             picks={picks}
             onAccount={pickAccount}
-            onChange={setChoice}
+            onChange={choose}
           />
+          <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
         <div className="new-chips">
@@ -1810,9 +1909,11 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />
           )}
           <span className="spacer" />
-          {cwd && branchList && (
+          {cwd && branchList && (gone ? (
+            <span className="bad small">This folder no longer exists</span>
+          ) : (
             <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
-          )}
+          ))}
         </div>
         <EngineNotice state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onLogin={() => setLoggingIn(true)} />
         {loggingIn && (
@@ -1869,7 +1970,7 @@ function ChipMenu(props: {
   );
 }
 
-export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void }) {
+export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void; contextScope?: boolean; allowOffline?: boolean }) {
   const { state, value } = props;
   const [open, setOpen] = useState(false);
   const pick = (host: string) => {
@@ -1880,11 +1981,12 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
   return (
     <ChipMenu
       icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
-      label={remote ? remote.name : hostName(state, "local")}
-      title="Where the session runs"
+      label={props.contextScope && value === "all" ? "All hosts" : remote ? remote.name : hostName(state, "local")}
+      title={props.contextScope ? "Hosts used for context" : "Where the session runs"}
       open={open}
       setOpen={setOpen}
     >
+      {props.contextScope && <button className={`picker-item menu-item ${value === "all" ? "active" : ""}`} onClick={() => pick("all")}><Icon d={CLOUD} /><span>All hosts</span></button>}
       <button className={`picker-item menu-item ${value === "local" ? "active" : ""}`} onClick={() => pick("local")}>
         <Icon d={LAPTOP} />
         <span>{hostName(state, "local")}</span>
@@ -1892,7 +1994,7 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
       {state.hosts.map((h) => {
         const online = hostOnline(state, h.id);
         return (
-          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online} onClick={() => pick(h.id)}>
+          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online && !props.contextScope && !props.allowOffline} onClick={() => pick(h.id)}>
             <Icon d={CLOUD} />
             <span>{h.name}</span>
             {!online && <span className="muted small menu-aside">{h.status === "error" ? "unreachable" : h.status}</span>}
@@ -2322,7 +2424,6 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           >
             <ModelPicker
               models={models}
-              usage={usageForPicks(usageOn(state, host), { [meta.engine]: accountOf(meta) })}
               accounts={accounts}
               picks={{ [meta.engine]: accountOf(meta) }}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
@@ -2330,6 +2431,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
+            <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
         </div>
@@ -2364,7 +2466,8 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
     );
   }
   return (
-    <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
+    // The title ellipsizes; the button keeps its one line beside it.
+    <button className="btn-text bar-choice" onClick={() => (armed ? onConfirm() : setArmed(true))}>
       {armed ? "Delete session?" : "Delete"}
     </button>
   );
@@ -2543,6 +2646,7 @@ function RowView({ row, render, widget }: { row: Row; render(item: Item): ReactN
   if (row.type === "item") return <>{render(row.item)}</>;
   if (row.type === "work") return <WorkGroup entries={row.entries} live={row.live} />;
   if (row.type === "widget") return <>{widget?.(row.tool) ?? null}</>;
+  if (row.type === "stopped") return <div className="stopped-mark muted">{row.ms != null ? `Stopped after ${duration(row.ms)}` : "Stopped"}</div>;
   return <TurnFold row={row} render={render} />;
 }
 
@@ -2697,6 +2801,51 @@ function AgentEntry({ entry }: { entry: ToolItem }) {
   );
 }
 
+export function ApprovalCard({ item, onDecide }: {
+  item: Extract<Item, {kind: "approval"}>;
+  onDecide(requestId: string, decision: "allow" | "allow_always" | "deny"): void;
+}) {
+  return (
+        <div className="approval">
+          <div className="approval-title">{item.approvalKind === "command" ? "Allow this command?" : "Allow this?"}</div>
+          <code className="approval-what">{item.title}</code>
+          {item.detail && <div className="muted small">{item.detail}</div>}
+          {item.decision === null && !item.unanswered ? (
+            <div className="row">
+              <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
+                Allow once
+              </button>
+              <button className="btn" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow_always")}>
+                Always allow
+              </button>
+              <button className="btn-text" disabled={item.sending} onClick={() => onDecide(item.requestId, "deny")}>
+                Deny
+              </button>
+            </div>
+          ) : (
+            <div className="muted small">
+              {item.decision === null
+                ? "Not answered before the turn ended"
+                : item.decision === "deny"
+                  ? "Denied"
+                  : item.decision === "allow_always"
+                    ? "Always allowed"
+                    : "Allowed"}
+            </div>
+          )}
+        </div>
+);
+}
+
+export function QueueNotice({ reason, starting, onStart }: {reason: string; starting: boolean; onStart(): void}) {
+  return (
+    <div className="queued-line">
+      <span>Queued: {reason}.</span>
+      <button className="btn" disabled={starting} onClick={onStart}>Start anyway</button>
+    </div>
+  );
+}
+
 function ItemView(props: {
   item: Item;
   /** For a hand-off note: the session on the other side. */
@@ -2751,49 +2900,11 @@ function ItemView(props: {
         </>
       );
     case "approval":
-      return (
-        <div className="approval">
-          <div className="approval-title">{item.approvalKind === "command" ? "Allow this command?" : "Allow this?"}</div>
-          <code className="approval-what">{item.title}</code>
-          {item.detail && <div className="muted small">{item.detail}</div>}
-          {item.decision === null && !item.unanswered ? (
-            <div className="row">
-              <button className="btn-primary" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow")}>
-                Allow once
-              </button>
-              <button className="btn" disabled={item.sending} onClick={() => onDecide(item.requestId, "allow_always")}>
-                Always allow
-              </button>
-              <button className="btn-text" disabled={item.sending} onClick={() => onDecide(item.requestId, "deny")}>
-                Deny
-              </button>
-            </div>
-          ) : (
-            <div className="muted small">
-              {item.decision === null
-                ? "Not answered before the turn ended"
-                : item.decision === "deny"
-                  ? "Denied"
-                  : item.decision === "allow_always"
-                    ? "Always allowed"
-                    : "Allowed"}
-            </div>
-          )}
-        </div>
-      );
+      return <ApprovalCard item={item} onDecide={onDecide} />;
     case "error":
       return <div className="error-line">{item.message}</div>;
     case "queued":
-      return (
-        <div className="queued-line">
-          <span>{props.queued ? `Queued: ${item.reason}.` : `Was queued: ${item.reason}.`}</span>
-          {props.queued && (
-            <button className="btn" disabled={props.starting} onClick={props.onStart}>
-              Start anyway
-            </button>
-          )}
-        </div>
-      );
+      return props.queued ? <QueueNotice reason={item.reason} starting={props.starting} onStart={props.onStart} /> : <div className="queued-line">Was queued: {item.reason}.</div>;
   }
 }
 
@@ -2996,21 +3107,20 @@ function MdTableView({ table }: { table: MdTable }) {
   );
 }
 
-function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
-  const blocks = text.split(/```/);
+export function Markdown({ text, quotable }: { text: string; quotable?: boolean }) {
+  const blocks = fencedBlocks(text);
   return (
     <div className="prose" data-quotable={quotable ? "" : undefined}>
       {blocks.map((block, i) => {
-        if (i % 2 === 1) {
-          // Fenced code: drop the language line.
-          const body = block.replace(/^[^\n]*\n/, "").replace(/\n$/, "");
+        if (block.kind === "code") {
+          if (block.language === "mermaid") return <MermaidDiagram key={i} source={block.body} complete={block.complete} />;
           return (
             <pre key={i} className="code">
-              {body}
+              {block.body}
             </pre>
           );
         }
-        return block
+        return block.text
           .split(/\n{2,}/)
           .filter((p) => p.trim())
           .map((para, j) => {
@@ -3066,19 +3176,18 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-const size = (bytes: number) => (bytes < 1024 ** 3 ? `${Math.round(bytes / 1024 ** 2)} MB` : `${gb(bytes)} GB`);
 /** `8` or `0.2`, without a trailing `.0`. */
 const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1)));
 
-/** What each session's processes use, and the sessions waiting to start. */
-/** Host ids whose Sessions list is open, per browser. Collapsed by default:
- *  on a busy server the list runs to dozens of rows. */
-const SESSIONS_OPEN_KEY = "yard.hosts.sessionsOpen";
+/** Host ids whose card details are open, per browser. Closed by default, like
+ *  an automation's runs: the grid stays a page of small cards, and on a busy
+ *  server the sessions alone run to dozens of rows. */
+const DETAILS_OPEN_KEY = "yard.hosts.detailsOpen";
 
-function useSessionsOpen(hostId: string): [boolean, () => void] {
+function useDetailsOpen(hostId: string): [boolean, () => void] {
   const read = () => {
     try {
-      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
       return Array.isArray(v) && v.includes(hostId);
     } catch {
       return false;
@@ -3089,47 +3198,31 @@ function useSessionsOpen(hostId: string): [boolean, () => void] {
     const next = !open;
     setOpen(next);
     try {
-      const v = JSON.parse(localStorage.getItem(SESSIONS_OPEN_KEY) ?? "[]");
+      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
       const list = (Array.isArray(v) ? v : []).filter((h: unknown) => h !== hostId);
-      localStorage.setItem(SESSIONS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
+      localStorage.setItem(DETAILS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
     } catch {
-      // A private window may refuse storage; the list still toggles.
+      // A private window may refuse storage; the details still toggle.
     }
   };
   return [open, toggle];
 }
 
-function SessionUse({ hostId, host, sessions }: { hostId: string; host: Host; sessions: Record<string, SessionMeta> }) {
+/** What each session's processes use, the sessions waiting to start, and the
+ *  rule that queues them: the details under a card's one-line summary. */
+function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
   const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
   const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
   const queued = Object.values(sessions)
     .filter((s) => s.status === "queued")
     .sort((a, b) => a.createdAt - b.createdAt);
   const limits = host.limits;
-  const [open, toggle] = useSessionsOpen(hostId);
-  const cores = rows.reduce((n, u) => n + u.cpuCores, 0);
-  const mem = rows.reduce((n, u) => n + u.memBytes, 0);
-  const any = rows.length > 0 || queued.length > 0;
   return (
     <section className="usage" aria-label="Sessions">
-      {any ? (
-        <h2>
-          <button className="list-toggle usage-toggle" aria-expanded={open} onClick={toggle}>
-            <span>Sessions</span>
-            <span className="muted usage-summary">
-              {rows.length > 0 && ` · ${rows.length} ${rows.length === 1 ? "session" : "sessions"}, ${cores.toFixed(1)} cores, ${size(mem)}`}
-            </span>
-            {queued.length > 0 && <span className="warn usage-summary"> · {queued.length} queued</span>}
-            <span className={`tool-chevron ${open ? "open" : ""}`}>
-              <Icon d={CHEVRON_RIGHT} size={11} />
-            </span>
-          </button>
-        </h2>
+      <h2>Sessions</h2>
+      {rows.length === 0 && queued.length === 0 ? (
+        <div className="muted small">No session is running anything.</div>
       ) : (
-        <h2>Sessions</h2>
-      )}
-      {!any && <div className="muted small">No session is running anything.</div>}
-      {any && open && (
         <table>
           <thead>
             <tr>
@@ -3585,6 +3678,11 @@ interface AccountActions {
   remove(id: string): void;
 }
 
+/** A host as a small card in the Hosts grid, like an automation's: its state,
+ *  CPU, memory and disk, one line for its sessions and a mark per engine.
+ *  Details opens the rest under it, as an automation's Runs do: the CPU
+ *  history, the sessions table and queue rule, each engine's accounts with
+ *  their logins, and Update or Remove for a remote host. */
 function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void; accountActions?: AccountActions }) {
   const { state, id, onRemove, onInstall, onLogin, accountActions } = props;
   const install = state.installs[id];
@@ -3593,17 +3691,27 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
   const host = status === "down" || status === "connecting" ? undefined : state.host[id];
   const sessions = Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
   const name = hostName(state, id);
-  const where = entry ? (entry.kind === "ssh" ? entry.destination : entry.url) : "";
+  const where = entry ? ((entry.kind === "ssh" ? entry.destination : entry.url) ?? "") : "This machine";
   const problem = entry && status === "down" ? explainHostError(entry) : null;
+  const engines = host ? state.engines[id] : undefined;
+  const accounts = accountsOn(state, id);
+  const glance = host ? sessionGlance(host, sessions) : null;
+  const [open, toggle] = useDetailsOpen(id);
   return (
     <section className="host-card" aria-label={name}>
       <div className="host-head">
         <span className={`dot host-dot-${status}`} aria-hidden="true" />
-        <h2>{name}</h2>
-        {entry && <Cloud size={14} />}
-        {where && <span className="muted small host-where">{where}</span>}
+        <h2 className="host-card-name" title={name}>
+          {name}
+        </h2>
+        {entry && <Cloud size={13} />}
         <span className="spacer" />
-        <span className={`small host-state-${status}`}>{HOST_STATE_LABEL[status]}</span>
+        <span className={`small host-state-${status}`} title={host?.pressure ?? undefined}>
+          {HOST_STATE_LABEL[status]}
+        </span>
+      </div>
+      <div className="muted small host-where" title={where}>
+        {where}
       </div>
       {install && (install.running || !install.ok || status !== "ok") && <InstallLog install={install} machine={name} />}
       {problem && !install?.running && !install?.ok && (
@@ -3627,35 +3735,70 @@ function HostCard(props: { state: State; id: string; onRemove?(): void; onInstal
       )}
       {status === "connecting" && <div className="muted small">Opening the SSH tunnel…</div>}
       {host && (
-        <>
-          <div className="stat-grid">
-            <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
-            <Stat
-              label="Memory"
-              value={(host.memUsed / host.memTotal) * 100}
-              big={`${gb(host.memUsed)} GB`}
-              detail={`of ${gb(host.memTotal)} GB`}
-              warn={host.memUsed / host.memTotal > 0.9}
-            />
-            <Stat
-              label="Disk"
-              value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
-              big={`${gb(host.diskUsed)} GB`}
-              detail={`of ${gb(host.diskTotal)} GB`}
-              warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
-            />
-          </div>
-          <Sparkline values={host.cpuHistory ?? []} />
-          <SessionUse hostId={id} host={host} sessions={sessions} />
-        </>
+        <div className="stat-grid">
+          <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
+          <Stat
+            label="Memory"
+            value={(host.memUsed / host.memTotal) * 100}
+            big={`${gb(host.memUsed)} GB`}
+            detail={`of ${gb(host.memTotal)} GB`}
+            warn={host.memUsed / host.memTotal > 0.9}
+          />
+          <Stat
+            label="Disk"
+            value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
+            big={`${gb(host.diskUsed)} GB`}
+            detail={`of ${gb(host.diskTotal)} GB`}
+            warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
+          />
+        </div>
       )}
       {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
-      {host && state.engines[id] ? (
-        <Engines engines={state.engines[id]} accounts={accountsOn(state, id)} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />
+      {engines ? (
+        <ul className="host-engines" aria-label={`Engines on ${name}`}>
+          {engineGlance(engines, accounts).map((e) => (
+            <li key={e.engine} className={`host-engine engine-${e.tone}`} title={e.title}>
+              <span className={`dot ${e.tone === "ok" ? "host-dot-ok" : e.tone === "warn" ? "host-dot-busy" : "host-dot-down"}`} aria-hidden="true" />
+              <span className="host-engine-label">
+                {e.label}
+                {e.note && <span className="host-engine-note"> · {e.note}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
       ) : (
         install?.ok && !install.running && <EngineSummary install={install} machine={name} />
       )}
-      {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
+      <div className="host-card-foot">
+        {glance && (
+          <span className="small host-sessions" title={`Sessions on ${name}: ${glance.text}${glance.queued ? `, ${glance.queued} queued` : ""}`}>
+            <span className="muted">{glance.text}</span>
+            {glance.queued > 0 && <span className="warn"> · {glance.queued} queued</span>}
+          </span>
+        )}
+        <span className="spacer" />
+        <button
+          className="btn-text host-more"
+          aria-expanded={open}
+          aria-label={`Details: ${name}`}
+          title={open ? "Hide the details" : "Sessions, engine accounts and logins"}
+          onClick={toggle}
+        >
+          Details
+          <span className={`tool-chevron ${open ? "open" : ""}`}>
+            <Icon d={CHEVRON_RIGHT} size={11} />
+          </span>
+        </button>
+      </div>
+      {open && (
+        <div className="host-details">
+          {host && <Sparkline values={host.cpuHistory ?? []} />}
+          {host && <SessionUse host={host} sessions={sessions} />}
+          {engines && <Engines engines={engines} accounts={accounts} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />}
+          {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
+          {!host && !onRemove && <div className="muted small">Nothing more until the first sample.</div>}
+        </div>
+      )}
     </section>
   );
 }
@@ -3726,7 +3869,7 @@ function Engines(props: {
             <div className="engine-row">
               <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
               <span>{ENGINE_LABEL[engine]}</span>
-              <span className="muted small">{engineStateText(st)}</span>
+              <span className="muted small">{stateText(st)}</span>
               {/* Either the install command or one action group sits at the right: a narrow row wraps the group whole instead of
                   leaving Add account at the left, and an empty group would share the free space with the install command. */}
               {!st.installed ? (
@@ -3775,14 +3918,6 @@ function Engines(props: {
   );
 }
 
-function engineStateText(st: EngineState): string {
-  if (!st.installed) return "not installed";
-  if (st.loggedIn === true && st.providers?.length) return `providers: ${st.providers.join(", ")}`;
-  if (st.loggedIn === true) return st.account ? `logged in as ${st.account}` : "logged in";
-  if (st.loggedIn === false) return "not logged in";
-  return st.error || "status unknown";
-}
-
 /** An added account under its engine: its login state, Log in and Remove
  *  (which asks for a second click, like removing a host). */
 function AccountRow({ account, state: st, onLogin, onRemove }: { account: AccountEntry; state?: EngineState; onLogin?(): void; onRemove?(): void }) {
@@ -3797,7 +3932,7 @@ function AccountRow({ account, state: st, onLogin, onRemove }: { account: Accoun
     <div className="account-row">
       <span className={`dot ${ready ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
       <span className="account-name">{account.name}</span>
-      <span className="muted small">{st ? engineStateText(st) : "checking…"}</span>
+      <span className="muted small">{st ? stateText(st) : "checking…"}</span>
       {st?.installed && (st.loggedIn !== true || addsProviders(account.engine)) && onLogin && (
         <button className="btn engine-login" aria-label={`Log in ${account.name}`} onClick={onLogin}>
           {addsProviders(account.engine) && st.loggedIn === true ? "Add provider" : "Log in"}
@@ -4011,31 +4146,33 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
         )}
       </header>
       <div className="scroll">
-        <div className="hosts-inner">
+        <div className="hosts-inner host-list">
           <MobileSetup mobile={state.mobile} />
           {adding && <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />}
-          <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
-          {state.hosts.map((h) => (
-            <HostCard
-              key={h.id}
-              state={state}
-              id={h.id}
-              onRemove={() => actions.removeHost(h.id)}
-              onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
-              accountActions={accountActions(h.id)}
-              onLogin={(engine) => setLogin({ host: h.id, engine })}
-            />
-          ))}
+          <div className="host-grid">
+            <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
+            {state.hosts.map((h) => (
+              <HostCard
+                key={h.id}
+                state={state}
+                id={h.id}
+                onRemove={() => actions.removeHost(h.id)}
+                onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
+                accountActions={accountActions(h.id)}
+                onLogin={(engine) => setLogin({ host: h.id, engine })}
+              />
+            ))}
+            {state.hosts.length === 0 && !adding && (
+              <button className="host-empty" onClick={() => setAdding(true)}>
+                <Icon d={CLOUD} size={16} />
+                <span>
+                  <strong>Run sessions on another machine</strong>
+                  <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
+                </span>
+              </button>
+            )}
+          </div>
           {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} account={login.account} onClose={() => setLogin(null)} />}
-          {state.hosts.length === 0 && !adding && (
-            <button className="host-empty" onClick={() => setAdding(true)}>
-              <Icon d={CLOUD} size={16} />
-              <span>
-                <strong>Run sessions on another machine</strong>
-                <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
-              </span>
-            </button>
-          )}
         </div>
       </div>
     </div>

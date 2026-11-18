@@ -168,8 +168,9 @@ defaults, ignoring the workflow's version settings in the uploaded bundle.
 
 Branch dispatch worked for the first signed build, without merging:
 [run 44207641656](https://github.com/giovaniif/switchyard/actions/runs/44207641656).
-The owner explicitly requires **no merge until they say so**; PR #183 remains
-a draft with auto-merge off. Do not merge to work around a dispatch problem,
+The initial betas were built while PR #183 was a draft under an owner merge
+hold. The owner subsequently explicitly approved merging it. Branch builds do
+not require merging. Do not merge to work around a dispatch problem,
 temporarily change an unrelated workflow, reuse another app's bundle ID or
 upload this app to another app record.
 

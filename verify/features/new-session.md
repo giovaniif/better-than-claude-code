@@ -34,8 +34,21 @@ session page with the prompt as the heading and the fake's reply "Echo: …".
 Read back: the daemon lists the session as idle, with a `yard/` branch.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-new from the page"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-new from the page"},{"expect":"css:.thread","text":"Echo: TEST-new from the page"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-new from the page"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-new from the page"},{"expect":"css:.thread","text":"Echo: TEST-new from the page"}]'
 yv state --expect '{"sessions":[{"title":"TEST-new from the page","status":"idle","engine":"codex","branch":"~yard/"}]}'
+```
+
+### long-prompt-titled-at-a-word
+A first line longer than 60 characters becomes a title cut at a word and
+marked with "…": the desktop header reads "TEST-a very long first prompt
+that becomes the title and…", not "…the title and kee". (It used to stop
+mid-word with no mark, so it read like a typo.)
+
+```sh
+for vp in desktop mobile; do
+  yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-a very long first prompt that becomes the title and keeps going '$vp'"}' --wait '{"op":"created"}' --save long_sid=sessionId
+  yv drive 'session:{{long_sid}}' --viewport $vp --steps '[{"expect":"css:.thread","text":"Echo: TEST-a very long"},{"expect":"role:heading:TEST-a very long first prompt"},{"shot":"long-title-'$vp'"},{"eval":"document.querySelector(\"h1\").textContent","equals":"TEST-a very long first prompt that becomes the title and…"}]'
+done
 ```
 
 ### empty-prompt-cannot-send
@@ -70,7 +83,7 @@ git -C "$R-TEST-base-wt" add TEST-base-only.txt
 git -C "$R-TEST-base-wt" -c user.name=TEST -c user.email=test@example.com commit -q -m "TEST-base only"
 git -C "$R" worktree remove --force "$R-TEST-base-wt"
 CUR="$(git -C "$R" branch --show-current)"
-yv drive new --viewport desktop --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"'"$CUR"'"},{"click":"css:button[title=\"Branch the worktree starts from\"]"},{"expect":{"css":".menu-item","hasText":"'"$CUR"'"},"text":"current"},{"fill":"label:Base branch","value":"TEST-ba"},{"expect":"css:.menu-item","count":1},{"click":{"css":".menu-item","hasText":"TEST-base"}},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"TEST-base"},{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"fill":"label:Message","value":"TEST-from the base branch"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-from the base branch"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"'"$CUR"'"},{"click":"css:button[title=\"Branch the worktree starts from\"]"},{"expect":{"css":".menu-item","hasText":"'"$CUR"'"},"text":"current"},{"fill":"label:Base branch","value":"TEST-ba"},{"expect":"css:.menu-item","count":1},{"click":{"css":".menu-item","hasText":"TEST-base"}},{"expect":"css:button[title=\"Branch the worktree starts from\"]","text":"TEST-base"},{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"fill":"label:Message","value":"TEST-from the base branch"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-from the base branch"}]'
 yv state --expect '{"sessions":[{"title":"TEST-from the base branch","status":"idle","branch":"~yard/"}]}'
 WT="$(yv state | jq -er '.sessions[] | select(.title=="TEST-from the base branch") | .cwd')"
 test -f "$WT/TEST-base-only.txt"
@@ -84,6 +97,17 @@ Enter does not take it: the chip keeps the folder it had.
 
 ```sh
 yv drive new --steps '[{"click":"role:button:work"},{"fill":"label:Folder","value":"{{work}}/TEST-no-such-folder"},{"expect":"css:.picker-empty","text":"No folder in"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"shot":"no-match"},{"press":"Enter"},{"expect":"css:.picker-empty","text":"TEST-no-such-folder"},{"press":"Escape"},{"expect":{"role":"button","name":"work","exact":true}}]'
+```
+
+### remembered-folder-that-is-gone-says-so
+Viewports: both
+The page reopens on the folder last used. When that folder was deleted since,
+the note under the chips says it no longer exists (not "Works in the folder
+itself") and Send stays disabled with a task typed, instead of failing only
+after Send. Found as patrol finding #171.
+
+```sh
+yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.cwd\",\"{{work}}/TEST-gone-later\");return 1})()","equals":1},{"reload":true},{"goto":"new"},{"expect":"css:.new-chips .bad","text":"no longer exists"},{"expect":"text:Works in the folder itself","visible":false},{"fill":"label:Message","value":"TEST-into a gone folder"},{"expect":{"role":"button","name":"Send","exact":true},"enabled":false},{"shot":"gone-folder"}]'
 ```
 
 ### refused-send-names-the-session-in-the-way
@@ -107,7 +131,7 @@ through New session. Once that task has started a session, the box is empty
 again.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-half a task"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo:"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":"TEST-half a task"},{"shot":"task-kept"},{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-half a task"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":""}]'
+yv drive new --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-half a task"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo:"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":"TEST-half a task"},{"shot":"task-kept"},{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-half a task"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":""}]'
 yv drive new --viewport mobile --steps '[{"press":"Escape"},{"fill":"label:Message","value":"TEST-task on the phone"},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo:"},{"click":"role:button:Open sessions"},{"click":{"css":".nav-row","hasText":"New session"}},{"expect":"label:Message","value":"TEST-task on the phone"},{"shot":"task-kept-mobile"}]'
 ```
 

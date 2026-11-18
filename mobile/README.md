@@ -7,9 +7,8 @@ new certificates or assuming the repository's secrets are the only source.
 An iOS shell around the **same live UI served by your yardd**. The editor,
 attachments, model/engine switching, approvals, queued messages, terminals,
 changes, pull requests, processes, hosts, accounts, connectors and automations
-use their existing implementation. Switchy will come through the host UI when
-that work lands; this branch does not duplicate or implement the other session's
-assistant. On narrow screens, **Workspace** opens the workspace tabs and its
+use their existing implementation. Switchy uses that same host UI, including
+its shared editor and voice controls. On narrow screens, **Workspace** opens the workspace tabs and its
 close button returns to the conversation.
 
 The native shell adds saved hosts, HTTPS connection checks, setup deep links,

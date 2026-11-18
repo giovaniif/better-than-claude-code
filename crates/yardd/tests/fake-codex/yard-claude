@@ -33,6 +33,10 @@
 // CLAUDE_CONFIG_DIR (`config=`, empty for the default account),
 // and one per one-shot `sessions` / `messages <id>` call.
 //
+// `usage` answers the plan limits the real one reads from Claude Code's usage
+// report, without a turn: 47% of 5 hours and 17% of the week, or 91% / 40%
+// when CLAUDE_CONFIG_DIR names an extra account. Logged as `usage config=…`.
+//
 // One-shot modes, like the real sidecar's, for importing Claude Code sessions:
 //   sessions        three TEST- sessions: two in FAKE_CLAUDE_CWD (else HOME),
 //                   one whose folder no longer exists
@@ -49,6 +53,20 @@ const out = (msg) => process.stdout.write(JSON.stringify(msg) + "\n");
 const emit = (event) => out({ type: "event", event });
 
 const mode = process.argv[2];
+if (mode === "usage") {
+  log(`usage config=${process.env.CLAUDE_CONFIG_DIR ?? ""}`);
+  const at = (s) => Math.floor(Date.now() / 1000) + s;
+  const extra = !!process.env.CLAUDE_CONFIG_DIR;
+  out({
+    usage: {
+      windows: {
+        five_hour: { utilization: extra ? 0.91 : 0.47, resetsAt: at(2 * 3600) },
+        seven_day: { utilization: extra ? 0.4 : 0.17, resetsAt: at(3 * 86400) },
+      },
+    },
+  });
+  process.exit(0);
+}
 if (mode === "sessions" || mode === "messages") {
   log(`${mode} ${process.argv[3] ?? ""}`.trim());
   const cwd = process.env.FAKE_CLAUDE_CWD || process.env.HOME || "/";
@@ -216,7 +234,7 @@ for await (const line of console) {
     continue;
   }
   if (msg.type === "start") {
-    log(`start pid=${process.pid} config=${process.env.CLAUDE_CONFIG_DIR ?? ""} resume=${msg.resume ?? ""}`);
+    log(`start pid=${process.pid} config=${process.env.CLAUDE_CONFIG_DIR ?? ""} resume=${msg.resume ?? ""}${msg.switchy ? " switchy=true" : ""}`);
     out({ type: "session", claudeSessionId: msg.resume ?? `fake-claude-${process.pid}` });
     // The shape the real sidecar sends (sidecar/yard-claude/src/usage.ts):
     // utilization is a fraction, resetsAt epoch seconds.
@@ -237,26 +255,27 @@ for await (const line of console) {
     steps.folded.push(String(msg.text ?? ""));
   } else if (msg.type === "user") {
     const text = String(msg.text ?? "");
-    if (text.includes("[steps]")) {
+    const behaviorText = text.startsWith("You are Switchy,") ? text.slice(text.lastIndexOf("\nQuestion: ") + 11) : text;
+    if (behaviorText.includes("[steps]")) {
       runSteps(text);
       continue;
     }
-    if (text.includes("[chart]")) {
+    if (behaviorText.includes("[chart]")) {
       runChart(text);
       continue;
     }
-    if (text.includes("[subagent]")) {
+    if (behaviorText.includes("[subagent]")) {
       runSubagent(text);
       continue;
     }
-    if (text.includes("[die]")) process.exit(1);
+    if (behaviorText.includes("[die]")) process.exit(1);
     const itemId = `text-${process.pid}-${++n}`;
-    if (text.includes("[stuck]")) {
+    if (behaviorText.includes("[stuck]")) {
       stuck = true;
       emit({ type: "assistant_delta", itemId, text: "Stuck" });
       continue;
     }
-    emit({ type: "assistant_message", itemId, text: `Echo: ${text}` });
+    emit({ type: "assistant_message", itemId, text: text.startsWith("You are Switchy,") ? "Scripted Claude Switchy answer [local:1]." : `Echo: ${text}` });
     emit({ type: "turn_completed", status: "completed" });
   } else if (msg.type === "mcp_reconnect") {
     log(`reconnect ${msg.server}`);

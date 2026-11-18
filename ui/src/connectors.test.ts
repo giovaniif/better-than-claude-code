@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { actionFor, CATALOG, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, summary } from "./connectors";
+import { actionFor, filterServers, CATALOG, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, summary } from "./connectors";
 import type { McpServer } from "./protocol";
 
 const s = (name: string, status: string, extra: Partial<McpServer> = {}): McpServer => ({ name, status, source: "user", tools: 0, appTools: 0, ...extra });
@@ -52,4 +52,19 @@ test("an added server is a plain name and https address", () => {
   expect(newServerProblem("ok", "https://a.example/a b")).toContain("https");
   expect(removable(s("x", "connected", { source: "user" }))).toBe(true);
   expect(removable(s("x", "connected", { source: "plugin" }))).toBe(false);
+});
+
+
+test("connected view hides unused connectors and setup failures", () => {
+  const list = [s("used", "connected"), s("unused", "needs-auth"), s("off", "disabled"), s("bad", "failed"), s("starting", "pending")];
+  expect(filterServers(list, "", "connected").map((x) => x.name)).toEqual(["starting", "used"]);
+  expect(filterServers(list, "", "available").map((x) => x.name)).toEqual(["unused", "off"]);
+  expect(filterServers(list, "", "failed").map((x) => x.name)).toEqual(["bad"]);
+  expect(filterServers(list, "", "all")).toHaveLength(5);
+});
+test("search matches readable service names and source, case insensitively", () => {
+  const list = [s("plugin:engineering:sentry", "needs-auth", { source: "plugin" }), s("claude.ai Datadog", "connected", { source: "claudeai" })];
+  expect(filterServers(list, "  SENTRY  engineering ", "available").map((x) => x.name)).toEqual(["plugin:engineering:sentry"]);
+  expect(filterServers(list, "claude.ai", "connected").map((x) => x.name)).toEqual(["claude.ai Datadog"]);
+  expect(filterServers(list, "sentry", "connected")).toEqual([]);
 });

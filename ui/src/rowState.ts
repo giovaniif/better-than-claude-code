@@ -2,15 +2,16 @@
 // not opened yet, failed, or quiet. "Answered" is per browser: the turn end
 // the user last had in front of them is kept in localStorage.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SessionMeta } from "./protocol";
 
-export type RowState = "working" | "approval" | "answered" | "failed" | "queued" | "idle" | "offline";
+export type RowState = "working" | "approval" | "unread" | "answered" | "failed" | "queued" | "idle" | "offline";
 
 export const ROW_LABEL: Record<RowState, string> = {
   working: "Running",
   approval: "Needs approval",
   answered: "Answered",
+  unread: "Unread",
   failed: "Failed",
   queued: "Queued",
   idle: "Idle",
@@ -18,11 +19,12 @@ export const ROW_LABEL: Record<RowState, string> = {
 };
 
 /** `seen`: the session's `turnEndedAt` when the user last had it open. */
-export function rowState(s: SessionMeta, seen: number, online: boolean): RowState {
+export function rowState(s: SessionMeta, seen: number, online: boolean, unread = false): RowState {
   if (!online) return "offline";
   if (s.status === "running") return "working";
   if (s.status === "needs_approval") return "approval";
   if (s.status === "queued") return "queued";
+  if (unread) return "unread";
   if (s.status === "error") return "failed";
   if (s.turnEndedAt !== undefined && s.turnEndedAt !== null && s.turnEndedAt > seen) {
     if (s.lastTurn === "completed") return "answered";
@@ -36,8 +38,8 @@ export type Seen = Record<string, number>;
 /** The map after the user saw `s`; the same object when nothing changed, so
  *  React skips the update. Sessions that are gone are dropped on the way. */
 export function markSeen(seen: Seen, s: SessionMeta, ids: Set<string>): Seen {
-  const end = s.turnEndedAt;
-  if (end === undefined || end === null || (seen[s.id] ?? 0) >= end) return seen;
+  const end = s.turnEndedAt ?? 0;
+  if ((seen[s.id] ?? 0) >= end) return seen;
   const next: Seen = {};
   for (const [id, at] of Object.entries(seen)) if (ids.has(id)) next[id] = at;
   next[s.id] = end;
@@ -67,13 +69,31 @@ const looking = () => document.visibilityState === "visible" && document.hasFocu
 
 /** Which sessions' answers the user has seen. The open session counts as
  *  seen while the window is in front; other windows follow through `storage`. */
-export function useSeen(sessions: Record<string, SessionMeta>, openId: string | null) {
+export function useSeen(sessions: Record<string, SessionMeta>, openId: string | null, restoring: string | null = null) {
   const [{ seen, since }, set] = useState(load);
   const open = openId ? sessions[openId] : undefined;
+  const visiting = openId ?? restoring;
+  const previous = useRef(visiting);
   const [front, setFront] = useState(looking);
+  const save = (next: Seen) => {
+    localStorage.setItem(KEY, JSON.stringify(next));
+    set({ seen: next, since });
+  };
+  const read = (id: string) => {
+    const session = sessions[id];
+    if (session) save(markSeen(seen, session, new Set(Object.keys(sessions))));
+  };
+  const unread = (id: string) => {
+    const next: Seen = {};
+    for (const [key, at] of Object.entries(seen)) if (sessions[key]) next[key] = at;
+    // -1 is an explicit unread mark, independent of the last turn's outcome
+    // and of the first-visit cutoff. A reload of the open chat preserves it.
+    next[id] = -1;
+    save(next);
+  };
   useEffect(() => {
     const update = () => setFront(looking());
-    const synced = (e: StorageEvent) => e.key === KEY && set(load());
+    const synced = (e: StorageEvent) => (e.key === KEY || e.key === null) && set(load());
     window.addEventListener("focus", update);
     window.addEventListener("blur", update);
     document.addEventListener("visibilitychange", update);
@@ -86,11 +106,17 @@ export function useSeen(sessions: Record<string, SessionMeta>, openId: string | 
     };
   }, []);
   useEffect(() => {
+    const changed = previous.current !== visiting;
+    previous.current = visiting;
     if (!open || !front) return;
+    if (seen[open.id] === -1 && !changed) return;
     const next = markSeen(seen, open, new Set(Object.keys(sessions)));
-    if (next === seen) return;
-    localStorage.setItem(KEY, JSON.stringify(next));
-    set({ seen: next, since });
-  }, [open?.id, open?.turnEndedAt, front]);
-  return (id: string) => Math.max(seen[id] ?? 0, since);
+    if (next !== seen) save(next);
+  }, [visiting, openId, open?.turnEndedAt, front]);
+  return {
+    seenAt: (id: string) => Math.max(seen[id] ?? 0, since),
+    isUnread: (id: string) => seen[id] === -1,
+    markUnread: unread,
+    markRead: read,
+  };
 }

@@ -39,6 +39,71 @@ pub fn sidecar_command(app: &App) -> Result<Command> {
     Ok(cmd)
 }
 
+/// How often each Claude account's plan limits are read without a turn.
+/// `YARD_CLAUDE_USAGE_EVERY_MS=0` turns it off (the tests do, but one).
+fn usage_every() -> Option<std::time::Duration> {
+    match std::env::var("YARD_CLAUDE_USAGE_EVERY_MS").ok().and_then(|v| v.trim().parse::<u64>().ok()) {
+        Some(0) => None,
+        Some(ms) => Some(std::time::Duration::from_millis(ms)),
+        None => Some(std::time::Duration::from_secs(10 * 60)),
+    }
+}
+
+/// Claude reports its limits only during a turn, so an account that has not
+/// run one showed none. This reads every Claude account's limits now and then
+/// with `yard-claude usage` (Claude Code's usage report, no prompt and no
+/// turn) and stores them like a turn's own report.
+pub async fn run_usage_refresh(app: Arc<App>) {
+    let Some(every) = usage_every() else { return };
+    loop {
+        let mut accounts = vec![crate::accounts::DEFAULT.to_string()];
+        accounts.extend(app.accounts.all().into_iter().filter(|a| a.engine == "claude").map(|a| a.id));
+        for account in accounts {
+            if let Err(e) = refresh_usage(&app, &account).await {
+                eprintln!("yardd: claude usage for {account}: {e:#}");
+            }
+        }
+        tokio::time::sleep(every).await;
+    }
+}
+
+/// Read one account's limits now (a new account, a fresh login), unless the
+/// refresh is turned off.
+pub fn refresh_usage_soon(app: &Arc<App>, account: &str) {
+    if usage_every().is_none() {
+        return;
+    }
+    let (app, account) = (app.clone(), account.to_string());
+    tokio::spawn(async move {
+        if let Err(e) = refresh_usage(&app, &account).await {
+            eprintln!("yardd: claude usage for {account}: {e:#}");
+        }
+    });
+}
+
+pub async fn refresh_usage(app: &Arc<App>, account: &str) -> Result<()> {
+    let mut cmd = sidecar_command(app)?;
+    cmd.arg("usage").stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::null()).kill_on_drop(true);
+    if let Some(dir) = app.accounts.config_dir("claude", account)? {
+        cmd.env(crate::accounts::env_var("claude"), dir);
+    }
+    let out = tokio::time::timeout(std::time::Duration::from_secs(60), cmd.output())
+        .await
+        .map_err(|_| anyhow::anyhow!("no answer within 60 s"))?
+        .context("could not start the Claude sidecar")?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.lines().rev().find(|l| l.trim_start().starts_with('{')).unwrap_or("");
+    let v: Value = serde_json::from_str(line).context("no usage line")?;
+    if let Some(e) = v["error"].as_str() {
+        bail!("{e}");
+    }
+    // An account with no plan limits (an API key) has none to show.
+    if v["usage"]["windows"].is_object() {
+        app.set_usage("claude", account, v["usage"].clone());
+    }
+    Ok(())
+}
+
 pub async fn create(app: &Arc<App>, sid: &str) -> Result<()> {
     spawn(app, sid, None)
 }
@@ -166,6 +231,7 @@ fn spawn(app: &Arc<App>, sid: &str, resume: Option<String>) -> Result<()> {
     let _ = tx.send(
         json!({
             "type": "start",
+            "switchy": crate::switchy::internal(sid),
             "cwd": meta.cwd,
             "model": meta.model,
             "effort": meta.effort,

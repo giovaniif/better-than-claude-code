@@ -26,7 +26,7 @@ as a thumbnail, and reaches the engine as a localImage.
 
 ```sh
 printf 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' | base64 -d > "$(v work)/TEST-dot.png"
-yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"upload":"input","files":["{{work}}/TEST-dot.png"]},{"expect":"css:.attachments","text":"TEST-dot.png"},{"fill":"label:Message","value":"TEST-look at this"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-look at this"},{"expect":"role:img:TEST-dot.png"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Fake Fast","exact":true}},{"press":"Escape"},{"click":"role:button:work"},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"upload":"input","files":["{{work}}/TEST-dot.png"]},{"expect":"css:.attachments","text":"TEST-dot.png"},{"fill":"label:Message","value":"TEST-look at this"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-look at this"},{"expect":"role:img:TEST-dot.png"}]'
 grep -q localImage "$(v fake)/turn-inputs.jsonl"
 ```
 

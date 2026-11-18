@@ -224,15 +224,22 @@ describe("stripGroups", () => {
       ],
       ["claude"],
     );
-    expect(pick(groups)).toEqual(["claude/Work@server"]);
+    // One Work, from the later report; Default is listed beside it, with nothing reported.
+    expect(pick(groups)).toEqual(["claude/-@local", "claude/Work@server"]);
+    expect(groups[0].reported).toBe(false);
   });
 
-  test("an account the host no longer lists, or one with no data yet, shows nothing", () => {
+  test("an account the host no longer lists shows nothing; one with no data yet is listed as not reported", () => {
     const groups = stripGroups(
       [{ host: "local", usage: { accounts: { gone: claude(0.5, NOW + HOUR) } }, accounts: [{ id: "a1", engine: "claude", name: "Work" }] }],
       ["claude"],
     );
-    expect(groups).toEqual([]);
+    // Default is listed next to it, also as not reported.
+    expect(groups.map((g) => [g.engine, g.account, g.reported])).toEqual([
+      ["claude", null, false],
+      ["claude", "Work", false],
+    ]);
+    expect(metersFor("claude", groups[1].usage)).toEqual([]);
   });
 
   test("no hosts shown, no rows", () => {

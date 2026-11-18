@@ -74,6 +74,16 @@ Session status (`idle`, `running`, `needs_approval`, `queued`, `error`) is deriv
 - Codex errors with `willRetry` ("Reconnecting... 2/5") are dropped; a turn that fails still ends with its error.
 - The thread is laid out like T3 Code's work log (`ui/src/thread.ts`): tool calls and thinking between messages fold into a one-line group ("Read 3 files, ran 2 commands"); while a turn runs, only its latest step shows, under "Working for 12s"; a finished turn folds all of its work into "Worked for 1m 12s" above its answer. A thought shows as one line, its bold heading or first sentence, and opens to the full text.
 
+**Chat diagrams.** Markdown fences labelled `mermaid` automatically show a
+diagram once the fence closes, with a Show source / Show diagram toggle.
+`ui/src/markdown.ts` recognises backtick and tilde fences, including open
+fences during streaming; `MermaidDiagram.tsx` lazy-loads the bundled Mermaid
+renderer. Invalid, empty and incomplete diagrams keep their source visible.
+Rendering uses strict security, disabled HTML labels and protected security
+and CSS settings. The result is a blob-backed SVG image, never inline HTML or
+SVG in the chat DOM; object URLs are revoked on changes and unmount. Diagrams
+fit the thread width on mobile. No service or engine-specific event is needed.
+
 ## Persistence
 
 yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard` when that is unset.
@@ -82,7 +92,7 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - Streamed `assistant_delta`s are not saved. The final `assistant_message` has the full text.
 - On startup yardd loads every session. One that was mid-turn gets an `error` ("yardd restarted during this turn.") and a failed `turn_completed`.
 - A restored session resumes on its next message. Codex: `thread/resume` with the saved thread id. Claude: a new sidecar started with the SDK `resume` option and the saved Claude Code session id.
-- `session.delete` stops the session's engine and terminal and removes it from memory and the database. Git worktrees are kept.
+- `session.delete` stops the session's engine and terminal and removes it from memory and the database. Git worktrees are kept (until merged, see Worktrees).
 
 ## Engines
 
@@ -99,8 +109,9 @@ yardd saves every session in SQLite: `yard.db` in `$YARD_DATA_DIR`, or `~/.yard`
 - `canUseTool` carries approvals. `setModel()` switches model mid-session. `interrupt()` stops a turn.
 - Effort is `low`, `medium`, `high`, `xhigh`, `max`. It is set at session start; changing it mid-session goes through `applyFlagSettings` (not wired yet).
 - `rate_limit_event` describes ONE window per event (`rateLimitType`: `five_hour`, `seven_day`, `seven_day_opus`, `seven_day_sonnet`, ...) with `utilization` (a fraction) and `resetsAt` (epoch seconds); some CLI builds send them all as `unifiedWindows`. The sidecar (`src/usage.ts`, `mergeUsage`) folds events into `usage.claude = { status, windows }`, so a five-hour event does not wipe out the weekly one. yardd saves the last usage in `usage.json` in the data dir, so the Claude meters survive a restart; each window carries `resetsAt`, so one that reset meanwhile reads as unknown. (The old mapping read only `unifiedWindows`, which the SDK's types do not have.)
+- **Limits without a turn.** Claude reports `rate_limit_event`s only during a turn, so an account that had not run one showed no limits. yardd now reads every Claude account's limits (Default and each added one, with its `CLAUDE_CONFIG_DIR`) at start, every 10 minutes, when an account is added and after it logs in, with `yard-claude usage`: a Claude Code with no prompt, asked for its usage report (the SDK's `usage_EXPERIMENTAL_MAY_CHANGE_DO_NOT_RELY_ON_THIS_API_YET`, what `/usage` shows; no model call). `fromUsageReport` (`sidecar/yard-claude/src/usage.ts`) maps its `rate_limits.limits` to the same windows: `session` is `five_hour`, `weekly_all` `seven_day`, a model's `weekly_scoped` `seven_day_<model>`. An SDK without the call reports nothing and the turn's own events still count. `YARD_CLAUDE_USAGE_EVERY_MS` sets the interval (`0` turns it off; the daemon tests do, but one).
 
-**Plan usage in the UI.** `ui/src/usage.ts` turns either engine's shape into meters (5-hour, week, per-model weeks; amber above 70%, red above 90%; "resets in 2 h 10 min"). They show in the model picker's header and in a strip above the host rows in the sidebar. The strip reads every host the sidebar shows (see Sidebar), so Claude limits reported only by a remote host where the Claude sessions run still show: each engine and account once (`stripGroups` in `usage.ts`; an account is matched across hosts by engine and name, since each host gives it its own id), from the shown host whose report is newest by its own figures (a later reset time, then more used, since use only grows inside a window), else the first host listed. A login is taken to be the same subscription on every machine. An added account gets a line with its name above its meters ("Claude · Work"). The picker opens on the current engine and folds the other into one row; on narrow screens it is a sheet over the window's bottom. No context-window meter: the SDK's `getContextUsage` is a control request per turn and would need a per-session event through yardd's log, which could not be proven without a real Claude turn; the result's `usage` is per turn, not the context size.
+**Plan usage in the UI.** `ui/src/usage.ts` turns either engine's shape into meters (5-hour, week, per-model weeks; amber above 70%, red above 90%; "resets in 2 h 10 min"). They show in a strip above the host rows in the sidebar, where each line's tooltip says when it resets; the model picker shows none (it shows models and, where an engine has more than one account, which account they run on, "Default account"). The strip reads every host the sidebar shows (see Sidebar), so Claude limits reported only by a remote host where the Claude sessions run still show: each engine and account once (`stripGroups` in `usage.ts`; an account is matched across hosts by engine and name, since each host gives it its own id), from the shown host whose report is newest by its own figures (a later reset time, then more used, since use only grows inside a window), else the first host listed. A login is taken to be the same subscription on every machine. Where an engine has more than one account, each gets a line with its name above its meters, Default included ("Claude · Default", "Claude · Work"), and an added account no host has reported limits for yet is listed as "No limits reported yet" rather than left out. Effort is a chip of its own next to the model's (`EffortPicker`), with a menu of the chosen model's efforts; a model without efforts has no chip. The model picker opens on the current engine and folds the others into one row each; on narrow screens it is a sheet over the window's bottom. No context-window meter: the SDK's `getContextUsage` is a control request per turn and would need a per-session event through yardd's log, which could not be proven without a real Claude turn; the result's `usage` is per turn, not the context size.
 - It runs on the CLI's own login (`apiKeySource: none`).
 - Never parse `~/.claude/projects/*.jsonl`. Use the SDK's `listSessions` and `getSessionMessages`.
 
@@ -146,7 +157,7 @@ Claude switches at once with `setPermissionMode` (the sidecar always passes `all
 - **Queue:** a new session waits (status `queued`) while 1-minute load is above the core count or free memory is under `YARD_MIN_FREE_GB` (default 2). One queued session starts per sample once there is room. "Start anyway" skips the wait. Queued sessions survive a restart.
 - **Processes tab:** `session.procs { sessionId }` answers `session.procs { sessionId, procs }`, the session's processes from the same sample (so up to 3 s old): `pid`, `ppid`, `name`, `cmd` (at most 400 characters), `cpu` (percent of one core), `memBytes`, `ageSecs`, `start` (seconds since the epoch), `origin` (`agent` for the sidecar tree or a Codex command, `terminal` for a shell) and `engine` (the engine's own process: a Claude sidecar, or the sidecar's child whose name or command line says `claude`, which is the CLI the SDK starts). It is asked for, not broadcast, and routes through the hub like any session op. The tab (`ProcPane`, next to Changes, Terminal and Pull request, so hidden below 1100 px) asks when opened and every 3 s while visible, and draws the tree with each command line shortened. An older remote yardd answers "unknown op": the tab stays on "Loading…".
 - **Stopping a process:** `session.kill { sessionId, pid, start?, signal: "term"|"kill", tree? }` answers `session.killed { sessionId, pid, signal, tree, result, reason?, running }` (and the request's `ref`). yardd does not trust the pid: it reads the process table again at that moment, works out every session's tree from it the same way as the sample, and refuses (`result: "refused"` with a `reason`, not an error) pid 0 or 1, its own pid, any engine process (a Claude sidecar or its CLI, a Codex app-server or ACP agent, which other sessions may share; these are never in the tab's reach, the session's Stop and Delete end them), a pid that is not in this session's tree now, a pid another session lists too, and a `start` that differs from the listed one (the pid was reused). It signals from that same read, then checks every 100 ms whether the processes are gone (a zombie counts as gone) for up to 3 s after SIGTERM or 2 s after SIGKILL: `killed`, or `running` with the pids still alive. Killed pids are dropped from the cached list so the next `session.procs` leaves them out. `tree: true` signals the process and everything below it in the session's list, children before parents in one pass with no pause between, so a parent waiting on a child has no time to start a replacement. Not by process group: a command that did not start its own group shares the one of whatever started it, which can be the engine, and the list is what was checked. Only `term` and `kill` exist; anything else, a missing pid or an unknown session is an error. It routes through the hub like any session op; an older remote answers `unknown op`, which the row shows as that host needing Update Switchyard. The tab offers each row a Stop (×, shown on hover, always on touch) that asks for a second click, with "Stop with children" when the row has children; a row still running after SIGTERM offers "Force kill", also confirmed. The engine's rows offer nothing. The tab refreshes the list after each answer. Known limit: a Codex or ACP child is matched to a session by folder and start time (above), so a helper the shared agent starts in that folder while a command runs there would look like the session's.
-- Not built: worktree disk sizes with cleanup.
+- Not built: worktree disk sizes. Merged worktrees are swept (see Worktrees).
 
 ## Remote hosts
 
@@ -159,6 +170,7 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 - An `ssh` host gets one `ssh -N -L` tunnel shared by all clients, on a free loopback port, restarted with backoff up to 30 s and killed when the host is removed or yardd stops. The destination is passed after `--` and may not start with `-`.
 - A `direct` host is a plain `ws://` URL, for local testing.
 - Remote sessions stay listed but offline while their host is down.
+- **The Hosts page** (since 2026-11-17) is a grid of small cards like the Automations page (`auto-fill`, at least 280 px; one column below 700 px), this machine first, then the remotes in `hosts.json` order, with "Run sessions on another machine" as a dashed tile while there is no remote. A card shows what reads at a glance: a dot and the state (Healthy, Under pressure with yardd's reason in the tooltip, Offline, Connecting), where it is (`This machine`, the SSH destination or URL), CPU, memory and disk, a mark per engine (green ready, amber with "not logged in" or "N accounts not logged in", grey not installed; `engineGlance()` in `ui/src/hosts.ts`), and in the footer one line for its sessions (`sessionGlance()`: `2 sessions, 1.3 cores, 512 MB · 1 queued`). An offline host's problem box, with Install Switchyard, and a running install's log stay on the card. **Details** in the footer opens the rest under the card, as an automation's Runs do: the CPU sparkline, the sessions table and queue rule, each engine with its accounts (Log in, Add provider, Add account, Remove) and Update Switchyard or Remove host. Which cards are open is per browser (`yard.hosts.detailsOpen`, host ids); closed by default. "Add host" opens its form above the grid.
 - **The web version as a host:** its compose file publishes the container's 47717 on the server's loopback, so an `ssh` host for that server reaches the same yardd as the web page. The installer refuses to install over a yardd it did not set up.
 - **Install from the app:** when the ssh tunnel is up but no yardd answers behind it, the host reports `noDaemon` and its card offers "Install Switchyard". The hub runs `scripts/remote-install.sh` (compiled into yardd) over the host's ssh as `bash -s -- <port>`, streaming each line to every client as `host.install`. The script downloads `switchyard-linux-{x64,arm64}.tar.gz` from the `latest` release (built by `.github/workflows/linux-host.yml`), swaps it into `~/.local/share/switchyard`, runs yardd as a systemd user service with lingering (or detached where there is no user systemd), checks `/health`, and reports whether `claude` and `codex` are installed and logged in, and `opencode` and `grok` where installed (`@@engine` lines). The same card offers "Update Switchyard" on a connected SSH host. `YARD_SSH` and `YARD_RELEASE_URL` exist for the tests.
 - `scripts/install-host.sh` builds and installs from a checkout instead, for development.
@@ -193,9 +205,26 @@ Scheduled work, built into yardd (`crates/yardd/src/automations.rs`, UI in `ui/s
 
 ## Sidebar
 
+- **Go to** (`ui/src/NavigationPalette.tsx`, search in `navigation.ts`): Cmd-K
+  opens a session and page palette from anywhere, including the composer and
+  terminal (Ctrl-K on non-Mac platforms). The Switchyard heading opens it too.
+  Search matches title, engine, host, folder, branch and group, including
+  archived sessions and automation runs; an empty search shows the eight most
+  recent sessions the sidebar lists (no archived sessions or runs) and the
+  pages. Arrow keys select, Enter opens, Escape closes and
+  returns focus. Pages include New session, Automations, Connectors, Settings,
+  Hosts and Import; Import opens the existing dialog.
+- **Mac app menu:** Settings… (Cmd-,), Import Sessions… and Go to… (Cmd-K)
+  live under Switchyard. The shell dispatches fixed `switchyard:navigate`
+  DOM events and advertises `__SWITCHYARD_APP_MENU__` during webview setup.
+  Only shells advertising that capability hide Settings and Import in the
+  sidebar, so browsers and older shells keep working. No extra IPC permission
+  is granted to the loopback page.
+
 - Each session row has a menu (the … button, or right-click): Pin, Move to group…, Remove from group, Archive or Restore, and Delete, which asks once and, for a worktree session, offers to remove the worktree too. `session.update { pinned?, archived?, group? }` stores the flags and the group name in the session's metadata, so every window and the web version agree, and they survive restarts; remote sessions route through the hub like every session op. Archiving unpins. `group` is a trimmed name (max 60 characters); null or blank clears it, and leaving the field out leaves it alone.
 - **Drag and drop** (native HTML5, no library): a row dragged onto a group (its header or rows) moves into it, onto the ungrouped Sessions rows leaves its group, onto Pinned pins it. A group or Sessions drop also unpins, since those sections only show unpinned sessions. `dropUpdate` in `ui/src/sidebarDrop.ts` turns a drop into one `session.update { pinned?, group? }`, or nothing when the session is already there; such a section refuses the drop, so the cursor says no and nothing lights up. The dragged row dims; the section under the pointer is highlighted; a collapsed group opens after 600 ms over it; with no ungrouped rows a "Drop here to remove from group" slot appears while dragging; Escape cancels (the browser's own). The drag carries the session id as `application/x-yard-session`. Archived rows and rows on an unreachable host are not draggable, like the menu. No reordering: order comes from creation and activity and is not stored. Touch has no HTML5 drag, so in the phone drawer (below 700 px) rows are not draggable and the … menu is the way; it is also the keyboard path. The Mac app turns off Tauri's own drop handler (`disable_drag_drop_handler`), which is what lets drags inside the page work.
 - Groups have no record of their own: a group exists while a session names it. The sidebar lists Pinned, then ungrouped sessions (creation order), then one collapsible section per group (sorted by name, newest activity first inside; `sidebarLayout` in `store.ts`). Pinned and archived sessions are not shown inside groups. A group header shows name, count and chevron; its menu renames or ungroups every session that carries the name, archived ones included. Which groups are collapsed is per browser (`yard.groups.collapsed` in localStorage).
+- **Mark as unread/read** in a session row’s menu persists per browser in `yard.seen` (`-1` is an explicit unread mark). An unread chat gets a blue dot, bold title and Unread label. Opening it deliberately or choosing Mark as read clears it; reloading an already open chat preserves the explicit mark. Running, approval, queued and offline states keep their priority. Other windows follow through `storage`.
 - **Row marks** (`ui/src/rowState.ts`): a turning ring while running, an amber "!" that breathes while it waits for approval, a blue dot with a bold title and "Answered" for a finished turn not opened yet, red for a failure (live, or an unseen failed turn), a hollow ring when idle; shapes differ so they read without color. yardd stamps every session with `turnEndedAt` and `lastTurn` (`completed`, `failed`, `interrupted`) when a turn ends. Which answers were seen is per browser (`yard.seen` in localStorage, the `turnEndedAt` last had open while the window was in front; other windows follow through `storage`). Turns that ended before the browser first kept track (`yard.seen.since`) count as seen, and a stopped turn never stands out.
 - Archived is a dock under the scrolling list, just above the host rows, so it never scrolls away. It is shown whenever something is archived, collapsed by default; opened, its rows expand upward in a list with its own scroll (max 40% of the window height, at most 320 px). Archived sessions still open and run.
 - The sessions sidebar and the workspace pane are resizable; widths are per browser.
@@ -231,13 +260,17 @@ More than one login per engine on a host, for example a personal and a company C
 - `engines.status` answers `{ engines: { claude, codex, opencode, grok }, accounts: { <id>: state } }`: Default under `engines`, the added ones by id. Adding or removing an account triggers a fresh answer.
 - `session.create` takes `account` (an id of that engine; Default when left out) and checks it. It is saved in the session's metadata (`account`, `default` for older rows), so resume after a restart and every later turn use the same account: the Claude sidecar is started with the account's `CLAUDE_CONFIG_DIR`, and the session's Codex thread lives on that account's app-server (a thread is only known to the `CODEX_HOME` that made it). **The account cannot be changed mid-session**; start a new session instead.
 - A hand-off starts a session on another engine, so the source's account does not carry over: it runs on the target engine's Default unless `session.handoff` names an `account` of that engine (the UI does not offer one yet).
-- **Usage is per account**: Default's limits stay at `usage.claude` and `usage.codex`; an added account's are at `usage.accounts[<id>]` in the same shape as its engine's. The model picker shows the limits of the account picked for each engine (a session's own account inside a session); the sidebar strip shows Default's and every added account's, from the hosts the sidebar shows. Codex model lists are loaded from Default's app-server and shared; so are Grok's (Default's agent) and OpenCode's (Default's providers, so an added OpenCode account with other providers still sees Default's list).
+- **Usage is per account**: Default's limits stay at `usage.claude` and `usage.codex`; an added account's are at `usage.accounts[<id>]` in the same shape as its engine's. The sidebar strip shows Default's and every added account's, from the hosts the sidebar shows; the model picker names the account picked for each engine (a session's own account inside a session). Codex model lists are loaded from Default's app-server and shared; so are Grok's (Default's agent) and OpenCode's (Default's providers, so an added OpenCode account with other providers still sees Default's list).
 - **UI.** The Hosts page lists each engine's added accounts under it with their login state, Log in and Remove (a second click confirms), and **Add account**. The model picker shows an account row under an engine only when it has more than one account, and the trigger names the account then. The session header and the sidebar row name the account, again only where the engine has a choice (or the session is not on Default).
 - Not built: moving a session to another account, per-account models, logging out without removing.
 
 ## Worktrees
 
 Every new session in a git repository with at least one commit gets its own branch and worktree at `<data dir>/wt/<repo>/<branch>` (`~/.yard/wt` by default); there is no switch for it. A folder outside a repository, or in one with no commits, runs in place, and the session says so in a note. Both engines share this layout.
+
+- **Host-card alignment:** closed cards stretch to the same height within a row and keep their footers at the bottom. Engine marks have two fixed columns with truncating login notes. Opening Details lets cards grow independently.
+
+- **New-session defaults:** the last used host, source project, model and effort are kept per browser (`ui/src/sessionDefaults.ts`). New sessions and reloads restore them, including remote hosts. Projects and model choices are kept per host; replies and model/effort changes in existing sessions update the defaults too. Model catalogs validate saved models and efforts once loaded. A configured host that is temporarily offline stays selected with Send disabled; a removed host falls back to local.
 
 - **Folder picker:** a button under the prompt box, next to the host and base branch buttons. It lists recent folders (recent picks, then sessions' repositories), browses the chosen host's folders as a path is typed (`fs.dirs`, routed through the hub like `git.branches`), and in the desktop app opens the Finder dialog (Tauri dialog plugin; the capability lets only the loopback page call `dialog:allow-open`).
 
@@ -246,6 +279,7 @@ Every new session in a git repository with at least one commit gets its own bran
 - The worktree is made before the session. If `git worktree add` fails, nothing else runs and no session exists.
 - **Setup:** after a successful add, yardd runs `<data dir>/setup/<repo>.sh` if it exists, else `.yard/worktree-setup.sh` from the repo, with bash in the new worktree (`YARD_REPO`, `YARD_WORKTREE`, 5 minute limit). This is where `node_modules` and `.env` get linked. If it fails, yardd removes that worktree and branch and creates no session. It never runs in the original checkout.
 - **Removal:** deleting a worktree session offers "Delete and remove worktree". It runs `git worktree remove`, never forced, and is refused if anything is uncommitted or untracked, or another session still uses the folder. The branch goes with `git branch -d`, which keeps unmerged branches.
+- **Merged worktrees go by themselves,** for every repository, with no setting (`sweep.rs`). Every 10 minutes (first pass a minute after start; `YARD_WORKTREE_SWEEP_SECS` changes it, `0` turns it off) yardd looks at each linked worktree under `<data dir>/wt/<repo>/`, whether a session made it or not. One goes when it is clean (no changed or untracked files), no session in it is running, waiting for approval or queued, no process has its current folder inside it (a terminal, a dev server; an idle Claude session's own CLI does not count and is stopped first), and `gh pr list --state merged --search <HEAD>` returns a PR whose `headRefOid` is exactly HEAD, so a branch with commits after the merge stays. Then `git worktree remove` (never forced) from the main checkout and `git branch -D`: a squash merge leaves the branch unmerged to git, and GitHub keeps the PR's head commit. Each session that ran there gets a note ("Worktree and branch … removed: pull request #N was merged."); its conversation stays. A repository without GitHub, or a host without a logged-in `gh`, is never swept.
 - **One writer per folder:** a session without a new worktree is refused while another session in the same folder is running, waiting for approval or queued.
 - Uncommitted changes in the original checkout are not carried over.
 - Files a setup script creates count as untracked unless gitignored, so they block removal.
@@ -318,7 +352,7 @@ The right pane has a Pull request tab.
 
 Both CLIs already load every MCP server their login and config give them: claude.ai connectors (Datadog, Sentry, ... as connected on claude.ai), plugins, `~/.claude.json`, project `.mcp.json`; Codex's `config.toml` and ChatGPT apps. Sessions get them with no work from Switchyard. What was missing is seeing which ones work and signing them in, since a server that needs sign-in just fails inside a turn. `crates/yardd/src/mcp.rs`, UI `ui/src/ConnectorsPage.tsx`.
 
-- **The page** (`#/connectors`, plug row in the sidebar) lists per online host, per engine account, every server: name, source, state (`connected`, `needs-auth`, `failed` with its error, `pending`, `disabled`), tool count, and whether it has widgets.
+- **The page** (`#/connectors`, plug row in the sidebar) inspects one selected host and engine account on demand. Connected is the default; unused entries stay under Available, and failures under Not working. All shows every status. Search matches service names and sources, with at most eight rows per page. Rows show name, source, state, tool count and widgets. A sign-in stays visible through completion until dismissed, and adding a connector reveals its sign-in even outside the current filter.
 - **Claude:** yardd keeps one `yard-claude connectors <home>` per account (the account's `CLAUDE_CONFIG_DIR`), started on demand and stopped after 10 idle minutes. It runs Claude Code with a prompt stream that never yields, so no turn runs and no usage is spent (checked on claude 2.1.325: all servers settle in about 4 s). It answers `mcpServerStatus()`; Connect is the SDK's `mcpAuthenticate` (not in the typed API, but in `core.mjs` and served by the CLI as `mcp_authenticate`): a claude.ai connector gives a claude.ai page and no callback, so the process re-dials it every 4 s until it reads `connected`; any other OAuth server redirects to `http://localhost:<port>/callback` on the host, which the CLI serves. From a browser on another machine that page fails to load, so its address is pasted back and goes to `mcpSubmitOAuthCallbackUrl`. Project `.mcp.json` servers are per folder, so the page (run in the home folder) does not list them.
 - **Codex:** the account's app-server: `mcpServerStatus/list` (`authStatus: notLoggedIn` reads as needs sign-in), `app/list` for ChatGPT apps (Connect links to the app's page), `mcpServer/oauth/login`, and `mcpServer/oauthLogin/completed`. Codex redirects to `http://127.0.0.1:<port>/callback` and has no call to hand it an address, so yardd makes that GET itself on the host. Only a loopback `http://` address with a port is accepted.
 - **After a sign-in** yardd broadcasts `mcp.auth done`, lists again, and sends `mcp_reconnect` to every running Claude sidecar of that account, so the server works in open sessions without a restart. A Claude login of the account drops its connectors process (it holds the old login's list); removing the account does too.
@@ -400,3 +434,98 @@ Next:
 - ACP's `session/resume` and `configOptions` are recent; Grok's ACP has `x.ai/` extensions and changes with its near-daily releases.
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
+
+## Saved launch defaults
+
+Settings offers separate defaults for New sessions and Switchy, using the shared
+host/model/effort pickers. `launchDefaults.ts` stores explicit `{ host, choice }`
+preferences in `yard.defaults.sessions` and `yard.defaults.switchy` in this browser.
+One-off selections and `rememberSession` never overwrite them. New-session models
+are validated against the selected host, retaining the intended default while
+catalogs load; configured offline hosts remain selected and cannot silently run
+on another host. Removed hosts/models fall back to available choices without
+rewriting the saved preference. Switchy's model runs locally; its default host
+selects context scope and may be All hosts. Clearing a default restores the prior
+last-used behavior. Existing sessions are unaffected.
+
+## Switchy
+
+`#/assistant` is Switchy, a persistent quick-question conversation separate from
+coding sessions. It uses the session `Composer` and `ModelPicker` components, including auto-grow,
+dictation, hands-free voice, draft retention, effort/access pickers and the send control.
+The shared host picker sits below the composer, as on New session;
+attachments remain disabled because the Switchy protocol accepts text only. Context
+opens the host rail. Model and host scope are independent: inference runs on the
+hub's default Claude or Codex account; evidence comes from Local, a selected
+remote, or All hosts. Other engines are omitted until a supported tool restriction
+path is implemented. No worktree, sidebar session or engine resume is created.
+
+- `switchy.get` returns `switchy.state`; `switchy.send { text, engine, model,
+  scope, permission, effort, ref }` acknowledges `switchy.accepted` and broadcasts versioned state as
+  the answer arrives. `switchy.stop` cancels the current question. One question
+  runs at a time across windows; concurrent submissions are refused. Host pressure
+  accepts a queued question, starts it when capacity returns, and exposes Stop and
+  `switchy.startNow` (the explicit Start anyway override). Waiting does not consume
+  the answer timeout. The UI keeps
+  a rejected question in the composer. Reload/reconnect fetches the conversation.
+- `crates/yardd/src/switchy.rs` owns `switchy.json` in the data directory. Atomic
+  writes persist the question before inference, its evidence, and the completed
+  answer/error. A restart marks unfinished work interrupted. The UI receives the
+  latest 50 exchanges; older exchanges remain available for query-based retrieval.
+- Every question builds a fresh input capped at 32,000 UTF-8 bytes: recent
+  exchanges and matching older exchanges, at most 16,000 bytes of selected
+  evidence, coverage notes and the question. There is no growing engine context
+  or background model summarization. Answers are capped at 32,000 bytes and the
+  complete operation times out after three minutes. Sources are untrusted records,
+  with host, stable per-snapshot ID, timestamp, text and availability, displayed
+  in expandable disclosures. No source is interpreted as HTML.
+- `switchy_context.rs` collects read-only host resources, CPU-sorted process
+  names (not arguments/environment), services, Docker container status/ports,
+  listening TCP ports, recent saved bash/zsh history and relevant session
+  passages. It discovers repositories from session folders, the workspace,
+  common home work folders, and optional `YARD_CONTEXT_ROOTS` (OS path-list
+  syntax). Up to four relevant repos supply status, recent commits and matching
+  tracked source/documentation lines. Commands use fixed programs/arguments,
+  never a shell or model-provided command. Each command has a three-second
+  timeout and an 8 KB output cap; evidence passages are capped further. Obvious
+  credential-bearing lines are omitted. This is not guaranteed secret detection.
+- `switchy.context { query, ref }` collects only the receiving host. The hub uses
+  daemon-owned WebSockets through configured remote connections, independently
+  of the browser, with a 20-second deadline and up to 16 remote hosts. Sources
+  are merged round-robin under a global byte budget. Offline hosts, old daemons,
+  denied reads and omitted evidence are explicitly reported. A remote hub's own
+  Switchy broadcasts are never substituted for this hub's conversation.
+- Each host keeps up to 2,000 distinct observations in `switchy-context.db`
+  (SQLite FTS5), searches earlier observations by question, and records new
+  observations on demand. This cache is not continuous monitoring. Session
+  history is searched from its canonical event log, not duplicated in the index.
+  Open-shell activity and arbitrary external agent transcripts are not captured.
+  Repositories outside the discovery roots need `YARD_CONTEXT_ROOTS`; this is
+  not a full filesystem crawl. Saved conversation evidence remains a historical
+  snapshot even if its original file or session is later changed/deleted.
+- Engine sessions use private `switchy-` IDs in memory only. They are excluded
+  from snapshots, normal session operations and the session event store, then
+  removed after each answer. In Plan only, Codex receives an ephemeral, read-only
+  thread with approvals disabled, along with shell/exec, apps, browser, computer, JS/code-mode, hooks,
+  multi-agent and configured MCP/plugin tools disabled by thread-local overrides.
+  Null optional fields from `config/read` are omitted from copied overrides: Codex
+  converts JSON nulls to empty TOML strings, which breaks typed fields such as MCP
+  timeouts. Transport settings and concrete values are retained.
+  Claude receives a fresh sidecar with no tools, strict empty MCP configuration,
+  no setting sources/plugins/hooks, no persisted engine session, and a denying
+  permission callback in Plan only. Ask first, Accept edits and Full access use
+  the coding-session engine policies, with fresh ephemeral threads and the same
+  bounded evidence. `switchy.approve` validates the active turn/request and routes
+  Allow once/Always allow/Deny; persisted approvals also survive UI reconnects.
+  Tools execute on the inference host, not automatically on context hosts. Voice
+  announces approvals and speaks completed answers, using the shared speech engine.
+  Coding-session settings are untouched. Grok/OpenCode,
+  account selection and running the inference engine on a remote host are not
+  implemented for Switchy.
+- Tests use scripted engines and isolated host command fixtures via
+  `YARD_CONTEXT_COMMAND_DIR`, which overrides only collector executables. The
+  integration suite proves persistence, scoped remote evidence, offline coverage,
+  cancellation, concurrent-send refusal, fresh restricted threads, history
+  budgets, external repository discovery and prior observation retrieval. The
+  `switchy` feature map drives send/source disclosure/reload/context at both
+  viewports. These do not prove a live Claude/Codex turn or model answer quality.

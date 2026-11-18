@@ -33,7 +33,7 @@ logged in, with Log in and Remove. Default keeps its own row. (At 390 px the
 Hosts page does not fit: see layout/mobile-hosts-page.)
 
 ```sh
-yv drive hosts --viewport desktop --steps '[{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"TEST-Work"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-added"}]'
+yv drive hosts --viewport desktop --steps '[{"click":"role:button:Details: iso-host"},{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"TEST-Work"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-added"}]'
 ```
 
 ### refused-add-account-keeps-the-form
@@ -43,7 +43,7 @@ keeps the form with the name typed; a free name then adds the account and
 closes the form.
 
 ```sh
-yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"default"},{"press":"Enter"},{"expect":"css:.banner-error","text":"account named default already exists"},{"wait":500},{"expect":"label:Account name","value":"default"},{"shot":"refused"},{"fill":"label:Account name","value":"TEST-Second"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Second"},"text":"not logged in"},{"expect":"label:Account name","count":0},{"shot":"added"}]'
+yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Details: iso-host"},{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"default"},{"press":"Enter"},{"expect":"css:.banner-error","text":"account named default already exists"},{"wait":500},{"expect":"label:Account name","value":"default"},{"shot":"refused"},{"fill":"label:Account name","value":"TEST-Second"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Second"},"text":"not logged in"},{"expect":"label:Account name","count":0},{"shot":"added"}]'
 ```
 
 ### log-in-account
@@ -53,7 +53,7 @@ The account then shows as logged in under its own email and Default is
 unchanged.
 
 ```sh
-yv drive hosts --viewport desktop --steps '[{"click":"role:button:Log in TEST-Work"},{"expect":"role:dialog","text":"Log in to Claude Code (TEST-Work) on iso-host"},{"fill":"label:Code from the sign-in page","value":"good-code","timeout":15000},{"press":"Enter"},{"expect":"role:dialog","text":"Claude Code (TEST-Work) is logged in on iso-host","timeout":15000},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"logged in as","timeout":15000},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"}]'
+yv drive hosts --viewport desktop --steps '[{"click":"role:button:Details: iso-host"},{"click":"role:button:Log in TEST-Work"},{"expect":"role:dialog","text":"Log in to Claude Code (TEST-Work) on iso-host"},{"fill":"label:Code from the sign-in page","value":"good-code","timeout":15000},{"press":"Enter"},{"expect":"role:dialog","text":"Claude Code (TEST-Work) is logged in on iso-host","timeout":15000},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"logged in as","timeout":15000},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"}]'
 test -f "$(v fake)/claude.log"
 grep -q "auth login config=.*/accounts/" "$(v fake)/claude.log"
 ```
@@ -66,7 +66,7 @@ account: its header and sidebar row name it, and the sidecar started with the
 account's config folder.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"expect":"role:button:Use account TEST-Work"},{"shot":"picker-accounts"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"TEST-Work"}},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick desktop"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-account pick desktop"},{"expect":"css:.thread","text":"Echo: TEST-account pick desktop"},{"expect":"css:.session-account","text":"TEST-Work"},{"expect":{"css":".session-row","hasText":"TEST-account pick desktop"},"text":"TEST-Work"},{"shot":"session-on-account"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"},{"expect":"role:button:Use account TEST-Work"},{"shot":"picker-accounts"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"TEST-Work"}},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick desktop"},{"click":"role:button:Send"},{"expect":"role:heading:TEST-account pick desktop"},{"expect":"css:.thread","text":"Echo: TEST-account pick desktop"},{"expect":"css:.session-account","text":"TEST-Work"},{"expect":{"css":".session-row","hasText":"TEST-account pick desktop"},"text":"TEST-Work"},{"shot":"session-on-account"}]'
 grep -q "start .*config=.*/accounts/" "$(v fake)/sidecar.log"
 ```
 
@@ -75,7 +75,7 @@ Viewports: mobile
 The same at 390 px: the account row is in the picker, the session header names the account, and so does the session's row in the sidebar drawer.
 
 ```sh
-yv drive new --viewport mobile --steps '[{"click":"role:button:Opus 5.5 High"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick mobile"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick mobile"},{"expect":"role:heading:TEST-account pick mobile","inViewport":true},{"expect":"css:.session-account","text":"TEST-Work"},{"shot":"session-on-account"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-account pick mobile"},"text":"TEST-Work"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Model Opus 5.5"},{"click":"role:button:Use account TEST-Work"},{"press":"Escape"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick mobile"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick mobile"},{"expect":"role:heading:TEST-account pick mobile","inViewport":true},{"expect":"css:.session-account","text":"TEST-Work"},{"shot":"session-on-account"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-account pick mobile"},"text":"TEST-Work"}]'
 ```
 
 ### default-has-no-account-row-without-a-choice
@@ -83,7 +83,7 @@ Viewports: desktop
 Codex has only Default, so its group in the picker shows no account row.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"expect":"role:button:Use account TEST-Work"},{"expect":"role:button:Use account Default","count":1},{"shot":"one-engine-with-a-choice"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"},{"expect":"role:button:Use account TEST-Work"},{"expect":"role:button:Use account Default","count":1},{"shot":"one-engine-with-a-choice"}]'
 ```
 
 ### pick-other-engine-account-switches-engine
@@ -94,8 +94,8 @@ session starts on Codex under that account, not on Claude Default.
 
 ```sh
 yv api '{"op":"account.add","engine":"codex","name":"TEST-Codex"}' --wait '{"op":"accounts"}'
-yv drive new --viewport mobile --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"expect":"role:button:Use account TEST-Codex","text":"TEST-Codex"},{"shot":"codex-account-picked"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"shot":"trigger"}]'
-yv drive new --viewport desktop --steps '[{"click":"role:button:Opus 5.5 High"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick codex"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick codex"},{"expect":{"css":".session-row","hasText":"TEST-account pick codex"},"text":"TEST-Codex"},{"shot":"session-on-codex-account"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"expect":"role:button:Use account TEST-Codex","text":"TEST-Codex"},{"shot":"codex-account-picked"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"shot":"trigger"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Model Opus 5.5"},{"click":{"css":".picker-fold","hasText":"Codex"}},{"click":"role:button:Use account TEST-Codex"},{"press":"Escape"},{"expect":{"css":".picker .btn-quiet","hasText":"Fake"},"text":"TEST-Codex"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-account pick codex"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-account pick codex"},{"expect":{"css":".session-row","hasText":"TEST-account pick codex"},"text":"TEST-Codex"},{"shot":"session-on-codex-account"}]'
 yv state | jq -e '.sessions[] | select(.title == "TEST-account pick codex") | select(.engine == "codex")'
 ```
 
@@ -105,7 +105,7 @@ An account with sessions cannot be removed: yardd says so and the row stays.
 (The refusal is also an API error, hence `--allow-errors`.)
 
 ```sh
-yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":"css:.banner-error","text":"session"},{"expect":{"css":".account-row","hasText":"TEST-Work"}}]'
+yv drive hosts --viewport desktop --allow-errors --steps '[{"click":"role:button:Details: iso-host"},{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":"css:.banner-error","text":"session"},{"expect":{"css":".account-row","hasText":"TEST-Work"}}]'
 ```
 
 ### remove-account
@@ -118,7 +118,7 @@ for t in "TEST-account pick desktop" "TEST-account pick mobile"; do
   sid="$(yv state | jq -r --arg t "$t" '.sessions[] | select(.title == $t) | .id')"
   yv api "{\"op\":\"session.delete\",\"sessionId\":\"$sid\"}" --wait '{"op":"session.deleted"}'
 done
-yv drive hosts --viewport desktop --steps '[{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"visible":false},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-removed"}]'
+yv drive hosts --viewport desktop --steps '[{"click":"role:button:Details: iso-host"},{"click":"role:button:Remove TEST-Work"},{"click":"role:button:Remove TEST-Work"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"visible":false},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-removed"}]'
 ```
 
 ### add-account-stays-at-the-right
@@ -126,7 +126,7 @@ Every engine's Add account sits at the right edge of its row on the Hosts
 page, also at 390 px where OpenCode's row (with Add provider) wraps.
 
 ```sh
-yv drive hosts --steps '[{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0]},{"shot":"add-account-buttons"}]'
+yv drive hosts --steps '[{"click":"role:button:Details: iso-host"},{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0]},{"shot":"add-account-buttons"}]'
 ```
 
 ### install-command-stays-at-the-right
@@ -136,7 +136,7 @@ engine, so the page rewrites the next `engines` reply to say Grok is not
 installed and drops the socket once to ask again.
 
 ```sh
-yv drive hosts --steps '[{"expect":"role:button:Add OpenCode account"},{"eval":"(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()"},{"expect":"css:.engine-cmd","text":"grok"},{"eval":"(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()","equals":0},{"shot":"install-command"}]'
+yv drive hosts --steps '[{"click":"role:button:Details: iso-host"},{"expect":"role:button:Add OpenCode account"},{"eval":"(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()"},{"expect":"css:.engine-cmd","text":"grok"},{"eval":"(() => { const c = document.querySelector(\".engine-cmd\"); return Math.round(c.closest(\".engine-row\").getBoundingClientRect().right - c.getBoundingClientRect().right); })()","equals":0},{"shot":"install-command"}]'
 ```
 
 ## Gotchas

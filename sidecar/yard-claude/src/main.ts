@@ -17,6 +17,7 @@
 //
 // Events are already in yardd's normalized shape, so yardd only relays them.
 // Nothing else may write to stdout.
+import { readOnlySwitchy, switchyProfile } from "./switchy";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
 import { userMessage } from "./message";
@@ -33,7 +34,7 @@ const out = (msg: unknown) => process.stdout.write(JSON.stringify(msg) + "\n");
 
 // `sessions` and `messages <id>`: answer once and exit (see oneshot.ts).
 const mode = process.argv[2];
-if (mode === "sessions" || mode === "messages") {
+if (mode === "sessions" || mode === "messages" || mode === "usage") {
   // A long history is megabytes: exit only once the pipe has taken all of
   // it, or yardd reads a cut-off line.
   const done = (msg: unknown, code: number) =>
@@ -85,7 +86,7 @@ const PERMISSION_MODE: Record<string, string> = {
   full: "bypassPermissions",
 };
 
-async function run(start: { cwd: string; model: string; effort?: string; permission?: string; resume?: string | null }) {
+async function run(start: { switchy?: boolean; cwd: string; model: string; effort?: string; permission?: string; resume?: string | null }) {
   cwd = start.cwd;
   const subagents = createSubagents(cwd);
 
@@ -108,6 +109,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
     // itself while the mode is another one.
     allowDangerouslySkipPermissions: true,
     canUseTool: async (toolName: string, toolInput: any, ctx: { signal?: AbortSignal; suggestions?: unknown[] }) => {
+      if (readOnlySwitchy(start)) return { behavior: "deny", message: "Switchy uses daemon-provided evidence only." };
       const requestId = nextId("claude");
       const d = describeTool(toolName, toolInput, cwd);
       emit({
@@ -129,6 +131,7 @@ async function run(start: { cwd: string; model: string; effort?: string; permiss
       return { behavior: "allow", updatedInput: toolInput };
     },
   };
+  Object.assign(options, switchyProfile(start));
   if (start.effort && efforts.includes(start.effort)) options.effort = start.effort;
   if (start.resume) options.resume = start.resume;
   // Recent models omit thinking text unless asked; summarized is what Claude Code shows.

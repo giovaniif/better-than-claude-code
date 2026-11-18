@@ -2,6 +2,32 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.10.0 (2026-11-18)
+
+- **Connectors, focused on what you use.** The page opens on connected services for one host and engine account. Unused entries stay under Available; search, status filters and eight-row pages keep long catalogs manageable. Sign-in progress stays visible through completion.
+- **New sessions remember your setup:** the last server, source project, model and effort, including remote sessions and after a reload. Changing model or effort in an existing chat updates the defaults too. A temporarily offline server stays selected with Send disabled.
+- **Mark chats unread.** A chat's menu offers Mark as unread and Mark as read. The blue dot, bold title and Unread label survive reloads, even for the open chat; opening it deliberately clears the mark.
+- **Aligned host cards.** Engine login notes no longer push one card's footer below its neighbours. Closed cards share a row height; Details still opens independently.
+- **Merged worktrees clean themselves up.** Clean worktrees whose pull request was merged are removed automatically across repositories, together with their branch. Running sessions, changed files and folders still used by a terminal or dev server are kept; conversation history stays.
+- **Switchy:** the same message box as chats, a working Cmd-K entry, and a fix for startup failures with some Codex connector configurations.
+- **Fixed:**
+  - A remembered project folder that was deleted says it no longer exists and disables Send before a session is started.
+  - Stopped turns that only wrote text now say "Stopped after …", including steered turns.
+  - On mobile, the delete-session confirmation stays on one line beside a long title.
+
+## 0.9.0 (2026-11-17)
+
+- **Every account's limits, clearly.** The sidebar names each account once an engine has more than one ("Claude · Default", "Claude · Work"), each over its own 5-hour and week meters; an account with nothing reported yet says so. Claude limits no longer wait for a session: Switchyard reads each Claude account's limits from Claude Code's own usage report, with no prompt and no usage, when it starts, every 10 minutes, and as soon as an account is added or logs in.
+- **The model picker names its account.** It shows models only (the limits moved to the sidebar) and says which account they run on, with the account choice beside "Account"; the closed picker says it too ("Opus 5.5 · Work").
+- **Effort is its own dropdown,** next to the model, in the new-session box, in a session and in the automation form.
+- **Hosts as a grid.** The Hosts page is a grid of small cards like Automations: each host's state, CPU, memory, disk, engine logins and sessions at a glance; Details opens the sessions table, accounts and host actions inside the card.
+- **Switchy:** quick questions about your hosts and sessions, in a conversation of their own that stays between visits (`#/assistant`), answered by your default Claude or Codex account with evidence from This Mac, one remote or all hosts.
+- **Go to (Cmd-K):** jump to any session or page from anywhere. On the Mac, Settings and Import move to the app menu.
+- **Mermaid diagrams** in an answer render as diagrams, with the source a click away.
+- **Fixed:**
+  - Cmd-K's recent list shows your sessions, not archived automation runs.
+  - Switchy: a removed host's saved scope falls back to All hosts instead of refusing every question.
+
 ## 0.8.0 (2026-11-17)
 
 - **Connectors.** A new Connectors page (plug icon in the sidebar) lists every MCP server each engine account has on each host: claude.ai connectors, plugins, your config files and, for Codex, ChatGPT apps. Each one says whether it works: Connected, Needs sign-in, or Not working with the reason. Checking spends no usage.

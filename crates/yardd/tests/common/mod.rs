@@ -33,7 +33,10 @@ pub const EFFORT: &str = "low";
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 pub fn repo_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..").canonicalize().unwrap()
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .unwrap()
 }
 
 pub fn fake_bin() -> PathBuf {
@@ -43,7 +46,11 @@ pub fn fake_bin() -> PathBuf {
 /// A free loopback port, away from the user's yardd and LocalStack.
 pub fn free_port() -> u16 {
     loop {
-        let port = std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port();
+        let port = std::net::TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+            .port();
         if port != 47717 && !(4510..=4559).contains(&port) {
             return port;
         }
@@ -59,7 +66,8 @@ pub struct Sandbox {
 impl Sandbox {
     pub fn new(tag: &str) -> Sandbox {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let root = std::env::temp_dir().join(format!("yardd-test-{}-{tag}-{n}", std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("yardd-test-{}-{tag}-{n}", std::process::id()));
         let _ = fs::remove_dir_all(&root);
         for sub in ["data", "home", "fake", "work"] {
             fs::create_dir_all(root.join(sub)).unwrap();
@@ -150,13 +158,24 @@ impl Daemon {
     fn try_start(sandbox: &Sandbox, env: &[(&str, &str)]) -> Option<Daemon> {
         let port = free_port();
         let log = sandbox.data().join("yardd.log");
-        let stderr = fs::OpenOptions::new().create(true).append(true).open(&log).unwrap();
-        let path = format!("{}:{}", fake_bin().display(), std::env::var("PATH").unwrap_or_default());
+        let stderr = fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&log)
+            .unwrap();
+        let path = format!(
+            "{}:{}",
+            fake_bin().display(),
+            std::env::var("PATH").unwrap_or_default()
+        );
         let mut cmd = Command::new(env!("CARGO_BIN_EXE_yardd"));
         cmd.current_dir(&sandbox.root)
             .env("YARD_PORT", port.to_string())
             .env("YARD_DATA_DIR", sandbox.data())
             .env("YARD_ROOT", repo_root())
+            .env_remove("YARD_CONTEXT_ROOTS")
+            .env("YARD_WORKSPACE", sandbox.root.join("work"))
+            .env("YARD_CONTEXT_COMMAND_DIR", fake_bin().join("host-context"))
             .env("PATH", path)
             .env("HOME", sandbox.home())
             .env("SHELL", "/bin/bash")
@@ -166,6 +185,8 @@ impl Daemon {
             // A busy test machine must not queue sessions on its own; the
             // queue test forces pressure instead.
             .env("YARD_MIN_FREE_GB", "0")
+            // No background Claude usage reads, except where a test asks for them.
+            .env("YARD_CLAUDE_USAGE_EVERY_MS", "0")
             .env_remove("YARD_FORCE_PRESSURE")
             .env_remove("YARD_ALLOW_ORIGIN")
             .env_remove("YARD_HOST_NAME")
@@ -179,7 +200,11 @@ impl Daemon {
         }
         let from = fs::metadata(&log).map(|m| m.len() as usize).unwrap_or(0);
         let child = cmd.spawn().expect("could not start yardd");
-        let mut daemon = Daemon { child: Some(child), port, log };
+        let mut daemon = Daemon {
+            child: Some(child),
+            port,
+            log,
+        };
         daemon.wait_ready(from).then_some(daemon)
     }
 
@@ -200,7 +225,10 @@ impl Daemon {
     fn wait_ready(&mut self, from: usize) -> bool {
         let deadline = Instant::now() + WAIT;
         let port = format!(":{}", self.port);
-        let listening = |text: &str| text.lines().any(|l| l.starts_with("yardd: http://") && l.ends_with(&port));
+        let listening = |text: &str| {
+            text.lines()
+                .any(|l| l.starts_with("yardd: http://") && l.ends_with(&port))
+        };
         let ours = |d: &Daemon| d.log_text().get(from..).unwrap_or_default().to_string();
         loop {
             if let Some(status) = self.child.as_mut().unwrap().try_wait().unwrap() {
@@ -220,7 +248,10 @@ impl Daemon {
                 }
             }
             if Instant::now() > deadline {
-                panic!("yardd on port {} did not answer /health within {WAIT:?}", self.port);
+                panic!(
+                    "yardd on port {} did not answer /health within {WAIT:?}",
+                    self.port
+                );
             }
             std::thread::sleep(Duration::from_millis(20));
         }
@@ -234,7 +265,10 @@ impl Daemon {
     pub fn stop(mut self) {
         let mut child = self.child.take().unwrap();
         let kids = children(child.id());
-        let _ = Command::new("kill").arg("-TERM").arg(child.id().to_string()).status();
+        let _ = Command::new("kill")
+            .arg("-TERM")
+            .arg(child.id().to_string())
+            .status();
         let deadline = Instant::now() + WAIT;
         while child.try_wait().unwrap().is_none() {
             if Instant::now() > deadline {
@@ -271,13 +305,25 @@ impl Drop for Daemon {
 
 /// The direct children of a process: the fake Codex, terminal shells, git.
 fn children(pid: u32) -> Vec<String> {
-    let out = Command::new("pgrep").arg("-P").arg(pid.to_string()).output();
-    out.map(|o| String::from_utf8_lossy(&o.stdout).split_whitespace().map(str::to_string).collect())
-        .unwrap_or_default()
+    let out = Command::new("pgrep")
+        .arg("-P")
+        .arg(pid.to_string())
+        .output();
+    out.map(|o| {
+        String::from_utf8_lossy(&o.stdout)
+            .split_whitespace()
+            .map(str::to_string)
+            .collect()
+    })
+    .unwrap_or_default()
 }
 
 fn alive(pid: &str) -> bool {
-    Command::new("kill").args(["-0", pid]).stderr(Stdio::null()).status().is_ok_and(|s| s.success())
+    Command::new("kill")
+        .args(["-0", pid])
+        .stderr(Stdio::null())
+        .status()
+        .is_ok_and(|s| s.success())
 }
 
 /// Wait for a stopped yardd's children to go: they exit on their own when
@@ -302,7 +348,10 @@ fn reap(kids: &[String]) {
 pub fn http_get(port: u16, path: &str) -> std::io::Result<String> {
     let mut s = StdTcpStream::connect(("127.0.0.1", port))?;
     s.set_read_timeout(Some(Duration::from_secs(2)))?;
-    write!(s, "GET {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n")?;
+    write!(
+        s,
+        "GET {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"
+    )?;
     let mut out = String::new();
     s.read_to_string(&mut out)?;
     Ok(out)
@@ -321,13 +370,21 @@ impl Client {
             .await
             .unwrap_or_else(|_| panic!("timed out connecting to {url}"))
             .unwrap_or_else(|e| panic!("could not connect to {url}: {e}"));
-        let mut client = Client { ws, log: Vec::new() };
-        client.wait_for("the first snapshot", |m| m["op"] == "snapshot").await;
+        let mut client = Client {
+            ws,
+            log: Vec::new(),
+        };
+        client
+            .wait_for("the first snapshot", |m| m["op"] == "snapshot")
+            .await;
         client
     }
 
     pub async fn send(&mut self, msg: Value) {
-        self.ws.send(Message::Text(msg.to_string())).await.expect("send failed");
+        self.ws
+            .send(Message::Text(msg.to_string()))
+            .await
+            .expect("send failed");
     }
 
     /// Where the log ends now; pass it to `wait_after` to ignore older messages.
@@ -340,7 +397,12 @@ impl Client {
     }
 
     /// The first message at or after `from` that matches, waiting for more as needed.
-    pub async fn wait_after(&mut self, from: usize, what: &str, pred: impl Fn(&Value) -> bool) -> Value {
+    pub async fn wait_after(
+        &mut self,
+        from: usize,
+        what: &str,
+        pred: impl Fn(&Value) -> bool,
+    ) -> Value {
         let deadline = tokio::time::Instant::now() + WAIT;
         let mut checked = from;
         loop {
@@ -352,12 +414,15 @@ impl Client {
             }
             let next = tokio::time::timeout_at(deadline, self.ws.next()).await;
             match next {
-                Err(_) => panic!("timed out after {WAIT:?} waiting for {what}; last messages:\n{}", self.tail(12)),
+                Err(_) => panic!(
+                    "timed out after {WAIT:?} waiting for {what}; last messages:\n{}",
+                    self.tail(12)
+                ),
                 Ok(None) => panic!("socket closed while waiting for {what}"),
                 Ok(Some(Err(e))) => panic!("socket error while waiting for {what}: {e}"),
-                Ok(Some(Ok(Message::Text(text)))) => {
-                    self.log.push(serde_json::from_str(&text).expect("yardd sent invalid JSON"))
-                }
+                Ok(Some(Ok(Message::Text(text)))) => self
+                    .log
+                    .push(serde_json::from_str(&text).expect("yardd sent invalid JSON")),
                 Ok(Some(Ok(_))) => {}
             }
         }
@@ -393,7 +458,12 @@ impl Client {
 
     /// Send a `session.create` (codex, fake model) and return the new id, or
     /// yardd's error message.
-    pub async fn try_create(&mut self, cwd: &str, text: &str, extra: Value) -> Result<String, String> {
+    pub async fn try_create(
+        &mut self,
+        cwd: &str,
+        text: &str,
+        extra: Value,
+    ) -> Result<String, String> {
         let mut msg = json!({
             "op": "session.create",
             "engine": "codex",
@@ -422,14 +492,19 @@ impl Client {
     /// test machine itself be under load, the session is started by hand
     /// rather than left in the queue.
     pub async fn create(&mut self, cwd: &str, text: &str, extra: Value) -> String {
-        let sid = self.try_create(cwd, text, extra).await.unwrap_or_else(|e| panic!("session.create failed: {e}"));
+        let sid = self
+            .try_create(cwd, text, extra)
+            .await
+            .unwrap_or_else(|e| panic!("session.create failed: {e}"));
         let first = self
             .wait_for("the first turn to start or queue", |m| {
-                is_event(m, &sid) && (m["event"]["type"] == "turn_started" || m["event"]["type"] == "queued")
+                is_event(m, &sid)
+                    && (m["event"]["type"] == "turn_started" || m["event"]["type"] == "queued")
             })
             .await;
         if first["event"]["type"] == "queued" {
-            self.send(json!({ "op": "session.startNow", "sessionId": sid })).await;
+            self.send(json!({ "op": "session.startNow", "sessionId": sid }))
+                .await;
             self.wait_event(&sid, "turn_started", 0).await;
         }
         sid
@@ -439,7 +514,9 @@ impl Client {
     pub async fn wait_event(&mut self, sid: &str, ty: &str, from_seq: u64) -> Value {
         let what = format!("event `{ty}` (seq >= {from_seq}) in {sid}");
         let msg = self
-            .wait_for(&what, |m| is_event(m, sid) && m["event"]["type"] == ty && m["seq"].as_u64() >= Some(from_seq))
+            .wait_for(&what, |m| {
+                is_event(m, sid) && m["event"]["type"] == ty && m["seq"].as_u64() >= Some(from_seq)
+            })
             .await;
         let mut ev = msg["event"].clone();
         ev["seq"] = msg["seq"].clone();
@@ -463,15 +540,18 @@ impl Client {
 
     pub async fn wait_status(&mut self, sid: &str, status: &str) -> Value {
         let what = format!("{sid} to have status `{status}`");
-        self.wait_for(&what, |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["status"] == status)
-            .await["session"]
+        self.wait_for(&what, |m| {
+            m["op"] == "session" && m["session"]["id"] == sid && m["session"]["status"] == status
+        })
+        .await["session"]
             .clone()
     }
 
     /// Wait for yardd to refuse an op, and return its message.
     pub async fn wait_error(&mut self, from: usize, op: &str) -> String {
         let what = format!("an error for `{op}`");
-        self.wait_after(from, &what, |m| m["op"] == "error" && m["for"] == op).await["message"]
+        self.wait_after(from, &what, |m| m["op"] == "error" && m["for"] == op)
+            .await["message"]
             .as_str()
             .unwrap_or("")
             .to_string()
@@ -491,7 +571,10 @@ impl Client {
     }
 
     pub fn event_types(&self, sid: &str) -> Vec<String> {
-        self.events(sid).iter().map(|e| e["type"].as_str().unwrap_or("").to_string()).collect()
+        self.events(sid)
+            .iter()
+            .map(|e| e["type"].as_str().unwrap_or("").to_string())
+            .collect()
     }
 
     /// The statuses this session went through, repeats folded.
@@ -511,7 +594,13 @@ impl Client {
     /// `attach.put` one file. `target` is `{ "host": .. }`, `{ "sessionId": .. }`
     /// or `{}` for this yardd. The stored attachment (with `hostId` when it
     /// came through the hub), or yardd's error.
-    pub async fn upload(&mut self, name: &str, mime: &str, bytes: &[u8], target: Value) -> Result<Value, String> {
+    pub async fn upload(
+        &mut self,
+        name: &str,
+        mime: &str,
+        bytes: &[u8],
+        target: Value,
+    ) -> Result<Value, String> {
         let r = format!("r{}", NEXT.fetch_add(1, Ordering::Relaxed));
         let mut msg = json!({
             "op": "attach.put",
@@ -543,7 +632,8 @@ impl Client {
     /// `attach.get`: the bytes of an attachment of a session, or yardd's error.
     pub async fn fetch(&mut self, sid: &str, id: &str) -> Result<Vec<u8>, String> {
         let from = self.mark();
-        self.send(json!({ "op": "attach.get", "sessionId": sid, "id": id })).await;
+        self.send(json!({ "op": "attach.get", "sessionId": sid, "id": id }))
+            .await;
         let reply = self
             .wait_after(from, "the reply to attach.get", |m| {
                 (m["op"] == "attach.data" && m["sessionId"] == sid && m["id"] == id)
@@ -553,15 +643,21 @@ impl Client {
         if let Some(e) = reply["error"].as_str().or(reply["message"].as_str()) {
             return Err(e.to_string());
         }
-        Ok(base64::engine::general_purpose::STANDARD.decode(reply["data"].as_str().unwrap()).unwrap())
+        Ok(base64::engine::general_purpose::STANDARD
+            .decode(reply["data"].as_str().unwrap())
+            .unwrap())
     }
 
     /// `session.open` and the history that comes back.
     pub async fn history(&mut self, sid: &str) -> Vec<Value> {
         let from = self.mark();
-        self.send(json!({ "op": "session.open", "sessionId": sid })).await;
+        self.send(json!({ "op": "session.open", "sessionId": sid }))
+            .await;
         let what = format!("history of {sid}");
-        self.wait_after(from, &what, |m| m["op"] == "history" && m["sessionId"] == sid).await["events"]
+        self.wait_after(from, &what, |m| {
+            m["op"] == "history" && m["sessionId"] == sid
+        })
+        .await["events"]
             .as_array()
             .unwrap()
             .clone()
@@ -573,14 +669,24 @@ pub fn is_event(m: &Value, sid: &str) -> bool {
 }
 
 pub fn types(events: &[Value]) -> Vec<&str> {
-    events.iter().map(|e| e["type"].as_str().unwrap_or("")).collect()
+    events
+        .iter()
+        .map(|e| e["type"].as_str().unwrap_or(""))
+        .collect()
 }
 
 /// `git` with a fixed identity and no user or system config, so the user's
 /// hooks and settings stay out of the test repos.
 pub fn git(dir: &str, args: &[&str], home: &Path) -> String {
     let out = Command::new("git")
-        .args(["-c", "user.name=Yard Test", "-c", "user.email=yard@test.invalid", "-c", "commit.gpgsign=false"])
+        .args([
+            "-c",
+            "user.name=Yard Test",
+            "-c",
+            "user.email=yard@test.invalid",
+            "-c",
+            "commit.gpgsign=false",
+        ])
         .args(["-c", "init.defaultBranch=main"])
         .args(args)
         .current_dir(dir)
@@ -614,7 +720,9 @@ pub fn make_repo(sandbox: &Sandbox, name: &str) -> String {
 
 /// A session's saved status, read straight from yardd's database.
 pub fn saved_status(sandbox: &Sandbox, sid: &str) -> Option<String> {
-    saved_meta(sandbox, sid)?["status"].as_str().map(str::to_string)
+    saved_meta(sandbox, sid)?["status"]
+        .as_str()
+        .map(str::to_string)
 }
 
 /// A session's metadata as yardd last wrote it to disk.
@@ -625,7 +733,9 @@ pub fn saved_meta(sandbox: &Sandbox, sid: &str) -> Option<Value> {
     )
     .ok()?;
     let meta: String = conn
-        .query_row("SELECT meta FROM sessions WHERE id = ?1", [sid], |r| r.get(0))
+        .query_row("SELECT meta FROM sessions WHERE id = ?1", [sid], |r| {
+            r.get(0)
+        })
         .ok()?;
     serde_json::from_str(&meta).ok()
 }

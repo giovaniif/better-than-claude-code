@@ -40,7 +40,7 @@ prompt).
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |
-| [hosts](hosts.md) | The Hosts page, adding a direct host, an unreachable SSH host, removing a host |
+| [hosts](hosts.md) | The Hosts page (a grid of host cards with Details), adding a direct host, an unreachable SSH host, removing a host |
 | [queue](queue.md) | The resource guard: sessions queue under pressure, Start anyway |
 | [logins](logins.md) | Engine login state and the Codex, Claude, Grok and OpenCode login flows |
 | [acp-engines](acp-engines.md) | OpenCode and Grok: listed where installed, sessions, approvals, hand-off rows |

@@ -202,6 +202,8 @@ export interface BranchList {
   current?: string;
   /** Local and `origin/*` branches, most recently committed first, at most 200. */
   branches?: string[];
+  /** The folder does not exist (deleted since it was picked). */
+  missing?: boolean;
   error?: string;
 }
 
@@ -788,3 +790,16 @@ export interface Automation {
 /** Hub setup discovery; `mobile.connected` records a successful iOS UI connection. */
 export type { MobileStatus } from "./mobile";
 
+/** Switchy's own conversation; engine threads never appear in the session list. */
+export interface SwitchySource {
+  id: string; host: string; title: string; at: number; text: string; unavailable: boolean;
+}
+export interface SwitchyTurn {
+  id: string; question: string; answer: string; engine: string; model: string;
+  at: number; status: string; sources: SwitchySource[]; coverage: string[]; error: string | null;
+  approvals?: { requestId: string; kind: string; title: string; detail: string; decision?: "allow" | "allow_always" | "deny" | null }[];
+}
+export interface SwitchyConversation {
+  status: string; turns: SwitchyTurn[]; engine: string; model: string; scope: string; revision: number;
+  permission?: Permission; effort?: string; queue_reason?: string | null;
+}

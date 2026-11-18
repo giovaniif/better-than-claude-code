@@ -7,6 +7,8 @@
 // `gh pr view <url> --json` (the hover card on a PR link) answers from the
 // fixture's `peeks` (canonical URL -> view) or `view` when its URL matches,
 // after `peekDelayMs` if set; any other URL is a PR that does not exist.
+// `gh pr list --state merged --search <sha>` (yardd's merged-worktree sweep)
+// answers the fixture's `merged` ([{ number, headRefOid }]) whose head is <sha>.
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 
 const dir = process.env.FAKE_CODEX_DIR;
@@ -25,6 +27,11 @@ if (args[0] === "pr" && args[1] === "view" && args[2]?.startsWith("https://")) {
     process.exit(1);
   }
   console.log(JSON.stringify(found));
+  process.exit(0);
+}
+if (args[0] === "pr" && args[1] === "list" && args.includes("merged")) {
+  const sha = args[args.indexOf("--search") + 1];
+  console.log(JSON.stringify((fixture?.merged ?? []).filter((pr: any) => pr.headRefOid === sha)));
   process.exit(0);
 }
 if (args[0] === "pr" && args[1] === "view") {

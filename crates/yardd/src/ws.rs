@@ -242,7 +242,7 @@ pub async fn create_session(
     let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
     let title: String = match title {
         Some(t) => t.to_string(),
-        None => first.chars().take(60).collect(),
+        None => title_from(first),
     };
 
     // The worktree (and its setup) comes first: if it cannot be made,
@@ -278,6 +278,12 @@ pub async fn create_session(
 }
 
 async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Value) -> Result<()> {
+    if msg["op"].as_str().is_some_and(|op| op.starts_with("switchy.")) {
+        return crate::switchy::handle(app, direct, msg).await;
+    }
+    if msg["sessionId"].as_str().is_some_and(crate::switchy::internal) {
+        bail!("Switchy engine threads are private; use switchy operations");
+    }
     if msg["op"].as_str().is_some_and(|op| op.starts_with("pr.")) {
         return pr::handle(app, direct, msg).await;
     }
@@ -303,13 +309,20 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         }
         "git.branches" => {
             let cwd = str_field(msg, "cwd")?;
-            let reply = match git::branches(cwd).await {
-                Ok(mut v) => {
-                    v["op"] = json!("git.branches");
-                    v["cwd"] = json!(cwd);
-                    v
+            // New session asks this for the folder it remembers, which may be
+            // gone since. Say so, so the page can tell before the user writes
+            // a task that `session.create` would then refuse.
+            let reply = if !Path::new(cwd).is_dir() {
+                json!({ "op": "git.branches", "cwd": cwd, "missing": true })
+            } else {
+                match git::branches(cwd).await {
+                    Ok(mut v) => {
+                        v["op"] = json!("git.branches");
+                        v["cwd"] = json!(cwd);
+                        v
+                    }
+                    Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
                 }
-                Err(e) => json!({ "op": "git.branches", "cwd": cwd, "error": format!("{e:#}") }),
             };
             let _ = direct.send(reply.to_string());
         }
@@ -337,7 +350,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         "login.cancel" => crate::login::cancel(app, str_field(msg, "engine")?, account_field(msg)).await?,
         "account.add" => {
             let engine = str_field(msg, "engine")?;
-            app.accounts.add(app.id("a"), engine, str_field(msg, "name")?)?;
+            let added = app.accounts.add(app.id("a"), engine, str_field(msg, "name")?)?;
+            if engine == "claude" {
+                claude::refresh_usage_soon(app, &added.id);
+            }
             app.broadcast_accounts();
             // The new account's login state, for the Hosts page.
             let app = app.clone();
@@ -657,6 +673,22 @@ async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     }
     pty::close_session(app, sid);
     app.remove_session(sid);
+}
+
+/// A session's title from its first line: at most 60 characters. A longer
+/// line is cut at a word and marked "…", so it does not read like a typo
+/// (the whole prompt is still the first message).
+fn title_from(first: &str) -> String {
+    const MAX: usize = 60;
+    let first = first.trim();
+    if first.chars().count() <= MAX {
+        return first.to_string();
+    }
+    let head: String = first.chars().take(MAX - 1).collect();
+    let next = first.chars().nth(MAX - 1);
+    // A word that runs past the cut is dropped, unless it is the only one.
+    let cut = if next.is_some_and(char::is_whitespace) { head.as_str() } else { head.rsplit_once(char::is_whitespace).map_or(head.as_str(), |(h, _)| h) };
+    format!("{}…", cut.trim_end())
 }
 
 #[cfg(test)]

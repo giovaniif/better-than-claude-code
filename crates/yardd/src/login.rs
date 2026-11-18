@@ -239,7 +239,8 @@ fn start_claude(app: &Arc<App>, account: &str) -> Result<()> {
         if !current {
             return; // replaced or cancelled
         }
-        if ok && !text.contains("Invalid code") {
+        let logged_in = ok && !text.contains("Invalid code");
+        if logged_in {
             report(&app, "claude", &account, "done", json!({}));
             restart_idle_claude(&app, &account);
         } else {
@@ -250,7 +251,14 @@ fn start_claude(app: &Arc<App>, account: &str) -> Result<()> {
             };
             report(&app, "claude", &account, "failed", json!({ "error": error }));
         }
-        runtime.spawn(async move { app.broadcast(status(&app).await) });
+        // This is a plain thread (it reads a terminal): anything async goes
+        // through the runtime. The new login's limits come without a turn.
+        runtime.spawn(async move {
+            if logged_in {
+                crate::claude::refresh_usage_soon(&app, &account);
+            }
+            app.broadcast(status(&app).await)
+        });
     });
     Ok(())
 }

@@ -23,7 +23,10 @@ mod pty;
 mod remote;
 mod sessions;
 mod state;
+mod switchy;
+mod switchy_context;
 mod store;
+mod sweep;
 mod widgets;
 mod ws;
 
@@ -91,6 +94,8 @@ async fn main() -> anyhow::Result<()> {
 
     tokio::spawn(hosts::run(app.clone()));
     tokio::spawn(automations::run_scheduler(app.clone()));
+    tokio::spawn(claude::run_usage_refresh(app.clone()));
+    tokio::spawn(sweep::run(app.clone()));
 
     // Queued messages: into the running turn at a step, or the next turn.
     // In order per session (tokio's Mutex queues waiters first come, first

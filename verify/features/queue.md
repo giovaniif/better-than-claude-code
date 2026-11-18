@@ -52,10 +52,11 @@ yv state --expect '{"sessions":[{"id":"{{q3_sid}}","status":"idle"}]}'
 ```
 
 ### hosts-page-shows-pressure
-The Hosts page says why new sessions wait.
+The Hosts page says the host is under pressure on its card, and its Details
+say why new sessions wait.
 
 ```sh
-yv drive hosts --steps '[{"expect":"role:region:iso-host","text":"queued"}]'
+yv drive hosts --steps '[{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .host-state-busy"},"text":"Under pressure"},{"click":"role:button:Details: iso-host"},{"expect":"role:region:iso-host","text":"New sessions are queued: pressure is forced on"}]'
 ```
 
 ## Gotchas

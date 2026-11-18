@@ -26,8 +26,21 @@ yv iso down
 Choosing Fake Deep in a Codex session saves the new model.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"role":"button","name":"Fake Deep","exact":true}},{"press":"Escape"},{"expect":"role:button:Fake Deep"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"Fake Deep","exact":true}},{"press":"Escape"},{"expect":"role:button:Fake Deep"}]'
 yv state --expect '{"sessions":[{"id":"{{sid_echo}}","model":"fake-deep"}]}'
+```
+
+### effort-is-its-own-chip
+Viewports: both
+Effort is a chip of its own next to the model's: the model chip and its menu
+show models only, the effort chip opens a menu of the model's efforts, and
+picking one changes the session's effort, kept by yardd across a reload (the
+session keeps its model). It uses a session of its own on Fake Fast (Low or
+High).
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"TEST-effort chip"}' --wait '{"op":"created"}' --save effort_sid=sessionId
+yv drive 'session:TEST-effort chip' --steps '[{"expect":"role:button:Model Fake Fast"},{"expect":"role:button:Effort Low"},{"click":"role:button:Model Fake Fast"},{"expect":{"css":".model-popover .picker-item","hasText":"Fake Fast"}},{"expect":{"css":".model-popover .picker-head","hasText":"Effort"},"count":0},{"press":"Escape"},{"click":"role:button:Effort Low"},{"expect":"role:menuitemradio:High"},{"shot":"effort-menu"},{"click":"role:menuitemradio:High"},{"expect":"role:button:Effort High"},{"expect":"role:button:Model Fake Fast"},{"reload":true},{"expect":"role:button:Effort High"},{"click":"role:button:Effort High"},{"click":"role:menuitemradio:Low"},{"expect":"role:button:Effort Low"}]'
 ```
 
 ### permission-mode
@@ -43,7 +56,7 @@ Picking a Claude model asks first; "Hand off" starts a Claude session with the
 same title in the same folder.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Haiku 5.5","exact":true}},{"expect":"role:group:Confirm hand-off"},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Haiku 5.5","timeout":15000}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Model Fake Fast"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Haiku 5.5","exact":true}},{"expect":"role:group:Confirm hand-off"},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Haiku 5.5","timeout":15000}]'
 yv state --expect '{"sessions":[{"engine":"claude","title":"[edit] TEST-fix the greeting"}]}'
 ```
 
@@ -53,7 +66,7 @@ session: "Handed off from Codex." goes back to the source, "Handed off to
 Claude." goes to the new one.
 
 ```sh
-yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Fake Fast Low"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Sonnet 5.5","exact":true}},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Sonnet 5.5","timeout":15000},{"expect":{"css":".note","hasText":"Handed off from Codex."}},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Fake Fast Low"},{"expect":"css:.thread","text":"Handed off to Claude."},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Model Fake Fast"},{"click":{"css":".picker-fold"}},{"click":{"role":"button","name":"Sonnet 5.5","exact":true}},{"click":{"role":"button","name":"Hand off","exact":true}},{"expect":"role:button:Sonnet 5.5","timeout":15000},{"expect":{"css":".note","hasText":"Handed off from Codex."}},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Model Fake Fast"},{"expect":"css:.thread","text":"Handed off to Claude."},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
 ```
 
 ### hand-off-note-links-survive-a-deleted-sibling

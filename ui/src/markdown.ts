@@ -3,6 +3,45 @@
 // over its text, and summarise test runs as GFM tables. As source those read
 // as "- " lines and pipe soup. Everything stays text; App.tsx renders it.
 
+export type FencedBlock =
+  | { kind: "text"; text: string }
+  | { kind: "code"; language: string; body: string; complete: boolean };
+
+/** Line-based fences keep inline backticks and nested Markdown examples intact.
+ *  An open fence stays code while the agent streams its remaining lines. */
+export function fencedBlocks(text: string): FencedBlock[] {
+  const lines = text.replace(/\r\n?/g, "\n").split("\n");
+  const out: FencedBlock[] = [];
+  let prose: string[] = [];
+  const flush = () => {
+    if (prose.some((line) => line.length)) out.push({ kind: "text", text: prose.join("\n") });
+    prose = [];
+  };
+  for (let i = 0; i < lines.length; i++) {
+    const opening = lines[i].match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+    if (!opening || (opening[1][0] === "`" && opening[2].includes("`"))) {
+      prose.push(lines[i]);
+      continue;
+    }
+    // Preserve the newline before a fence as part of the preceding prose.
+    if (prose.length) prose.push("");
+    flush();
+    const body: string[] = [];
+    const closing = new RegExp(`^ {0,3}${opening[1][0]}{${opening[1].length},}\\s*$`);
+    let complete = false;
+    while (++i < lines.length) {
+      if (closing.test(lines[i])) {
+        complete = true;
+        break;
+      }
+      body.push(lines[i]);
+    }
+    out.push({ kind: "code", language: opening[2].trim().split(/\s+/)[0].toLowerCase(), body: body.join("\n"), complete });
+  }
+  flush();
+  return out;
+}
+
 export type Align = "left" | "center" | "right" | null;
 
 export interface MdTable {

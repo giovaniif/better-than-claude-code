@@ -2,7 +2,7 @@
 
 Pinned sessions, then ungrouped ones newest first, then one collapsible
 section per group, each row with title, model and status. A row's … menu (or
-right-click) pins, moves to a group, archives or restores, and deletes after one
+right-click) marks read or unread, pins, moves to a group, archives or restores, and deletes after one
 confirmation; a worktree session also offers to remove its worktree. On a
 desktop-width window a row can also be dragged onto a group, the ungrouped
 Sessions rows or Pinned; on the phone drawer the menu is the only way. A group
@@ -47,6 +47,17 @@ seen, so the recipe moves that point back to the start.
 yv drive new --viewport desktop --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()"},{"reload":true},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Answered"},{"expect":{"css":".session-row.unread .mark-answered"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"css":".mark-approval"}},{"expect":{"css":".session-row","hasText":"[fail] TEST-failing turn"},"text":"Failed"},{"shot":"marks"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"TEST-say hello"},{"wait":300},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"reload":true},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"expect":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"},"text":"Answered"}]'
 yv drive new --viewport mobile --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.seen.since\",\"1\");localStorage.removeItem(\"yard.seen\");return 1})()"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Answered"},{"expect":{"css":".session-row.unread .mark-answered"}},{"expect":{"css":".session-row","hasText":"[cmd] TEST-run the migration"},"text":"Needs approval"},{"expect":{"css":".mark-approval"}},{"expect":{"css":".session-row","hasText":"[fail] TEST-failing turn"},"text":"Failed"},{"shot":"marks"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"TEST-say hello"},{"wait":300},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"expect":{"css":".session-row","hasText":"[edit] TEST-fix the greeting"},"text":"Answered"}]'
 ```
+
+### mark-chat-unread
+Marking a chat unread persists across reloads, including the open chat. Opening
+it deliberately or choosing Mark as read clears it.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"shot":"marked-unread"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as unread"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"reload":true},{"click":"role:button:Open sessions"},{"expect":{"css":".session-row.unread","hasText":"TEST-say hello"},"text":"Unread"},{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Mark as read"},{"expect":{"css":".session-row","hasText":"TEST-say hello"},"text":"Idle"}]'
+```
+
+
 
 ### pin-and-unpin
 Pin moves the row under "Pinned"; the daemon stores it.

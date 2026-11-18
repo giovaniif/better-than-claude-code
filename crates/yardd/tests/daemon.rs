@@ -140,6 +140,32 @@ async fn the_codex_sandbox_can_be_set() {
     assert!(sb.codex_log().contains("req thread/start sandbox=danger-full-access"), "{}", sb.codex_log());
 }
 
+/// A long first line becomes a title cut at a word, marked with "…", not
+/// one that stops mid-word and reads like a typo.
+#[tokio::test]
+async fn a_long_first_line_is_titled_at_a_word_with_an_ellipsis() {
+    let sb = Sandbox::new("long-title");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+    let long = "a very long first prompt that becomes the title and keeps going on and on";
+    let sid = c.create(&cwd, &format!("{long}\nsecond line"), json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], "a very long first prompt that becomes the title and keeps…");
+
+    // One that fits stays whole, with no mark.
+    let fits = "x".repeat(60);
+    let sid = c.create(&sb.folder("proj2"), &fits, json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], fits.as_str());
+
+    // A single word longer than the limit is cut, still marked.
+    let word = "y".repeat(80);
+    let sid = c.create(&sb.folder("proj3"), &word, json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], format!("{}…", "y".repeat(59)));
+}
+
 #[tokio::test]
 async fn approval_allow_runs_the_command() {
     let sb = Sandbox::new("allow");
@@ -631,6 +657,29 @@ async fn worktree_branches_and_a_session_from_a_base() {
 
     let refused = c.try_create(&repo, "bad base", json!({ "worktree": true, "base": "nope" })).await.unwrap_err();
     assert!(refused.contains("is not a branch or commit"), "{refused}");
+}
+
+/// New session asks for the branches of the folder it remembers. A folder
+/// deleted since must read as gone, not as a plain folder that Send would
+/// then refuse.
+#[tokio::test]
+async fn branches_of_a_missing_folder_say_it_is_missing() {
+    let sb = Sandbox::new("branches-missing");
+    let plain = sb.folder("plain");
+    let gone = format!("{plain}-gone");
+    let d = sb.start();
+    let mut c = d.client().await;
+
+    c.send(json!({ "op": "git.branches", "cwd": plain })).await;
+    let reply = c.wait_for("plain folder branches", |m| m["op"] == "git.branches" && m["cwd"] == plain).await;
+    assert!(reply["error"].is_string(), "{reply}");
+    assert_eq!(reply.get("missing"), None, "an existing folder is not missing: {reply}");
+
+    c.send(json!({ "op": "git.branches", "cwd": gone })).await;
+    let reply = c.wait_for("missing folder branches", |m| m["op"] == "git.branches" && m["cwd"] == gone).await;
+    assert_eq!(reply["missing"], true, "{reply}");
+    // An answer, not a failure: the page reads `missing`.
+    assert_eq!(reply.get("error"), None, "{reply}");
 }
 
 #[tokio::test]
