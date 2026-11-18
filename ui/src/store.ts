@@ -662,6 +662,7 @@ export interface Actions {
   addAccount(host: string, engine: Engine, name: string): void;
   /** Deletes the account's folder and login; refused while a session uses it. */
   removeAccount(host: string, id: string): void;
+  refreshUsage(host: string, engine: Engine, account: string): Promise<{ error?: string }>;
   loadPr(sessionId: string): void;
   loadProcs(sessionId: string): void;
   /** Signal one of the session's processes (`session.kill`); with `tree`, it
@@ -925,7 +926,11 @@ export function useYard(): { state: State; actions: Actions } {
       loadBranches: (cwd, host) =>
         post(host === "local" ? { op: "git.branches", cwd } : { op: "git.branches", cwd, host }),
       listDirs: (path, host) => post(host === "local" ? { op: "fs.dirs", path } : { op: "fs.dirs", path, host }),
-      loadPr: (sessionId) => post({ op: "pr.get", sessionId }),
+      refreshUsage: async (host, engine, account) => {
+        const reply = await ask(onHost(host, { op: "usage.refresh", engine, account }), 65_000);
+        return reply.error ? { error: String(reply.error) } : {};
+      },
+      loadPr: (sessionId) => post({ op: "pr.get", sessionId, linkOnly: true }),
       loadProcs: (sessionId) => post({ op: "session.procs", sessionId }),
       killProc,
       // gh gives up after 30 s; a remote host adds its own round trip.

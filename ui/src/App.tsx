@@ -2,9 +2,9 @@ import { loadDefaults } from "./launchDefaults";
 import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
-import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
+import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
-import { Subscriptions, UsageStrip } from "./UsageMeters";
+import { Subscriptions, UsageStrip, type UsageAccount } from "./UsageMeters";
 import { AnchoredPopover } from "./AnchoredPopover";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
@@ -15,7 +15,7 @@ import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, D
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge, tooMany } from "./attach";
 import { TerminalPane } from "./TerminalPane";
-import { PrPane } from "./PrPane";
+import { SessionPullRequest } from "./SessionPullRequest";
 import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
@@ -143,6 +143,7 @@ const DrawerContext = createContext<{ open: boolean; show(): void }>({ open: fal
 export function App() {
   const { state, actions } = useYard();
   const { route } = state;
+  const [draftUsageAccount, setDraftUsageAccount] = useState<UsageAccount>();
   const [importing, setImporting] = useState(false);
   const [navigating, setNavigating] = useState(false);
   const navigationOrigin = useRef<HTMLElement | null>(null);
@@ -238,7 +239,7 @@ export function App() {
   return (
     <DrawerContext.Provider value={drawerCtx}>
       <div className={`app ${drawer ? "drawer-open" : ""}`} inert={navigating || undefined} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-        <Sidebar state={state} actions={sidebarActions} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
+        <Sidebar state={state} actions={sidebarActions} draftUsageAccount={draftUsageAccount} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
         {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
         <Resizer
           width={sidebarW}
@@ -277,7 +278,7 @@ export function App() {
                 <span className="spacer" />
                 <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
               </header>
-              <NewSession state={state} actions={actions} />
+              <NewSession state={state} actions={actions} onUsageAccount={setDraftUsageAccount} />
             </>
           )}
           {route.page === "assistant" && <AssistantPage state={state} actions={actions} />}
@@ -778,7 +779,7 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
+function Sidebar({ state, actions, draftUsageAccount, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; draftUsageAccount?: UsageAccount; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -790,6 +791,9 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
   const { route } = state;
   // The hosts picked in Settings: their rows, and their plan usage in the strip.
   const shown = shownHosts(["local", ...state.hosts.map((h) => h.id)], useHiddenHosts());
+  const selectedSession = route.page === "session" ? state.sessions[route.id] : undefined;
+  const selectedUsageAccount = selectedSession ? { host: hostOf(selectedSession), engine: selectedSession.engine, account: accountOf(selectedSession) }
+    : route.page === "new" ? draftUsageAccount : undefined;
   const narrow = useMedia(NARROW);
   // The row being dragged. The ref answers dragover at once; the state (the
   // dimmed row, the empty Sessions slot) renders a tick later, because
@@ -960,14 +964,20 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
           {showArchived && <div className="archived-list">{archived.map(row)}</div>}
         </div>
       )}
-      <UsageStrip sources={shown.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host] }))} onViewAll={() => actions.go({ page: "subscriptions" })} />
+      <UsageStrip
+        sources={shown.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host], online: hostOnline(state, host) }))}
+        selected={selectedUsageAccount}
+        onViewAll={() => actions.go({ page: "subscriptions" })}
+        onManage={(host) => actions.go({ page: "hosts", host, tab: "engines" })}
+        onRefresh={actions.refreshUsage}
+      />
       {shown.length > 0 && (
         <div className="sidebar-bottom">
           {shown.map((id) => {
             const stats = state.host[id];
             const status = hostState(state, id);
             return (
-              <button key={id} className="host-row" onClick={() => actions.go({ page: "hosts" })} title={HOST_STATE_LABEL[status]}>
+              <button key={id} className="host-row" onClick={() => actions.go({ page: "hosts", host: id })} title={HOST_STATE_LABEL[status]}>
                 <span className={`dot host-dot-${status}`} aria-hidden="true" />
                 <span className="host-name">{hostName(state, id)}</span>
                 {id !== "local" && <Cloud size={12} />}
@@ -1002,11 +1012,12 @@ export function effortFor(model: ModelInfo | undefined, wanted: string): string 
  *  to Claude at once and to Codex from its next turn. */
 export function PermissionPicker({ engine, value, onChange }: { engine: Engine; value: Permission; onChange(p: Permission): void }) {
   const [open, setOpen] = useState(false);
-  useEscape(open, () => setOpen(false));
+  const anchor = useRef<HTMLButtonElement>(null);
   const current = PERMISSIONS.find((p) => p.id === value) ?? PERMISSIONS[0];
   return (
     <div className="picker">
       <button
+        ref={anchor}
         className={`btn-quiet permission ${value === "full" ? "permission-full" : ""}`}
         aria-haspopup="true"
         aria-expanded={open}
@@ -1019,9 +1030,9 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
         </span>
       </button>
       {open && (
-        <>
-          <div className="scrim" onClick={() => setOpen(false)} />
-          <div className="popover permission-menu" role="menu">
+        <AnchoredPopover anchor={anchor} label="Permissions" onClose={() => setOpen(false)}>
+          <div className="popover-heading"><strong>Permissions</strong></div>
+          <div className="permission-menu" role="menu">
             {PERMISSIONS.map((p) => (
               <button
                 key={p.id}
@@ -1038,7 +1049,7 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
               </button>
             ))}
           </div>
-        </>
+        </AnchoredPopover>
       )}
     </div>
   );
@@ -1046,32 +1057,33 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
 
 /** Effort for the chosen model, its own chip next to the model's. A model
  *  without efforts (some OpenCode and Grok ones) runs as it is: no chip. */
+const EFFORT_DESCRIPTIONS: Record<string, string> = {
+  minimal: "Responds quickly with little planning",
+  low: "Suited to small edits and quick questions",
+  medium: "Balanced for everyday tasks",
+  high: "Thinks longer about tricky changes",
+  xhigh: "More reasoning for complex tasks",
+  max: "Deep reasoning for the hardest work",
+  ultra: "The most reasoning this model offers",
+};
+
 export function EffortPicker({ models, value, onChange }: { models: Models; value: Choice; onChange(effort: string): void }) {
   const [open, setOpen] = useState(false);
-  const menu = useRef<HTMLDivElement>(null);
-  useEscape(open, () => setOpen(false));
-  // The chip can sit last in a narrow row (Settings on a phone), where a menu
-  // hanging from its left edge ran past the screen: pull it back inside.
-  useLayoutEffect(() => {
-    const el = menu.current;
-    if (!el) return;
-    const over = el.getBoundingClientRect().right - (document.documentElement.clientWidth - 8);
-    if (over > 0) el.style.left = `${el.offsetLeft - over}px`;
-  }, [open]);
+  const anchor = useRef<HTMLButtonElement>(null);
   const efforts = models[value.engine]?.find((m) => m.id === value.model)?.efforts ?? [];
   if (efforts.length === 0) return null;
   return (
     <div className="picker">
-      <button className="btn-quiet" aria-haspopup="true" aria-expanded={open} aria-label={`Effort ${capitalize(value.effort)}`} onClick={() => setOpen(!open)}>
+      <button ref={anchor} className="btn-quiet" aria-haspopup="true" aria-expanded={open} aria-label={`Effort ${capitalize(value.effort)}`} onClick={() => setOpen(!open)}>
         <span>{capitalize(value.effort)}</span>
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
         </span>
       </button>
       {open && (
-        <>
-          <div className="scrim" onClick={() => setOpen(false)} />
-          <div ref={menu} className="popover effort-menu" role="menu" aria-label="Effort">
+        <AnchoredPopover anchor={anchor} label="Effort" onClose={() => setOpen(false)}>
+          <div className="popover-heading"><strong>Effort</strong></div>
+          <div className="effort-menu" role="menu" aria-label="Effort">
             {efforts.map((e) => (
               <button
                 key={e}
@@ -1083,11 +1095,12 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
                   setOpen(false);
                 }}
               >
-                {capitalize(e)}
+                <span>{capitalize(e)}</span>
+                {EFFORT_DESCRIPTIONS[e] && <small className="muted">{EFFORT_DESCRIPTIONS[e]}</small>}
               </button>
             ))}
           </div>
-        </>
+        </AnchoredPopover>
       )}
     </div>
   );
@@ -1121,12 +1134,13 @@ function AccountPicker({
         ref={anchor}
         className="btn-quiet account-trigger"
         aria-label={`Account: ${ENGINE_NAME[engine]}, ${name}`}
+        title={`${ENGINE_NAME[engine]} · ${name}`}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
         <span className="account-avatar" aria-hidden="true">
-          {name[0]}
+          {name.trim().split(/\s+/).slice(0, 2).map((word) => word[0]?.toUpperCase()).join("")}
         </span>
         <span className="account-trigger-name">
           {ENGINE_NAME[engine]} · {name}
@@ -1204,6 +1218,7 @@ export function ModelPicker(props: {
 }) {
   const { models, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
+  const anchor = useRef<HTMLButtonElement>(null);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
   const [expanded, setExpanded] = useState<Engine[]>([]);
@@ -1215,7 +1230,7 @@ export function ModelPicker(props: {
   // down to the model that was just clicked. Bring it into view.
   const popover = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (confirm) popover.current?.scrollTo({ top: 0 });
+    if (confirm) popover.current?.closest("[data-anchored-panel]")?.scrollTo({ top: 0 });
   }, [confirm]);
   const current = models[value.engine]?.find((m) => m.id === value.model);
   const close = () => {
@@ -1224,25 +1239,26 @@ export function ModelPicker(props: {
     setExpanded([]);
     setFilter("");
   };
-  useEscape(open, close);
   return (
     <div className="picker">
       <button
-        className="btn-quiet"
+        ref={anchor}
+        className="btn-quiet model-trigger"
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={`Model ${current?.name ?? value.model}`}
         onClick={() => (open ? close() : setOpen(true))}
       >
+        <span className="model-provider" aria-hidden="true">{value.engine === "claude" ? "CC" : value.engine === "codex" ? "CX" : value.engine.slice(0, 2).toUpperCase()}</span>
         <span>{current?.name ?? value.model}</span>
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
         </span>
       </button>
       {open && (
-        <>
-          <div className="scrim" onClick={close} />
-          <div className="popover model-popover" ref={popover}>
+        <AnchoredPopover anchor={anchor} label="Model" onClose={close}>
+          <div className="popover-heading"><strong>Model</strong></div>
+          <div className="model-popover" ref={popover}>
             {confirm && handoff && (
               <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
                 <div>
@@ -1336,7 +1352,7 @@ export function ModelPicker(props: {
               );
             })}
           </div>
-        </>
+        </AnchoredPopover>
       )}
     </div>
   );
@@ -1392,8 +1408,22 @@ export function Composer(props: {
   onSubmit(text: string, attachments: Attachment[]): void | boolean | Promise<void | boolean>;
   /** Hands-free voice mode for a session: what it has to say, numbered. */
   voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
+  settings?: { label: string; model: string; effort: string; full: boolean };
   children: ReactNode;
 }) {
+  const toolbar = useRef<HTMLDivElement>(null);
+  const setup = useRef<HTMLButtonElement>(null);
+  const [compact, setCompact] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
+  useLayoutEffect(() => {
+    const row = toolbar.current;
+    if (!row || !props.settings) return;
+    const measure = () => setCompact(row.clientWidth < 500);
+    measure();
+    const resize = new ResizeObserver(measure);
+    resize.observe(row);
+    return () => resize.disconnect();
+  }, [!!props.settings]);
   const draftKey = props.draft ?? props.appendFor;
   const [kept] = useState(() => draftOf<ComposerDraft>(draftKey));
   const [text, setText] = useState(kept?.text ?? "");
@@ -1671,7 +1701,7 @@ export function Composer(props: {
         }}
         autoFocus
       />
-      <div className="composer-row">
+      <div ref={toolbar} className={`composer-row ${props.settings ? "session-toolbar" : ""}`}>
         <div className="composer-controls">
           <button className="btn-icon attach-btn" aria-label="Attach files" disabled={!props.upload} title={props.upload ? "Attach files" : "Attachments are not supported here"} onClick={() => picker.current?.click()}>
             <Icon d={PAPERCLIP} size={16} />
@@ -1713,9 +1743,32 @@ export function Composer(props: {
               e.currentTarget.value = "";
             }}
           />
-          {props.children}
+          {compact && props.settings ? (
+            <>
+              <button
+                ref={setup}
+                className={`btn-quiet composer-setup ${props.settings.full ? "permission-full" : ""}`}
+                aria-label={`Session setup: ${props.settings.label}`}
+                aria-haspopup="dialog"
+                aria-expanded={setupOpen}
+                title={props.settings.label}
+                onClick={() => setSetupOpen(!setupOpen)}
+              >
+                <span className="setup-model">{props.settings.model}</span>
+                {!props.settings.full && props.settings.effort && <span className="setup-effort">· {capitalize(props.settings.effort)}</span>}
+                {props.settings.full && <Icon d="M12 22s7-3 7-10V5l-7-3-7 3v7c0 7 7 10 7 10Z" size={14} />}
+                <Icon d={CHEVRON_DOWN} size={12} />
+              </button>
+              {setupOpen && (
+                <AnchoredPopover anchor={setup} label="Session setup" variant="session-setup-popover" onClose={() => setSetupOpen(false)}>
+                  <div className="popover-heading"><strong>Session setup</strong></div>
+                  <div className="setup-options">{props.children}</div>
+                </AnchoredPopover>
+              )}
+            </>
+          ) : props.children}
         </div>
-        <span className="spacer" />
+        {!props.settings && <span className="spacer" />}
         <button
           className="send"
           aria-label={props.queueing ? "Add to queue" : "Send"}
@@ -1857,7 +1910,7 @@ function SentAttachment({ attachment: a, load }: { attachment: Attachment; load(
 /** The New session box's draft key: it has no session yet (compose.ts). */
 const NEW_TASK_DRAFT = "new";
 
-function NewSession({ state, actions }: { state: State; actions: Actions }) {
+function NewSession({ state, actions, onUsageAccount }: { state: State; actions: Actions; onUsageAccount(account: UsageAccount): void }) {
   // Where the session runs. A remote host can be picked only while connected.
   const [host, setHost] = useState(loadHost);
   // A configured host stays selected while reconnecting. Never silently send
@@ -1881,6 +1934,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     return accountChoices(accounts, engine).some((a) => a.id === wanted) ? wanted : DEFAULT_ACCOUNT;
   };
   const picks = Object.fromEntries(ENGINES.map((e) => [e, pickOf(e)])) as Record<Engine, string>;
+  const selectedAccount = picks[choice.engine];
+  useEffect(() => onUsageAccount({ host: target, engine: choice.engine, account: selectedAccount }), [onUsageAccount, target, choice.engine, selectedAccount]);
   const pickAccount = (engine: Engine, id: string) => {
     localStorage.setItem(pickKey(engine), id);
     setPicked({ ...picked, [pickKey(engine)]: id });
@@ -1983,10 +2038,12 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
+          voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false }}
+          settings={{ model: modelName(models, choice.engine, choice.model), effort: choice.effort, label: `${modelName(models, choice.engine, choice.model)}, ${accountName(accounts, choice.engine, selectedAccount)}, ${capitalize(choice.effort)}, ${PERMISSIONS.find((p) => p.id === permission)?.label ?? ""}`, full: permission === "full" }}
           busy={pending || !online || !choice.model || !cwd || gone}
         >
+          <ModelPicker models={models} value={choice} engines={pickerEngines(models, choice.engine)} onChange={choose} />
           <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts", host: target, tab: "engines" })} />
-          <ModelPicker models={models} value={choice} engines={[choice.engine]} onChange={choose} />
           <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
@@ -2449,6 +2506,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           <MenuButton />
           <h1>{meta.title}</h1>
           <code className="muted">{meta.branch || changes?.branch || tilde(meta.cwd, homeOn(state, host))}</code>
+          <SessionPullRequest sessionId={meta.id} online={online} busy={busy} pr={state.pr[meta.id]} load={actions.loadPr} />
           {sessionAccount && (
             <span className="muted small session-account" title="The account this session runs under. It can't be changed mid-session.">
               {sessionAccount}
@@ -2518,8 +2576,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             upload={actions.upload}
             onSubmit={submit}
             voice={voice}
+            settings={{ model: modelName(models, meta.engine, meta.model), effort: meta.effort, label: `${modelName(models, meta.engine, meta.model)}, ${accountName(accounts, meta.engine, accountOf(meta))}, ${capitalize(meta.effort)}, ${PERMISSIONS.find((p) => p.id === meta.permission)?.label ?? "Ask first"}`, full: meta.permission === "full" }}
           >
-            <AccountPicker state={state} host={host} engine={meta.engine} account={accountOf(meta)} onManage={() => actions.go({ page: "new" })} />
             <ModelPicker
               models={models}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
@@ -2527,12 +2585,13 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
+            <AccountPicker state={state} host={host} engine={meta.engine} account={accountOf(meta)} onManage={() => actions.go({ page: "new" })} />
             <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
         </div>
       </main>
-      <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
+      <WorkPane key={meta.id} mobileOpen={workspace} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
     </div>
   );
 }
@@ -3033,109 +3092,27 @@ function FileDiff({ file }: { file: ChangedFile }) {
   );
 }
 
-/** Split `git diff` output into one body per file, without the git headers. */
-function splitDiff(diff: string): { path: string; body: string }[] {
-  return diff
-    .split(/^diff --git /m)
-    .filter(Boolean)
-    .map((chunk) => {
-      const lines = chunk.split("\n");
-      const header = lines[0] ?? "";
-      const path = header.match(/ b\/(.+)$/)?.[1] ?? header;
-      const start = lines.findIndex((l) => l.startsWith("@@"));
-      return { path, body: start >= 0 ? lines.slice(start).join("\n") : "" };
-    });
-}
-
-/** The right-hand pane: what changed, and a shell in the same folder. */
-function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State; onClose(): void }) {
+function WorkPane({ mobileOpen, connected, actions, meta, state, onClose }: { mobileOpen: boolean; connected: boolean; actions: Actions; meta: SessionMeta; state: State; onClose(): void }) {
   const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
-  const { sessionId, changes, connected, actions } = props;
-  const [tab, setTab] = useState<"changes" | "terminal" | "pr" | "procs">("changes");
-  const [prUsed, setPrUsed] = useState(false);
-  // The shell starts the first time the tab is opened, then stays mounted.
-  const [terminalUsed, setTerminalUsed] = useState(false);
-  const parts = useMemo(() => splitDiff(changes?.diff ?? ""), [changes?.diff]);
-  const files = changes?.files ?? [];
+  const [tab, setTab] = useState<"terminal" | "procs">("terminal");
+  const wide = !useMedia("(max-width: 1100px)");
+  const shown = wide || mobileOpen;
+  const [terminalUsed, setTerminalUsed] = useState(shown);
+  useEffect(() => {
+    if (shown && tab === "terminal") setTerminalUsed(true);
+  }, [shown, tab]);
   return (
     <section className="pane" aria-label="Workspace" style={{ "--pane-w": `${paneW}px` } as CSSProperties}>
-      <Resizer
-        width={paneW}
-        min={300}
-        max={Math.max(300, window.innerWidth - 640)}
-        initial={PANE_W}
-        dir={-1}
-        cssVar="--pane-w"
-        label="Resize the workspace pane"
-        onWidth={setPaneW}
-      />
+      <Resizer width={paneW} min={300} max={Math.max(300, window.innerWidth - 640)} initial={PANE_W} dir={-1} cssVar="--pane-w" label="Resize the workspace pane" onWidth={setPaneW} />
       <header className="bar tabs workspace-tabs">
-        <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={props.onClose}><Icon d={CLOSE} /></button>
-        <button className={`tab ${tab === "changes" ? "active" : ""}`} aria-pressed={tab === "changes"} onClick={() => setTab("changes")}>
-          Changes
-        </button>
-        <button
-          className={`tab ${tab === "terminal" ? "active" : ""}`}
-          aria-pressed={tab === "terminal"}
-          onClick={() => {
-            setTab("terminal");
-            setTerminalUsed(true);
-          }}
-        >
-          Terminal
-        </button>
-        <button
-          className={`tab ${tab === "pr" ? "active" : ""}`}
-          aria-pressed={tab === "pr"}
-          aria-label="Pull request"
-          onClick={() => {
-            setTab("pr");
-            setPrUsed(true);
-          }}
-        >
-          <span className="workspace-pr-full">Pull request</span>
-          <span className="workspace-pr-short">PR</span>
-        </button>
-        <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>
-          Processes
-        </button>
+        <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={onClose}><Icon d={CLOSE} /></button>
+        <button className={`tab ${tab === "terminal" ? "active" : ""}`} aria-pressed={tab === "terminal"} onClick={() => setTab("terminal")}>Terminal</button>
+        <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>Processes</button>
         <span className="spacer" />
-        {tab !== "terminal" && (
-          <button
-            className="btn-icon"
-            aria-label={tab === "pr" ? "Refresh pull request" : tab === "procs" ? "Refresh processes" : "Refresh changes"}
-            onClick={() =>
-              tab === "pr" ? actions.loadPr(sessionId) : tab === "procs" ? actions.loadProcs(sessionId) : actions.loadChanges(sessionId)
-            }
-          >
-            <Icon d={REFRESH} />
-          </button>
-        )}
+        {tab === "procs" && <button className="btn-icon" aria-label="Refresh processes" onClick={() => actions.loadProcs(meta.id)}><Icon d={REFRESH} /></button>}
       </header>
-      {terminalUsed && <TerminalPane sessionId={sessionId} connected={connected} visible={tab === "terminal"} actions={actions} />}
-      {prUsed && <PrPane meta={props.meta} state={props.state} actions={actions} visible={tab === "pr"} />}
-      {tab === "procs" && <ProcPane meta={props.meta} state={props.state} actions={actions} visible />}
-      <div className="scroll pane-body" style={{ display: tab === "changes" ? "flex" : "none" }}>
-        {changes?.error && <div className="muted">{capitalize(changes.error)}.</div>}
-        {changes && !changes.error && files.length === 0 && <div className="muted">No changes in this folder.</div>}
-        {files.length > 0 && (
-          <div className="file-list">
-            {files.map((f) => (
-              <div key={f.path} className="file-row">
-                <code>{f.from ? `${f.from} → ${f.path}` : f.path}</code>
-                {/* git counts no lines in a binary file; "+0 −0" would read as unchanged. */}
-                <code className="muted">
-                  {f.untracked ? "new" : f.added == null && f.removed == null ? "binary" : `+${f.added ?? 0} −${f.removed ?? 0}`}
-                </code>
-              </div>
-            ))}
-          </div>
-        )}
-        {parts.map((p) => (
-          <FileDiff key={p.path} file={{ path: p.path, diff: p.body }} />
-        ))}
-        {changes?.truncated && <div className="muted small">Diff cut off at 400 KB.</div>}
-      </div>
+      {terminalUsed && <TerminalPane sessionId={meta.id} connected={connected} visible={shown && tab === "terminal"} actions={actions} />}
+      {shown && tab === "procs" && <ProcPane meta={meta} state={state} actions={actions} visible />}
     </section>
   );
 }

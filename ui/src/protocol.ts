@@ -393,7 +393,7 @@ export interface KillReply {
 
 /** Reply to `pr.get`: the branch's PR, no PR, or why it could not be read. */
 export type PrResult =
-  | PullRequest
+  | Pick<PullRequest, "number" | "title" | "url">
   | { none: true; branch: string; defaultBranch?: string | null }
   /**
    * `repo`: the folder is a git repository, so a review is still possible,

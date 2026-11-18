@@ -2,7 +2,7 @@
 
 Working name. Design: [Agent Harness UI](https://claude.ai/artifact/XQdXoraWtiuUwwrrCt3462), sources in [design/](../design).
 
-One UI for Claude Code, Codex, OpenCode, Grok and Gemini sessions on my own subscriptions: fast switching between engines, models and efforts, a terminal and PR review next to each session, and the same view for sessions on a remote box.
+One UI for Claude Code, Codex, OpenCode, Grok and Gemini sessions on my own subscriptions: fast switching between engines, models and efforts, a terminal and process list next to each session, and the same view for sessions on a remote box.
 
 Rewritten 2026-11-13. Replaces the 2026-11-06 version. Checked against claude 2.1.318, codex-cli 0.159.2, Agent SDK 0.3.323. OpenCode and Grok added 2026-11-16, checked against opencode-ai 1.19.5 and @xai-official/grok 1.0.77.
 
@@ -42,7 +42,7 @@ a small phone icon until a phone has received a hub snapshot and reported
 `mobile.connected`. yardd saves `mobile.json`, includes `mobile` in snapshots,
 and broadcasts `mobile.status`; remotes' setup state does not replace the hub's.
 `YARD_TESTFLIGHT_URL` supplies the real beta invitation once available.
-The narrow workspace is reachable with Workspace, including all four tabs.
+The narrow workspace is reachable with Workspace, with Terminal and Processes.
 The native main-frame bridge adapts Apple's speech APIs to the shared voice
 hook and local notifications to the shared notification rules. Backgrounding
 stops speech; foregrounding reconnects the WebSocket. There is no APNs service.
@@ -177,7 +177,7 @@ The local yardd is a hub. The UI keeps its one WebSocket to it.
 - An `ssh` host gets one `ssh -N -L` tunnel shared by all clients, on a free loopback port, restarted with backoff up to 30 s and killed when the host is removed or yardd stops. The destination is passed after `--` and may not start with `-`.
 - A `direct` host is a plain `ws://` URL, for local testing.
 - Remote sessions stay listed but offline while their host is down.
-- **The Hosts page** uses compact full-width host rows, this machine first, then remotes. Selecting a row opens one inspector below the list. Sessions shows running/queued activity with links to conversations; Engine logins manages each engine's accounts, login, providers and removal; System contains resource detail/history, queue policy and remote Update/Remove. Offline errors and install progress stay visible above the tabs. The host list stays the same size regardless of login text or activity. Add host opens its form above the list. `#/sessions` provides searchable active/all/archived conversations. Workspace panes keep all four tabs directly accessible at narrow widths.
+- **The Hosts page** uses compact full-width host rows, this machine first, then remotes. Selecting a row opens one inspector below the list. Sessions shows running/queued activity with links to conversations; Engine logins manages each engine's accounts, login, providers and removal; System contains resource detail/history, queue policy and remote Update/Remove. Offline errors and install progress stay visible above the tabs. The host list stays the same size regardless of login text or activity. Add host opens its form above the list. `#/sessions` provides searchable active/all/archived conversations. Workspace opens on Terminal and also offers Processes. Pull requests open on GitHub from the conversation header.
 - **The web version as a host:** its compose file publishes the container's 47717 on the server's loopback, so an `ssh` host for that server reaches the same yardd as the web page. The installer refuses to install over a yardd it did not set up.
 - **Install from the app:** when the ssh tunnel is up but no yardd answers behind it, the host reports `noDaemon` and its card offers "Install Switchyard". The hub runs `scripts/remote-install.sh` (compiled into yardd) over the host's ssh as `bash -s -- <port>`, streaming each line to every client as `host.install`. The script downloads `switchyard-linux-{x64,arm64}.tar.gz` from the `latest` release (built by `.github/workflows/linux-host.yml`), swaps it into `~/.local/share/switchyard`, runs yardd as a systemd user service with lingering (or detached where there is no user systemd), checks `/health`, and reports whether `claude` and `codex` are installed and logged in, and `opencode` and `grok` where installed (`@@engine` lines). The same card offers "Update Switchyard" on a connected SSH host. `YARD_SSH` and `YARD_RELEASE_URL` exist for the tests.
 - `scripts/install-host.sh` builds and installs from a checkout instead, for development.
