@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+    "short": "5f13b39",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:07:51.865Z"
+  },
+  "dir": ".verify/evidence/connectors-mobile-tabs-head3-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2334,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/connectors-mobile-tabs-head3-desktop/focus-all-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
