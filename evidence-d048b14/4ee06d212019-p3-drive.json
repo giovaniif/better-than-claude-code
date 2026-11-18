@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "d048b14c1303041b8a7df7cedb569347294b32dd",
+    "short": "d048b14",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T08:55:41.174Z"
+  },
+  "dir": ".verify/evidence/effort-menu-on-screen-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2229,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/effort-menu-on-screen-head/effort-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1879,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/effort-menu-on-screen-head/effort-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
