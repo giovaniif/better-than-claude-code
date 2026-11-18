@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1ecc165e66",
+  "build": {
+    "sha": "54e25b20e614de1f7ac7179c89a8844dabc4a37b",
+    "short": "54e25b2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:53:47.056Z"
+  },
+  "dir": ".verify/evidence/hosts-iphone-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2358,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-iphone-head/hosts-after-shortcut-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2411,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-iphone-head/hosts-after-shortcut-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
