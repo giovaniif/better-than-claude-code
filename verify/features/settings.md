@@ -68,6 +68,20 @@ yv drive 'settings' --viewport desktop --steps '[{"click":"role:button:Subscript
 yv drive 'settings' --viewport mobile --steps '[{"click":"role:switch:Show iso-host in sidebar"},{"click":"role:button:Open sessions"},{"click":"role:button:Subscription usage"},{"expect":"role:region:Claude · TEST-Work","text":"91%"},{"expect":{"css":".compact-meter","hasText":"47%"},"count":0},{"expect":"role:region:Codex · Default","text":"12%"},{"shot":"usage-remote-only"}]'
 ```
 
+### long-host-name
+Viewports: both
+A 40-character host name (the most a name allows) in the Sidebar card is cut
+with an ellipsis like the sidebar's own host row, and its cloud icon stays
+whole inside the row instead of being clipped away with the overflow (#160).
+The recipe adds an unreachable host for itself and removes it afterwards.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-build-farm-long-name-for-sidebar-01","kind":"direct","url":"ws://127.0.0.1:9/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-build-farm-long-name-for-sidebar-01"}]}' --save long_host='hosts[name=TEST-build-farm-long-name-for-sidebar-01].id'
+yv drive settings --viewport desktop --steps '[{"expect":{"css":".settings-host","hasText":"TEST-build-farm-long-name-for-sidebar-01"}},{"eval":"(() => { const row = [...document.querySelectorAll(\".settings-host\")].find((r) => r.textContent.includes(\"TEST-build-farm\")); const box = row.querySelector(\".settings-host-name\").getBoundingClientRect(); const c = row.querySelector(\".cloud\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\"TEST-build-farm\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \"ellipsis\" && !st.display.includes(\"flex\")].join(); })()","equals":"true,true"},{"shot":"long-host-name"}]'
+yv drive settings --viewport mobile --steps '[{"expect":{"css":".settings-host","hasText":"TEST-build-farm-long-name-for-sidebar-01"}},{"expect":"role:switch:Show TEST-build-farm-long-name-for-sidebar-01 in sidebar","inViewport":true},{"eval":"(() => { const row = [...document.querySelectorAll(\".settings-host\")].find((r) => r.textContent.includes(\"TEST-build-farm\")); const box = row.querySelector(\".settings-host-name\").getBoundingClientRect(); const c = row.querySelector(\".cloud\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\"TEST-build-farm\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \"ellipsis\" && !st.display.includes(\"flex\")].join(); })()","equals":"true,true"},{"shot":"long-host-name"}]'
+yv api '{"op":"host.remove","hostId":"{{long_host}}"}' --wait '{"op":"hosts"}'
+```
+
 ## Gotchas
 - Which of two hosts reported last is read from the reports themselves (reset
   times, then use); the fakes always report the same figures, so the tie-breaks
