@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1ecc165e66",
+  "build": {
+    "sha": "838e8f274d9a98ed981155697931fe1b09f253b4",
+    "short": "838e8f2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:46:36.432Z"
+  },
+  "dir": ".verify/evidence/workspace-button-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2472,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/workspace-button-head-m/header-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/workspace-button-head-m/workspace-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "const mid = (s) => { const b = document.querySelector(s); const r = document.createRange(); r.selectNodeContents(b); const t = r.getBoundingClientRect(); return t.top + t.height / 2; }; Math.round((mid(\".workspace-toggle\") - mid(\".bar-choice\")) * 10) / 10",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

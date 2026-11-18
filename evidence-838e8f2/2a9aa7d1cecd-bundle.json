@@ -1,0 +1,196 @@
+{
+  "v": 1,
+  "claim": "On a phone the session header's Workspace label sits at the top of its button, about 6 px above Delete, instead of on the same line",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451",
+  "base": "0e6bcfb895857085a20384852f591dfcfadb1d57",
+  "head": "838e8f274d9a98ed981155697931fe1b09f253b4",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mobile.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T03:46:19.249Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e2e6732574ab6c6af6bd74e99774e6ba4a782c9b",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "cdd2e8ec608c467328d714bec3fcda3acf29eb2a4a1c20f1bc078f199e253361"
+        },
+        {
+          "path": "p1-header-mobile.png",
+          "sha256": "89382fe0c738b7317bf2aa90b1bc5e178017848939151931b0ad535f106c6b17"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:27.547Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e2e6732574ab6c6af6bd74e99774e6ba4a782c9b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "2a362bb81e199ac5ad734fc9969140744d1cc2ce15e07ca41587a119cad92b3b"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:27.590Z",
+      "cmd": "verify/yv map run mobile --recipe workspace-button-text-centered",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "838e8f274d9a98ed981155697931fe1b09f253b4",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "fc245edb15a8b480b26faae77b0230c286a9a1fda9a357ddaf904f49f38af457"
+        },
+        {
+          "path": "p3-header-mobile.png",
+          "sha256": "bc805d5e5642e76647904e1ef9a6386ba09b84c018c2dfa0dfe9e737aa388f47"
+        },
+        {
+          "path": "p3-workspace-mobile.png",
+          "sha256": "143b1e4121e56ef05f785f2c530c1b4bfcc1522263c8bbc541dad6c47ddf7fa9"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:42.375Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "838e8f274d9a98ed981155697931fe1b09f253b4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "3de2950282e51643c8ee418b94547417b9c6c8e5c47b82e196287b8bf9b87430"
+        },
+        {
+          "path": "p4-header-desktop.png",
+          "sha256": "5077bf0dbc826ae9a08c3689f46a3d0627cd0316b0b05d951e8872a9f71f119e"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:42.415Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "838e8f274d9a98ed981155697931fe1b09f253b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "a7a86036219e8318517910fb6eb231cec772e70da5f9d517758f53d1cff79e0b"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:42.454Z",
+      "cmd": "verify/yv map run mobile --recipe workspace-button-text-centered && verify/yv map run changes-pane --recipe shows-diff && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "838e8f274d9a98ed981155697931fe1b09f253b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "62cb87e846ff9de22b82e7f7d0daa8b2babc258e27dd99191944ff3bcf2304a8"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:50.753Z",
+      "cmd": "verify/yv design-check --base 0e6bcfb89585",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "838e8f274d9a98ed981155697931fe1b09f253b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-mobile.json",
+          "sha256": "8f8c18a2c405077bc06e460f5567c8cdc7e627ebe5d9a7eaf93f1ee52c4c68dc"
+        }
+      ],
+      "addedAt": "2026-11-18T03:46:50.835Z",
+      "cmd": "verify/yv map run mobile",
+      "exit": 1,
+      "failingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/successful-connection-removes-shortcuts"
+      ],
+      "passingRecipes": [
+        "mobile/phone-workspace",
+        "mobile/workspace-button-text-centered"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "base",
+      "kind": "regression",
+      "at": "e2e6732574ab6c6af6bd74e99774e6ba4a782c9b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-mobile.json",
+          "sha256": "cbb1c1ed3607c77f143ca9e6e7266f8f110bb40c88b3c9223f274d89792f5582"
+        }
+      ],
+      "addedAt": "2026-11-18T03:48:11.036Z",
+      "cmd": "verify/yv map run mobile",
+      "exit": 1,
+      "failingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/workspace-button-text-centered",
+        "mobile/successful-connection-removes-shortcuts"
+      ],
+      "passingRecipes": [
+        "mobile/phone-workspace"
+      ]
+    }
+  ]
+}
