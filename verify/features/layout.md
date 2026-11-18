@@ -108,6 +108,14 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"label:Me
 yv drive new --steps '[{"expect":"label:Message"},{"eval":"(() => { const row = document.querySelector(\".composer-row\").getBoundingClientRect(); const send = document.querySelector(\".composer-row .send\").getBoundingClientRect(); return Math.round(row.right - send.right); })()","equals":0}]'
 ```
 
+### new-session-send-shares-controls-row
+Viewports: desktop
+Send stays next to the composer controls as the New session box narrows.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":"label:Message"},{"expect":"role:button:Send"},{"eval":"(async () => { const inner = document.querySelector(\".new-inner\"); const row = inner.querySelector(\".composer-row\"); const send = row.querySelector(\".send\"); for (let width = 300; width <= 580; width += 2) { inner.style.maxWidth = width + \"px\"; await new Promise(requestAnimationFrame); const lastControl = Math.max(...[...row.querySelectorAll(\"button:not(.send)\")].filter(b => b.getClientRects().length).map(b => b.getBoundingClientRect().bottom)); if (send.getBoundingClientRect().top >= lastControl) return {width}; } return true; })()","equals":true},{"shot":"composer-controls"}]'
+```
+
 ### desktop-sidebar-is-a-column
 Viewports: desktop
 At 1440 px nothing changes: no menu button, and the sidebar is a 248 px column
