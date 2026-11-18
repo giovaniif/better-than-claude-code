@@ -26,7 +26,9 @@ Dictation and hands-free voice use the existing composer and voice rules.
    link fills the address; you still choose Connect on the phone.
 
 The app validates `/health`, then waits for the UI's WebSocket snapshot before
-saving the host. The UI reports `mobile.connected` over that same socket;
+saving the host. The native bridge observes a valid snapshot from the selected
+host's own `/ws` socket, so older host UIs can also finish connecting. Updated
+host UIs additionally report `mobile.connected` over that same socket;
 yardd persists `mobile.json` in its data directory and broadcasts `mobile.status`.
 The phone icon in new-session and session headers disappears across all clients
 of that hub only after a successful phone connection. Hosts always retains the

@@ -1,6 +1,24 @@
 // Adapt Apple's recognizer to the same voice state machine used by the web UI.
 (() => {
   const post = (body) => window.webkit.messageHandlers.switchyard.postMessage(body);
+  // Existing hosts predate the explicit UI handshake. Observe their own hub
+  // snapshot so installing the phone app does not require updating the host.
+  const Socket = window.WebSocket;
+  window.WebSocket = class extends Socket {
+    constructor(...args) {
+      super(...args);
+      const url = new URL(this.url);
+      if (url.protocol !== "wss:" || url.pathname !== "/ws") return;
+      url.protocol = "https:";
+      if (url.origin !== window.location.origin) return;
+      this.addEventListener("message", (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message?.op === "snapshot" && Array.isArray(message.sessions)) post({ op: "connected" });
+        } catch { /* Ignore non-protocol frames as the host UI does. */ }
+      });
+    }
+  };
   let next = 0;
   const recognitions = new Map();
   const utterances = new Map();
