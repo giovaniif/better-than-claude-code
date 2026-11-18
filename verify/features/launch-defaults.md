@@ -39,3 +39,14 @@ Explicit defaults can be cleared independently without changing the conversation
 ```sh
 yv drive settings --steps '[{"eval":"for (const target of [\"sessions\",\"switchy\"]) localStorage.setItem(\"yard.defaults.\"+target,JSON.stringify({host:\"local\",choice:{engine:\"codex\",model:\"fake-fast\",effort:\"low\"}})); true"},{"reload":true},{"click":{"css":"section[aria-labelledby=defaults-sessions] button","hasText":"Use last used"}},{"eval":"localStorage.getItem(\"yard.defaults.sessions\")","equals":null},{"eval":"localStorage.getItem(\"yard.defaults.switchy\") !== null","equals":true},{"click":{"css":"section[aria-labelledby=defaults-switchy] button","hasText":"Use last used"}},{"eval":"localStorage.getItem(\"yard.defaults.switchy\")","equals":null},{"shot":"reset-defaults"}]'
 ```
+
+### removed-default-host-keeps-the-model
+Viewports: both
+The saved default host was removed: New session falls back to this computer
+but still starts on the saved default model and effort, as Settings shows.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-removed-default","kind":"ssh","destination":"test@gone.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-removed-default"}]}' --save removed_host='hosts[name=TEST-removed-default].id'
+yv api '{"op":"host.remove","hostId":"{{removed_host}}"}'
+yv drive new --steps '[{"eval":"localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"{{removed_host}}\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true"},{"reload":true},{"expect":{"css":".new-chips button","hasText":"iso-host"}},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Xhigh"},{"shot":"new-session"},{"goto":"settings"},{"expect":"css:section[aria-labelledby=\"defaults-sessions\"] .chip","text":"iso-host"},{"expect":"css:section[aria-labelledby=\"defaults-sessions\"] button[aria-label^=\"Model \"]","text":"Fake Deep"},{"shot":"settings"}]'
+```

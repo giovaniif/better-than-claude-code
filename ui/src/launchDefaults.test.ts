@@ -85,3 +85,17 @@ test("a removed default model falls back without overwriting the saved preferenc
   expect(loadChoice(models).model).toBe("fast");
   expect(loadDefaults("sessions")?.choice.model).toBe("gone");
 });
+test("a removed default host falls back without dropping the saved model", () => {
+  saveDefaults("sessions", { host: "gone", choice });
+  rememberSession({
+    host: "local",
+    engine: "codex",
+    model: "other",
+    effort: "low",
+    cwd: "/test",
+  });
+  // New session asked for "gone" and runs on local because it was removed.
+  expect(loadChoice(models, "local", "gone")).toEqual(choice);
+  // Picking local on purpose still restores what was last used there.
+  expect(loadChoice(models, "local", "local").model).toBe("other");
+});
