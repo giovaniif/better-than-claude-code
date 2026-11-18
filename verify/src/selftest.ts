@@ -33,7 +33,7 @@ export function selftest(a: Args): Result {
       step(["drive", "session:{{sid_cmd}}", "--viewport", "desktop", "--steps", '[{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it."}]']) &&
       // A hand-off keeps the title, so a session route by id must not open the other one.
       step(["api", '{"op":"session.handoff","sessionId":"{{sid_echo}}","engine":"claude","model":"claude-haiku-5-5","effort":"low"}', "--wait", '{"op":"created"}']) &&
-      step(["drive", "session:{{sid_echo}}", "--steps", '[{"expect":"role:button:Fake Fast Low"}]']);
+      step(["drive", "session:{{sid_echo}}", "--steps", '[{"expect":"role:button:Model Fake Fast"},{"expect":"role:button:Effort Low"}]']);
     step(["iso", "down"]);
     smoke = { ok, steps };
     if (!ok) problems.push({ code: "smoke", msg: "the smoke round trip failed", hint: "see smoke.steps" });
