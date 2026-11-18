@@ -1,0 +1,47 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd automation_window_survives_partial_edits_and_null_clears_it -- --exact
+# exit 101 after 13572 ms at 2af77a89053f937520d5ab711b0adf5726f1c46c
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 59 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+
+running 1 test
+test automation_window_survives_partial_edits_and_null_clears_it ... FAILED
+
+failures:
+
+---- automation_window_survives_partial_edits_and_null_clears_it stdout ----
+
+thread 'automation_window_survives_partial_edits_and_null_clears_it' (3935220) panicked at crates/yardd/tests/daemon.rs:1851:5:
+assertion `left == right` failed
+  left: Null
+ right: Object {"days": Array [Number(1), Number(5)], "end": String("09:00"), "start": String("21:00")}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-3935219-auto-window-0 for inspection
+
+
+failures:
+    automation_window_survives_partial_edits_and_null_clears_it
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 77 filtered out; finished in 0.14s
+
+
+   Compiling yardd v0.11.0 (/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 13.38s
+     Running unittests src/main.rs (target/debug/build/yardd/c16ca97707e25d45/out/yardd-c16ca97707e25d45)
+     Running tests/acp.rs (target/debug/build/yardd/2f1e989bae883b47/out/acp-2f1e989bae883b47)
+     Running tests/connectors.rs (target/debug/build/yardd/eb516ee4b02bf4b4/out/connectors-eb516ee4b02bf4b4)
+     Running tests/daemon.rs (target/debug/build/yardd/bfc8be8b1207db57/out/daemon-bfc8be8b1207db57)
+error: test failed, to rerun pass `-p yardd --test daemon`
