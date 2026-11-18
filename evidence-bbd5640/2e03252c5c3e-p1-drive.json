@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "93d9da094197223fe033b753b4d119a7251e9861",
+    "short": "93d9da0",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:02:45.793Z"
+  },
+  "dir": ".verify/evidence/sessions-search-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1817,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sessions-search-base/no-match-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.querySelector(\".focused-empty\").innerText",
+          "value": "No sessions to show\n\nStart a session whenever you're ready.\n\nNew session"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1921,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sessions-search-base/no-match-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.querySelector(\".focused-empty\").innerText",
+          "value": "No sessions to show\n\nStart a session whenever you're ready.\n\nNew session"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

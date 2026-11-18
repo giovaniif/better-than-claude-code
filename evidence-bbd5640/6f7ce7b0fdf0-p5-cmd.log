@@ -1,0 +1,26 @@
+$ verify/yv map run focused-pages --recipe sessions-search-no-match-says-so
+# exit 0 after 5831 ms at bbd56408dab0d110c1aa63711fb92292784d686c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T03:03:29.970Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 4799
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

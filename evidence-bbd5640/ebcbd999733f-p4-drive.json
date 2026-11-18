@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "bbd56408dab0d110c1aa63711fb92292784d686c",
+    "short": "bbd5640",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:03:19.475Z"
+  },
+  "dir": ".verify/evidence/sessions-search-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1537,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sessions-search-head-d/no-match-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.querySelector(\".focused-empty\").innerText",
+          "value": "No sessions match your search.\nClear search"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
