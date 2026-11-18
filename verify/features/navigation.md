@@ -36,6 +36,17 @@ it and Enter opens it (#197: it said "No sessions or pages match.").
 yv drive new --steps '[{"press":"Meta+k"},{"expect":"role:dialog:Go to session or page"},{"fill":"role:combobox:Search sessions and pages","value":"Switchy"},{"expect":{"css":".navigation-option","hasText":"Switchy"}},{"shot":"switchy-search"},{"press":"Enter"},{"expect":"role:heading:Switchy"},{"expect":"role:dialog:Go to session or page","visible":false},{"shot":"switchy-page"}]'
 ```
 
+### command-k-rows-name-repo-and-branch
+Viewports: both
+A worktree session's row in the palette names its repository and branch
+("Codex · iso-host · TEST-demo-app · yard/edit-…"), not the full worktree path
+under yardd's data dir, which cut off before the branch (#212). Its path still
+matches a search.
+
+```sh
+yv drive new --steps '[{"press":"Meta+k"},{"expect":"role:dialog:Go to session or page"},{"fill":"role:combobox:Search sessions and pages","value":"TEST-fix the greeting"},{"expect":{"css":".navigation-option","hasText":"TEST-fix the greeting"}},{"eval":"/^Codex · iso-host · TEST-demo-app · yard\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\".navigation-option .navigation-detail\").textContent)","equals":true},{"shot":"repo-and-branch"},{"fill":"role:combobox:Search sessions and pages","value":"wt/TEST-demo-app/yard-edit"},{"expect":{"css":".navigation-option","hasText":"TEST-fix the greeting"}}]'
+```
+
 ### recent-list-skips-automation-runs
 Viewports: both
 Finished automation runs are archived and live on the Automations page. Nine
