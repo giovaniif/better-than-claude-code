@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "subscriptions",
+  "build": {
+    "sha": "74c2c64817a9b2638a01a54f31d534f85885f9bc",
+    "short": "74c2c64",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:27:14.173Z"
+  },
+  "dir": ".verify/focused-merge-subscriptions",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/focused-merge-subscriptions/subscriptions-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1910,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/focused-merge-subscriptions/subscriptions-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1726,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

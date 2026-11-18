@@ -1,0 +1,383 @@
+{
+  "v": 1,
+  "claim": "Approved Focused pages redesign separates host activity, engine logins and system controls, compacts sidebar subscription usage, makes account identity explicit, and prevents workspace tabs wrapping or clipping.",
+  "repo": "/tmp/switchyard-workspace-tabs-20261118",
+  "base": "24488917932ab6800dcba2a54cdbd9e2d1c26e5c",
+  "head": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mermaid.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mobile.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/queue.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/session-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:58:38.117Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "f08ecc466baf1a84ed474890f017f49fbbb6d79145cc4b3ecb85b76645fe6ff7"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:38.215Z",
+      "cmd": "verify/yv map run layout --recipe workspace-tabs-fit-minimum-width",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "2a70c56b7f0e12850bfe9b6a5f92b8be14a13a8ba28d3ddbe39bac8442b9228e"
+        },
+        {
+          "path": "p2-minimum-pane-desktop.png",
+          "sha256": "25427630c44c33f0efb2bcd87a7c7025d6b5fdacb386a557a43efa9fc98e6f8b"
+        },
+        {
+          "path": "p2-fail-desktop-step4.png",
+          "sha256": "0da6e9650515478de613cb9edde6d9d44435fbacb2265998893ce97151a65c7f"
+        }
+      ],
+      "addedAt": "2026-11-18T01:59:18.249Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "base",
+      "kind": "repro",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "3e0213b0a06ef4ad4f70544874beddeed7a4f9dca9bcfc9889396fa95e11a239"
+        },
+        {
+          "path": "p9-before-expanded-host-mobile.png",
+          "sha256": "15aad914b4bc7d9dc22a0edda75108c05390b30d43e8b9dcabda2b23ff72657d"
+        },
+        {
+          "path": "p9-before-expanded-host-desktop.png",
+          "sha256": "50539af2fc0f83c701536476f11931a8f4d5638e2b14c91e649532e02f888c3b"
+        }
+      ],
+      "addedAt": "2026-11-18T02:05:48.364Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e56f17970614bfd214226af67eed1e83009b916e6066cca127a12691803ce6da"
+        }
+      ],
+      "addedAt": "2026-11-18T02:29:59.876Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "090f7d7211bb0313a810f85f92854a3b0920f775b0dba0798131fda3e6d85d24"
+        }
+      ],
+      "addedAt": "2026-11-18T02:30:00.429Z",
+      "cmd": "verify/yv design-check --base 24488917932a",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-2-hosts.json",
+          "sha256": "448d6b3b515a41cd51deb6c7e9a330743a5e6e4236e3bc157cabf57ea08773b0"
+        },
+        {
+          "path": "p6-2-hosts-mobile.png",
+          "sha256": "2de7ac6950e59b2625c128b297c614c18c88ca968a7d9848436566550ce84d69"
+        },
+        {
+          "path": "p6-2-hosts-desktop.png",
+          "sha256": "2adb84ef46be30cb0e93e69dd5685ef2f80b7446f89520010e7a7205eebf582d"
+        }
+      ],
+      "addedAt": "2026-11-18T02:30:13.029Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-2-new.json",
+          "sha256": "2d533c5a24e4ce0ca7a442392a535f611912060e3c19f0b1aa535fc4c239ec4f"
+        },
+        {
+          "path": "p7-2-new-mobile.png",
+          "sha256": "7062cb5e256354d0cf7e54bc4ff6cb82c3a34c0687c74c350c975bd275aefd16"
+        },
+        {
+          "path": "p7-2-new-desktop.png",
+          "sha256": "c1e102676e5499269e1bef7e834d2ad829678816d08e8cc7d0b65d46b97f85ce"
+        }
+      ],
+      "addedAt": "2026-11-18T02:30:13.074Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-2-subscriptions.json",
+          "sha256": "75834a4ee404920f3eab387fdbb4b6c4f1f3b0a50a7d25387637067028c6b084"
+        },
+        {
+          "path": "p8-2-subscriptions-mobile.png",
+          "sha256": "3af6aa68af520d215a5336cfbf323388780d0d34daf21c3ec5c1a9abc5e96605"
+        },
+        {
+          "path": "p8-2-subscriptions-desktop.png",
+          "sha256": "7ad9669117d2845bb85d82f70207bc309be04aaa4433b085a5661175feda0a9e"
+        }
+      ],
+      "addedAt": "2026-11-18T02:30:13.117Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-focused-final-acp-map.json",
+          "sha256": "b3e80e4e7e76db4f9aadf8296a9a532c389b26594bdf04f62eb42cf78a886ef7"
+        }
+      ],
+      "addedAt": "2026-11-18T02:31:26.482Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn",
+        "acp-engines/gemini-picker-session-and-approval",
+        "acp-engines/gemini-separate-account-terminal-login"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "note",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T02:31:26.524Z",
+      "text": "Rebased onto current main, including Gemini support. Retained the original workspace-tab baseline proofs: the intervening main changes do not alter that header or its wrapping reproduction. Final head UI tests: 395 pass; verification CLI: 53 pass. ACP browser map passes all 7 recipes, including Gemini account login, approvals, and hand-off model labels; the five-engine account-action layout check also passes."
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-focused-final-focused-map.json",
+          "sha256": "dc7f25b89ed5a6c3bc758d7641a682e658e92fc46fb8ac5227a94928f3e3a7da"
+        }
+      ],
+      "addedAt": "2026-11-18T02:31:42.893Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    }
+  ]
+}

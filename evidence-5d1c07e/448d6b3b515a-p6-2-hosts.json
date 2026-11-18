@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "5d1c07e2d3201a8bb0ebc03c22bb695ee539b72d",
+    "short": "5d1c07e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:29:35.783Z"
+  },
+  "dir": ".verify/focused-final-merge-hosts",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/focused-final-merge-hosts/hosts-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1863,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/focused-final-merge-hosts/hosts-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 1852,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

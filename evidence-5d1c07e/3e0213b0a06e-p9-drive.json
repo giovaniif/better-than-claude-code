@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+    "short": "607b476",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:55:36.283Z"
+  },
+  "dir": "/tmp/switchyard-workspace-tabs-20261118/.verify/focused-before-hosts",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1909,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-workspace-tabs-20261118/.verify/focused-before-hosts/before-expanded-host-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1556,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-workspace-tabs-20261118/.verify/focused-before-hosts/before-expanded-host-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

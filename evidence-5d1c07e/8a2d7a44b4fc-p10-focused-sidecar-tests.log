@@ -1,0 +1,60 @@
+bun test v1.4.4 (38afee6c8)
+
+src/message.test.ts:
+(pass) userMessage > plain text stays a plain string [0.24ms]
+(pass) userMessage > an image goes inline as base64 and every file is named by path [0.32ms]
+(pass) userMessage > attachments alone still make a text block [0.07ms]
+(pass) userMessage > an image the API would refuse, or cannot read, is named by path only [0.12ms]
+(pass) userMessage > other image types, such as SVG, are not sent inline [0.07ms]
+
+src/main.test.ts:
+(pass) the sidecar's entry point bundles [140.40ms]
+
+src/history.test.ts:
+(pass) sessionRow > prefers the custom title, then the summary, then the first prompt [0.21ms]
+(pass) historyEvents > turns prompts, answers and tool calls into yardd events, one turn per prompt [1.02ms]
+(pass) historyEvents > edits keep their diff [0.32ms]
+(pass) historyEvents > Claude Code's own bookkeeping and subagent chatter stay out [0.15ms]
+(pass) historyEvents > a failed tool result is not ok, and item ids never repeat [0.23ms]
+(pass) lastModel > the last main-thread answer's model, skipping synthetic answers and subagents [0.14ms]
+
+src/usage.test.ts:
+(pass) one rate_limit_event carries one window; later events add to it [0.32ms]
+(pass) a newer event for the same window replaces it [0.05ms]
+(pass) the per-model weekly windows are kept under their own names [0.03ms]
+(pass) unifiedWindows, when the CLI sends them, fill every window at once; reset times may be ISO strings [0.09ms]
+(pass) an event with no utilization updates the status and keeps what was known [0.04ms]
+(pass) an empty or odd event does not throw [0.04ms]
+(pass) the usage report's limits become the same windows as rate_limit_event [0.31ms]
+
+src/switchy.test.ts:
+(pass) Switchy plan profile keeps tools disabled; explicit access retains SDK tools and permissions [0.20ms]
+
+src/mcp.test.ts:
+(pass) summarize > one row per server, with tool and widget counts and no URL path [0.42ms]
+(pass) tool names follow Claude Code's mcp__<server>__<tool> [0.07ms]
+(pass) a widget is a ui:// resource, under the current or the flat key [0.12ms]
+(pass) widgetResource takes the HTML item and its sandbox meta [0.21ms]
+(pass) widgetResult prefers the server's own result over the model's text [0.14ms]
+(pass) apps > an MCP call with a widget completes with the widget, its input and result [1.41ms]
+(pass) apps > a failed call or a tool without a widget has none [0.20ms]
+(pass) apps > a widget calls only its server's widget tools; side effects go through the permission check [0.52ms]
+
+src/subagents.test.ts:
+(pass) the Agent call > carries its description and the subagent's type [0.10ms]
+(pass) the Agent call > the older Task name is the same call; an ordinary tool has no agent field [0.06ms]
+(pass) a subagent's own messages > a tool call becomes a tool_started under its Agent call [0.27ms]
+(pass) a subagent's own messages > a subagent's edit gives the tool line only, no diff for the thread [0.08ms]
+(pass) a subagent's own messages > a result completes its call [0.10ms]
+(pass) a subagent's own messages > thinking, text, the prompt and stream events add nothing [0.07ms]
+(pass) a subagent's own messages > a subagent that starts one of its own nests under it [0.08ms]
+(pass) the task's life > the Agent call ends with its notification: the subagent's last words, its duration [0.20ms]
+(pass) the task's life > without any words of its own, the summary stands in; a failure is not ok [0.06ms]
+(pass) the task's life > the call's own tool_result is left alone once the task runs it, foreground or background [0.08ms]
+(pass) the task's life > a background shell or monitor is no subagent: its result completes it as before [0.05ms]
+(pass) the task's life > a notification with no tool call, or for an unknown one, is dropped [0.03ms]
+
+ 40 pass
+ 0 fail
+ 104 expect() calls
+Ran 40 tests across 7 files. [168.00ms]
