@@ -35,6 +35,16 @@ Hosts page does not fit: see layout/mobile-hosts-page.)
 yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"role:button:Add Claude Code account"},{"fill":"label:Account name","value":"TEST-Work"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-Work"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"logged in as me@example.com"},{"shot":"account-added"}]'
 ```
 
+### empty-name-add-looks-disabled
+Viewports: desktop
+With the account name empty, Add is disabled and looks it (faded, like the
+other disabled controls), so it does not read as a button that ignores the
+click. Typing a name brings it back to full strength.
+
+```sh
+yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"role:button:Add Claude Code account"},{"expect":{"css":".account-add .btn-primary","hasText":"Add"},"enabled":false},{"eval":"Number(getComputedStyle(document.querySelector(\".account-add .btn-primary\")).opacity) < 1","equals":true},{"shot":"empty-name"},{"fill":"label:Account name","value":"TEST-Faded"},{"expect":{"css":".account-add .btn-primary","hasText":"Add"},"enabled":true},{"eval":"getComputedStyle(document.querySelector(\".account-add .btn-primary\")).opacity","equals":"1"},{"shot":"named"}]'
+```
+
 ### refused-add-account-keeps-the-form
 Viewports: desktop
 A name yardd refuses ("default", or one already in use) shows the error and
