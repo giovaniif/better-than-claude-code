@@ -415,8 +415,10 @@ impl App {
         }
         // A widget's HTML and data go to a file; the log keeps its id.
         crate::widgets::take(self, &mut event);
-        // Turn boundaries carry the time, so the UI can say how long one took.
-        if matches!(event["type"].as_str(), Some("turn_started") | Some("turn_completed")) && event["at"].is_null() {
+        // Turn boundaries carry the time, so the UI can say how long one took;
+        // approvals too, so the time spent waiting for the user is left out.
+        let timed = ["turn_started", "turn_completed", "approval_request", "approval_resolved"];
+        if event["type"].as_str().is_some_and(|t| timed.contains(&t)) && event["at"].is_null() {
             event["at"] = json!(now_ms());
         }
         let status = match event["type"].as_str() {

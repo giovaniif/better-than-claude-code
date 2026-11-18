@@ -90,7 +90,9 @@ export function layout(items: Item[], running: boolean): Row[] {
     const cut = nextHead?.kind === "user" && nextHead.steered ? nextHead.at : undefined;
     const from = own?.start ?? (steered && head?.kind === "user" ? head.at : undefined);
     const to = cut ?? marker?.end;
-    const ms = from != null && to != null ? to - from : null;
+    // "Worked for" is the agent's time: an approval's wait for the user is
+    // left out (one never answered waited until the turn ended).
+    const ms = from != null && to != null ? to - from - waited(turn, from, to) : null;
     // Only the part that runs to the stop is marked, not each steered part.
     const stoppedMark = (): Row[] => (!live && marker && cut === undefined && marker.status === "interrupted" ? [{ type: "stopped", key: `stopped-${marker.key}`, ms }] : []);
     if (live || !body.some(isWork)) {
@@ -125,6 +127,18 @@ export function layout(items: Item[], running: boolean): Row[] {
     rows.push(...group(shown, false));
   });
   return rows;
+}
+
+/** How long this part's approvals waited for the user, within `from`..`to`. */
+function waited(items: Item[], from: number, to: number): number {
+  let ms = 0;
+  for (const it of items) {
+    if (it.kind !== "approval" || it.askedAt == null) continue;
+    const start = Math.max(it.askedAt, from);
+    const end = Math.min(it.answeredAt ?? to, to);
+    if (end > start) ms += end - start;
+  }
+  return ms;
 }
 
 const PLURAL: Record<string, [string, string, string]> = {
