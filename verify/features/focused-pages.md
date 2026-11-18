@@ -151,8 +151,8 @@ yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () 
 
 ### manage-accounts-opens-logins
 Viewports: both
-The account identity is visible below the composer. Manage accounts opens Engine logins on the selected host and keeps that destination after a reload.
+Manage accounts opens Engine logins on the selected host and keeps that destination after a reload. The composer has no standalone login email.
 
 ```sh
-yv drive new --steps '[{"expect":"css:.composer-identity","text":"me@example.com"},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+yv drive new --steps '[{"expect":"css:.composer-identity","count":0},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
 ```

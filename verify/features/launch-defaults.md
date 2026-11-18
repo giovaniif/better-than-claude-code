@@ -61,3 +61,13 @@ yv api '{"op":"host.add","name":"TEST-removed-default","kind":"ssh","destination
 yv api '{"op":"host.remove","hostId":"{{removed_host}}"}'
 yv drive new --steps '[{"eval":"localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"{{removed_host}}\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true"},{"reload":true},{"expect":{"css":".new-chips button","hasText":"iso-host"}},{"expect":"role:button:Model Fake Deep"},{"expect":"role:button:Effort Xhigh"},{"shot":"new-session"},{"goto":"settings"},{"expect":"css:section[aria-labelledby=\"defaults-sessions\"] .chip","text":"iso-host"},{"expect":"css:section[aria-labelledby=\"defaults-sessions\"] button[aria-label^=\"Model \"]","text":"Fake Deep"},{"shot":"settings"}]'
 ```
+
+### offline-host-skips-branch-loading
+Viewports: both
+A saved offline host and folder stay selected. Opening the composer waits for
+the host before looking up branches and keeps the task draft available.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-offline-default","kind":"ssh","destination":"test@offline.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-offline-default","status":"error"}]}' --save offline_default='hosts[name=TEST-offline-default].id'
+yv drive new --steps '[{"eval":"localStorage.setItem(\"yard.host\",\"{{offline_default}}\"); localStorage.setItem(\"yard.cwd.{{offline_default}}\",\"/tmp/TEST-remembered-repo\"); true"},{"reload":true},{"expect":"role:button:TEST-offline-default"},{"expect":"role:button:TEST-remembered-repo"},{"fill":"label:Message","value":"TEST-draft for offline host"},{"expect":"role:button:Send","enabled":false},{"wait":350},{"expect":"css:.banner-error","count":0},{"shot":"new-session-offline"}]'
+```
