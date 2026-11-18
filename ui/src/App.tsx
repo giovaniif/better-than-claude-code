@@ -3383,7 +3383,7 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
           <code>{login.command}</code>
           <button className="btn" onClick={() => copy(login.command ?? "gemini")}>{copied ? "Copied" : "Copy"}</button>
         </div>
-        {login.error && <p className="muted small">{login.error}</p>}
+        {login.instructions && <p className="muted small">{login.instructions}</p>}
         <p className="muted small">Gemini CLI keeps the login on that machine. After signing in, check it here.</p>
         <button className="btn-primary" onClick={() => actions.login(host, engine, account)}>Check login</button>
       </>

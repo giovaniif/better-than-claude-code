@@ -244,8 +244,9 @@ export interface LoginState {
   code?: string | null;
   error?: string;
   providers?: LoginProvider[];
-  /** OpenCode: the provider being logged in, and what its sign-in says to do. */
+  /** OpenCode: the provider being logged in. */
   provider?: string;
+  /** Guidance from the CLI or provider for completing the login. */
   instructions?: string;
   label?: string;
 }

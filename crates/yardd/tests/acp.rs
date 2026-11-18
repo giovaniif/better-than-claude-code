@@ -571,6 +571,8 @@ async fn gemini_logged_out_offers_terminal_login_and_added_accounts_stay_separat
     c.send(json!({ "op": "login.start", "engine": "gemini" })).await;
     let login = login_state(&mut c, 0, "gemini", "terminal").await;
     assert_eq!(login["command"], "gemini");
+    assert!(login["error"].is_null(), "terminal login guidance is an expected state, not a failed API call");
+    assert_eq!(login["instructions"], "Authentication required");
     c.send(json!({ "op": "account.add", "engine": "gemini", "name": "Work" })).await;
     let accounts = c.wait_for("Gemini account", |m| m["op"] == "accounts").await;
     let id = accounts["accounts"][0]["id"].as_str().unwrap().to_string();

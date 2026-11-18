@@ -125,6 +125,6 @@ pub async fn start(app: &Arc<App>, account: &str) -> Result<()> {
         Some(dir) => format!("GEMINI_CLI_HOME='{}' gemini", dir.display().to_string().replace('\'', "'\\''")),
         None => "gemini".to_string(),
     };
-    crate::login::report(app, "gemini", account, "terminal", json!({ "command": command, "error": status["error"] }));
+    crate::login::report(app, "gemini", account, "terminal", json!({ "command": command, "instructions": status["error"] }));
     Ok(())
 }
