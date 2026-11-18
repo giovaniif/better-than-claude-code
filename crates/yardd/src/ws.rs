@@ -300,6 +300,10 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         return crate::import::handle(app, direct, msg).await;
     }
     match msg["op"].as_str().unwrap_or("") {
+        "mobile.connected" => {
+            app.mobile.connected()?;
+            app.broadcast(json!({ "op": "mobile.status", "mobile": app.mobile.status() }));
+        }
         "session.create" => {
             create_session(app, Some(direct), msg, None, None).await?;
         }

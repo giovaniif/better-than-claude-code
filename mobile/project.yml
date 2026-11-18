@@ -1,0 +1,55 @@
+name: Switchyard
+options:
+  bundleIdPrefix: sh.giovani
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  Switchyard:
+    type: application
+    platform: iOS
+    sources: [Switchyard]
+    info:
+      path: Switchyard/Info.plist
+      properties:
+        CFBundleDisplayName: Switchyard
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSMicrophoneUsageDescription: Dictate messages and talk to your Switchyard sessions.
+        NSSpeechRecognitionUsageDescription: Turn your speech into messages for your Switchyard sessions.
+        NSLocalNetworkUsageDescription: Connect to your Switchyard host on your private network.
+        NSCameraUsageDescription: Take a photo to attach to a Switchyard message.
+        NSPhotoLibraryUsageDescription: Choose photos to attach to a Switchyard message.
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: sh.giovani.switchyard.mobile
+            CFBundleURLSchemes: [switchyard]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: sh.giovani.switchyard.mobile
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+  SwitchyardTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [SwitchyardTests]
+    dependencies:
+      - target: Switchyard
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Switchyard:
+    build:
+      targets:
+        Switchyard: all
+    test:
+      targets: [SwitchyardTests]

@@ -856,6 +856,30 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 }
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) { .sidebar, .app.drawer-open .sidebar { transition: none; } }
 
+/* The workspace remains available on a phone, one full-width view at a time. */
+.workspace-toggle, .workspace-close { display: none; }
+.mobile-setup { display: flex; flex-direction: column; gap: 16px; padding: 16px; line-height: 1.55; }
+.mobile-setup h2 { font-size: 15px; font-weight: 600; }
+.mobile-setup .field { margin: 8px 0; font-family: inherit; }
+.mobile-setup .login-open { margin-top: 6px; }
+.mobile-setup-button { flex: none; }
+.new-bar { border-bottom: 0; }
+@media (max-width: 1100px) {
+  .workspace-toggle, .workspace-close { display: flex; flex: none; }
+  .workspace-open > .thread { display: none; }
+  .workspace-open > .pane { display: flex; width: 100%; flex: 1 1 0; min-width: 0; border-left: 0; }
+  .workspace-open > .pane > .resizer { display: none; }
+  .workspace-open .tabs { flex-wrap: wrap; gap: 4px; }
+}
+@media (max-width: 700px) {
+  /* 16px keeps iOS from zooming the page when the editor takes focus. */
+  input, textarea, [contenteditable="true"] { font-size: 16px; }
+  .composer textarea { font-size: 16px; }
+  .field { font-size: 16px; }
+  .bar .mobile-setup-button { min-width: 32px; min-height: 32px; }
+  .mobile-setup .login-open { white-space: normal; height: auto; min-height: 36px; }
+}
+
 /* OpenCode's login: a provider list and the ways into one; a filter for long model lists */
 .provider-list { list-style: none; margin: 0; padding: 0; max-height: 46vh; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
 .provider-row { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }

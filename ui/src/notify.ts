@@ -6,6 +6,7 @@
 import { useState } from "react";
 import type { AgentEvent, SessionMeta, Status } from "./protocol";
 import { duration } from "./thread";
+import { inMobileApp } from "./mobile";
 
 export type Notice = "approval" | "finished" | "failed";
 
@@ -167,6 +168,11 @@ const tauriInvoke = (): ((cmd: string, args?: object) => Promise<unknown>) | und
 
 /** Turning them on asks for permission the first time. */
 export async function enable(): Promise<"on" | "blocked" | "unsupported"> {
+  if (inMobileApp()) {
+    const granted = await (window as any).SwitchyardMobile.requestNotifications();
+    if (granted) localStorage.setItem(KEY, "on");
+    return granted ? "on" : "blocked";
+  }
   const invoke = tauriInvoke();
   let granted: boolean;
   if (invoke) {
@@ -202,7 +208,7 @@ export function switchState(stored: boolean, permission: NotificationPermission 
 }
 
 const permissionNow = (): NotificationPermission | "unsupported" | null =>
-  tauriInvoke() ? null : typeof Notification === "undefined" ? "unsupported" : Notification.permission;
+  tauriInvoke() || inMobileApp() ? null : typeof Notification === "undefined" ? "unsupported" : Notification.permission;
 
 /** The sidebar switch: on or off, kept per browser. */
 export function useNotifySetting() {
@@ -269,6 +275,10 @@ export function createNotifier(opts: { openSessionId(): string | null; open(sess
   });
 
   const show = async (note: Note) => {
+    if (inMobileApp()) {
+      (window as any).SwitchyardMobile.notify(note);
+      return;
+    }
     const invoke = tauriInvoke();
     if (invoke) {
       try {
@@ -289,6 +299,7 @@ export function createNotifier(opts: { openSessionId(): string | null; open(sess
     };
   };
 
+  window.addEventListener("yard:notification", ((event: CustomEvent<Note>) => activate(event.detail)) as EventListener);
   return (msg: any) => {
     switch (msg.op) {
       case "snapshot":

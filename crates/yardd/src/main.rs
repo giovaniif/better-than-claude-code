@@ -16,6 +16,7 @@ mod hosts;
 mod import;
 mod login;
 mod mcp;
+mod mobile;
 mod opencode;
 mod pr;
 mod pty;

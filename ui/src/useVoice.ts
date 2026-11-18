@@ -278,6 +278,21 @@ export function useVoice(opts: VoiceOptions) {
   // What the session has to say, while voice mode is on.
   const lastCue = useRef(opts.cue?.n ?? 0);
   useEffect(() => {
+    const pause = () => {
+      stopAll();
+      modeRef.current = VOICE_OFF;
+      setMode(VOICE_OFF);
+      setDictating(false);
+    };
+    const hidden = () => { if (document.hidden) pause(); };
+    window.addEventListener("yard:pause", pause);
+    document.addEventListener("visibilitychange", hidden);
+    return () => {
+      window.removeEventListener("yard:pause", pause);
+      document.removeEventListener("visibilitychange", hidden);
+    };
+  }, []);
+  useEffect(() => {
     const c = opts.cue;
     if (!c || c.n === lastCue.current) return;
     lastCue.current = c.n;

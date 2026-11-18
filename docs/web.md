@@ -28,6 +28,16 @@ The compose file publishes container port 47717 on the server's `127.0.0.1`, whi
 
 Update the container by redeploying it; the app's **Update Switchyard** button refuses, since it only manages the Switchyard it installed.
 
+## iPhone app
+
+The iOS app connects to this same private HTTPS origin and uses the existing
+WebSocket Origin check. Open **Hosts → Switchyard for iPhone** for setup. Once
+the TestFlight beta has an invitation, set `YARD_TESTFLIGHT_URL` to its real
+`https://testflight.apple.com/join/<code>` URL and redeploy to show Install with
+TestFlight. The phone must have network access to the origin (for example,
+through Tailscale); the desktop's SSH forward cannot be used from the phone.
+See [mobile/README.md](../mobile/README.md) for the native app and signing setup.
+
 ## Projects
 
 The container sees only its own disk. Projects get in one of three ways:

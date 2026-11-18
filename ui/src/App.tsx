@@ -30,6 +30,7 @@ import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, E
 import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
+import { MobileSetup, MobileSetupButton } from "./MobileSetup";
 import { loadChoice, loadFolder, loadHost, readRecent, rememberSession, validChoice, type Choice } from "./sessionDefaults";
 export { loadChoice, readRecent } from "./sessionDefaults";
 export type { Choice } from "./sessionDefaults";
@@ -266,9 +267,11 @@ export function App() {
           {route.page === "new" && (
             <>
               {/* The page has no bar of its own; narrow windows need one for the menu button. */}
-              <header className="bar bar-narrow">
+              <header className="bar new-bar">
                 <MenuButton />
-                <h2>New session</h2>
+                <h2 className="label-narrow">New session</h2>
+                <span className="spacer" />
+                <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
               </header>
               <NewSession state={state} actions={actions} />
             </>
@@ -2243,6 +2246,7 @@ export function BranchPicker(props: { current: string; branches: string[]; value
 /* ---------- session ---------- */
 
 function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State; actions: Actions }) {
+  const [workspace, setWorkspace] = useState(false);
   const thread = state.threads[meta.id];
   const items = thread?.items ?? [];
   const changes = state.changes[meta.id];
@@ -2342,7 +2346,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   );
 
   return (
-    <div className="session">
+    <div className={`session ${workspace ? "workspace-open" : ""}`}>
       <main className="thread">
         <header className="bar">
           <MenuButton />
@@ -2361,6 +2365,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             </span>
           )}
           <span className="spacer" />
+          <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
+          <button className="btn-text workspace-toggle" aria-expanded={workspace} onClick={() => setWorkspace(true)}>Workspace</button>
           {busy && online && (
             <button className="btn-text" onClick={() => actions.interrupt(meta.id)}>
               Stop
@@ -2430,7 +2436,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} />
+      <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
     </div>
   );
 }
@@ -2946,7 +2952,7 @@ function splitDiff(diff: string): { path: string; body: string }[] {
 }
 
 /** The right-hand pane: what changed, and a shell in the same folder. */
-function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State }) {
+function WorkPane(props: { sessionId: string; changes: Changes | undefined; connected: boolean; actions: Actions; meta: SessionMeta; state: State; onClose(): void }) {
   const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
   const { sessionId, changes, connected, actions } = props;
   const [tab, setTab] = useState<"changes" | "terminal" | "pr" | "procs">("changes");
@@ -2968,6 +2974,7 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         onWidth={setPaneW}
       />
       <header className="bar tabs">
+        <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={props.onClose}><Icon d={CLOSE} /></button>
         <button className={`tab ${tab === "changes" ? "active" : ""}`} aria-pressed={tab === "changes"} onClick={() => setTab("changes")}>
           Changes
         </button>
@@ -4140,6 +4147,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
       </header>
       <div className="scroll">
         <div className="hosts-inner host-list">
+          <MobileSetup mobile={state.mobile} />
           {adding && <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />}
           <div className="host-grid">
             <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />

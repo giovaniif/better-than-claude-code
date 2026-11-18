@@ -794,6 +794,8 @@ export interface Automation {
   nextRun: number | null;
   lastRun?: LastRun | null;
 }
+/** Hub setup discovery; `mobile.connected` records a successful iOS UI connection. */
+export type { MobileStatus } from "./mobile";
 
 /** Switchy's own conversation; engine threads never appear in the session list. */
 export interface SwitchySource {

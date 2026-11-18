@@ -79,6 +79,13 @@ Open **Hosts → Add host**, enter `you@your-server`, and click **Install Switch
 
 Switchyard also ships as one Docker image you can deploy with Coolify or Docker Compose and open from any browser. It has no sign-in of its own, so keep it on a private network such as a tailnet. See [docs/web.md](docs/web.md).
 
+### On iPhone or iPad
+
+The iOS app is being prepared for TestFlight. **Hosts → Switchyard for iPhone**
+shows the beta invitation when available and the address to connect. It uses
+the same sessions and UI as your private HTTPS host, with native voice support.
+Build and distribution instructions: [mobile/README.md](mobile/README.md).
+
 ## How it works
 
 ```
