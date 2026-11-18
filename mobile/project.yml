@@ -20,6 +20,7 @@ targets:
         CFBundleDisplayName: Switchyard
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSMicrophoneUsageDescription: Dictate messages and talk to your Switchyard sessions.
         NSSpeechRecognitionUsageDescription: Turn your speech into messages for your Switchyard sessions.
         NSLocalNetworkUsageDescription: Connect to your Switchyard host on your private network.

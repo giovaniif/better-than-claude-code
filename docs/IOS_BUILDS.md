@@ -38,8 +38,9 @@ Verified on 2026-11-17:
   expires on **2027-10-20**. It uses that existing distribution certificate.
 - All seven required GitHub repository secret names are configured. Six iOS
   values were synced from EAS/the new profile; the existing team ID was reused.
-- The Switchyard App Store Connect app record did **not** exist when checked.
-  Do not confuse the registered bundle ID with the separate app record.
+- The owner created the separate App Store Connect record on 2026-11-18 UTC:
+  **Switchyard - AI Agents**, numeric app ID **`6836111611`**, SKU
+  `switchyard-mobile`, locale `en-US`. Apple's API confirmed the bundle ID.
 
 Do not revoke or replace the shared EAS certificate or API key to set up this
 app: other apps already use them. Only the provisioning profile is specific
@@ -121,14 +122,15 @@ At [App Store Connect → Apps](https://appstoreconnect.apple.com/apps), choose
 | Field | Value |
 | --- | --- |
 | Platform | iOS |
-| Name | Switchyard (if Apple reports a name conflict, resolve that before uploading) |
+| Name | Switchyard - AI Agents |
 | Primary language | English (U.S.) |
 | Bundle ID | `sh.giovani.switchyard.mobile` |
 | SKU | `switchyard-mobile` |
 
-Record the new numeric App Store Connect app ID here once created. Do not use
-the Bolão app's numeric ID. No public App Store release is needed to use
-TestFlight.
+The existing Switchyard record is **`6836111611`**:
+[open it in App Store Connect](https://appstoreconnect.apple.com/apps/6836111611).
+Do not create a duplicate or use the Bolão app's numeric ID. No public App Store
+release is needed to use TestFlight.
 
 ## Build and upload
 
@@ -149,20 +151,49 @@ gh run list --repo giovaniif/switchyard --workflow ios-app.yml --limit 5
 gh run watch <run-id> --repo giovaniif/switchyard --exit-status
 ```
 
+The app supports iPad multitasking, so `UISupportedInterfaceOrientations~ipad`
+must include all four orientations (including portrait upside down). The first
+signed archive passed locally but Apple's upload validator rejected the
+three-orientation plist with error 90474; the iPad-specific key fixes it while
+preserving the iPhone orientations.
+
 The simulator job must pass before the signing job starts. Signing imports the
 certificate into a temporary keychain, installs the provisioning profile,
 archives the Release app and uploads it to App Store Connect. The script
 cleans up temporary signing material. The build number uses the workflow run
 number and attempt; do not reuse a previously uploaded build number.
 
-If GitHub refuses dispatch because the new workflow is not on the default
-branch, land its reviewed PR first. Do not temporarily change an unrelated
-workflow, reuse another app's bundle ID or upload this app to another app record.
+Branch dispatch worked for the first signed build, without merging:
+[run 44207641656](https://github.com/giovaniif/switchyard/actions/runs/44207641656).
+The owner explicitly requires **no merge until they say so**; PR #183 remains
+a draft with auto-merge off. Do not merge to work around a dispatch problem,
+temporarily change an unrelated workflow, reuse another app's bundle ID or
+upload this app to another app record.
 
 The simulator artifact is **not** an installable iPhone/TestFlight build.
 Upload success is also not proof of installation: wait for Apple processing,
 then attach the build to a TestFlight group. Internal testers can test first;
 external testers require Apple's beta review.
+
+The app's internal **Owner testing** group is
+`78fa0ded-7289-4163-8570-a165110f7eb4`, with access to all builds. The existing
+account-holder tester matches the App Store Connect user, but Apple rejected
+assigning it through the public API (`409 STATE_ERROR: Tester(s) cannot be
+assigned`). Confirm internal tester access on the website; do not assume an
+empty successful group-creation response added the tester. No unrelated
+testers or other apps' groups were changed. Use
+[Switchyard → TestFlight](https://appstoreconnect.apple.com/apps/6836111611/testflight)
+to inspect processing, tester access and installation availability.
+
+For API checks, list `/v1/builds?filter[app]=6836111611` and inspect
+`processingState`, then the build's `betaBuildLocalizations` and
+`buildBetaDetail` (internal state). The group's `/relationships/builds` and
+`/relationships/betaTesters` confirm distribution. A successful relationship
+update can return HTTP 204 with an empty body; do not try to parse it as JSON
+or mistake that for a failed update. Add English "What to Test" notes for
+host connection, editing, voice, attachments and foreground recovery before
+requesting device verification. Internal testing does not provide a public
+`testflight.apple.com/join/` link.
 
 ## Show the installation link in Switchyard
 
