@@ -1,0 +1,40 @@
+$ verify/yv map run settings --recipe long-host-name
+# exit 1 after 8774 ms at 4bf2c8ffe906c232b584863ff7360753f43355f8
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "settings",
+      "at": "2026-11-18T04:43:24.914Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-host-name",
+          "status": "fail",
+          "ms": 2237,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"(() => { const row = [...document.querySelectorAll(\\\".settings-host\\\")].find((r) => r.textContent.includes(\\\"TEST-build-farm\\\")); const box = row.querySelector(\\\".settings-host-name\\\").getBoundingClientRect(); const c = row.querySelector(\\\".cloud\\\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\\\"TEST-build-farm\\\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \\\"ellipsis\\\" && !st.display.includes(\\\"flex\\\")].join(); })()\",\"equals\":\"true,true\"}: eval returned \"true,false\", expected \"true,true\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-43-22-866Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "\\\"Notifications\\\"\\n- region \\\"Sidebar\\\":\\n  - heading \\\"Sidebar\\\" [level=2]\\n  - text: The hosts listed at the foot of the sidebar, with CPU and memory. Plan usage there comes from these hosts. iso-host Show in sidebar\\n  - switch \\\"Show iso-host in sidebar\\\" [checked]\\n  - text: TEST-server Show in sidebar\\n  - switch \\\"Show TEST-server in sidebar\\\" [checked]\\n  - text: TEST-build-farm-long-name-for-sidebar-01 Show in sidebar\\n  - switch \\\"Show TEST-build-farm-long-name-for-sidebar-01 in sidebar\\\" [checked]\\n  - button \\\"Manage hosts\\\"\\n- text: Kept in this browser.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const row = [...document.querySelectorAll(\\\".settings-host\\\")].find((r) => r.textContent.includes(\\\"TEST-build-farm\\\")); const box = row.querySelector(\\\".settings-host-name\\\").getBoundingClientRect(); const c = row.querySelector(\\\".cloud\\\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\\\"TEST-build-farm\\\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \\\"ellipsis\\\" && !st.display.includes(\\\"flex\\\")].join(); })()\",\n          \"value\": \"true,false\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"(() => { const row = [...document.querySelectorAll(\\\\\\\".settings-host\\\\\\\")].find((r) => r.textContent.includes(\\\\\\\"TEST-build-farm\\\\\\\")); const box = row.querySelector(\\\\\\\".settings-host-name\\\\\\\").getBoundingClientRect(); const c = row.querySelector(\\\\\\\".cloud\\\\\\\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\\\\\\\"TEST-build-farm\\\\\\\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \\\\\\\"ellipsis\\\\\\\" && !st.display.includes(\\\\\\\"flex\\\\\\\")].join(); })()\\\",\\\"equals\\\":\\\"true,true\\\"}: eval returned \\\"true,false\\\", expected \\\"true,true\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-43-22-866Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "settings/long-host-name",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

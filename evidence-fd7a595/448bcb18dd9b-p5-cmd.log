@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run settings --recipe long-host-name
+# exit 0 after 6612 ms at fd7a595c5ffed391cf95fbe45fb58f394751ee68
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "settings",
+      "at": "2026-11-18T04:43:47.762Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-host-name",
+          "status": "pass",
+          "ms": 4876
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [169.00ms]

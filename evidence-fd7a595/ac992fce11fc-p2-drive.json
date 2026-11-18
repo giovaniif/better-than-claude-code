@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "4bf2c8ffe906c232b584863ff7360753f43355f8",
+    "short": "4bf2c8f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T04:42:18.261Z"
+  },
+  "dir": ".verify/evidence/settings-long-host-name-baseshot",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1790,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/settings-long-host-name-baseshot/base-long-host-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1489,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/settings-long-host-name-baseshot/base-long-host-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+    "short": "fd7a595",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T04:43:33.685Z"
+  },
+  "dir": ".verify/evidence/settings-long-host-name-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1826,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/settings-long-host-name-head/head-long-host-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const row = [...document.querySelectorAll(\".settings-host\")].find((r) => r.textContent.includes(\"TEST-build-farm\")); const box = row.querySelector(\".settings-host-name\").getBoundingClientRect(); const c = row.querySelector(\".cloud\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\"TEST-build-farm\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \"ellipsis\" && !st.display.includes(\"flex\")].join(); })()",
+          "value": "true,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1789,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/settings-long-host-name-head/head-long-host-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const row = [...document.querySelectorAll(\".settings-host\")].find((r) => r.textContent.includes(\"TEST-build-farm\")); const box = row.querySelector(\".settings-host-name\").getBoundingClientRect(); const c = row.querySelector(\".cloud\").getBoundingClientRect(); const walk = document.createTreeWalker(row, NodeFilter.SHOW_TEXT); let t; while ((t = walk.nextNode()) && !t.data.includes(\"TEST-build-farm\")); const st = getComputedStyle(t.parentElement); return [c.width > 0 && c.left >= box.left - 0.5 && c.right <= box.right + 0.5, st.textOverflow === \"ellipsis\" && !st.display.includes(\"flex\")].join(); })()",
+          "value": "true,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

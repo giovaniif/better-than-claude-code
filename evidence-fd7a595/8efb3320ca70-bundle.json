@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "claim": "Settings, Sidebar card, at 390 px: a long host name (up to the 40 characters names allow) is cut mid-letter with no ellipsis and its cloud icon (the remote-host mark) disappears; the sidebar's own host row truncates the same name with an ellipsis and keeps the cloud.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67",
+  "base": "57794b557517cfcaae540196173277a62392e796",
+  "head": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/SettingsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T04:43:10.597Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4bf2c8ffe906c232b584863ff7360753f43355f8",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "98c19351bead584a268a04de3d141648735341b538362cb540785810fbd5b804"
+        },
+        {
+          "path": "p1-fail-mobile-step2.png",
+          "sha256": "60ebeb5306170e0af39227975b92fbfbb131ccc3296f9cf6a791ad2c651815ed"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:10.636Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4bf2c8ffe906c232b584863ff7360753f43355f8",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "ac992fce11fc9179d5bc922addb90eb708750d2ce493ec0f8e907803927f2e67"
+        },
+        {
+          "path": "p2-base-long-host-mobile.png",
+          "sha256": "60ebeb5306170e0af39227975b92fbfbb131ccc3296f9cf6a791ad2c651815ed"
+        },
+        {
+          "path": "p2-base-long-host-desktop.png",
+          "sha256": "cab8392114891f757441171432fe1a0fd70012a6dd39d5fd314e53cae9bd1c7a"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:10.680Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "4bf2c8ffe906c232b584863ff7360753f43355f8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "1e50ac53b5f48cb1f98a5b85d4bc3d8e8b043dae7e41b213a42959da38f964a1"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:16.143Z",
+      "cmd": "verify/yv map run settings --recipe long-host-name",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "2b0a4ebd6614de4b50941a5c3e6202b03bdbf29b3f2e364cffd94cb92d02d3d1"
+        },
+        {
+          "path": "p4-head-long-host-mobile.png",
+          "sha256": "682f021b1406bfb469e8ef777ce5ad53b6761dafbe6a40c3b223071bda1bcb74"
+        },
+        {
+          "path": "p4-head-long-host-desktop.png",
+          "sha256": "660fb98ec6fba069e261e48ce0e23a96b929e99577f66c6243658eb61c280180"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:38.027Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "448bcb18dd9b6acff50a76e8f4f8ab42eeb947a5827eabe88bd18e998f00dddd"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:41.153Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run settings --recipe long-host-name",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "af05c4d41de3a0d7aab139f20f0575dad2e7edb18e920863e4013be3176ea0c7"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:47.810Z",
+      "cmd": "verify/yv design-check --base 57794b557517",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fd7a595c5ffed391cf95fbe45fb58f394751ee68",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-settings.json",
+          "sha256": "bce56c3ebd8b4aa073ff6857fed8f4bc86f6c1f348c591a5b001ee26d2148d3c"
+        }
+      ],
+      "addedAt": "2026-11-18T04:43:47.894Z",
+      "cmd": "verify/yv map run settings",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "settings/settings-page",
+        "settings/hide-this-mac",
+        "settings/strip-from-shown-hosts",
+        "settings/long-host-name"
+      ]
+    }
+  ]
+}

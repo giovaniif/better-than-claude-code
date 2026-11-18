@@ -1,0 +1,37 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "settings",
+      "at": "2026-11-18T04:44:18.118Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "settings-page",
+          "status": "pass",
+          "ms": 4609
+        },
+        {
+          "label": "hide-this-mac",
+          "status": "pass",
+          "ms": 11635
+        },
+        {
+          "label": "strip-from-shown-hosts",
+          "status": "pass",
+          "ms": 6646
+        },
+        {
+          "label": "long-host-name",
+          "status": "pass",
+          "ms": 5781
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
