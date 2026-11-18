@@ -1,0 +1,123 @@
+{
+  "ok": true,
+  "route": "session:s1a1ed634ca38",
+  "build": {
+    "sha": "c51f3039f203153dba9548882b5a16cd55ffea20",
+    "short": "c51f303",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:03:01.040Z"
+  },
+  "dir": ".verify/evidence/account-chip-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4382,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/account-chip-head/head-chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/account-chip-head/head-new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/account-chip-head/head-long-name-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth && document.documentElement.scrollWidth <= innerWidth; })()",
+          "value": true
+        },
+        {
+          "step": 8,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), row = document.querySelector(\".composer-row\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.width <= 230.5 && b.right <= row.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3623,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/account-chip-head/head-chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/account-chip-head/head-new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/account-chip-head/head-long-name-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth && document.documentElement.scrollWidth <= innerWidth; })()",
+          "value": true
+        },
+        {
+          "step": 8,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), row = document.querySelector(\".composer-row\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.width <= 230.5 && b.right <= row.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

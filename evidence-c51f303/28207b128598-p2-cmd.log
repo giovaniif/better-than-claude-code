@@ -1,0 +1,40 @@
+$ verify/yv map run accounts --recipe account-chip-shows-the-whole-name
+# exit 1 after 6703 ms at 497fbda0274d5ce24151d48496eaab4be046df29
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T07:02:49.537Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "account-chip-shows-the-whole-name",
+          "status": "fail",
+          "ms": 5840,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"(() => { const n = document.querySelector(\\\".composer .account-trigger-name\\\"); return n.scrollWidth <= n.clientWidth; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T07-02-43-910Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 11% · 70%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[edit] TEST-fix the greeting\\\" [level=1]\\n  - code: yard/edit-test-fix-the-greeting-77d7\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Delete\\\"\\n  - text: \\\"[edit] TEST-fix the greeting\\\"\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\\n  - paragraph: Edited src/lib.rs.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - paragraph: me@example.com\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - combobox \\\"Workspace view\\\":\\n    - option \\\"Changes\\\" [selected]\\n    - option \\\"Terminal\\\"\\n    - option \\\"Pull request\\\"\\n    - option \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: src/lib.rs\\n  - code: +1 −0\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const n = document.querySelector(\\\".composer .account-trigger-name\\\"); return n.scrollWidth <= n.clientWidth; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"(() => { const n = document.querySelector(\\\\\\\".composer .account-trigger-name\\\\\\\"); return n.scrollWidth <= n.clientWidth; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T07-02-43-910Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "accounts/account-chip-shows-the-whole-name",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

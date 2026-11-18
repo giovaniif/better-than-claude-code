@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "claim": "At desktop the composer's account chip is clipped to 'Codex · Def…' while the row has free space; phones show the whole name",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f",
+  "base": "85d8d867bcb3cdd76faa04cdedbf93213ec7c588",
+  "head": "c51f3039f203153dba9548882b5a16cd55ffea20",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T07:02:32.856Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "497fbda0274d5ce24151d48496eaab4be046df29",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "2752a480e4a126c9e0090f1196b02ac6da71f59acd146282dc633eab8c71d513"
+        },
+        {
+          "path": "p1-base-chip-mobile.png",
+          "sha256": "a7104688108012e4dbb52589df85fefe1f2d37b9fa3ebc806bc152bd6b4bbad0"
+        },
+        {
+          "path": "p1-base-chip-desktop.png",
+          "sha256": "580eb1ecef214a3c0283c2976fc4a035214bb99eea3082a1abae36a1170adaca"
+        }
+      ],
+      "addedAt": "2026-11-18T07:02:42.787Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "497fbda0274d5ce24151d48496eaab4be046df29",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "28207b128598d7ed25e34da3637768a53a45d61c26534161bd9ef1c731da0cfd"
+        }
+      ],
+      "addedAt": "2026-11-18T07:02:42.837Z",
+      "cmd": "verify/yv map run accounts --recipe account-chip-shows-the-whole-name",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c51f3039f203153dba9548882b5a16cd55ffea20",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "fdc918cac726bcc056c8b0c5abf64dbe4a956d5746f2ff761eb877b73b91a48f"
+        },
+        {
+          "path": "p3-head-chip-mobile.png",
+          "sha256": "a7104688108012e4dbb52589df85fefe1f2d37b9fa3ebc806bc152bd6b4bbad0"
+        },
+        {
+          "path": "p3-head-new-session-mobile.png",
+          "sha256": "7062cb5e256354d0cf7e54bc4ff6cb82c3a34c0687c74c350c975bd275aefd16"
+        },
+        {
+          "path": "p3-head-long-name-mobile.png",
+          "sha256": "2498a2fd09f6e9d51f33a2e0506f7c4c5cc12a8e25de0c63cf5505b0d7d384dc"
+        },
+        {
+          "path": "p3-head-chip-desktop.png",
+          "sha256": "45514ed3f730e46034d972ffea68e75dca1035beb0d6f0a2182f2ca2c6ba59c3"
+        },
+        {
+          "path": "p3-head-new-session-desktop.png",
+          "sha256": "b0456dd463cfa9e496c5b32112d8cadae2e98395ecf42abf22305d49acdb77b7"
+        },
+        {
+          "path": "p3-head-long-name-desktop.png",
+          "sha256": "704ca6242160a833ad309990dad8e4acae6a7cf9ad0e8dd3d2c4bb087e360bc9"
+        }
+      ],
+      "addedAt": "2026-11-18T07:03:09.765Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "c51f3039f203153dba9548882b5a16cd55ffea20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "9dba28301e2990442a3a423d518b66fd7e0db8fe10f366bfdfacee788d0e4edd"
+        }
+      ],
+      "addedAt": "2026-11-18T07:03:09.816Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "c51f3039f203153dba9548882b5a16cd55ffea20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "b341b2bd4cc59e78b569eb05a93eb08387ca38bc97c3be498d7f5e9f55445d0b"
+        }
+      ],
+      "addedAt": "2026-11-18T07:03:10.010Z",
+      "cmd": "verify/yv design-check --base 85d8d867bcb3",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c51f3039f203153dba9548882b5a16cd55ffea20",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-accounts.json",
+          "sha256": "c2d3d11011b8451e8f088195ae63e97f3fcb39556bee1b11a7f4c35d1856bcea"
+        }
+      ],
+      "addedAt": "2026-11-18T07:03:12.892Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/empty-name-add-looks-disabled",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right",
+        "accounts/account-chip-shows-the-whole-name"
+      ]
+    }
+  ]
+}

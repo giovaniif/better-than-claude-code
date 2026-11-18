@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "route": "session:s1a1ed634ca38",
+  "build": {
+    "sha": "497fbda0274d5ce24151d48496eaab4be046df29",
+    "short": "497fbda",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:02:37.357Z"
+  },
+  "dir": ".verify/evidence/account-chip-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2387,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/account-chip-base/base-chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return [n.clientWidth, n.scrollWidth]; })()",
+          "value": [
+            97,
+            97
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2256,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/account-chip-base/base-chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return [n.clientWidth, n.scrollWidth]; })()",
+          "value": [
+            90,
+            97
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
