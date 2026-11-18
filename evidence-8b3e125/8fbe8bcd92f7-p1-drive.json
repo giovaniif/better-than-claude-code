@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:h1a1ee49bd9d1~s1a1ee49be12d",
+  "build": {
+    "sha": "c41e40d199a610d4b4fe616aa63cbd8e92ebb6cd",
+    "short": "c41e40d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T10:52:51.612Z"
+  },
+  "dir": ".verify/evidence/procs-offline-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 11917,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/procs-offline-base/online-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/procs-offline-base/offline-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

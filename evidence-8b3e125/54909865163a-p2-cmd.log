@@ -1,0 +1,26 @@
+$ cd ui && bun test src/procs.test.ts
+# exit 1 after 15 ms at c41e40d199a610d4b4fe616aa63cbd8e92ebb6cd
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/procs.test.ts:
+141 |     expect(procsBlank(rows, true)).toBeNull();
+142 |     expect(procsBlank(undefined, true)).toBe("Loading…");
+143 |     expect(procsBlank([], true)).toBe("Nothing is running for this session.");
+144 |   });
+145 |   test("an offline host says so rather than a stale list, a wait that never ends, or nothing running", () => {
+146 |     for (const r of [rows, undefined, []]) expect(procsBlank(r, false)).toBe("Processes are available when this host reconnects.");
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: "Processes are available when this host reconnects."
+Received: null
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-2db1/ui/src/procs.test.ts:146:73)
+(fail) procsBlank > an offline host says so rather than a stale list, a wait that never ends, or nothing running [1.47ms]
+
+ 15 pass
+ 1 fail
+ 35 expect() calls
+Ran 16 tests across 1 file. [10.00ms]

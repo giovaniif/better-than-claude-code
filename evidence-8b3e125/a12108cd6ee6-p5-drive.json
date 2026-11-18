@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee3e6f406",
+  "build": {
+    "sha": "8b3e1250f27321626bd7d35588092105d1c8a271",
+    "short": "8b3e125",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T10:53:25.435Z"
+  },
+  "dir": ".verify/evidence/procs-offline-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2280,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/procs-offline-mobile/mobile-no-pane-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
