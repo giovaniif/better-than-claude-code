@@ -2454,7 +2454,8 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
     );
   }
   return (
-    <button className="btn-text" onClick={() => (armed ? onConfirm() : setArmed(true))}>
+    // The title ellipsizes; the button keeps its one line beside it.
+    <button className="btn-text bar-choice" onClick={() => (armed ? onConfirm() : setArmed(true))}>
       {armed ? "Delete session?" : "Delete"}
     </button>
   );

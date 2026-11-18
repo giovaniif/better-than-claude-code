@@ -85,6 +85,18 @@ yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":{"role":"bu
 yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
 ```
 
+### mobile-delete-confirm-fits-the-bar-without-worktree
+Viewports: mobile
+A session without its own worktree arms one "Delete session?" button. With a
+long title it stays on one line inside its pill and the bar; the title gives
+way (#214: it wrapped and spilled out of the button).
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","text":"TEST-a long first prompt that becomes the title of this session and keeps going"}' --wait '{"op":"event","event":{"type":"turn_completed"}}' --save long_title=sessionId
+yv drive 'session:{{long_title}}' --viewport mobile --steps '[{"click":{"role":"button","name":"Delete","exact":true}},{"expect":"role:button:Delete session?"},{"eval":"(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); const b = [...document.querySelectorAll(\".main header.bar button\")].find((e) => e.textContent.trim() === \"Delete session?\"); const pill = b.getBoundingClientRect(); const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= pill.bottom && pill.bottom <= bar.bottom && pill.right <= window.innerWidth; })()","equals":true},{"shot":"delete-armed-no-worktree"}]'
+yv state --expect '{"sessions":[{"id":"{{long_title}}"}]}'
+```
+
 ### send-stays-at-the-right
 At 390 px the reply box's tools (attach, dictate, voice mode, model, permission)
 fill the row, so Send moves to a second line. It stays at the right edge of
