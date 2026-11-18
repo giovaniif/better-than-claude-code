@@ -38,6 +38,16 @@ losing its composer. The terminal starts only when opened.
 yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-draft on phone"},{"click":"role:button:Workspace"},{"expect":"role:region:Workspace"},{"expect":"role:button:Changes"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm"},{"select":"label:Workspace view","value":"pr"},{"select":"label:Workspace view","value":"procs"},{"expect":"role:button:Refresh processes"},{"click":"role:button:Back to conversation"},{"expect":"label:Message","value":"TEST-draft on phone"},{"shot":"conversation-restored"}]'
 ```
 
+### workspace-button-text-centered
+Viewports: mobile
+The session header's Workspace button reads on the same line as Delete. Its
+text used to sit at the top of the button, 6 px above Delete, because the
+button is a flex box with no vertical centring.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"expect":"role:button:Workspace"},{"eval":"const mid = (s) => { const b = document.querySelector(s); const r = document.createRange(); r.selectNodeContents(b); const t = r.getBoundingClientRect(); return t.top + t.height / 2; }; Math.abs(mid(\".workspace-toggle\") - mid(\".bar-choice\")) <= 1","equals":true},{"shot":"header"}]'
+```
+
 ### successful-connection-removes-shortcuts
 Viewports: both
 A native connection is persisted by the hub. Reloading and reopening another
