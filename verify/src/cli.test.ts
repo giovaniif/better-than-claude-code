@@ -11,7 +11,7 @@ import { matches, parseArgs, pick, sha256File } from "./common";
 import { addedLines, lint } from "./design";
 import { _test as evidenceTest, type Bundle, type Proof, verifyBundle } from "./evidence";
 import { humanReplies, latestVerdict, AGENT_MARK } from "./gh";
-import { recipesDeclaredRemoved, regressedJobs, scanFiles, type PrFile } from "./land";
+import { recipesDeclaredRemoved, regressedJobs, regressionAfterRetry, scanFiles, type PrFile } from "./land";
 import { parseArea } from "./map";
 import { _test as loopTest } from "./loop";
 
@@ -423,6 +423,13 @@ describe("land watch", () => {
     expect(regressedJobs([{ name: "dmg", conclusion: "cancelled" }, { name: "linux", conclusion: "success" }])).toEqual([]);
     expect(regressedJobs([{ name: "dmg", conclusion: "failure" }, { name: "ui", conclusion: "cancelled" }])).toEqual(["dmg"]);
     expect(regressedJobs([{ name: "yardd", conclusion: "timed_out" }])).toEqual(["yardd"]);
+  });
+
+  test("a failed job is re-run once before it counts as a regression", () => {
+    // #125's merge: the macOS stapler lost its connection to Apple (error 68); the re-run passed.
+    expect(regressionAfterRetry(1, ["dmg"])).toBe(false);
+    expect(regressionAfterRetry(2, ["dmg"])).toBe(true);
+    expect(regressionAfterRetry(2, [])).toBe(false);
   });
 });
 
