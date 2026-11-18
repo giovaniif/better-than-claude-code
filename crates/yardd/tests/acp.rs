@@ -503,3 +503,93 @@ async fn an_added_grok_account_logs_in_on_its_own() {
     assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
     assert_eq!(prompts(&sb)[0]["account"], json!(id));
 }
+
+
+#[tokio::test]
+async fn gemini_discovers_models_streams_and_switches_models_without_config_options() {
+    let sb = Sandbox::new("gemini-models");
+    fs::write(sb.fake_state().join("gemini-logged-in"), "").unwrap();
+    let d = sb.start();
+    let mut c = d.client().await;
+    let models = c.wait_for("Gemini models", |m| (m["op"] == "snapshot" || m["op"] == "models") && m["models"]["gemini"].as_array().is_some_and(|l| l.len() == 2)).await;
+    assert_eq!(models["models"]["gemini"][0]["id"], "fake-small");
+    assert_eq!(models["models"]["gemini"][0]["efforts"], json!([]));
+    let sid = c.create(&sb.folder("proj"), "hello Gemini", on("gemini", "fake-large", "")).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+    assert!(c.events(&sid).iter().any(|e| e["type"] == "assistant_message" && e["text"] == "Echo: hello Gemini"));
+    assert_eq!(prompts(&sb)[0]["model"], "fake-large");
+    assert!(acp_log(&sb).contains("gemini req session/set_model"));
+    assert!(!acp_log(&sb).contains("gemini req session/set_config_option"));
+}
+
+#[tokio::test]
+async fn gemini_permissions_stop_and_reload_use_its_native_protocol() {
+    let sb = Sandbox::new("gemini-permissions");
+    fs::write(sb.fake_state().join("gemini-logged-in"), "").unwrap();
+    let mut d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[cmd] ask", on("gemini", "fake-small", "")).await;
+    let req = c.wait_event(&sid, "approval_request", 0).await;
+    c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" })).await;
+    c.wait_turn_done(&sid, 0).await;
+    c.wait_status(&sid, "idle").await;
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "full" })).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[edit] full" })).await;
+    c.wait_turn_done(&sid, next).await;
+    assert_eq!(prompts(&sb)[1]["mode"], "yolo");
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.setPermission", "sessionId": sid, "permission": "plan" })).await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[edit] plan" })).await;
+    c.wait_turn_done(&sid, next).await;
+    assert_eq!(prompts(&sb)[2]["mode"], "default", "without native plan support, leave yolo and enforce refusals in yardd");
+    assert!(c.events(&sid).iter().any(|e| e["type"] == "assistant_message" && e["text"] == "Left it alone."));
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "[slow] wait" })).await;
+    c.wait_event(&sid, "assistant_delta", next).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    assert_eq!(c.wait_turn_done(&sid, next).await["status"], "interrupted");
+    c.wait_status(&sid, "idle").await;
+    let next = c.next_seq(&sid);
+    drop(c);
+    d.stop();
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "after restart" })).await;
+    c.wait_turn_done(&sid, next).await;
+    assert!(acp_log(&sb).contains("gemini req session/load"));
+    assert!(!c.events(&sid).iter().any(|e| e["text"] == "old answer"));
+}
+
+#[tokio::test]
+async fn gemini_logged_out_offers_terminal_login_and_added_accounts_stay_separate() {
+    let sb = Sandbox::new("gemini-accounts");
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "engines.status" })).await;
+    let status = c.wait_for("Gemini logged out", |m| m["op"] == "engines" && m["engines"]["gemini"]["installed"] == true).await;
+    assert_eq!(status["engines"]["gemini"]["loggedIn"], false);
+    c.send(json!({ "op": "login.start", "engine": "gemini" })).await;
+    let login = login_state(&mut c, 0, "gemini", "terminal").await;
+    assert_eq!(login["command"], "gemini");
+    c.send(json!({ "op": "account.add", "engine": "gemini", "name": "Work" })).await;
+    let accounts = c.wait_for("Gemini account", |m| m["op"] == "accounts").await;
+    let id = accounts["accounts"][0]["id"].as_str().unwrap().to_string();
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "gemini", "account": id })).await;
+    let login = login_state(&mut c, mark, "gemini", "terminal").await;
+    assert!(login["command"].as_str().unwrap().contains("GEMINI_CLI_HOME="));
+    let state = sb.data().join("accounts").join(&id).join(".gemini");
+    fs::create_dir_all(&state).unwrap();
+    fs::write(state.join("logged-in"), "").unwrap();
+    let mark = c.mark();
+    c.send(json!({ "op": "login.start", "engine": "gemini", "account": id })).await;
+    login_state(&mut c, mark, "gemini", "done").await;
+    let sid = c.create(&sb.folder("proj"), "work account", json!({ "engine": "gemini", "model": "fake-small", "effort": "", "account": id })).await;
+    c.wait_turn_done(&sid, 0).await;
+    assert_eq!(prompts(&sb)[0]["account"], id);
+    let mark = c.mark();
+    c.send(json!({ "op": "engines.status" })).await;
+    let status = c.wait_after(mark, "Default still logged out", |m| m["op"] == "engines").await;
+    assert_eq!(status["engines"]["gemini"]["loggedIn"], false);
+}

@@ -45,3 +45,11 @@ describe("engines", () => {
     expect(reviewEngine("claude", { claude: [m("c")] })).toBeNull();
   });
 });
+
+
+test("Gemini is offered on hosts that have it and queues messages for the next turn", () => {
+  expect(ENGINES).toContain("gemini");
+  expect(pickerEngines({ gemini: [m("auto")] })).toEqual(["claude", "codex", "gemini"]);
+  expect(queuedHint("gemini")).toBe("sent when the current turn ends");
+  expect(reviewEngine("gemini", { claude: [m("c")] })).toBe("claude");
+});
