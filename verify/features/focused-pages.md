@@ -93,6 +93,16 @@ rows end 8 px short), from the quiet button's negative margin.
 yv drive hosts --steps '[{"expect":"role:button:Select iso-host"},{"expect":"css:.host-empty"},{"eval":"const col = document.querySelector(\".focused-hosts\").getBoundingClientRect(); [\".host-summary\", \".host-empty\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })","equals":true},{"shot":"hosts"}]'
 ```
 
+### session-rows-line-up-with-the-page
+Viewports: both
+Session rows on the Sessions page span the same column as the tabs and the
+search box above them. They used to start 8 px left of it (and their dividers
+end 8 px short), from the quiet button's negative margin (#246).
+
+```sh
+yv drive sessions --steps '[{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"eval":"const col = document.querySelector(\".focused-session-list\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\".focused-session-row\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })","equals":true},{"shot":"session-rows"}]'
+```
+
 ### offline-host-and-selection-fallback
 Viewports: both
 An unreachable host shows its problem, retains System actions, and removing it returns selection to the local host.
