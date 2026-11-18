@@ -68,7 +68,7 @@ set_version() { # file, prefix before the quoted version
 set_version crates/yardd/Cargo.toml 'version = '
 set_version app/src-tauri/Cargo.toml 'version = '
 set_version app/src-tauri/tauri.conf.json '  "version": '
-cargo metadata --no-deps --format-version 1 >/dev/null # refreshes Cargo.lock
+cargo metadata --format-version 1 >/dev/null # refreshes Cargo.lock
 
 git add CHANGELOG.md crates/yardd/Cargo.toml app/src-tauri/Cargo.toml app/src-tauri/tauri.conf.json Cargo.lock
 if ! git diff --cached --quiet; then
