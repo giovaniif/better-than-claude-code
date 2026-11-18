@@ -1,0 +1,5 @@
+$ bash .verify/stress-import.sh .
+# exit 0 after 4418 ms at 937650885a23521e85df3e7dcb75989cb9c2381f
+
+failures: 0 of 30
+

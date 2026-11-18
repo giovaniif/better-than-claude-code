@@ -1,0 +1,73 @@
+{
+  "v": 1,
+  "claim": "CI flake: claude_code_sessions_are_listed_and_imported_with_their_history panics at saved_meta(...).expect(\"saved\") when the machine is loaded, because yardd's store writes the session row on a batching writer thread after the created reply, and the test reads the database once.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67",
+  "base": "75069ab8d43cd324ca85ceb64bb7caaff389aa6e",
+  "head": "937650885a23521e85df3e7dcb75989cb9c2381f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T05:08:28.569Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "937650885a23521e85df3e7dcb75989cb9c2381f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T05:08:28.608Z",
+      "text": "no-repro: a load-dependent race, seen once in the #250 verifier's full cargo run beside a map run (passed 3/3 alone). 30 parallel runs at base (6 at a time) did not reproduce it either. The store's writer thread batches writes (crates/yardd/src/store.rs), so the row can land after 'created'."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "937650885a23521e85df3e7dcb75989cb9c2381f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T05:08:28.650Z",
+      "text": "no-failing-test: the fix is to the test itself; making the race fire on demand would need a delay injected into yardd's writer."
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "937650885a23521e85df3e7dcb75989cb9c2381f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "c90ef8e6879ef2094a87b932606ffc09aa7b9db8cd1b7c5712c18947781be224"
+        }
+      ],
+      "addedAt": "2026-11-18T05:08:28.691Z",
+      "cmd": "bash .verify/stress-import.sh .",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "937650885a23521e85df3e7dcb75989cb9c2381f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "f162506dc9feb19988327b22e634712696d2bb4916a804296b70a52255702c16"
+        }
+      ],
+      "addedAt": "2026-11-18T05:08:33.144Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    }
+  ]
+}
