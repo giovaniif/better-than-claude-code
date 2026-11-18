@@ -1,0 +1,97 @@
+{
+  "v": 1,
+  "claim": "The hand-off smoke test still expects a combined model and effort button, so CI fails on the current separate controls.",
+  "repo": "/tmp/switchyard-merge-check-8evgvsu8",
+  "base": "c3392452b0a67d2a15b1e410031d66980f69f12e",
+  "head": "1d6764b2520d72e4e808b501fba97777dd0c10ba",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/src/selftest.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T01:29:50.377Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "c3392452b0a67d2a15b1e410031d66980f69f12e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "2e1de98bf294160f2877c9cea0813ae6da299f32df22a4fe5c1cfb90d4c3105b"
+        }
+      ],
+      "addedAt": "2026-11-18T01:29:50.423Z",
+      "cmd": "CARGO_BUILD_JOBS=2 verify/yv selftest --smoke",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c3392452b0a67d2a15b1e410031d66980f69f12e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "eeb62d4eb55acda41b30e9246975addb2ed76143301bbc76a71552576f9e0db5"
+        },
+        {
+          "path": "p2-fail-mobile-step0.png",
+          "sha256": "4ae9a68c52d26707ef0d2902fb8036c2fb52e4f7487635ad7267c2835f0e6291"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "e20c5a80b5dad11f3118926785f800e376f3b23504a3c153ca595239cb0b9a68"
+        }
+      ],
+      "addedAt": "2026-11-18T01:30:46.690Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1d6764b2520d72e4e808b501fba97777dd0c10ba",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3ccc2598dea2eb046cb8cbee6999e5d5bfd8ae6d528b2fe5a0d037f4c23c3178"
+        }
+      ],
+      "addedAt": "2026-11-18T01:30:46.759Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "1d6764b2520d72e4e808b501fba97777dd0c10ba",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "5bdfc14707e830cec4e902a5a38de9d2870581f0081e0b09a6fcfe13995c8b1f"
+        }
+      ],
+      "addedAt": "2026-11-18T01:30:46.800Z",
+      "cmd": "verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}

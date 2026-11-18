@@ -1,0 +1,76 @@
+$ CARGO_BUILD_JOBS=2 verify/yv selftest --smoke
+# exit 1 after 44932 ms at c3392452b0a67d2a15b1e410031d66980f69f12e
+
+{
+  "command": "selftest",
+  "ok": false,
+  "unit": {
+    "exit": 0,
+    "pass": 53,
+    "fail": 0
+  },
+  "smoke": {
+    "ok": false,
+    "steps": [
+      {
+        "cmd": "yv iso up",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv iso seed",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv state --expect {\"sessions\":[{\"title\":\"TEST-say hello\",\"status\":\"idle\"}]}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv shot session:{{sid_echo}}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_cmd}} --viewport desktop --steps [{\"click\":\"role:button:Allow once\"},{\"expect\":\"css:.thread\",\"text\":\"Ran it.\"}]",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv api {\"op\":\"session.handoff\",\"sessionId\":\"{{sid_echo}}\",\"engine\":\"claude\",\"model\":\"claude-haiku-5-5\",\"effort\":\"low\"} --wait {\"op\":\"created\"}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_echo}} --steps [{\"expect\":\"role:button:Fake Fast Low\"}]",
+        "exit": 1,
+        "problems": [
+          {
+            "code": "step-failed",
+            "msg": "mobile: step 0 {\"expect\":\"role:button:Fake Fast Low\"}: for: Timeout 10000ms exceeded.",
+            "hint": "see /tmp/switchyard-merge-check-8evgvsu8/.verify/drives/2026-11-18T01-30-05-177Z/fail-mobile-step0.png and the aria snapshot"
+          },
+          {
+            "code": "step-failed",
+            "msg": "desktop: step 0 {\"expect\":\"role:button:Fake Fast Low\"}: for: Timeout 10000ms exceeded.",
+            "hint": "see /tmp/switchyard-merge-check-8evgvsu8/.verify/drives/2026-11-18T01-30-05-177Z/fail-desktop-step0.png and the aria snapshot"
+          }
+        ]
+      },
+      {
+        "cmd": "yv iso down",
+        "exit": 0,
+        "problems": []
+      }
+    ]
+  },
+  "problems": [
+    {
+      "code": "smoke",
+      "msg": "the smoke round trip failed",
+      "hint": "see smoke.steps"
+    }
+  ]
+}
+

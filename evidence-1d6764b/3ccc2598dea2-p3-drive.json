@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec455dbf6",
+  "build": {
+    "sha": "1d6764b2520d72e4e808b501fba97777dd0c10ba",
+    "short": "1d6764b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:28:51.020Z"
+  },
+  "dir": "/tmp/switchyard-merge-check-8evgvsu8/.verify/drives/2026-11-18T01-29-01-688Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5202,
+      "steps": 2,
+      "failed": null,
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4035,
+      "steps": 2,
+      "failed": null,
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
