@@ -1,0 +1,88 @@
+{
+  "v": 1,
+  "claim": "The mermaid recipe safe-long-diagram-and-loading never reaches the app: literal backticks in its JSON end the recipe's sh block early and bash fails on an unterminated quote",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451",
+  "base": "2c3f285ba8f5d7a4b43d96a7159495431e564b08",
+  "head": "a8729ffa263ecd38ad0635c2162f3bea0d7616cf",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mermaid.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T04:03:31.529Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "2c3f285ba8f5d7a4b43d96a7159495431e564b08",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T04:03:31.581Z",
+      "text": "no-repro: map-only; the base test run below shows bash failing on the truncated block (unexpected EOF while looking for matching quote)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "2c3f285ba8f5d7a4b43d96a7159495431e564b08",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "1978ea4f12c7e7a173b2f8d522329c763466ed6232928b6d191ba9997fe3baef"
+        }
+      ],
+      "addedAt": "2026-11-18T04:03:31.620Z",
+      "cmd": "verify/yv map run mermaid --recipe safe-long-diagram-and-loading",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a8729ffa263ecd38ad0635c2162f3bea0d7616cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-mermaid-head.json",
+          "sha256": "a305550a10d8f2f1803fa3471ef118a818d0d791a9f26dc32316b1c83914734f"
+        }
+      ],
+      "addedAt": "2026-11-18T04:04:00.528Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "mermaid/automatic-diagrams",
+        "mermaid/diagram-fallbacks",
+        "mermaid/safe-long-diagram-and-loading"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "a8729ffa263ecd38ad0635c2162f3bea0d7616cf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "0b60af9a002efb8bca8fb7df0fad150879f71f0c41faee833f5c49ae7dddb4bb"
+        }
+      ],
+      "addedAt": "2026-11-18T04:04:00.566Z",
+      "cmd": "verify/yv map run mermaid --recipe safe-long-diagram-and-loading",
+      "exit": 0
+    }
+  ]
+}

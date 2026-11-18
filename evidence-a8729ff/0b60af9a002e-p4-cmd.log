@@ -1,0 +1,26 @@
+$ verify/yv map run mermaid --recipe safe-long-diagram-and-loading
+# exit 0 after 8567 ms at a8729ffa263ecd38ad0635c2162f3bea0d7616cf
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-18T04:04:09.129Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "safe-long-diagram-and-loading",
+          "status": "pass",
+          "ms": 7713
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

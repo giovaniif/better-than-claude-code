@@ -1,0 +1,33 @@
+$ verify/yv map run mermaid --recipe safe-long-diagram-and-loading
+# exit 1 after 860 ms at 2c3f285ba8f5d7a4b43d96a7159495431e564b08
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-18T04:03:32.477Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "safe-long-diagram-and-loading",
+          "status": "fail",
+          "ms": 4,
+          "tail": "bash: -c: line 5: unexpected EOF while looking for matching `''\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "mermaid/safe-long-diagram-and-loading",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
