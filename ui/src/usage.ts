@@ -2,6 +2,19 @@
 // (see Usage in protocol.ts); this turns them into one list of meters so the
 // picker and the sidebar strip draw them the same way.
 import type { AccountEntry, Engine, Usage } from "./protocol";
+import { ENGINES, ENGINE_NAME } from "./engines";
+
+/** Only Claude and Codex report plan limits; the ACP engines have none. */
+export const reportsLimits = (engine: Engine) => engine === "claude" || engine === "codex";
+
+/** The Subscriptions page's note on the engines it cannot show, derived from
+ *  the engine list so a newly added engine is not left out of it. */
+export function noLimitsNote(engines: Engine[] = ENGINES): string {
+  const names = engines.filter((e) => !reportsLimits(e)).map((e) => ENGINE_NAME[e]);
+  if (!names.length) return "";
+  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+  return `${list} ${names.length === 1 ? "doesn't" : "don't"} report subscription limits.`;
+}
 
 export type Level = "ok" | "warn" | "high";
 
@@ -77,8 +90,7 @@ export function metersFor(engine: Engine, usage: Usage, now?: number): Meter[] {
     if (c?.secondary) out.push(meter("secondary", windowLabel(c.secondary.windowDurationMins, "Week"), c.secondary.usedPercent, toMs(c.secondary.resetsAt), now));
     return out;
   }
-  // Only Claude and Codex report plan limits.
-  if (engine !== "claude") return [];
+  if (!reportsLimits(engine)) return [];
   const c = usage.claude;
   if (!c) return [];
   const windows = { ...(c.windows ?? {}) };
@@ -159,7 +171,7 @@ function newer(engine: Engine, a: Usage, b: Usage): boolean {
  *  all. Engines in the order given, Default first, then accounts as they appear. */
 export function stripGroups(sources: UsageSource[], engines: Engine[]): StripGroup[] {
   // ACP engines have no plan-limit reports, even when they have added accounts.
-  engines = engines.filter((engine) => engine === "claude" || engine === "codex");
+  engines = engines.filter(reportsLimits);
   const found = new Map<string, StripGroup>();
   const offer = (key: string, group: StripGroup) => {
     if (metersFor(group.engine, group.usage).length === 0) return;

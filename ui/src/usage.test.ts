@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatReset, levelOf, metersFor, percentText, stripGroups } from "./usage";
+import { formatReset, levelOf, metersFor, noLimitsNote, percentText, stripGroups } from "./usage";
 
 const NOW = 1_800_000_000_000;
 const S = 1000;
@@ -254,4 +254,10 @@ test("ACP accounts do not add empty plan-usage rows", () => {
     { id: "o", engine: "opencode", name: "Work" },
     { id: "x", engine: "grok", name: "Work" },
   ] }], ["claude", "codex", "opencode", "grok", "gemini"])).toEqual([]);
+});
+
+test("the Subscriptions note names every engine without plan limits, Gemini included", () => {
+  expect(noLimitsNote()).toBe("OpenCode, Grok and Gemini don't report subscription limits.");
+  expect(noLimitsNote(["claude", "codex", "grok"])).toBe("Grok doesn't report subscription limits.");
+  expect(noLimitsNote(["claude", "codex"])).toBe("");
 });
