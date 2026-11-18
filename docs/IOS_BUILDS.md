@@ -161,7 +161,10 @@ The simulator job must pass before the signing job starts. Signing imports the
 certificate into a temporary keychain, installs the provisioning profile,
 archives the Release app and uploads it to App Store Connect. The script
 cleans up temporary signing material. The build number uses the workflow run
-number and attempt; do not reuse a previously uploaded build number.
+number and attempt; do not reuse a previously uploaded build number. The
+plist explicitly expands `$(MARKETING_VERSION)` and
+`$(CURRENT_PROJECT_VERSION)`: XcodeGen otherwise writes literal `1.0`/`1`
+defaults, ignoring the workflow's version settings in the uploaded bundle.
 
 Branch dispatch worked for the first signed build, without merging:
 [run 44207641656](https://github.com/giovaniif/switchyard/actions/runs/44207641656).
