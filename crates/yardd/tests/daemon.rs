@@ -2138,7 +2138,9 @@ async fn a_missed_run_outside_the_window_creates_no_session_but_run_now_does() {
     fs::write(sb.data().join("automations.json"), json!([a]).to_string()).unwrap();
     let d = sb.start_with(&[("TZ", "UTC"), ("YARD_AUTOMATION_TICK_MS", "30")]);
     let mut c = d.client().await;
-    let moved = c.wait_for("rescheduled instead of fired", |m| m["op"] == "automations" && m["automations"][0]["nextRun"].as_u64().is_some_and(|n| n > now.timestamp_millis() as u64)).await;
+    // The scheduler may move the slot before the client connects; its first
+    // snapshot is just as conclusive as a later rescheduling broadcast.
+    let moved = c.wait_for("rescheduled instead of fired", |m| (m["op"] == "automations" || m["op"] == "snapshot") && m["automations"][0]["nextRun"].as_u64().is_some_and(|n| n > now.timestamp_millis() as u64)).await;
     let next = moved["automations"][0]["nextRun"].as_i64().unwrap();
     assert_eq!(chrono::DateTime::from_timestamp_millis(next).unwrap().format("%H:%M").to_string(), window["start"].as_str().unwrap());
     assert!(d.client().await.log[0]["sessions"].as_array().unwrap().is_empty());
