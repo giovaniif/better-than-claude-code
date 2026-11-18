@@ -1,0 +1,45 @@
+$ verify/yv map run switchy --recipe answer-names-the-model
+# exit 1 after 8458 ms at 609789a02cd6a2182256d2f311e9263ac73ee49a
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-18T02:58:56.289Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "answer-names-the-model",
+          "status": "fail",
+          "ms": 7548,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"(() => { const label = [...document.querySelectorAll(\\\".assistant-answer-label .muted\\\")].at(-1).textContent; const picker = document.querySelector(\\\".composer .picker > button\\\").textContent; return label === picker && label === \\\"Fake Fast\\\"; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T02-58-49-025Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"(() => { const label = [...document.querySelectorAll(\\\".assistant-answer-label .muted\\\")].at(-1).textContent; const picker = document.querySelector(\\\".composer .picker > button\\\").textContent; return label === picker && label === \\\"Fake Fast\\\"; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T02-58-49-025Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "fast\\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\\n    - group: 11 sources · 11:58 PM\\n  - article:\\n    - text: TEST-which model answers?\\n    - strong: Switchy\\n    - text: fake-fast\\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\\n    - group: 11 sources · 11:58 PM\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Ask about your servers or your work…\\n  - button \\\"Attach files\\\" [disabled]\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Plan only\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - button \\\"All hosts\\\"\\n  - paragraph: Context comes from selected hosts. Tools run on iso-host with the access selected above.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const label = [...document.querySelectorAll(\\\".assistant-answer-label .muted\\\")].at(-1).textContent; const picker = document.querySelector(\\\".composer .picker > button\\\").textContent; return label === picker && label === \\\"Fake Fast\\\"; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"(() => { const label = [...document.querySelectorAll(\\\\\\\".assistant-answer-label .muted\\\\\\\")].at(-1).textContent; const picker = document.querySelector(\\\\\\\".composer .picker > button\\\\\\\").textContent; return label === picker && label === \\\\\\\"Fake Fast\\\\\\\"; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T02-58-49-025Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"(() => { const label = [...document.querySelectorAll(\\\\\\\".assistant-answer-label .muted\\\\\\\")].at(-1).textContent; const picker = document.querySelector(\\\\\\\".composer .picker > button\\\\\\\").textContent; return label === picker && label === \\\\\\\"Fake Fast\\\\\\\"; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T02-58-49-025Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "switchy/answer-names-the-model",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

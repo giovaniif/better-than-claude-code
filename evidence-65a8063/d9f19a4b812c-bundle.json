@@ -1,0 +1,199 @@
+{
+  "v": 1,
+  "claim": "Switchy labels each answer with the model's id (fake-fast, claude-haiku-5-5) while the model picker right below names it (Fake Fast, Haiku 5.5)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f",
+  "base": "f343329f945be073efd1dbc7badd996321bc065b",
+  "head": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:58:36.187Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "609789a02cd6a2182256d2f311e9263ac73ee49a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c73560d411d7e235608c803a8c10cd3e8963958b5f46b5ad95ed64fc1d87ab05"
+        },
+        {
+          "path": "p1-answer-mobile.png",
+          "sha256": "df40378ade87a6865abec8a8782d236eca7a496172eadf165762a70bb7ee9a23"
+        },
+        {
+          "path": "p1-answer-desktop.png",
+          "sha256": "ad0f75c9a92db5fce6dbe7aa6a422024b9e99a7e5f8229cad64424d236009c88"
+        }
+      ],
+      "addedAt": "2026-11-18T02:58:47.791Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "609789a02cd6a2182256d2f311e9263ac73ee49a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "a2c95c102f045979d01625934cbbda7f6d65607f5ba61cc549506e185da25727"
+        }
+      ],
+      "addedAt": "2026-11-18T02:58:47.834Z",
+      "cmd": "verify/yv map run switchy --recipe answer-names-the-model",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "5d56b7d9fba935c057064ee120c627cef67ad78c416f3002a5ec2e90b69e6798"
+        },
+        {
+          "path": "p3-answer-mobile.png",
+          "sha256": "dbdef886288c1239232c5ec71d1fa842fa69b51a99ca57cd289e678c6088b7a5"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:08.911Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "aded2cd46ae70efde23f347e43f82c0e0d72cac0ecaef7f595abff6612fe0227"
+        },
+        {
+          "path": "p4-answer-desktop.png",
+          "sha256": "ccedee568cdf5fa318ec47fd8b9783afe069d922ba3218e2b568e39325df038e"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:08.951Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "41845388b23c67f5410c9fb9c3b142a2b6883994dc70bced32c06e7c47abc904"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:08.991Z",
+      "cmd": "verify/yv map run switchy --recipe answer-names-the-model",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "63cbd061c5243f17560356fb3532aeccbed56fddef48a0258b1a00d9bbef76e3"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:17.523Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "abe22ca2200f2a1ac1b2e63cf309a3374022d01da0a84b45bf551c522d4ac3f1"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:17.684Z",
+      "cmd": "verify/yv design-check --base f343329f945b",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-switchy.json",
+          "sha256": "72bafe10c4edc4deb9f605971e17dde45d297eb4edbe9fc61dbcf88da581ec34"
+        }
+      ],
+      "addedAt": "2026-11-18T02:59:17.768Z",
+      "cmd": "verify/yv map run switchy",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "switchy/ask-and-reload",
+        "switchy/context-and-followup",
+        "switchy/removed-host-scope-falls-back",
+        "switchy/answer-names-the-model",
+        "switchy/refusal-notice-is-red",
+        "switchy/shared-composer",
+        "switchy/controls-and-approvals",
+        "switchy/voice-roundtrip"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "note",
+      "at": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T03:00:30.125Z",
+      "text": "rebased onto f343329 (#225 landed). Same diff as b316833, which had PASS+NOTES"
+    }
+  ]
+}

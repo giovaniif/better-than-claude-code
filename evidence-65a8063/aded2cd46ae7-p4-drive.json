@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "65a80630237f5159446b1594cdc0e3fd20aeb4cd",
+    "short": "65a8063",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:59:00.638Z"
+  },
+  "dir": ".verify/evidence/switchy-model-name-r2-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3642,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-model-name-r2-head-d/answer-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll(\".assistant-answer-label .muted\")].at(-1).textContent",
+          "value": "Fake Fast"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
