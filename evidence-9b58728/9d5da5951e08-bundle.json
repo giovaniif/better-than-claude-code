@@ -1,0 +1,273 @@
+{
+  "v": 1,
+  "claim": "Processes tab of a remote session whose host went offline kept saying Nothing is running for this session (or a stale list with Stop buttons that can only fail; Loading… forever when first opened offline), instead of saying the host is offline",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-2db1",
+  "base": "0ac74e00a65059e488ca4702d5a36379755e59f5",
+  "head": "9b58728775f13627779335898e148f7fb161e3d2",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/ProcPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/procs.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/procs.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T11:12:44.140Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "0e28c97b8909858d93b172e554355d274fb6a346",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "7d99333429fc4b6e1c7c47dec0242aad42e85256c5d21cc6f917a8663634e370"
+        },
+        {
+          "path": "p1-online-desktop.png",
+          "sha256": "be0b3376c027bf1cf3d1856a854359a4c937343cb75f90195c13cb74faacef92"
+        },
+        {
+          "path": "p1-offline-desktop.png",
+          "sha256": "cc383e6a38607cba1e23c679a5133573d0206cb79bb74a978601228a1a833469"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:03.502Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "0e28c97b8909858d93b172e554355d274fb6a346",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "94de31da1f3b6b340c3d963e8898c3d3f591fd669e0216c8ce1178d7ec69961d"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:03.548Z",
+      "cmd": "cd ui && bun test src/procs.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "0e28c97b8909858d93b172e554355d274fb6a346",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "366b9025d863e7087330948396b822e3d22bba11f213390d0748a9ebb2360d71"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:03.607Z",
+      "cmd": "verify/yv map run hosts --recipe processes-say-the-host-is-offline",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "bc1e6556f06552b985073218e96688c9c94ed19c29b212b05c245db9b670a947"
+        },
+        {
+          "path": "p4-online-desktop.png",
+          "sha256": "86bd0607653e9d6b1928286b57e22ba706ddbedc3581fcd961746087419f07fe"
+        },
+        {
+          "path": "p4-offline-desktop.png",
+          "sha256": "a3fb381c5251474bbbda3d52a430f66d6ce2a3efd0208f1a4ce4988abe27a02b"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:37.712Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "e42484dc07eff4a8b10c3b30a7c49c5872bf0011bdf4dc9bb57103cdd8e2197e"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:37.752Z",
+      "cmd": "verify/yv map run hosts --recipe processes-say-the-host-is-offline",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "ef57ae18501ecf4119a5ff373305a241bbd3705693ceb09f03f1f267d367034f"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:48.740Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "d6151e7c4377a2e9f6af4c60dfa73fee43a54114678723d730599626d19dddd2"
+        }
+      ],
+      "addedAt": "2026-11-18T11:13:48.938Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "b05670ec24dd35ea35171fbc7fb6f27844cc37c5ec7962f1c1ba991914bb7a93"
+        }
+      ],
+      "addedAt": "2026-11-18T11:14:37.574Z",
+      "cmd": "verify/yv design-check --base 0ac74e00a650",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-processes.json",
+          "sha256": "98d2641b20a41bd7cd0c9c9fc736ad086d4e86b3da4c6a7f4c8254f67187177c"
+        }
+      ],
+      "addedAt": "2026-11-18T11:14:37.653Z",
+      "cmd": "verify/yv map run processes",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "processes/lists-the-process-tree",
+        "processes/nothing-running",
+        "processes/terminal-shell-is-listed",
+        "processes/stop-a-terminal-command",
+        "processes/force-kill-what-ignores-sigterm",
+        "processes/stop-with-children",
+        "processes/stop-with-children-fits-the-pane",
+        "processes/agent-offers-no-stop",
+        "processes/refused-outside-the-session",
+        "processes/listed-from-the-workspace-sheet"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-hosts.json",
+          "sha256": "934e7157465c6b6e72ee5533c13610fe782f4f949da83a8040d0d605d05bdd07"
+        }
+      ],
+      "addedAt": "2026-11-18T11:15:50.922Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "fix",
+      "at": "9b58728775f13627779335898e148f7fb161e3d2",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p11-drive.json",
+          "sha256": "39784070db755415cb43aba60b771877199fd664979af4a40b7f914fc12161ef"
+        },
+        {
+          "path": "p11-online-mobile.png",
+          "sha256": "18604231898735c7c4e7c6881499ca4c1f2f1db6639c40bd9314174f8d2d9298"
+        },
+        {
+          "path": "p11-offline-mobile.png",
+          "sha256": "003ce8e8bb7ef09891a63cd49955aa2b7b3212f62e10968a1cecc01502a069f0"
+        }
+      ],
+      "addedAt": "2026-11-18T11:17:20.783Z",
+      "failedApi": []
+    }
+  ]
+}
