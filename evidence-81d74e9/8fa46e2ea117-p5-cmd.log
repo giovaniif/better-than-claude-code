@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run focused-pages --recipe usage-row-lines-up-with-host-rows
+# exit 0 after 6173 ms at 81d74e9fc5a8acf880e99feedd873f2e719a66f7
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:58:49.747Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-row-lines-up-with-host-rows",
+          "status": "pass",
+          "ms": 4984
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [141.00ms]

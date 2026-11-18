@@ -1,0 +1,40 @@
+$ verify/yv map run focused-pages --recipe usage-row-lines-up-with-host-rows
+# exit 1 after 2992 ms at ab73a9653fbd8cd21f4b77500493538b8327b703
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:58:33.785Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-row-lines-up-with-host-rows",
+          "status": "fail",
+          "ms": 1967,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"eval\":\"const u = document.querySelector(\\\".usage-trigger\\\").getBoundingClientRect(); const h = document.querySelector(\\\".host-row\\\").getBoundingClientRect(); [u.left - h.left, u.right - h.right].map(Math.round).join()\",\"equals\":\"0,0\"}: eval returned \"-8,-8\", expected \"0,0\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-58-32-031Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "Switchy\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Connectors\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval · Default\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle · Default\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle · Default\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle · Default\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle · Default\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle · Default\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 91% used\\n  - button \\\"iso-host Healthy\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- 'button \\\"Account: Claude, Default\\\"': Claude · Default\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"const u = document.querySelector(\\\".usage-trigger\\\").getBoundingClientRect(); const h = document.querySelector(\\\".host-row\\\").getBoundingClientRect(); [u.left - h.left, u.right - h.right].map(Math.round).join()\",\n          \"value\": \"-8,-8\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"eval\\\":\\\"const u = document.querySelector(\\\\\\\".usage-trigger\\\\\\\").getBoundingClientRect(); const h = document.querySelector(\\\\\\\".host-row\\\\\\\").getBoundingClientRect(); [u.left - h.left, u.right - h.right].map(Math.round).join()\\\",\\\"equals\\\":\\\"0,0\\\"}: eval returned \\\"-8,-8\\\", expected \\\"0,0\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-58-32-031Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "focused-pages/usage-row-lines-up-with-host-rows",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

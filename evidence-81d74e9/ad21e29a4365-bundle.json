@@ -1,0 +1,188 @@
+{
+  "v": 1,
+  "claim": "Sidebar foot, desktop and the phone drawer: the Usage row starts 8 px left of the host rows under it (its hover background runs into the sidebar's edge) and ends 8 px short of them.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67",
+  "base": "af2ef8c4f8a72a4b40e71a2f192caf51fbb7f03d",
+  "head": "81d74e9fc5a8acf880e99feedd873f2e719a66f7",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T04:58:19.784Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ab73a9653fbd8cd21f4b77500493538b8327b703",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d61256ffab16fa3120069b32103cd579da4657b3fda4b76b07d6829dd5dcc60a"
+        },
+        {
+          "path": "p1-base-usage-row-desktop.png",
+          "sha256": "004dfd2a50097a4ab9f6398aa6c9e8b3a2103cf2f42f01435c5728afa38ae110"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "004dfd2a50097a4ab9f6398aa6c9e8b3a2103cf2f42f01435c5728afa38ae110"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:30.705Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ab73a9653fbd8cd21f4b77500493538b8327b703",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "19540d56dd428f009fbc14e67b812d278f2a1733b2f3adc02789bbffc3791173"
+        },
+        {
+          "path": "p2-base-usage-row-mobile.png",
+          "sha256": "8e00f1ac8f596a0922a03e636ef0a0eef1bc2424bb83a3042d1f0096b87300d0"
+        },
+        {
+          "path": "p2-fail-mobile-step4.png",
+          "sha256": "8e00f1ac8f596a0922a03e636ef0a0eef1bc2424bb83a3042d1f0096b87300d0"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:30.753Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ab73a9653fbd8cd21f4b77500493538b8327b703",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "829fc59d1e3cc65cdf9f2b46353196441993bd747dc71ea9d4d203393f97553b"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:30.797Z",
+      "cmd": "verify/yv map run focused-pages --recipe usage-row-lines-up-with-host-rows",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "81d74e9fc5a8acf880e99feedd873f2e719a66f7",
+      "dirty": false,
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "e0b111b1e1a75b6eb695cd30d3bae89191f0a0fda1505a09609d9eed24fe9d15"
+        },
+        {
+          "path": "p4-head-usage-row-desktop.png",
+          "sha256": "d9151c4da180698d656ef68743af3b422168b63a425cb73992dbb9fbfc6ace89"
+        },
+        {
+          "path": "p4-2-drive.json",
+          "sha256": "50eb22be2c60820c063a0d1e7ab0d40b9eb159146333cbfdbac95d1db459cf5e"
+        },
+        {
+          "path": "p4-head-usage-row-mobile.png",
+          "sha256": "aca6d99a60caa359a3cff0c18e07c70c2ba47c4aa6ed99b256ffebc35e5ff160"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:43.532Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "81d74e9fc5a8acf880e99feedd873f2e719a66f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "8fa46e2ea11781cd2207fe324030e353996af580067b0953b45140bd221a185c"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:43.576Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run focused-pages --recipe usage-row-lines-up-with-host-rows",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "81d74e9fc5a8acf880e99feedd873f2e719a66f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "aa47eee9357d4f28095cbfe6162d1beab93ff5dfc2ba3642a0c687c8fdfc648a"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:49.790Z",
+      "cmd": "verify/yv design-check --base af2ef8c4f8a7",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "81d74e9fc5a8acf880e99feedd873f2e719a66f7",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-focused-pages.json",
+          "sha256": "4d4b4e6eca1f53edca22dc744d6c1d94e726b263436e734a1b8792c2255c205a"
+        }
+      ],
+      "addedAt": "2026-11-18T04:58:49.874Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    }
+  ]
+}
