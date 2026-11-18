@@ -80,6 +80,18 @@ A process with a child offers "Stop with children", which ends both.
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 302 & wait\"\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 302 & wait"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 302 & wait\") .proc-kill"},{"expect":"role:button:with its children","text":"Stop with children"},{"shot":"stop-with-children"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 302"},"visible":false,"timeout":10000}]'
 ```
 
+### stop-with-children-fits-the-pane
+Viewports: desktop
+Arming Stop on a row with children keeps the table inside the pane: both
+choices show in full and the pane does not scroll sideways. Once, the two
+buttons sat in the row's last cell and widened it, so at 1440 px the table ran
+45 px past the pane, "Stop with children" was cut at the window's edge and the
+command shrank to "sle…".
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 304 & wait\"\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 304 & wait"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 304 & wait\") .proc-kill"},{"expect":"role:button:with its children","text":"Stop with children","inViewport":true},{"expect":"role:button:Confirm stop process","text":"Stop","inViewport":true},{"eval":"(() => { const p = document.querySelector(\".proc-table\").parentElement; return p.scrollWidth <= p.clientWidth; })()","equals":true},{"shot":"armed-fits"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 304"},"visible":false,"timeout":10000}]'
+```
+
 ### agent-offers-no-stop
 Viewports: desktop
 The Claude sidecar is the session's agent: its row has no Stop. The

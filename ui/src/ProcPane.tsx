@@ -92,6 +92,9 @@ function ProcLine(props: { row: ProcRow; depth: number; offers: ReturnType<typeo
     onKill(signal, tree);
   };
   const label = `${row.pid} ${shortCommand(row.cmd, 40)}`;
+  // Two choices side by side are wider than the pane leaves the last column:
+  // they go on a line under the row, as a note does, so the table keeps its widths.
+  const choices = armed === "stop" && offers.stop && offers.withChildren;
 
   return (
     <>
@@ -111,17 +114,10 @@ function ProcLine(props: { row: ProcRow; depth: number; offers: ReturnType<typeo
         <td className="num">{memText(row.memBytes)}</td>
         <td className="num">{duration(row.ageSecs * 1000)}</td>
         <td className="proc-act">
-          {armed === "stop" && offers.stop ? (
-            <>
-              <button className="btn-text danger" aria-label={`Confirm stop process ${label}`} onClick={() => fire("term", false)}>
-                {offers.withChildren ? "Stop" : "Stop?"}
-              </button>
-              {offers.withChildren && (
-                <button className="btn-text danger" aria-label={`Stop process ${label} with its children`} onClick={() => fire("term", true)}>
-                  Stop with children
-                </button>
-              )}
-            </>
+          {choices ? null : armed === "stop" && offers.stop ? (
+            <button className="btn-text danger" aria-label={`Confirm stop process ${label}`} onClick={() => fire("term", false)}>
+              Stop?
+            </button>
           ) : armed === "force" && offers.force ? (
             <button className="btn-text danger" aria-label={`Confirm force kill process ${label}`} onClick={() => fire("kill", offers.forceTree)}>
               Force kill?
@@ -137,6 +133,19 @@ function ProcLine(props: { row: ProcRow; depth: number; offers: ReturnType<typeo
           ) : null}
         </td>
       </tr>
+      {choices && (
+        <tr className="proc-choices">
+          <td />
+          <td colSpan={5}>
+            <button className="btn-text danger" aria-label={`Confirm stop process ${label}`} onClick={() => fire("term", false)}>
+              Stop
+            </button>
+            <button className="btn-text danger" aria-label={`Stop process ${label} with its children`} onClick={() => fire("term", true)}>
+              Stop with children
+            </button>
+          </td>
+        </tr>
+      )}
       {offers.note && (
         <tr className="proc-note">
           <td />
