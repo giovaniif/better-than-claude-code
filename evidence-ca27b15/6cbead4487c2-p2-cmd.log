@@ -1,0 +1,45 @@
+$ verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine
+# exit 1 after 25041 ms at 177df468d7ae16db251e7cdfca4322046a5153ae
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-18T03:07:49.498Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "subscriptions-note-names-every-silent-engine",
+          "status": "fail",
+          "ms": 24180,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"expect\":\"css:.subscription-note\",\"text\":\"OpenCode, Grok and Gemini don't report subscription limits.\"}: expected \"css:.subscription-note\" to contain \"OpenCode, Grok and Gemini don't report subscription limits.\", got \"One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T03-07-25-476Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":\"css:.subscription-note\",\"text\":\"OpenCode, Grok and Gemini don't report subscription limits.\"}: expected \"css:.subscription-note\" to contain \"OpenCode, Grok and Gemini don't report subscription limits.\", got \"One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T03-07-25-476Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "dle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 18% · 52%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - heading \\\"Subscriptions\\\" [level=1]\\n- paragraph: Your accounts and usage, across all hosts\\n- region \\\"Claude · Default\\\":\\n  - strong: Claude · Default\\n  - paragraph: me@example.com\\n  - text: iso-host 5-hour\\n  - strong: 47% used\\n  - progressbar \\\"5-hour used\\\"\\n  - text: resets in 1 h 35 min Week\\n  - strong: 17% used\\n  - progressbar \\\"Week used\\\"\\n  - text: resets in 4 d 2 h Week · Sonnet\\n  - strong: 8% used\\n  - progressbar \\\"Week · Sonnet used\\\"\\n  - text: resets in 4 d 2 h\\n- region \\\"Codex · Default\\\":\\n  - strong: Codex · Default\\n  - paragraph: me@example.com\\n  - text: iso-host 5-hour\\n  - strong: 12% used\\n  - progressbar \\\"5-hour used\\\"\\n  - text: resets in 2 h 10 min Week\\n  - strong: 34% used\\n  - progressbar \\\"Week used\\\"\\n  - text: resets in 3 d 4 h\\n- paragraph: One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.\\n- button \\\"Manage engine logins →\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"expect\\\":\\\"css:.subscription-note\\\",\\\"text\\\":\\\"OpenCode, Grok and Gemini don't report subscription limits.\\\"}: expected \\\"css:.subscription-note\\\" to contain \\\"OpenCode, Grok and Gemini don't report subscription limits.\\\", got \\\"One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T03-07-25-476Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":\\\"css:.subscription-note\\\",\\\"text\\\":\\\"OpenCode, Grok and Gemini don't report subscription limits.\\\"}: expected \\\"css:.subscription-note\\\" to contain \\\"OpenCode, Grok and Gemini don't report subscription limits.\\\", got \\\"One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f/.verify/drives/2026-11-18T03-07-25-476Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "usage/subscriptions-note-names-every-silent-engine",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

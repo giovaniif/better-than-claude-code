@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T03:11:07.991Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selected-host-tabs",
+          "status": "pass",
+          "ms": 5484
+        },
+        {
+          "label": "compact-usage-popover",
+          "status": "pass",
+          "ms": 4998
+        },
+        {
+          "label": "subscriptions-page",
+          "status": "pass",
+          "ms": 6311
+        },
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 4960
+        },
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 10177
+        },
+        {
+          "label": "sessions-search-and-archive",
+          "status": "pass",
+          "ms": 8338
+        },
+        {
+          "label": "offline-host-and-selection-fallback",
+          "status": "pass",
+          "ms": 8374
+        },
+        {
+          "label": "workspace-widths-and-views",
+          "status": "pass",
+          "ms": 9376
+        },
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 7361
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

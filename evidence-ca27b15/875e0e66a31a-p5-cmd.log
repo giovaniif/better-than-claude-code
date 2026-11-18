@@ -1,0 +1,26 @@
+$ verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine
+# exit 0 after 4878 ms at ca27b15ad6ef3267b5b0f1002a589a3142dbf90e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-18T03:08:03.257Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "subscriptions-note-names-every-silent-engine",
+          "status": "pass",
+          "ms": 4020
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

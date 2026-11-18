@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "subscriptions",
+  "build": {
+    "sha": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+    "short": "ca27b15",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:07:53.908Z"
+  },
+  "dir": ".verify/evidence/subs-note-r2-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1492,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/subs-note-r2-head-d/note-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "document.querySelector(\".subscription-note\").textContent",
+          "value": "One limit per account, shared across its hosts. OpenCode, Grok and Gemini don't report subscription limits."
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,238 @@
+{
+  "v": 1,
+  "claim": "The Subscriptions page says only OpenCode and Grok don't report subscription limits; Gemini (added in #226) doesn't either, so the note reads as if Gemini's limits were among the meters",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f",
+  "base": "ef3b785431ed1e36a2a0103c3da9cb2284720df3",
+  "head": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T03:07:15.520Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "177df468d7ae16db251e7cdfca4322046a5153ae",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "ab76a51c48ef2c18ad27b0a9ff369b35bf52faee2760732bbe0e6d0af6e4d8bf"
+        },
+        {
+          "path": "p1-note-mobile.png",
+          "sha256": "4d7d9d75e7b6204d49df888277e5351885fb5eeeaf70dedd021446257ca98509"
+        },
+        {
+          "path": "p1-note-desktop.png",
+          "sha256": "cf28d7958ae0524be8a0fe70d960a35fe0406c35038f83675f56180123d5649b"
+        }
+      ],
+      "addedAt": "2026-11-18T03:07:24.417Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "177df468d7ae16db251e7cdfca4322046a5153ae",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "6cbead4487c2e5bad8aff62517a55463953d015e7f88cdd3140c856eb4080428"
+        }
+      ],
+      "addedAt": "2026-11-18T03:07:24.459Z",
+      "cmd": "verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "34b4ec14f5e99fc9ac7c9fec83928fd42007f7f1176367063a9c645fd63b1232"
+        },
+        {
+          "path": "p3-note-mobile.png",
+          "sha256": "65e7098dfdf437d19810452773f97c5f5d9ea3f865a5932b941acb980a509246"
+        }
+      ],
+      "addedAt": "2026-11-18T03:07:58.302Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4736e6a0a8b4898d5e9f06c994f475a9b710e30b65c6c351a1133faa0f37864c"
+        },
+        {
+          "path": "p4-note-desktop.png",
+          "sha256": "112c3b87a31bf738f44e1a134ca1925d9cdd4b30d54f7a6352507c64937eb894"
+        }
+      ],
+      "addedAt": "2026-11-18T03:07:58.341Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "875e0e66a31af01654fe17e00a908fcb6b7fe5c64afd50fe61611f96b529d4fe"
+        }
+      ],
+      "addedAt": "2026-11-18T03:07:58.382Z",
+      "cmd": "verify/yv map run usage --recipe subscriptions-note-names-every-silent-engine",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "b60698f695402c6b3fc6dd5c51aaa205a4926192b56ea0ded96c2618b43a208e"
+        }
+      ],
+      "addedAt": "2026-11-18T03:08:03.303Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "b7a9fed147aaaf3d5269c605aa45790a44a3b92d7ee441f632d3064313112f53"
+        }
+      ],
+      "addedAt": "2026-11-18T03:08:03.470Z",
+      "cmd": "verify/yv design-check --base ef3b785431ed",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-usage.json",
+          "sha256": "b40db763120234cdfe36fc931a5ee8f07e4585de20bab6a7b3ee6150e7d8f69f"
+        }
+      ],
+      "addedAt": "2026-11-18T03:08:03.554Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart",
+        "usage/strip-names-every-account",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "note",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T03:09:52.416Z",
+      "text": "rebased onto main after #225 and #231 landed. 11babfd had PASS+NOTES; the one new commit (review note) makes the Subscriptions rows use reportsLimits instead of their own claude/codex list, same engines"
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ca27b15ad6ef3267b5b0f1002a589a3142dbf90e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-focused-pages.json",
+          "sha256": "8bb709721805fc4643d82b4b4e65e97435803ab0ee1305cd67e3c5f33fa3c6dd"
+        }
+      ],
+      "addedAt": "2026-11-18T03:10:01.584Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    }
+  ]
+}
