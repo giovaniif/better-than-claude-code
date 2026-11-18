@@ -451,8 +451,8 @@ export type AgentEvent =
    *  (a chart), fetched with `widget.get`. */
   | { type: "tool_completed"; itemId: string; ok: boolean; output?: string | null; note?: string | null; ms?: number | null; app?: WidgetRef }
   | { type: "file_change"; itemId: string; files: ChangedFile[] }
-  | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string; /** The call it asks about. */ itemId?: string | null }
-  | { type: "approval_resolved"; requestId: string; decision: Decision }
+  | { type: "approval_request"; requestId: string; kind: string; title: string; detail: string; /** The call it asks about. */ itemId?: string | null; at?: number }
+  | { type: "approval_resolved"; requestId: string; decision: Decision; at?: number }
   | { type: "error"; message: string }
   /** A quiet line from yardd itself, such as a hand-off or a worktree setup. Changes no status. */
   | { type: "note"; text: string; /** A hand-off note's other session. */ session?: string }
@@ -551,6 +551,10 @@ export type Item =
       unanswered?: boolean;
       /** A decision was sent and yardd has not resolved it yet. */
       sending?: boolean;
+      /** When it was asked and answered (yardd's clock), so "Worked for"
+       *  leaves out the wait. Older logs lack them. */
+      askedAt?: number;
+      answeredAt?: number;
     }
   | { kind: "error"; key: string; message: string }
   | { kind: "note"; key: string; text: string; session?: string }
@@ -672,13 +676,16 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
         decision: null,
       };
       if (ev.itemId) approval.itemId = ev.itemId;
+      if (ev.at != null) approval.askedAt = ev.at;
       return markAsked([...items, approval], turnStart(items), approval);
     }
     case "approval_resolved": {
       const from = turnStart(items);
       let resolved: Extract<Item, { kind: "approval" }> | undefined;
       const next = items.map((it, i) => {
-        if (i >= from && it.kind === "approval" && it.requestId === ev.requestId) return (resolved = { ...it, decision: ev.decision });
+        if (i >= from && it.kind === "approval" && it.requestId === ev.requestId) {
+          return (resolved = { ...it, decision: ev.decision, ...(ev.at != null ? { answeredAt: ev.at } : {}) });
+        }
         return it;
       });
       return resolved ? markAsked(next, from, resolved) : next;

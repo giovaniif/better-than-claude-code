@@ -90,7 +90,9 @@ export function layout(items: Item[], running: boolean): Row[] {
     const cut = nextHead?.kind === "user" && nextHead.steered ? nextHead.at : undefined;
     const from = own?.start ?? (steered && head?.kind === "user" ? head.at : undefined);
     const to = cut ?? marker?.end;
-    const ms = from != null && to != null ? to - from : null;
+    // "Worked for" is the agent's time: an approval's wait for the user is
+    // left out (one never answered waited until the turn ended).
+    const ms = from != null && to != null ? to - from - waited(turn, from, to) : null;
     // Only the part that runs to the stop is marked, not each steered part.
     const stoppedMark = (): Row[] => (!live && marker && cut === undefined && marker.status === "interrupted" ? [{ type: "stopped", key: `stopped-${marker.key}`, ms }] : []);
     if (live || !body.some(isWork)) {
@@ -125,6 +127,28 @@ export function layout(items: Item[], running: boolean): Row[] {
     rows.push(...group(shown, false));
   });
   return rows;
+}
+
+/** How long this part's approvals waited for the user, within `from`..`to`.
+ *  Several can wait at once (Claude asks in parallel), so the waits are
+ *  merged: time is left out once, however many approvals shared it. */
+function waited(items: Item[], from: number, to: number): number {
+  const spans: [number, number][] = [];
+  for (const it of items) {
+    if (it.kind !== "approval" || it.askedAt == null) continue;
+    const start = Math.max(it.askedAt, from);
+    const end = Math.min(it.answeredAt ?? to, to);
+    if (end > start) spans.push([start, end]);
+  }
+  spans.sort((a, b) => a[0] - b[0]);
+  let ms = 0;
+  let reached = -Infinity;
+  for (const [start, end] of spans) {
+    if (end <= reached) continue;
+    ms += end - Math.max(start, reached);
+    reached = end;
+  }
+  return ms;
 }
 
 const PLURAL: Record<string, [string, string, string]> = {
