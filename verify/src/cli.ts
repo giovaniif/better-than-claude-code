@@ -24,8 +24,8 @@ const HELP = `verify/yv <command> [args]   (every command prints one JSON object
 
   shot <route> [--viewport mobile|desktop|both] [--iso n] [--out dir] [--name label]
   drive <route> --steps '<json>' [--viewport ...] [--iso n] [--video]
-        routes: new | hosts | settings | connectors | switchy | session:<id or title text> | session:{{var}}
-        steps: goto click hover tap fill type press drag wait expect upload shot aria eval reload
+        routes: new | hosts | subscriptions | sessions | settings | connectors | switchy | session:<id or title text> | session:{{var}}
+        steps: goto click hover tap fill select type press drag wait expect upload shot aria eval reload
 
   map status [area]
   map run <area|all> [--recipe label] [--iso n]

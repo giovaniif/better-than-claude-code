@@ -53,7 +53,7 @@ Viewports: mobile
 At 390 px the Hosts heading and the host card's stats must be readable.
 
 ```sh
-yv drive hosts --viewport mobile --steps '[{"expect":"role:heading:Hosts","inViewport":true},{"eval":"Math.round(document.querySelector(\".host-card\").getBoundingClientRect().width) >= 300","equals":true}]'
+yv drive hosts --viewport mobile --steps '[{"expect":"role:heading:Hosts","inViewport":true},{"eval":"Math.round(document.querySelector(\".host-summary\").getBoundingClientRect().width) >= 300","equals":true}]'
 ```
 
 ### mobile-drawer-opens-and-closes

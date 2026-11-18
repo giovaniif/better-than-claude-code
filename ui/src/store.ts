@@ -50,6 +50,8 @@ const widgets = new Map<string, Promise<{ widget?: WidgetRecord; error?: string 
 export type Route =
   | { page: "new" }
   | { page: "hosts" }
+  | { page: "subscriptions" }
+  | { page: "sessions" }
   | { page: "assistant" }
   | { page: "settings" }
   | { page: "session"; id: string }
@@ -68,6 +70,10 @@ export function routeHash(route: Route): string {
       return "#/assistant";
     case "hosts":
       return "#/hosts";
+    case "subscriptions":
+      return "#/subscriptions";
+    case "sessions":
+      return "#/sessions";
     case "settings":
       return "#/settings";
     case "automations":
@@ -90,6 +96,8 @@ export function parseHash(hash: string): Route {
   } catch {
     return { page: "new" };
   }
+  if (hash === "#/subscriptions") return { page: "subscriptions" };
+  if (hash === "#/sessions") return { page: "sessions" };
   if (hash === "#/assistant") return { page: "assistant" };
   if (hash === "#/automations") return { page: "automations" };
   if (hash === "#/settings") return { page: "settings" };

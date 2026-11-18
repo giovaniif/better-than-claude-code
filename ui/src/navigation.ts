@@ -21,6 +21,8 @@ const PAGES: NavigationEntry[] = [
   { id: "connectors", title: "Connectors", detail: "MCP servers and connections", group: "Pages", route: { page: "connectors" } },
   { id: "settings", title: "Settings", detail: "Notifications and sidebar", group: "Pages", route: { page: "settings" } },
   { id: "hosts", title: "Hosts", detail: "Local and remote machines", group: "Pages", route: { page: "hosts" } },
+  { id: "subscriptions", title: "Subscriptions", detail: "Accounts and usage across hosts", group: "Pages", route: { page: "subscriptions" } },
+  { id: "sessions", title: "Sessions", detail: "Active and archived conversations", group: "Pages", route: { page: "sessions" } },
   { id: "import", title: "Import", detail: "Claude Code sessions", group: "Pages", action: "import" },
 ];
 

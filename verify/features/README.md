@@ -40,7 +40,8 @@ prompt).
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |
-| [hosts](hosts.md) | The Hosts page (a grid of host cards with Details), adding a direct host, an unreachable SSH host, removing a host |
+| [focused-pages](focused-pages.md) | Approved host, session and subscription pages, account identity and compact usage popover |
+| [hosts](hosts.md) | The Hosts page (compact host rows and a tabbed inspector), adding a direct host, an unreachable SSH host, removing a host |
 | [queue](queue.md) | The resource guard: sessions queue under pressure, Start anyway |
 | [logins](logins.md) | Engine login state and the Codex, Claude, Grok and OpenCode login flows |
 | [acp-engines](acp-engines.md) | OpenCode and Grok: listed where installed, sessions, approvals, hand-off rows |
@@ -54,6 +55,6 @@ prompt).
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
 | [automations](automations.md) | Scheduled runs: the Automations page, create (daily, interval, weekly), Run now, auto-archive, pin, edit, disable, delete, the working-run dot |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
-| [usage](usage.md) | Plan usage meters in the sidebar and the model picker, the picker's engine sections |
+| [usage](usage.md) | Usage popover, Subscriptions, reset times and separate account/model controls |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
 | [connectors](connectors.md) | MCP servers per engine account: states, sign-in (claude.ai, pasted redirects, ChatGPT apps), chart widgets in the thread |

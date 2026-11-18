@@ -1,75 +1,176 @@
-// Plan-usage meters: the strip at the foot of the sidebar, one block per
-// engine account. The model picker shows none: limits are read here, per
-// account, and the picker only says which account a model runs on.
-import { Fragment, useEffect, useState } from "react";
-import type { Engine } from "./protocol";
+import { useEffect, useRef, useState } from "react";
+import { AnchoredPopover } from "./AnchoredPopover";
+import type { EngineStates } from "./protocol";
 import { formatReset, metersFor, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
-import { ENGINES as ENGINE_IDS, ENGINE_NAME } from "./engines";
+import { ENGINE_NAME } from "./engines";
 
-// An engine that reports no plan usage has no meters, so it shows nothing.
-const ENGINES: { id: Engine; name: string }[] = ENGINE_IDS.map((id) => ({ id, name: ENGINE_NAME[id] }));
+const LIMIT_ENGINES = ["claude", "codex"] as const;
 
-/** Re-renders now and then so "resets in" keeps counting down. */
-function useNow(everyMs = 30_000): number {
-  const [now, setNow] = useState(() => Date.now());
+function useNow() {
+  const [now, setNow] = useState(Date.now);
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), everyMs);
+    const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
-  }, [everyMs]);
+  }, []);
   return now;
 }
-
-const Bar = ({ meter }: { meter: Meter }) => (
-  <div className="bar-track" aria-hidden="true">
+export const Bar = ({ meter }: { meter: Meter }) => (
+  <div
+    className="bar-track"
+    role="progressbar"
+    aria-label={`${meter.label} used`}
+    aria-valuenow={Math.round(meter.percent)}
+    aria-valuemin={0}
+    aria-valuemax={100}
+  >
     <div className={`bar-fill level-${meter.level}`} style={{ width: `${meter.percent}%` }} />
   </div>
 );
 
-/** What a meter says in words: for a screen reader and for the strip's tooltip. */
-const describe = (engineName: string, m: Meter, now: number) =>
-  [`${engineName} ${m.label}: ${percentText(m.percent)} used`, formatReset(m.resetsAt, now)].filter(Boolean).join(", ");
+export type SubscriptionSource = UsageSource & { name?: string; engines?: EngineStates };
 
-/** The meters worth a line in the strip: the 5-hour window and the week,
- *  plus any other window that is running high. */
-const forStrip = (meters: Meter[]) => meters.filter((m, i) => i < 2 || m.level !== "ok");
+/** Keep the existing cross-host deduplication and freshness rules. Identity
+ * and host badges explain which login each report belongs to. */
+function subscriptionRows(sources: SubscriptionSource[], now: number) {
+  const groups = stripGroups(sources, [...LIMIT_ENGINES]);
+  for (const source of sources)
+    for (const engine of LIMIT_ENGINES) {
+      if (source.engines?.[engine]?.installed && !groups.some((g) => g.engine === engine && g.account === null))
+        groups.push({ engine, account: null, host: source.host, usage: {}, reported: false });
+    }
+  return groups.map((g) => {
+    const available = sources.filter((s) =>
+      g.account === null
+        ? !!s.engines?.[g.engine]?.installed || !!(g.engine === "claude" ? s.usage.claude : s.usage.codex)
+        : s.accounts.some((a) => a.engine === g.engine && a.name.toLowerCase() === g.account!.toLowerCase()),
+    );
+    const reportSource = sources.find((s) => s.host === g.host);
+    const account =
+      g.account === null ? undefined : reportSource?.accounts.find((a) => a.engine === g.engine && a.name.toLowerCase() === g.account!.toLowerCase());
+    const login = account ? reportSource?.engines?.accounts?.[account.id] : reportSource?.engines?.[g.engine];
+    return {
+      ...g,
+      key: `${g.engine}:${g.account ?? "default"}`,
+      name: `${ENGINE_NAME[g.engine]} · ${g.account ?? "Default"}`,
+      identity: login?.account || (login?.loggedIn === false ? "Needs sign-in" : ""),
+      hosts: available,
+      meters: metersFor(g.engine, g.usage, now),
+    };
+  });
+}
 
-/** Always visible: one line per window; when each resets is in the line's
- *  tooltip. Each engine and account once, from the hosts the sidebar shows.
- *  Where an engine has more than one account, each gets its name above its
- *  meters, Default included, and an account with nothing reported yet says
- *  so instead of being left out. */
-export function UsageStrip({ sources }: { sources: UsageSource[] }) {
+export function UsageStrip({ sources, onViewAll }: { sources: SubscriptionSource[]; onViewAll(): void }) {
   const now = useNow();
-  const groups = stripGroups(sources, ENGINES.map((e) => e.id));
-  const several = new Set(groups.filter((g) => g.account !== null).map((g) => g.engine));
-  const shown = groups
-    .map((g) => {
-      const engine = ENGINES.find((e) => e.id === g.engine)?.name ?? g.engine;
-      const account = g.account ?? (several.has(g.engine) ? "Default" : null);
-      return { ...g, engine, account, name: account ? `${engine} (${account})` : engine, meters: forStrip(metersFor(g.engine, g.usage, now)) };
-    })
-    .filter((g) => g.meters.length > 0 || !g.reported);
-  if (shown.length === 0) return null;
+  const rows = subscriptionRows(sources, now);
+  const [open, setOpen] = useState(false);
+  const anchor = useRef<HTMLButtonElement>(null);
+  const highest = rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
   return (
-    <div className="usage-strip" role="group" aria-label="Plan usage">
-      {shown.map((g) => (
-        <Fragment key={g.name}>
-          {g.account && (
-            <div className="usage-line-account">
-              {g.engine} · {g.account}
-            </div>
-          )}
-          {!g.reported && <div className="usage-line-none muted">No limits reported yet</div>}
-          {g.meters.map((m, i) => (
-            <div key={`${g.name}-${m.key}`} className={`usage-line level-${m.level}`} title={describe(g.name, m, now)}>
-              <span className="usage-line-engine">{i === 0 && !g.account ? g.engine : ""}</span>
-              <span className="usage-label">{m.label}</span>
-              <Bar meter={m} />
-              <span className="usage-percent">{percentText(m.percent)}</span>
-            </div>
+    <div className="usage-dock">
+      <button
+        ref={anchor}
+        className="btn-quiet usage-trigger"
+        aria-label="Subscription usage"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+      >
+        <span aria-hidden="true">◷</span>
+        <span>Usage</span>
+        <span className="spacer" />
+        <span className={highest?.level === "high" ? "bad" : highest?.level === "warn" ? "warn" : "muted"}>
+          {highest ? `${percentText(highest.percent)} used` : "View limits"}
+        </span>
+        <span aria-hidden="true">›</span>
+      </button>
+      {open && (
+        <AnchoredPopover anchor={anchor} label="Subscription usage" side="right" onClose={() => setOpen(false)}>
+          <div className="popover-heading">
+            <strong>Subscription usage</strong>
+            <button className="btn-icon" aria-label="Close usage popover" onClick={() => setOpen(false)}>
+              ×
+            </button>
+          </div>
+          {rows.length === 0 && <p className="muted pad">No subscription limits reported yet.</p>}
+          {rows.map((r) => (
+            <section key={r.key} className="compact-subscription" aria-label={r.name}>
+              <strong>{r.name}</strong>
+              {!r.meters.length && <p className="muted small">No limits reported yet</p>}
+              {r.meters.map((m) => (
+                <div key={m.key} className={`compact-meter level-${m.level}`} title={formatReset(m.resetsAt, now)}>
+                  <span className="muted">{m.label}</span>
+                  <Bar meter={m} />
+                  <span className="usage-percent">{percentText(m.percent)}</span>
+                </div>
+              ))}
+            </section>
           ))}
-        </Fragment>
+          <div className="popover-footer">
+            <span className="muted small">Shared across hosts</span>
+            <button
+              className="btn-text"
+              onClick={() => {
+                setOpen(false);
+                onViewAll();
+              }}
+            >
+              View all →
+            </button>
+          </div>
+        </AnchoredPopover>
+      )}
+    </div>
+  );
+}
+
+export function Subscriptions({ sources, onManage }: { sources: SubscriptionSource[]; onManage(): void }) {
+  const now = useNow();
+  const rows = subscriptionRows(sources, now);
+  return (
+    <div className="subscriptions">
+      <div className="subscription-columns muted small" aria-hidden="true">
+        <span>Account</span>
+        <span>Reported limits</span>
+      </div>
+      {rows.map((r) => (
+        <section className="subscription-row" key={r.key} aria-label={r.name}>
+          <div className="subscription-identity">
+            <strong>{r.name}</strong>
+            {r.identity && <p className="muted small">{r.identity}</p>}
+            <div className="subscription-hosts">
+              {r.hosts.map((s) => (
+                <span key={s.host} className="account-host-badge">
+                  {s.name ?? s.host}
+                </span>
+              ))}
+            </div>
+          </div>
+          {r.meters.length ? (
+            <div className="subscription-meters">
+              {r.meters.map((m) => (
+                <div key={m.key} className={`subscription-meter level-${m.level}`}>
+                  <span className="muted small">{m.label}</span>
+                  <strong className="usage-percent">{percentText(m.percent)} used</strong>
+                  <Bar meter={m} />
+                  <span className="muted small">{formatReset(m.resetsAt, now) || "Reset time not reported"}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="muted small">No limits reported yet</p>
+          )}
+        </section>
       ))}
+      {!rows.length && (
+        <div className="focused-empty">
+          <strong>No subscription limits reported yet</strong>
+          <p className="muted">Usage appears here when Claude or Codex reports it.</p>
+        </div>
+      )}
+      <p className="muted small subscription-note">One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.</p>
+      <button className="btn-text" onClick={onManage}>
+        Manage engine logins →
+      </button>
     </div>
   );
 }

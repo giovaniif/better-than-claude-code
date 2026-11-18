@@ -200,6 +200,8 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
       await page.getByRole("button", { name: "Settings", exact: true }).first().click();
       await page.getByRole("button", { name: "Manage hosts" }).click();
     }
+  } else if (route === "subscriptions" || route === "sessions") {
+    await page.getByRole("button", { name: route === "subscriptions" ? "Subscriptions" : "Sessions", exact: true }).first().click();
   } else if (route === "settings") {
     await page.getByRole("button", { name: "Settings", exact: true }).first().click();
   } else if (route === "switchy") {
@@ -241,7 +243,7 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
       if (!found) fail("no-session", `no sidebar row opens ${key} (title ${title})`, "verify/yv state");
     }
   } else if (route !== "") {
-    throw new Usage(`unknown route ${route}: new | hosts | settings | connectors | session:<id or title>`);
+    throw new Usage(`unknown route ${route}: new | hosts | subscriptions | sessions | settings | connectors | session:<id or title>`);
   }
   // Picking a row closes the drawer; a shot taken mid-slide would show it half open.
   if (drawer) await page.locator(".sidebar").waitFor({ state: "hidden", timeout: 5000 });
@@ -368,6 +370,10 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
   }
   if (step.tap) {
     await locate(page, step.tap).tap({ timeout });
+    return settle(page, w);
+  }
+  if (step.select) {
+    await locate(page, step.select).selectOption(String(step.value), { timeout });
     return settle(page, w);
   }
   if (step.fill) {
@@ -497,7 +503,7 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
     await page.locator(".sidebar").waitFor({ state: "attached", timeout });
     return settle(page, w);
   }
-  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click hover tap fill type press drag wait expect upload shot aria eval reload`);
+  throw new Usage(`unknown step ${JSON.stringify(step)}: goto click hover tap fill select type press drag wait expect upload shot aria eval reload`);
 }
 
 /** Scripted interaction. On failure: a screenshot, an accessibility snapshot and the reason. */
