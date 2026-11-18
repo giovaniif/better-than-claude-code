@@ -315,6 +315,8 @@ export interface Attachment {
 
 /** Largest file `attach.put` takes. Keep in step with `attachments::MAX_BYTES`. */
 export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+/** Most files one message takes. Keep in step with `attachments::MAX_PER_MESSAGE`. */
+export const MAX_ATTACHMENTS_PER_MESSAGE = 20;
 
 /** Reply to `session.interrupt` (what was queued, joined) or `session.unqueue`
  *  (one message, with its `id`) when it had not reached the agent yet: the
