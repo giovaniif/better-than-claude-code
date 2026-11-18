@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run accounts --recipe account-chip-chevron-keeps-its-size
+# exit 0 after 6910 ms at d38bd0ea7884ed8a1a70c4c192ea3802587f3ed8
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T08:12:37.448Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "account-chip-chevron-keeps-its-size",
+          "status": "pass",
+          "ms": 5880
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 398 pass
+ 0 fail
+ 987 expect() calls
+Ran 398 tests across 29 files. [163.00ms]

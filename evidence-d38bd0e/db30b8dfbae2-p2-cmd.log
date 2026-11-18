@@ -1,0 +1,45 @@
+$ verify/yv map run accounts --recipe account-chip-chevron-keeps-its-size
+# exit 1 after 6776 ms at 28b71de3836ee5840e5b20aefac897c0f1cd4bcb
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T08:12:20.027Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "account-chip-chevron-keeps-its-size",
+          "status": "fail",
+          "ms": 5917,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"(() => { const n = document.querySelector(\\\".composer .account-trigger-name\\\"); n.textContent = \\\"Codex · \\\" + \\\"TEST-averyverylongaccountname\\\".repeat(4); const s = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b/.verify/drives/2026-11-18T08-12-14-321Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"(() => { const n = document.querySelector(\\\".composer .account-trigger-name\\\"); n.textContent = \\\"Codex · \\\" + \\\"TEST-averyverylongaccountname\\\".repeat(4); const s = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b/.verify/drives/2026-11-18T08-12-14-321Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "countnameTEST-averyverylongaccountnameTEST-averyverylongaccountnameTEST-averyverylongaccountname\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - paragraph: me@example.com\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - combobox \\\"Workspace view\\\":\\n    - option \\\"Changes\\\" [selected]\\n    - option \\\"Terminal\\\"\\n    - option \\\"Pull request\\\"\\n    - option \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: src/lib.rs\\n  - code: +1 −0\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const n = document.querySelector(\\\".composer .account-trigger-name\\\"); n.textContent = \\\"Codex · \\\" + \\\"TEST-averyverylongaccountname\\\".repeat(4); const s = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"(() => { const n = document.querySelector(\\\\\\\".composer .account-trigger-name\\\\\\\"); n.textContent = \\\\\\\"Codex · \\\\\\\" + \\\\\\\"TEST-averyverylongaccountname\\\\\\\".repeat(4); const s = n.parentElement.querySelector(\\\\\\\"svg\\\\\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b/.verify/drives/2026-11-18T08-12-14-321Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"(() => { const n = document.querySelector(\\\\\\\".composer .account-trigger-name\\\\\\\"); n.textContent = \\\\\\\"Codex · \\\\\\\" + \\\\\\\"TEST-averyverylongaccountname\\\\\\\".repeat(4); const s = n.parentElement.querySelector(\\\\\\\"svg\\\\\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b/.verify/drives/2026-11-18T08-12-14-321Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "accounts/account-chip-chevron-keeps-its-size",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
