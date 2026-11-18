@@ -242,7 +242,7 @@ pub async fn create_session(
     let first = first.or_else(|| files.first().and_then(|a| a["name"].as_str())).unwrap_or("");
     let title: String = match title {
         Some(t) => t.to_string(),
-        None => first.chars().take(60).collect(),
+        None => title_from(first),
     };
 
     // The worktree (and its setup) comes first: if it cannot be made,
@@ -669,6 +669,22 @@ async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     }
     pty::close_session(app, sid);
     app.remove_session(sid);
+}
+
+/// A session's title from its first line: at most 60 characters. A longer
+/// line is cut at a word and marked "…", so it does not read like a typo
+/// (the whole prompt is still the first message).
+fn title_from(first: &str) -> String {
+    const MAX: usize = 60;
+    let first = first.trim();
+    if first.chars().count() <= MAX {
+        return first.to_string();
+    }
+    let head: String = first.chars().take(MAX - 1).collect();
+    let next = first.chars().nth(MAX - 1);
+    // A word that runs past the cut is dropped, unless it is the only one.
+    let cut = if next.is_some_and(char::is_whitespace) { head.as_str() } else { head.rsplit_once(char::is_whitespace).map_or(head.as_str(), |(h, _)| h) };
+    format!("{}…", cut.trim_end())
 }
 
 #[cfg(test)]

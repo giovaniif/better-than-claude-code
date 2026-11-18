@@ -140,6 +140,32 @@ async fn the_codex_sandbox_can_be_set() {
     assert!(sb.codex_log().contains("req thread/start sandbox=danger-full-access"), "{}", sb.codex_log());
 }
 
+/// A long first line becomes a title cut at a word, marked with "…", not
+/// one that stops mid-word and reads like a typo.
+#[tokio::test]
+async fn a_long_first_line_is_titled_at_a_word_with_an_ellipsis() {
+    let sb = Sandbox::new("long-title");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = sb.folder("proj");
+    let long = "a very long first prompt that becomes the title and keeps going on and on";
+    let sid = c.create(&cwd, &format!("{long}\nsecond line"), json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], "a very long first prompt that becomes the title and keeps…");
+
+    // One that fits stays whole, with no mark.
+    let fits = "x".repeat(60);
+    let sid = c.create(&sb.folder("proj2"), &fits, json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], fits.as_str());
+
+    // A single word longer than the limit is cut, still marked.
+    let word = "y".repeat(80);
+    let sid = c.create(&sb.folder("proj3"), &word, json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], format!("{}…", "y".repeat(59)));
+}
+
 #[tokio::test]
 async fn approval_allow_runs_the_command() {
     let sb = Sandbox::new("allow");
