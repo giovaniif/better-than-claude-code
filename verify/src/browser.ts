@@ -456,7 +456,15 @@ async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: s
       if (got !== step.enabled) throw new Error(`expected ${JSON.stringify(step.expect)} to be ${step.enabled ? "enabled" : "disabled"}`);
     }
     if (step.count !== undefined) {
-      const n = await locateAll(page, step.expect).count();
+      // The first match being visible says nothing of the rest: a remounted
+      // image has no size until it decodes. Poll like "text" does.
+      const all = locateAll(page, step.expect);
+      const deadline = Date.now() + timeout;
+      let n = await all.count();
+      while (n !== step.count && Date.now() < deadline) {
+        await page.waitForTimeout(100);
+        n = await all.count();
+      }
       if (n !== step.count) throw new Error(`expected ${step.count} visible ${JSON.stringify(step.expect)}, found ${n}`);
     }
     if (step.inViewport) {
