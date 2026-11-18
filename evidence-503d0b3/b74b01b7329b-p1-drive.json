@@ -1,0 +1,95 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "9458c94236efc0ceb2f65b54b96b7964fc47bf88",
+    "short": "9458c94",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T06:10:39.225Z"
+  },
+  "dir": ".verify/evidence/removed-default-host-r2-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 7156,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-r2-base/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-r2-base/settings-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed475ca41\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 5,
+          "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"New session\" [level=2]\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- 'button \"Account: Claude, Default\"': Claude · Default\n- button \"Model Opus 5.5\": Opus 5.5\n- button \"Effort High\": High\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- paragraph: me@example.com\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 5061,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-r2-base/new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-r2-base/settings-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed475ca41\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 5,
+          "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Hosts\"\n  - button \"Sessions\"\n  - button \"Subscriptions\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 10% · 67%\"\n  - button \"TEST-offline-default Offline\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- 'button \"Account: Claude, Default\"': Claude · Default\n- button \"Model Opus 5.5\": Opus 5.5\n- button \"Effort High\": High\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- paragraph: me@example.com\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

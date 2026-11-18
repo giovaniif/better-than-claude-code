@@ -1,0 +1,212 @@
+{
+  "v": 1,
+  "claim": "After the saved New session default host is removed, New session opens on the last used model instead of the saved default model that Settings still shows",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73",
+  "base": "172f372d9e6929dc519fd5ab788ec6a07fecdfa3",
+  "head": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/launchDefaults.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/sessionDefaults.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T06:10:34.801Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "9458c94236efc0ceb2f65b54b96b7964fc47bf88",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "b74b01b7329b55034686813fbba33e29f9686827a5eb28d4adcef6f1a4843ddb"
+        },
+        {
+          "path": "p1-new-session-mobile.png",
+          "sha256": "7062cb5e256354d0cf7e54bc4ff6cb82c3a34c0687c74c350c975bd275aefd16"
+        },
+        {
+          "path": "p1-settings-mobile.png",
+          "sha256": "138d8fd5b68426c958aa009d9bc8699dde841bc559f4366eb8ba706ad2590233"
+        },
+        {
+          "path": "p1-new-session-desktop.png",
+          "sha256": "9c0824bd31c6d121283dc625a7de6d59e13e6e901d022dcb250b9b0277ccca39"
+        },
+        {
+          "path": "p1-settings-desktop.png",
+          "sha256": "35104ac5ff7129e4dc3e05989605e7c78123afc29fcb55dc34ffca4c462e7975"
+        }
+      ],
+      "addedAt": "2026-11-18T06:10:52.687Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "9458c94236efc0ceb2f65b54b96b7964fc47bf88",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "b9a9c2c62be93327569e6de445cb906c2191b360263f8051866d5ddac4ffe51c"
+        }
+      ],
+      "addedAt": "2026-11-18T06:10:52.733Z",
+      "cmd": "cd ui && bun test src/launchDefaults.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "9458c94236efc0ceb2f65b54b96b7964fc47bf88",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "d294c4c4511d7cde09b554007a8f0cef7278b9e141742ab19d1e8fec9a504554"
+        }
+      ],
+      "addedAt": "2026-11-18T06:10:52.792Z",
+      "cmd": "verify/yv map run launch-defaults --recipe removed-default-host-keeps-the-model",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "b5e4041877fda0c82e5682c9053789ef04d9aaf4b6535803164ebb817334ea95"
+        },
+        {
+          "path": "p4-new-session-mobile.png",
+          "sha256": "96ef74499ed45706f7fbdde1b1c23e2204534bb87938871057ad5f82f0b639cc"
+        },
+        {
+          "path": "p4-settings-mobile.png",
+          "sha256": "138d8fd5b68426c958aa009d9bc8699dde841bc559f4366eb8ba706ad2590233"
+        },
+        {
+          "path": "p4-new-session-desktop.png",
+          "sha256": "872f1ac4420e7c8d134b7ee328efca272a81a224d86c999482d5f305da836bb3"
+        },
+        {
+          "path": "p4-settings-desktop.png",
+          "sha256": "4d8a213723de5b33cbc1680e8dfd92eb7dc0b738a584f735608b5f04be2e520c"
+        }
+      ],
+      "addedAt": "2026-11-18T06:11:33.029Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "b637dc4df7ecc4b0dc2b704beeb93d2c6a1026c9851b2bdc37c68515ec419cef"
+        }
+      ],
+      "addedAt": "2026-11-18T06:11:33.072Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "d017fcbff7d65ecdbd3fc1b62455976cb697e8d80896d138dc368b1135523d85"
+        }
+      ],
+      "addedAt": "2026-11-18T06:12:21.935Z",
+      "cmd": "verify/yv design-check --base 172f372d9e69",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-launch-defaults.json",
+          "sha256": "deba7a9fdf1f92d177bf9ee456b1e4f9170d0342de64ccc8f5a99221efb901dd"
+        }
+      ],
+      "addedAt": "2026-11-18T06:12:22.013Z",
+      "cmd": "verify/yv map run launch-defaults",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "launch-defaults/independent-defaults",
+        "launch-defaults/reset-defaults",
+        "launch-defaults/removed-default-host-keeps-the-model"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-session-defaults.json",
+          "sha256": "3aa7e4faea37cbcf63391deb0e54af40a9b10e7a0e1f32e11ce42038524eaa58"
+        }
+      ],
+      "addedAt": "2026-11-18T06:13:10.627Z",
+      "cmd": "verify/yv map run session-defaults",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "session-defaults/remembers-remote-session",
+        "session-defaults/remembers-changes-in-existing-chat"
+      ]
+    }
+  ]
+}

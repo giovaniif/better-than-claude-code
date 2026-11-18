@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "503d0b3d8d7de7d2038202c50276c20c2390b9f8",
+    "short": "503d0b3",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T06:11:24.506Z"
+  },
+  "dir": ".verify/evidence/removed-default-host-r2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3818,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-r2-head/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-r2-head/settings-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed480d861\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3450,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-r2-head/new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-r2-head/settings-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed480d861\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
