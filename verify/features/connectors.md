@@ -74,10 +74,11 @@ yv drive connectors --steps '[{"expect":"label:Connector account"},{"expect":"cs
 Viewports: both
 The four filters (Connected, Available, Not working, All) sit on one row, each
 fully visible. At 390 px "All 4" used to wrap onto a line of its own, where it
-looked like a separate control (#209).
+looked like a separate control (#209). Nothing between the tabs and the card
+clips their 3 px focus ring (a scrolling row did, on the first try of #225).
 
 ```sh
-yv drive connectors --steps '[{"expect":"role:heading:Connectors"},{"expect":{"role":"button","name":"All","exact":true}},{"eval":"(() => { const group = document.querySelector(\".connector-filters\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\"button\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()","equals":true},{"shot":"filters"}]'
+yv drive connectors --steps '[{"expect":"role:heading:Connectors"},{"expect":{"role":"button","name":"All","exact":true}},{"eval":"(() => { const group = document.querySelector(\".connector-filters\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\"button\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()","equals":true},{"eval":"[...document.querySelectorAll(\".connector-filters button\")].every((tab) => { const r = tab.getBoundingClientRect(); for (let el = tab.parentElement; el && !el.classList.contains(\"connectors-card\"); el = el.parentElement) { const cs = getComputedStyle(el); if (cs.overflowX === \"visible\" && cs.overflowY === \"visible\") continue; const b = el.getBoundingClientRect(); if (r.top - 3 < b.top || r.bottom + 3 > b.bottom || r.left - 3 < b.left || r.right + 3 > b.right) return false; } return true; })","equals":true},{"shot":"filters"}]'
 ```
 
 ### claude-sign-in
