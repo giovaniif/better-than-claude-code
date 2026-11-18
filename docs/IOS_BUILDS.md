@@ -173,6 +173,21 @@ a draft with auto-merge off. Do not merge to work around a dispatch problem,
 temporarily change an unrelated workflow, reuse another app's bundle ID or
 upload this app to another app record.
 
+The first accepted upload was **0.1.0 (7.1)** in
+[run 44210065697](https://github.com/giovaniif/switchyard/actions/runs/44210065697).
+The current device-testing build is **0.1.0 (8.1)** from commit `898eb45` in
+[run 44211379054](https://github.com/giovaniif/switchyard/actions/runs/44211379054).
+On 2026-11-18 UTC, Apple reported it `VALID` and
+`READY_FOR_BETA_TESTING`; its build ID is
+`009bd6ff-1249-4b3f-8002-0da5dd04774d`. It is attached to **Owner testing**,
+with English What to Test notes. This build also finishes native setup against
+older host UIs by recognizing their own valid hub snapshot. The host-page
+shortcuts and Workspace improvements still require deploying this PR's host UI.
+
+The current runner used Xcode 26.6 / iOS SDK 26.5. Apple's accepted upload
+warned that iOS 27 SDK / Xcode 27 becomes required in April 2027; update the
+runner and SDK guard before then.
+
 The simulator artifact is **not** an installable iPhone/TestFlight build.
 Upload success is also not proof of installation: wait for Apple processing,
 then attach the build to a TestFlight group. Internal testers can test first;
@@ -187,6 +202,14 @@ empty successful group-creation response added the tester. No unrelated
 testers or other apps' groups were changed. Use
 [Switchyard → TestFlight](https://appstoreconnect.apple.com/apps/6836111611/testflight)
 to inspect processing, tester access and installation availability.
+
+For the first installation, select **Owner testing → Invite Testers**, choose
+the owner's App Store Connect account, and click Add. The group still had zero
+testers at the final API check; a ready build alone does not grant installation
+access. Accept the invitation on the iPhone, install **0.1.0 (8.1)** through
+TestFlight, enable the private network/Tailscale, and connect to the existing
+HTTPS host. Installation and physical microphone/permission behavior require
+that device check; they are not proven by CI or Apple's processing status.
 
 For API checks, list `/v1/builds?filter[app]=6836111611` and inspect
 `processingState`, then the build's `betaBuildLocalizations` and
