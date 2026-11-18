@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { hostErrorText, hostOf, hostOnline, type Actions, type State } from "./store";
 import type { ProcRow, SessionMeta } from "./protocol";
-import { ENGINE_HINT, procSummary, procTree, memText, pruneKills, rowActions, shortCommand, type KillSignal, type KillState } from "./procs";
+import { ENGINE_HINT, procsBlank, procSummary, procTree, memText, pruneKills, rowActions, shortCommand, type KillSignal, type KillState } from "./procs";
 import { duration } from "./thread";
 import { Icon } from "./App";
 
@@ -43,34 +43,29 @@ export function ProcPane(props: { meta: SessionMeta; state: State; actions: Acti
     actions.loadProcs(meta.id);
   };
 
-  if (!rows) return <div className="scroll pane-body" style={{ display: visible ? "flex" : "none" }}><div className="muted">Loading…</div></div>;
+  const blank = procsBlank(rows, connected);
+  if (blank !== null || !rows) return <div className="scroll pane-body" style={{ display: visible ? "flex" : "none" }}><div className="muted">{blank}</div></div>;
   const tree = procTree(rows);
   return (
     <div className="scroll pane-body" style={{ display: visible ? "flex" : "none" }}>
-      {tree.length === 0 ? (
-        <div className="muted">Nothing is running for this session.</div>
-      ) : (
-        <>
-          <div className="muted small">{procSummary(rows)}</div>
-          <table className="proc-table">
-            <thead>
-              <tr>
-                <th>PID</th>
-                <th>Command</th>
-                <th className="num">CPU</th>
-                <th className="num">Memory</th>
-                <th className="num">Running</th>
-                <th aria-label="Stop" />
-              </tr>
-            </thead>
-            <tbody>
-              {tree.map(({ row, depth }) => (
-                <ProcLine key={row.pid} row={row} depth={depth} offers={rowActions(row, rows, kills[row.pid])} onKill={(signal, t) => kill(row, signal, t)} />
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+      <div className="muted small">{procSummary(rows)}</div>
+      <table className="proc-table">
+        <thead>
+          <tr>
+            <th>PID</th>
+            <th>Command</th>
+            <th className="num">CPU</th>
+            <th className="num">Memory</th>
+            <th className="num">Running</th>
+            <th aria-label="Stop" />
+          </tr>
+        </thead>
+        <tbody>
+          {tree.map(({ row, depth }) => (
+            <ProcLine key={row.pid} row={row} depth={depth} offers={rowActions(row, rows, kills[row.pid])} onKill={(signal, t) => kill(row, signal, t)} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
