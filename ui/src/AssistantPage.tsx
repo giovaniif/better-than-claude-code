@@ -16,7 +16,7 @@ import {
 } from "./App";
 import { hostName, type Actions, type State } from "./store";
 import type { Engine, Models, Permission, SwitchyTurn } from "./protocol";
-import { switchyScope, switchyVoiceCue } from "./switchy";
+import { switchyScope, switchyStopped, switchyVoiceCue } from "./switchy";
 
 const SPARK = "M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z";
 const SERVER = "M4 3h16v7H4ZM4 14h16v7H4ZM7 6h.01M7 17h.01";
@@ -64,11 +64,16 @@ function Answer({
           Answering…
         </p>
       )}
-      {turn.error && (
-        <p className="bad" role="alert">
-          {turn.error}
-        </p>
-      )}
+      {turn.error &&
+        (switchyStopped(turn) ? (
+          <p className="muted" role="status">
+            {turn.error}
+          </p>
+        ) : (
+          <p className="bad" role="alert">
+            {turn.error}
+          </p>
+        ))}
       {turn.approvals?.map((a) => (
         <ApprovalCard
           key={a.requestId}

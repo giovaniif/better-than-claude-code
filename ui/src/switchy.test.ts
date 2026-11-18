@@ -24,7 +24,7 @@ describe("switchyScope", () => {
   });
 });
 
-import { switchyVoiceCue } from "./switchy";
+import { switchyStopped, switchyVoiceCue } from "./switchy";
 import type { SwitchyConversation } from "./protocol";
 
 test("Switchy voice reads completed answers and announces approvals, not streaming tokens", () => {
@@ -63,4 +63,10 @@ test("Switchy voice reads completed answers and announces approvals, not streami
   state.turns[0].status = "failed";
   state.turns[0].error = "Stopped by you.";
   expect(switchyVoiceCue(state)?.cue.kind).toBe("stopped");
+});
+
+test("only a turn the user stopped reads as stopped", () => {
+  expect(switchyStopped({ error: "Stopped by you." })).toBe(true);
+  expect(switchyStopped({ error: "fake failure: the model is unavailable" })).toBe(false);
+  expect(switchyStopped({ error: null })).toBe(false);
 });
