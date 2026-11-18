@@ -110,6 +110,14 @@ describe("composer additions", () => {
     stop();
     expect(got).toEqual([{ quotes: ["Use the flag."], text: "Why?" }]);
   });
+  test("a message given back for editing brings its files back too", () => {
+    const file = { id: "a1", name: "shot.png", mime: "image/png", size: 42, path: "/data/attachments/a1/shot.png" };
+    const { got, stop } = listen("s5");
+    returnToComposer("s5", "Look", [file]);
+    returnToComposer("s5", "", [file]);
+    stop();
+    expect(got).toEqual([{ text: "Look", attachments: [file] }, { text: "", attachments: [file] }]);
+  });
   test("only the session's own composer hears it", () => {
     const { got, stop } = listen("s4");
     quoteInComposer("other", "x");

@@ -1,3 +1,5 @@
+import type { Attachment } from "./protocol";
+
 // Lets other panes add to a session's reply box without lifting the
 // composer's state: the composer listens for its own session id.
 
@@ -10,6 +12,8 @@ export interface Snippet {
 /** Text goes into the box; quotes and snippets become cards above it. */
 export interface Addition {
   text?: string;
+  /** Files already on the session's host, back as chips. */
+  attachments?: Attachment[];
   quotes?: string[];
   snippets?: Snippet[];
 }
@@ -50,10 +54,11 @@ export function quoteInComposer(sessionId: string, selection: string) {
 }
 
 /** A message yardd gave back (Edit, Stop): its leading quotes go back to
- *  cards, so editing a reply does not turn them into `>` text. */
-export function returnToComposer(sessionId: string, message: string) {
+ *  cards, so editing a reply does not turn them into `>` text, and its
+ *  files go back to chips. */
+export function returnToComposer(sessionId: string, message: string, attachments: Attachment[] = []) {
   const { quotes, text } = splitQuotes(message);
-  add(sessionId, quotes.length ? { quotes, text } : { text });
+  add(sessionId, { ...(quotes.length ? { quotes, text } : { text }), ...(attachments.length ? { attachments } : {}) });
 }
 
 export const SELECTION_CAP = 20_000;

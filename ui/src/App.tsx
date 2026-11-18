@@ -1355,7 +1355,11 @@ export function ModelPicker(props: {
 /** A file in the composer, uploaded as soon as it is added so sending is quick. */
 interface PendingFile {
   key: string;
-  file: File;
+  name: string;
+  size: number;
+  /** Absent for a file already on the host (a queued message given back by
+   *  Edit or Stop): it goes again by id, with nothing to upload. */
+  file?: File;
   /** Object URL for a local preview of an image. */
   preview?: string;
   state: "uploading" | "ready" | "error";
@@ -1425,6 +1429,12 @@ export function Composer(props: {
       if (rows.length) setSnippets((list) => [...list, ...rows.map((r) => ({ ...r, key: newKey() }))]);
       const typed = added.text;
       if (typed) setText((t) => (t && !t.endsWith("\n") ? t + "\n" : t) + typed);
+      const back = added.attachments ?? [];
+      if (back.length) {
+        const list = back.map((a): PendingFile => ({ key: newKey(), name: a.name, size: a.size, state: "ready" }));
+        list.forEach((f, i) => uploads.current.set(f.key, { target: targetKey, promise: Promise.resolve(back[i]) }));
+        setFiles((cur) => [...cur, ...list]);
+      }
       const el = area.current;
       if (!el) return;
       el.focus();
@@ -1453,7 +1463,7 @@ export function Composer(props: {
     );
 
   const startUpload = (f: PendingFile) => {
-    const promise = props.upload!(f.file, props.target);
+    const promise = props.upload!(f.file!, props.target);
     const entry = { target: targetKey, promise };
     uploads.current.set(f.key, entry);
     patch(f.key, { state: "uploading", error: undefined });
@@ -1481,6 +1491,8 @@ export function Composer(props: {
       const big = tooLarge(file.size);
       return {
         key: `f${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+        name: file.name,
+        size: file.size,
         file,
         preview: !big && file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
         state: big ? "error" : "uploading",
@@ -1505,7 +1517,7 @@ export function Composer(props: {
   useEffect(() => {
     files.forEach((f) => {
       const u = uploads.current.get(f.key);
-      if (u && u.target !== targetKey) startUpload(f);
+      if (u && u.target !== targetKey && f.file) startUpload(f);
     });
   }, [targetKey]);
 
@@ -1788,7 +1800,7 @@ function PendingChip({ file, onRemove }: { file: PendingFile; onRemove(): void }
   const [broken, setBroken] = useState(false);
   const { state } = file;
   return (
-    <div className={`attachment attachment-${state}`} title={file.error ?? file.file.name}>
+    <div className={`attachment attachment-${state}`} title={file.error ?? file.name}>
       {file.preview && !broken ? (
         <img className="attachment-thumb" src={file.preview} alt="" onError={() => setBroken(true)} />
       ) : (
@@ -1797,12 +1809,12 @@ function PendingChip({ file, onRemove }: { file: PendingFile; onRemove(): void }
         </span>
       )}
       <span className="attachment-text">
-        <span className="attachment-name">{file.file.name || "file"}</span>
+        <span className="attachment-name">{file.name || "file"}</span>
         <span className="attachment-meta">
-          {state === "error" ? file.error : state === "uploading" ? `${humanSize(file.file.size)} · uploading` : humanSize(file.file.size)}
+          {state === "error" ? file.error : state === "uploading" ? `${humanSize(file.size)} · uploading` : humanSize(file.size)}
         </span>
       </span>
-      <button className="attachment-remove" aria-label={`Remove ${file.file.name}`} onClick={onRemove}>
+      <button className="attachment-remove" aria-label={`Remove ${file.name}`} onClick={onRemove}>
         <Icon d={CLOSE} size={12} />
       </button>
     </div>

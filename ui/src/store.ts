@@ -757,7 +757,7 @@ export function useYard(): { state: State; actions: Actions } {
         } else if (msg.op === "queue.returned") {
           // Stop or Edit gave queued text back: it goes to the reply box.
           const back = msg as QueueReturned;
-          if (back.text) returnToComposer(back.sessionId, back.text);
+          if (back.text || back.attachments?.length) returnToComposer(back.sessionId, back.text ?? "", back.attachments);
         } else {
           dispatch({ t: "server", msg });
         }
