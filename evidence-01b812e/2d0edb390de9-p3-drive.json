@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "01b812eb925947fb705092d19c3273a2a76876b5",
+    "short": "01b812e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:41:14.320Z"
+  },
+  "dir": ".verify/evidence/search-no-match-r2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2034,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/search-no-match-r2-head/no-match-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/search-no-match-r2-head/cleared-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2043,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/search-no-match-r2-head/no-match-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/search-no-match-r2-head/cleared-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

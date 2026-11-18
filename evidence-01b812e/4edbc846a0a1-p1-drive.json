@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "95ba8aff4cec15759ce76de67952080b3c6a7855",
+    "short": "95ba8af",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T03:40:38.713Z"
+  },
+  "dir": ".verify/evidence/search-no-match-r2-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2273,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/search-no-match-r2-base/no-match-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1411,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/search-no-match-r2-base/no-match-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

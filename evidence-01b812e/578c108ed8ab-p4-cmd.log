@@ -1,0 +1,32 @@
+$ verify/yv map run focused-pages --recipe sessions-search-no-match-says-so && (cd ui && bun test)
+# exit 0 after 5971 ms at 01b812eb925947fb705092d19c3273a2a76876b5
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T03:41:24.914Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 4775
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [159.00ms]

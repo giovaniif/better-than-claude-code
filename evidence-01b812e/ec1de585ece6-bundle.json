@@ -1,0 +1,134 @@
+{
+  "v": 1,
+  "claim": "On the Sessions page a search that matches nothing shows the empty-list state: No sessions to show, Start a session whenever you're ready, and a New session button, as if there were no sessions",
+  "repo": "/home/giovani/.yard/wt/switchyard/pr-235",
+  "base": "0e6bcfb895857085a20384852f591dfcfadb1d57",
+  "head": "01b812eb925947fb705092d19c3273a2a76876b5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T03:40:03.078Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "95ba8aff4cec15759ce76de67952080b3c6a7855",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "4edbc846a0a1a1712d03c895990a3481a4c55038c75368246fc2bb47167fe67d"
+        },
+        {
+          "path": "p1-no-match-mobile.png",
+          "sha256": "410a228c21a7730a1506604bba7d4441a3d4cf96e6963c7bd55da9257c1ab440"
+        },
+        {
+          "path": "p1-no-match-desktop.png",
+          "sha256": "3c414b7c12efb23b469ba42beb8d5e20b3fee2369e6abe8b484be69241a823ba"
+        }
+      ],
+      "addedAt": "2026-11-18T03:40:44.394Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "95ba8aff4cec15759ce76de67952080b3c6a7855",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f9ab902c170f37a962676ca3c80e1998e718e46e337454fb959ab35baffff637"
+        }
+      ],
+      "addedAt": "2026-11-18T03:40:44.436Z",
+      "cmd": "verify/yv map run focused-pages --recipe sessions-search-no-match-says-so",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "01b812eb925947fb705092d19c3273a2a76876b5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "2d0edb390de9b5a15124b01c5986098c0875f1b6e32819a9a3a348a1aea84398"
+        },
+        {
+          "path": "p3-no-match-mobile.png",
+          "sha256": "95ffb888fcf0189b9414c63d2c1139bbc0d4025c9b2d25496ad5afe0befd028d"
+        },
+        {
+          "path": "p3-cleared-mobile.png",
+          "sha256": "c9c0248bfb3c93d7019796109647d5b59f1a78fdd44d41da578bbdf69391bd27"
+        },
+        {
+          "path": "p3-no-match-desktop.png",
+          "sha256": "c341a214b9efe78caf985a31fe42e4174c1dcf891ff1fa1bce5d97917e50974e"
+        },
+        {
+          "path": "p3-cleared-desktop.png",
+          "sha256": "b9263ff081ed4ff08eb46ae118a7e51e53770ee6fba5ee969e0b5034c88c2838"
+        }
+      ],
+      "addedAt": "2026-11-18T03:41:19.069Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "01b812eb925947fb705092d19c3273a2a76876b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "578c108ed8ab203f0977324fd5a0109b7f0b30504e1477083cd29c9ca81adc86"
+        }
+      ],
+      "addedAt": "2026-11-18T03:41:19.110Z",
+      "cmd": "verify/yv map run focused-pages --recipe sessions-search-no-match-says-so && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "01b812eb925947fb705092d19c3273a2a76876b5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "208d822d0fc2002c240bc3f13cbe27e5f660d8404573c5d828a5ac569d1ea05f"
+        }
+      ],
+      "addedAt": "2026-11-18T03:41:25.121Z",
+      "cmd": "verify/yv design-check --base 0e6bcfb89585",
+      "exit": 0
+    }
+  ]
+}
