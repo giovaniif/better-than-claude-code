@@ -3664,8 +3664,12 @@ function ImportDialog({ state, actions, onClose }: { state: State; actions: Acti
                 <div className="import-text">
                   <div className="import-title">{s.title}</div>
                   <div className="muted small import-meta">
-                    {s.cwd ? tilde(s.cwd, homeOn(state, host)) : "unknown folder"}
-                    {s.gitBranch ? ` · ${s.gitBranch}` : ""} · {ago(s.lastModified)}
+                    {/* The folder and branch give way first: the age tells sessions in one folder apart. */}
+                    <span className="import-where">
+                      {s.cwd ? tilde(s.cwd, homeOn(state, host)) : "unknown folder"}
+                      {s.gitBranch ? ` · ${s.gitBranch}` : ""}
+                    </span>
+                    <span className="import-when">{` · ${ago(s.lastModified)}`}</span>
                   </div>
                   {!s.importedAs && Date.now() - s.lastModified < RECENT_MS && (
                     // Two writers on one Claude Code conversation would interleave.
