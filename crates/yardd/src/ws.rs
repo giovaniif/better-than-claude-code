@@ -686,8 +686,10 @@ fn title_from(first: &str) -> String {
     }
     let head: String = first.chars().take(MAX - 1).collect();
     let next = first.chars().nth(MAX - 1);
-    // A word that runs past the cut is dropped, unless it is the only one.
-    let cut = if next.is_some_and(char::is_whitespace) { head.as_str() } else { head.rsplit_once(char::is_whitespace).map_or(head.as_str(), |(h, _)| h) };
+    // A word that runs past the cut is dropped, unless that would leave less
+    // than half the title: then a long word (a pasted URL) is cut through.
+    let at_word = head.rsplit_once(char::is_whitespace).map(|(h, _)| h).filter(|h| h.trim_end().chars().count() >= MAX / 2);
+    let cut = if next.is_some_and(char::is_whitespace) { head.as_str() } else { at_word.unwrap_or(head.as_str()) };
     format!("{}…", cut.trim_end())
 }
 
