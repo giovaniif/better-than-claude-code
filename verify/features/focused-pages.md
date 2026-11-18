@@ -156,3 +156,12 @@ Manage accounts opens Engine logins on the selected host and keeps that destinat
 ```sh
 yv drive new --steps '[{"expect":"css:.composer-identity","count":0},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
 ```
+
+### sidebar-skips-duplicate-page-links
+Viewports: desktop
+Sessions and Subscriptions stay accessible from page navigation. The sidebar
+keeps its session list and Usage entry.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button","hasText":"Sessions","exact":true},"count":0},{"expect":{"css":".sidebar-top button","hasText":"Subscriptions","exact":true},"count":0},{"click":"role:button:Go to session or page"},{"fill":"role:combobox","value":"subscriptions"},{"press":"Enter"},{"expect":"role:heading:Subscriptions"}]'
+```
