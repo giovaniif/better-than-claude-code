@@ -164,6 +164,13 @@ async fn a_long_first_line_is_titled_at_a_word_with_an_ellipsis() {
     let sid = c.create(&sb.folder("proj3"), &word, json!({})).await;
     let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
     assert_eq!(session["session"]["title"], format!("{}…", "y".repeat(59)));
+
+    // A long word after a short one (a pasted URL) is cut through, not
+    // dropped: backing up to the word would leave just "fix…".
+    let url = "fix https://github.com/example-org/example-repo/issues/12345#issuecomment-987654321";
+    let sid = c.create(&sb.folder("proj4"), url, json!({})).await;
+    let session = c.wait_for("the session's metadata", |m| m["op"] == "session" && m["session"]["id"] == sid).await;
+    assert_eq!(session["session"]["title"], format!("{}…", url.chars().take(59).collect::<String>()));
 }
 
 #[tokio::test]
