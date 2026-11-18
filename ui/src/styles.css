@@ -132,6 +132,8 @@ h1, h2, h3, p { margin: 0; }
 /* buttons */
 .btn-primary, .btn, .btn-text, .btn-quiet, .btn-icon { height: 32px; border-radius: 8px; }
 .btn-primary { padding: 0 14px; border: 0; background: var(--ink); color: #fff; font-weight: 500; }
+/* A disabled primary button kept full ink and read as one that ignores the click. */
+.btn-primary:disabled { opacity: 0.5; }
 .btn { padding: 0 12px; border: 1px solid var(--line-strong); background: var(--bg); }
 .btn-text { padding: 0 10px; border: 0; background: transparent; color: var(--muted); }
 .btn-text:hover, .btn-quiet:hover, .btn-icon:hover { background: var(--fill); }
