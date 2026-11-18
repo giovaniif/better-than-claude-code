@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run import --recipe age-stays-visible
+# exit 0 after 7628 ms at 56e39eb45d71b39363a58892af40c983b42a4753
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-18T07:48:00.012Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "age-stays-visible",
+          "status": "pass",
+          "ms": 7055
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 398 pass
+ 0 fail
+ 987 expect() calls
+Ran 398 tests across 29 files. [166.00ms]

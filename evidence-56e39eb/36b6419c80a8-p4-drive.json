@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "56e39eb45d71b39363a58892af40c983b42a4753",
+    "short": "56e39eb",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:47:37.666Z"
+  },
+  "dir": ".verify/evidence/import-age-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2277,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/import-age-head-d/import-ages-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".import-meta\")].map((m) => { const w = document.createTreeWalker(m, NodeFilter.SHOW_TEXT); let n, last = null; while ((n = w.nextNode())) if (n.textContent.trim()) last = n; const r = document.createRange(); r.setStart(last, last.length - 1); r.setEnd(last, last.length); return last.textContent.trim().endsWith(\"ago\") && r.getBoundingClientRect().right <= m.getBoundingClientRect().right + 1; }).join(\",\")",
+          "value": "true,true,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

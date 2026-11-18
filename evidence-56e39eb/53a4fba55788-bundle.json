@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "claim": "In the Import from Claude Code dialog at 390 px, each row's folder pushes the last-used age (and the branch) behind an ellipsis, so the user cannot see when a session was last used",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b",
+  "base": "cd979a6a1bf203ff109b502804dc5325f2281abf",
+  "head": "56e39eb45d71b39363a58892af40c983b42a4753",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/import.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T07:47:06.685Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b751abfc30bce58d466fd22a12721f98cae312d6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "32e02b8ad798f50310cc8cb5d898b0bec0b120cc2c073438a5ce2fed3542ae64"
+        },
+        {
+          "path": "p1-import-mobile.png",
+          "sha256": "dd6668155df0fba0f1eab522c45c09d68986edc66737542302903cd0508feb70"
+        }
+      ],
+      "addedAt": "2026-11-18T07:47:18.620Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b751abfc30bce58d466fd22a12721f98cae312d6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "bf116cdc465c93612895cb6a7fffddc65679892524045c2b0169f66ed205f22b"
+        }
+      ],
+      "addedAt": "2026-11-18T07:47:18.666Z",
+      "cmd": "verify/yv map run import --recipe age-stays-visible",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "56e39eb45d71b39363a58892af40c983b42a4753",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "62234dacf2b390a90e5cdff5475855b3a3ca44d3c43d9758573ff0d18113db81"
+        },
+        {
+          "path": "p3-import-ages-mobile.png",
+          "sha256": "6d17b22d5396b0f8b450772a3ab193686eb5ae9b7338336081a0022f5709b22a"
+        }
+      ],
+      "addedAt": "2026-11-18T07:47:52.302Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "56e39eb45d71b39363a58892af40c983b42a4753",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "36b6419c80a82fc401f2efe39a9245de64886dd57b3f24f4134fb624ec2b525f"
+        },
+        {
+          "path": "p4-import-ages-desktop.png",
+          "sha256": "0dcf1d3816260ead81f64bdb218a6e395f5a69277efe2ef6b6b2369b50a59c57"
+        }
+      ],
+      "addedAt": "2026-11-18T07:47:52.344Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "56e39eb45d71b39363a58892af40c983b42a4753",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "51ae82eaadf738385a20536621598e1c741901728e788fff8b63a6384ecf350a"
+        }
+      ],
+      "addedAt": "2026-11-18T07:47:52.386Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run import --recipe age-stays-visible",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "56e39eb45d71b39363a58892af40c983b42a4753",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "c28ff7e4ee02cedf9a0cc1632a58bc9224376628570149c5eeef6483907c0ac2"
+        }
+      ],
+      "addedAt": "2026-11-18T07:48:00.059Z",
+      "cmd": "verify/yv design-check --base cd979a6a1bf2",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "56e39eb45d71b39363a58892af40c983b42a4753",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-import.json",
+          "sha256": "d1e759e20ca14318ca848e3200fe30129e6eef4b3c5fa21e225421b899c86d60"
+        }
+      ],
+      "addedAt": "2026-11-18T07:48:02.158Z",
+      "cmd": "verify/yv map run import",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "import/dialog-lists-sessions",
+        "import/filter-narrows-the-list",
+        "import/recently-active-warns",
+        "import/age-stays-visible",
+        "import/import-opens-the-session",
+        "import/import-on-mobile",
+        "import/next-message-resumes",
+        "import/missing-folder-is-refused",
+        "import/import-from-a-remote-host"
+      ]
+    }
+  ]
+}
