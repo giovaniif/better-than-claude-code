@@ -1,0 +1,216 @@
+{
+  "v": 1,
+  "claim": "On a phone, opening the folder chip under the New session prompt box ran its menu past the right edge and scrolled the whole page sideways (heading read 'at should we work on?')",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499",
+  "base": "2e34143227c0adf3aa81d37e553583c06f48e689",
+  "head": "b8c4174811640a6a3e616cb750175880d06ed913",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T08:46:10.105Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e675725da60bdb213eb0017af1b0b889d828f0df",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "1420992c6ad8158630eac5b9601c79815af6c370a54167a3b74270bbf3bff0cf"
+        },
+        {
+          "path": "p1-folder-menu-mobile.png",
+          "sha256": "11be14c9dcbc3b61a9f1f6954f9d5e3bad8df28d4e2578972d0631f6eb39c493"
+        },
+        {
+          "path": "p1-folder-menu-desktop.png",
+          "sha256": "ea9ad357cf6e890169c9a16fbe4504061693afa9c49d915b2969c682e2f910ce"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:21.705Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e675725da60bdb213eb0017af1b0b889d828f0df",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "36c418dab39e36df259989ae83b59124aa185f150ced904562a36eacbab295b2"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:21.752Z",
+      "cmd": "verify/yv map run new-session --recipe folder-menu-stays-on-screen",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "124d5b31202e423e7d84a1dc45cce3a39980f0a53c952ecd384d8a409cd610ba"
+        },
+        {
+          "path": "p3-folder-menu-mobile.png",
+          "sha256": "dda163cdc9f828b4dbe2e4758e9be48639e0319dac6929de4e65ca067bb45b2b"
+        },
+        {
+          "path": "p3-folder-menu-desktop.png",
+          "sha256": "695d7db67616cb8db098fcd096371de05ba6dc69fa2ae9d87278fe5ea7dd2e5e"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:49.665Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "b653146c4e3ebe8e48d6a5ac229bf3a52057b62a3137ea0625183acd5dd19dfb"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:49.709Z",
+      "cmd": "verify/yv map run new-session --recipe folder-menu-stays-on-screen",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "45a9f138a8669e40df1ba72ee4d80e2b1da4b12aa0f1569d13f7c4e7f2615786"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:57.555Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "0a287425e8c0526162f66feed709be5bf4e2b811ba07e723b0e920a3a62215e5"
+        }
+      ],
+      "addedAt": "2026-11-18T08:46:57.744Z",
+      "cmd": "verify/yv design-check --base 2e34143227c0",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-new-session.json",
+          "sha256": "da8ff8bf0613bddce98a043ab4e038d81bf292dcf0bcba063609cc9a36f4ab84"
+        }
+      ],
+      "addedAt": "2026-11-18T08:47:01.478Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/long-prompt-titled-at-a-word",
+        "new-session/long-second-word-is-cut-not-dropped",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/long-folder-keeps-its-chip-icon",
+        "new-session/folder-menu-stays-on-screen",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b8c4174811640a6a3e616cb750175880d06ed913",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-automations.json",
+          "sha256": "322a5c63e96ee2278e0767f90bfc97fbc7707d18b1981e0356bcf87a31a40e95"
+        }
+      ],
+      "addedAt": "2026-11-18T08:48:30.887Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/grid-of-cards-and-the-run-strip",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button",
+        "automations/manual-run-with-its-own-prompt"
+      ]
+    }
+  ]
+}

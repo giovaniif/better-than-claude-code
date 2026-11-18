@@ -1,0 +1,26 @@
+$ verify/yv map run new-session --recipe folder-menu-stays-on-screen
+# exit 0 after 7809 ms at b8c4174811640a6a3e616cb750175880d06ed913
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T08:46:57.516Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "folder-menu-stays-on-screen",
+          "status": "pass",
+          "ms": 6952
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

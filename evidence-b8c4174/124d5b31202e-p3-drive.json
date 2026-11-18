@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b8c4174811640a6a3e616cb750175880d06ed913",
+    "short": "b8c4174",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T08:46:42.251Z"
+  },
+  "dir": ".verify/evidence/folder-menu-fits-phone-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3519,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-menu-fits-phone-head/folder-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const pop = document.querySelector(\".new-chips .popover\").getBoundingClientRect(); return pop.left >= 0 && pop.right <= innerWidth && [...document.querySelectorAll(\"*\")].filter((e) => e.scrollLeft > 0).length === 0; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3222,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-menu-fits-phone-head/folder-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const pop = document.querySelector(\".new-chips .popover\").getBoundingClientRect(); return pop.left >= 0 && pop.right <= innerWidth && [...document.querySelectorAll(\"*\")].filter((e) => e.scrollLeft > 0).length === 0; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

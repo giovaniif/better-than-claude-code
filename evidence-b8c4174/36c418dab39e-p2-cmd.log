@@ -1,0 +1,40 @@
+$ verify/yv map run new-session --recipe folder-menu-stays-on-screen
+# exit 1 after 7848 ms at e675725da60bdb213eb0017af1b0b889d828f0df
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T08:46:29.596Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "folder-menu-stays-on-screen",
+          "status": "fail",
+          "ms": 6992,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"(() => { const pop = document.querySelector(\\\".new-chips .popover\\\").getBoundingClientRect(); const chip = document.querySelector(\\\".new-chips .chip[aria-expanded=true]\\\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\\\"*\\\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T08-46-22-779Z/fail-mobile-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": ".querySelector(\\\".new-chips .popover\\\").getBoundingClientRect(); const chip = document.querySelector(\\\".new-chips .chip[aria-expanded=true]\\\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\\\"*\\\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 2940,\n      \"steps\": 5,\n      \"failed\": null,\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T08-46-22-779Z/folder-menu-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const pop = document.querySelector(\\\".new-chips .popover\\\").getBoundingClientRect(); const chip = document.querySelector(\\\".new-chips .chip[aria-expanded=true]\\\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\\\"*\\\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"(() => { const pop = document.querySelector(\\\\\\\".new-chips .popover\\\\\\\").getBoundingClientRect(); const chip = document.querySelector(\\\\\\\".new-chips .chip[aria-expanded=true]\\\\\\\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\\\\\\\"*\\\\\\\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T08-46-22-779Z/fail-mobile-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "new-session/folder-menu-stays-on-screen",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
