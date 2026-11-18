@@ -39,10 +39,10 @@ prompt).
 | [mermaid](mermaid.md) | Mermaid fences drawn as diagrams, the source kept, invalid and incomplete diagrams, long diagrams on phones |
 | [approvals](approvals.md) | Command approvals: allow once, always, deny, and the sidebar status |
 | [stop](stop.md) | Stopping a running turn, including one the engine ignores |
-| [changes-pane](changes-pane.md) | The Changes tab: the session folder's git diff |
 | [processes](processes.md) | The Processes tab: the session's process tree, refreshed while visible |
 | [terminal](terminal.md) | The Terminal tab: shells per session, tabs, closing a tab, scrollback, attaching output to a reply |
-| [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
+| [approved-design](approved-design.md) | The right pane, single-row composer, account connector cards and usage panel |
+| [pr-pane](pr-pane.md) | The conversation header’s external pull request link |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
 | [navigation](navigation.md) | Command-K: sessions and pages, Switchy, repo and branch names, automation runs left out; the macOS app menu |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |

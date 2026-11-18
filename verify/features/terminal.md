@@ -108,7 +108,7 @@ yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"
 
 ### folder-gone
 Viewports: desktop
-When the session's folder was removed outside Switchyard, the Changes pane and
+When the session's folder was removed outside Switchyard, the terminal and
 the terminal say the folder no longer exists. Before, the pane said "Not a git
 repository." and the terminal quietly opened a shell in the home folder. The
 refused terminal is an API error, hence `--allow-errors`.
