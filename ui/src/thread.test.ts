@@ -55,6 +55,23 @@ describe("layout", () => {
     expect(f?.type === "fold" && f.ms).toBe(3_000);
   });
 
+  test("two approvals waiting at the same time leave their shared wait out once", () => {
+    const items = fold([
+      { type: "user_message", text: "migrate" },
+      { type: "turn_started", at: 0 },
+      { type: "approval_request", requestId: "r1", kind: "command", title: "one", detail: "", at: 2_000 },
+      { type: "approval_request", requestId: "r2", kind: "command", title: "two", detail: "", at: 2_000 },
+      { type: "approval_resolved", requestId: "r1", decision: "allow", at: 30_000 },
+      { type: "approval_resolved", requestId: "r2", decision: "allow", at: 30_000 },
+      { type: "tool_started", itemId: "a", kind: "command", title: "Ran", detail: "migrate" },
+      { type: "tool_completed", itemId: "a", ok: true },
+      { type: "assistant_message", itemId: "m", text: "Done." },
+      { type: "turn_completed", status: "completed", at: 40_000 },
+    ]);
+    const f = layout(items, false).find((r) => r.type === "fold");
+    expect(f?.type === "fold" && f.ms).toBe(12_000);
+  });
+
   test("a turn stopped while waiting for an approval counts the work before it only", () => {
     const items = fold([
       { type: "user_message", text: "migrate" },
