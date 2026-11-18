@@ -19,6 +19,16 @@ describe("navigationEntries", () => {
     expect(navigationEntries([s], context, "login absent")).toEqual([]);
     expect(navigationEntries([s], context, "archived")[0]?.title).toBe("investigation");
   });
+  test("a session's detail names its repository and branch, not the worktree path under the data dir", () => {
+    const s = session("fix login", { cwd: "/home/me/.yard/wt/app/yard-fix-login-1a2b", repo: "/work/app", branch: "yard/fix-login-1a2b" });
+    const [row] = navigationEntries([s], context, "");
+    expect(row.detail).toBe("Codex · This Mac · app · yard/fix-login-1a2b");
+    // The full paths still match a search.
+    expect(navigationEntries([s], context, "/work/app")[0]?.title).toBe("fix login");
+    expect(navigationEntries([s], context, ".yard/wt")[0]?.title).toBe("fix login");
+    // A session in place shows its folder's name.
+    expect(navigationEntries([session("plain", { cwd: "/work/notes/" })], context, "")[0].detail).toBe("Codex · This Mac · notes");
+  });
   test("page searches put matching destinations ahead of similarly named sessions", () => {
     const entries = navigationEntries([session("Settings work")], context, "settings");
     expect(entries[0].route).toEqual({ page: "settings" });
