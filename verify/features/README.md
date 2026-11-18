@@ -33,7 +33,10 @@ prompt).
 |---|---|
 | [mobile](mobile.md) | iOS setup discovery, successful connection status and phone workspace navigation |
 | [new-session](new-session.md) | The new-session page: prompt, model, effort, permission, folder, host, base branch, worktree note |
+| [session-defaults](session-defaults.md) | New sessions remember the last host, project, model and effort, per host and across a reload |
+| [launch-defaults](launch-defaults.md) | Saved model, effort and host defaults for New sessions and Switchy, Reset, a removed default host |
 | [thread](thread.md) | How a session's turns render: replies, thinking, edits, failures, the work-log fold |
+| [mermaid](mermaid.md) | Mermaid fences drawn as diagrams, the source kept, invalid and incomplete diagrams, long diagrams on phones |
 | [approvals](approvals.md) | Command approvals: allow once, always, deny, and the sidebar status |
 | [stop](stop.md) | Stopping a running turn, including one the engine ignores |
 | [changes-pane](changes-pane.md) | The Changes tab: the session folder's git diff |
@@ -41,8 +44,9 @@ prompt).
 | [terminal](terminal.md) | The Terminal tab: shells per session, tabs, closing a tab, scrollback, attaching output to a reply |
 | [pr-pane](pr-pane.md) | The Pull request tab: PR state, checks, review threads, Send to session |
 | [sidebar](sidebar.md) | Session rows: order, status, pin, archive, restore, delete |
+| [navigation](navigation.md) | Command-K: sessions and pages, Switchy, repo and branch names, automation runs left out; the macOS app menu |
 | [persistence](persistence.md) | Sessions and history across a yardd restart |
-| [focused-pages](focused-pages.md) | Approved host, session and subscription pages, account identity and compact usage popover |
+| [focused-pages](focused-pages.md) | Approved host, session (search, Active/All/Archived tabs) and subscription pages, account identity and compact usage popover |
 | [hosts](hosts.md) | The Hosts page (compact host rows and a tabbed inspector), adding a direct host, an unreachable SSH host, removing a host |
 | [queue](queue.md) | The resource guard: sessions queue under pressure, Start anyway |
 | [logins](logins.md) | Engine login state and the Codex, Claude, Grok and OpenCode login flows |
@@ -60,3 +64,4 @@ prompt).
 | [usage](usage.md) | Usage popover, Subscriptions, reset times and separate account/model controls |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
 | [connectors](connectors.md) | MCP servers per engine account: states, sign-in (claude.ai, pasted redirects, ChatGPT apps), chart widgets in the thread |
+| [switchy](switchy.md) | Switchy: ask and reload, host context, follow-ups, model names, refusals, the shared composer, approvals, voice |

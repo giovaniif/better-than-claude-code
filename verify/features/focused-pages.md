@@ -84,6 +84,22 @@ yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"fill":"label:
 yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":false}'
 ```
 
+### sessions-visibility-tabs
+Viewports: both
+The Sessions page opens on Active, which leaves archived sessions out. All
+sessions lists active and archived together, the archived row labelled
+Archived. Archived lists only the archived ones. The tab in use reads as
+pressed. Read back: the daemon still has the session archived until the
+recipe restores it.
+
+```sh
+yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":true}'
+yv state --expect '{"sessions":[{"id":"{{sid_think}}","archived":true}]}'
+yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"expect":{"role":"button","name":"Active","exact":true}},{"eval":"document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent","equals":"Active"},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"expect":{"css":".focused-session-row","hasText":"TEST-plan the refactor"},"count":0},{"click":{"role":"button","name":"All sessions","exact":true}},{"eval":"document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent","equals":"All sessions"},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"expect":{"css":".focused-session-row","hasText":"TEST-plan the refactor"},"text":"Archived"},{"shot":"all-sessions"},{"click":{"role":"button","name":"Archived","exact":true}},{"expect":{"css":".focused-session-row","hasText":"TEST-plan the refactor"},"text":"Archived"},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"},"count":0},{"eval":"[...document.querySelectorAll(\".focused-session-row .focused-session-state\")].every((el) => el.textContent.trim() === \"Archived\")","equals":true},{"shot":"archived-only"}]'
+yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":false}'
+yv state --expect '{"sessions":[{"id":"{{sid_think}}","archived":false}]}'
+```
+
 ### sessions-search-no-match-says-so
 Viewports: both
 A search that matches nothing says so and offers to clear it. It used to say
