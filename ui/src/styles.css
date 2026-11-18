@@ -778,6 +778,12 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .connector-filters { display: flex; flex-wrap: wrap; gap: 4px; }
 .connector-filters .btn-text { gap: 6px; }
 .connector-filters [aria-pressed="true"] { background: var(--fill); font-weight: 600; }
+/* At phone width "All" wrapped onto a line of its own and read as a separate
+   control: tighter tabs keep the four on one row, and a long count scrolls. */
+@media (max-width: 700px) {
+  .connector-filters { flex-wrap: nowrap; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .connector-filters .btn-text { flex: none; padding: 0 8px; }
+}
 .connector-search.field { font-family: inherit; }
 .connectors-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0; }
 .connector-pagination { display: flex; align-items: center; gap: 8px; }
