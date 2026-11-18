@@ -108,3 +108,10 @@ export function pruneKills(kills: Record<number, KillState>, rows: ProcRow[]): R
   const kept = Object.entries(kills).filter(([pid, k]) => listed.has(Number(pid)) || k.phase === "sending");
   return kept.length === Object.keys(kills).length ? kills : Object.fromEntries(kept);
 }
+
+/** What the Processes tab says instead of a list, or null to show the list. */
+export function procsBlank(rows: ProcRow[] | undefined, online: boolean): string | null {
+  if (!rows) return "Loading…";
+  if (procTree(rows).length === 0) return "Nothing is running for this session.";
+  return null;
+}
