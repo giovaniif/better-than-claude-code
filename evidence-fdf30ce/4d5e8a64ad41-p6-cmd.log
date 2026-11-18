@@ -1,0 +1,26 @@
+$ verify/yv map run new-session --recipe long-folder-keeps-its-chip-icon
+# exit 0 after 7516 ms at fdf30ce8d9a67c15f6b425976f29c967815f3fcd
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T02:04:27.259Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-folder-keeps-its-chip-icon",
+          "status": "pass",
+          "ms": 6661
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

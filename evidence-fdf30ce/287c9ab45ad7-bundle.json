@@ -1,0 +1,192 @@
+{
+  "v": 1,
+  "claim": "New session: a folder or branch name long enough to be cut with an ellipsis squeezed its chip's icon (the 14 px folder icon rendered 8 px wide)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "1535f0efc05270118837aa52f59d0b8a312e89e1",
+  "head": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:03:49.168Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "484d76772273ec0aac17fc38044042ee12c30735",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "de9dc68d523087a080a180dd4b4cf1502fc53b4a5a28cfa81a7943c77885ed6a"
+        },
+        {
+          "path": "p1-chips-mobile.png",
+          "sha256": "f011f5c8efc2fba7e990694117b31dc4098336ca94d1cc177b9fa94eb83e66cf"
+        },
+        {
+          "path": "p1-chips-desktop.png",
+          "sha256": "90da20d2d7d75a92535f228d2e5cc586d5dc2123d274a389a58e56ee64fc0dca"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:01.094Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "484d76772273ec0aac17fc38044042ee12c30735",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "3d8885fb5ce631d5208861177eaf523e21b102d39bebe7bdd70373d2f3c21ade"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:01.142Z",
+      "cmd": "verify/yv map run new-session --recipe long-folder-keeps-its-chip-icon",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3ef71337b1f2cc9649cbc38fc6d2e483792bc25e1fcfd1ab07f1138d0f82865e"
+        },
+        {
+          "path": "p3-chips-desktop.png",
+          "sha256": "102e3c2ae2a76b87bbea467883a4dd921087843e898b500562980edc6ae6a4af"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:15.374Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "833f0d98332317bd1a3ce3846e3ea33e032f28ea77b4e8ffa9d9d3aad13d7204"
+        },
+        {
+          "path": "p4-chips-mobile.png",
+          "sha256": "baa8f7bffaca531db038c98a51feb15d7f57fd05ea340411fb355a5d8525e565"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:19.520Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "99fc857b195358b84f6b394df701a2d54700c34281631e972befefb6641fbfca"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:19.566Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "4d5e8a64ad41979a2e9eb257b1b76a1990526f7b52a91a4b91a40ff6cb270f78"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:19.746Z",
+      "cmd": "verify/yv map run new-session --recipe long-folder-keeps-its-chip-icon",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "674653a9362d17ee682362cc0e376cbe4fa315b7f4937b2d5d530da3869d0c8f"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:27.310Z",
+      "cmd": "verify/yv design-check --base 1535f0efc052",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fdf30ce8d9a67c15f6b425976f29c967815f3fcd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-new-session.json",
+          "sha256": "197b6aeaa980c72118837b47590346ae2f09c109f64ebc4a9241d5a5b72bf77b"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:27.393Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/long-prompt-titled-at-a-word",
+        "new-session/long-second-word-is-cut-not-dropped",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/long-folder-keeps-its-chip-icon",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    }
+  ]
+}

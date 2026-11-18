@@ -1,0 +1,45 @@
+$ verify/yv map run new-session --recipe long-folder-keeps-its-chip-icon
+# exit 1 after 6801 ms at 484d76772273ec0aac17fc38044042ee12c30735
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T02:04:07.939Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-folder-keeps-its-chip-icon",
+          "status": "fail",
+          "ms": 5935,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"(() => { const icons = [...document.querySelectorAll(\\\".new-chips .chip svg\\\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\\\"width\\\"))); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T02-04-02-250Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"(() => { const icons = [...document.querySelectorAll(\\\".new-chips .chip svg\\\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\\\"width\\\"))); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T02-04-02-250Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": " turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 11% · 56%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"TEST-a-really-long-project-folder-name-for-the-mobile-chips\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"(()=>{localStorage.setItem(\\\"yard.cwd\\\",\\\"/tmp/yv-map-new-session-2720737-mwlh9poj/work/TEST-a-really-long-project-folder-name-for-the-mobile-chips\\\");return 1})()\",\n          \"value\": 1\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const icons = [...document.querySelectorAll(\\\".new-chips .chip svg\\\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\\\"width\\\"))); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"(() => { const icons = [...document.querySelectorAll(\\\\\\\".new-chips .chip svg\\\\\\\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\\\\\\\"width\\\\\\\"))); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T02-04-02-250Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"(() => { const icons = [...document.querySelectorAll(\\\\\\\".new-chips .chip svg\\\\\\\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\\\\\\\"width\\\\\\\"))); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T02-04-02-250Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "new-session/long-folder-keeps-its-chip-icon",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

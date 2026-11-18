@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "484d76772273ec0aac17fc38044042ee12c30735",
+    "short": "484d767",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:03:53.827Z"
+  },
+  "dir": ".verify/evidence/chip-icon-no-shrink-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3480,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/chip-icon-no-shrink-base/chips-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-2319571-mwlgfgp6/work/TEST-a-really-long-project-folder-name-for-the-mobile-chips\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3102,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/chip-icon-no-shrink-base/chips-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{localStorage.setItem(\"yard.cwd\",\"/tmp/yv-default-2319571-mwlgfgp6/work/TEST-a-really-long-project-folder-name-for-the-mobile-chips\");return 1})()",
+          "value": 1
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
