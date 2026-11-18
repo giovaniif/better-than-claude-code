@@ -994,6 +994,8 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 
 /* Focused pages keep host summaries stable, with one inspector below them. */
 .focused-page { width: 100%; max-width: 1080px; margin: 0 auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+/* Full-width cards: drop .btn-quiet's text-aligning -8px. */
+.focused-page > .host-empty, .focused-hosts > .host-summary { margin-left: 0; }
 .focused-page > .host-empty { height: auto; }
 .focused-hosts { display: flex; flex-direction: column; gap: 8px; }
 .host-summary { height: auto; width: 100%; display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, .7fr)) 14px; align-items: center; gap: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); text-align: left; }
