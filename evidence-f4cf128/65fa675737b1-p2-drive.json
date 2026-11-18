@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec25e1f94",
+  "build": {
+    "sha": "6902762bca74e8200ea4af24bb01377a237c364c",
+    "short": "6902762",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:54:19.509Z"
+  },
+  "dir": ".verify/evidence/title-whole-words-base-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2322,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/title-whole-words-base-mobile/long-title-mobile-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\"h1\").textContent",
+          "value": "TEST-a very long first prompt that becomes the title and kee"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

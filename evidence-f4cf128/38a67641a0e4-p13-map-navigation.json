@@ -1,0 +1,37 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-18T00:58:17.791Z",
+      "counts": {
+        "pass": 4
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-navigation",
+          "status": "pass",
+          "ms": 10870
+        },
+        {
+          "label": "command-k-finds-switchy",
+          "status": "pass",
+          "ms": 6055
+        },
+        {
+          "label": "recent-list-skips-automation-runs",
+          "status": "pass",
+          "ms": 6932
+        },
+        {
+          "label": "native-app-menu",
+          "status": "pass",
+          "ms": 8359
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

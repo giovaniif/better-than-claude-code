@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec2673112",
+  "build": {
+    "sha": "f4cf128a1e8886206046fd120f0f891408ff701a",
+    "short": "f4cf128",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:55:05.030Z"
+  },
+  "dir": ".verify/evidence/title-whole-words-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2249,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/title-whole-words-head-desktop/long-title-desktop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\"h1\").textContent",
+          "value": "TEST-a very long first prompt that becomes the title and…"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,33 @@
+$ verify/yv map run new-session --recipe long-prompt-titled-at-a-word
+# exit 1 after 208 ms at 6902762bca74e8200ea4af24bb01377a237c364c
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T00:54:32.488Z",
+      "counts": {
+        "skipped": 1
+      },
+      "setupFailed": "{\n  \"command\": \"iso up\",\n  \"ok\": false,\n  \"iso\": {\n    \"name\": \"map-new-session\",\n    \"port\": 46031,\n    \"pid\": 1987863,\n    \"root\": \"/tmp/yv-map-new-session-1984590-mwlerrvw\",\n    \"data\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/data\",\n    \"home\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/home\",\n    \"fake\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/fake\",\n    \"work\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/work\",\n    \"engines\": \"fake\",\n    \"build\": {\n      \"sha\": \"6902762bca74e8200ea4af24bb01377a237c364c\",\n      \"short\": \"6902762\",\n      \"dirty\": true,\n      \"diffHash\": \"01809477c5fdf0d1\",\n      \"at\": \"2026-11-18T00:54:05.035Z\"\n    },\n    \"startedAt\": \"2026-11-18T00:54:05.143Z\",\n    \"url\": \"http://127.0.0.1:46031\"\n  },\n  \"problems\": [\n    {\n      \"code\": \"iso-exists\",\n      \"msg\": \"isolated environment map-new-session is already running on port 46031\",\n      \"hint\": \"verify/yv iso down --name map-new-session\"\n    }\n  ]\n}\n",
+      "results": [
+        {
+          "label": "long-prompt-titled-at-a-word",
+          "status": "skipped",
+          "why": "Setup failed",
+          "tail": "{\n  \"command\": \"iso up\",\n  \"ok\": false,\n  \"iso\": {\n    \"name\": \"map-new-session\",\n    \"port\": 46031,\n    \"pid\": 1987863,\n    \"root\": \"/tmp/yv-map-new-session-1984590-mwlerrvw\",\n    \"data\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/data\",\n    \"home\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/home\",\n    \"fake\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/fake\",\n    \"work\": \"/tmp/yv-map-new-session-1984590-mwlerrvw/work\",\n    \"engines\": \"fake\",\n    \"build\": {\n      \"sha\": \"6902762bca74e8200ea4af24bb01377a237c364c\",\n      \"short\": \"6902762\",\n      \"dirty\": true,\n      \"diffHash\": \"01809477c5fdf0d1\",\n      \"at\": \"2026-11-18T00:54:05.035Z\"\n    },\n    \"startedAt\": \"2026-11-18T00:54:05.143Z\",\n    \"url\": \"http://127.0.0.1:46031\"\n  },\n  \"problems\": [\n    {\n      \"code\": \"iso-exists\",\n      \"msg\": \"isolated environment map-new-session is already running on port 46031\",\n      \"hint\": \"verify/yv iso down --name map-new-session\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "new-session/long-prompt-titled-at-a-word",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

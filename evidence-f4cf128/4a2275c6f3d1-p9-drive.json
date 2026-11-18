@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec267ebb4",
+  "build": {
+    "sha": "f4cf128a1e8886206046fd120f0f891408ff701a",
+    "short": "f4cf128",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:55:05.030Z"
+  },
+  "dir": ".verify/evidence/title-whole-words-head-palette",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3265,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/title-whole-words-head-palette/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

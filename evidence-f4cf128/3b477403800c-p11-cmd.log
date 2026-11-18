@@ -1,0 +1,26 @@
+$ verify/yv map run new-session --recipe long-prompt-titled-at-a-word
+# exit 0 after 7725 ms at f4cf128a1e8886206046fd120f0f891408ff701a
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T00:56:36.772Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-prompt-titled-at-a-word",
+          "status": "pass",
+          "ms": 6871
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
