@@ -1,0 +1,40 @@
+$ verify/yv map run approvals --recipe approval-wait-is-not-work
+# exit 1 after 11110 ms at 67c406b03ee434e296025722712cf27b32599417
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-18T00:45:04.656Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "approval-wait-is-not-work",
+          "status": "fail",
+          "ms": 10258,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 6 {\"eval\":\"/^Worked for [01]s/.test(document.querySelector(\\\".fold-row\\\").textContent)\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/.verify/drives/2026-11-18T00-44-54-752Z/fail-desktop-step6.png and the aria snapshot"
+            }
+          ],
+          "tail": "dle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 10% · 47%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[cmd] TEST-wait for me desktop\\\" [level=1]\\n  - code: yard/cmd-test-wait-for-me-0b7d\\n  - button \\\"Delete\\\"\\n  - text: \\\"[cmd] TEST-wait for me desktop\\\"\\n  - button \\\"Worked for 9s · Ran 1 command\\\"\\n  - paragraph: Ran it.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/.verify/drives/2026-11-18T00-44-54-752Z/worked-for-desktop-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 6,\n          \"eval\": \"/^Worked for [01]s/.test(document.querySelector(\\\".fold-row\\\").textContent)\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 6 {\\\"eval\\\":\\\"/^Worked for [01]s/.test(document.querySelector(\\\\\\\".fold-row\\\\\\\").textContent)\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/.verify/drives/2026-11-18T00-44-54-752Z/fail-desktop-step6.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "approvals/approval-wait-is-not-work",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

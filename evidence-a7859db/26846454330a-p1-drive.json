@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec1cac512",
+  "build": {
+    "sha": "67c406b03ee434e296025722712cf27b32599417",
+    "short": "67c406b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:44:19.883Z"
+  },
+  "dir": ".verify/evidence/worked-for-approval-wait-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8547,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/worked-for-approval-wait-base-desktop/worked-for-desktop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".fold-row\").textContent",
+          "value": "Worked for 8s· Ran 1 command"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

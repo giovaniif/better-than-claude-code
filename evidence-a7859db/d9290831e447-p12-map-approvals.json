@@ -1,0 +1,57 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-18T01:02:23.367Z",
+      "counts": {
+        "pass": 8
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "pending-shows-card",
+          "status": "pass",
+          "ms": 6886
+        },
+        {
+          "label": "allow-once",
+          "status": "pass",
+          "ms": 4204
+        },
+        {
+          "label": "allow-then-follow-up",
+          "status": "pass",
+          "ms": 5633
+        },
+        {
+          "label": "deny",
+          "status": "pass",
+          "ms": 3598
+        },
+        {
+          "label": "waiting-then-denied-command-did-not-run",
+          "status": "pass",
+          "ms": 19486
+        },
+        {
+          "label": "always-allow",
+          "status": "pass",
+          "ms": 4279
+        },
+        {
+          "label": "double-click-allow-once",
+          "status": "pass",
+          "ms": 3930
+        },
+        {
+          "label": "approval-wait-is-not-work",
+          "status": "pass",
+          "ms": 19296
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,26 @@
+$ cd ui && bun test src/thread.test.ts
+# exit 1 after 20 ms at f036463edaa7b32fc83df2c53e21eae6706e16bc
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+67 |       { type: "tool_completed", itemId: "a", ok: true },
+68 |       { type: "assistant_message", itemId: "m", text: "Done." },
+69 |       { type: "turn_completed", status: "completed", at: 40_000 },
+70 |     ]);
+71 |     const f = layout(items, false).find((r) => r.type === "fold");
+72 |     expect(f?.type === "fold" && f.ms).toBe(12_000);
+                                            ^
+error: expect(received).toBe(expected)
+
+Expected: 12000
+Received: -16000
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/ui/src/thread.test.ts:72:40)
+(fail) layout > two approvals waiting at the same time leave their shared wait out once [0.77ms]
+
+ 24 pass
+ 1 fail
+ 42 expect() calls
+Ran 25 tests across 1 file. [16.00ms]
