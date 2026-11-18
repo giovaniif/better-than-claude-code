@@ -70,6 +70,16 @@ yv drive connectors --steps '[{"expect":"label:Connector account"},{"expect":"cs
 
 
 
+### filters-stay-on-one-row
+Viewports: both
+The four filters (Connected, Available, Not working, All) sit on one row, each
+fully visible. At 390 px "All 4" used to wrap onto a line of its own, where it
+looked like a separate control (#209).
+
+```sh
+yv drive connectors --steps '[{"expect":"role:heading:Connectors"},{"expect":{"role":"button","name":"All","exact":true}},{"eval":"(() => { const group = document.querySelector(\".connector-filters\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\"button\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()","equals":true},{"shot":"filters"}]'
+```
+
 ### claude-sign-in
 Viewports: desktop
 Datadog connects by itself after Connect. sentry asks for the address: one
