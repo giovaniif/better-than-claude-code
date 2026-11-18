@@ -134,6 +134,19 @@ mkdir -p "$(v work)/TEST-a-really-long-project-folder-name-for-the-mobile-chips"
 yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.cwd\",\"{{work}}/TEST-a-really-long-project-folder-name-for-the-mobile-chips\");return 1})()","equals":1},{"reload":true},{"goto":"new"},{"expect":{"css":".new-chips .chip","hasText":"TEST-a-really-long"}},{"eval":"(() => { const icons = [...document.querySelectorAll(\".new-chips .chip svg\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\"width\"))); })()","equals":true},{"shot":"long-folder-chip"}]'
 ```
 
+### folder-menu-stays-on-screen
+Viewports: both
+The folder menu opens fully on screen and the page stays put: the heading
+still reads "What should we work on?" with nothing scrolled sideways. At
+desktop it opens under the folder chip. (On a 390 px phone it used to hang
+from the folder chip, the second in the row, so it ran ~100 px past the right
+edge and focusing its search box scrolled the whole page left: "at should we
+work on?".)
+
+```sh
+yv drive new --steps '[{"click":{"role":"button","name":"work","exact":true}},{"expect":"placeholder:Search folders, or type a path"},{"wait":300},{"shot":"folder-menu"},{"eval":"(() => { const pop = document.querySelector(\".new-chips .popover\").getBoundingClientRect(); const chip = document.querySelector(\".new-chips .chip[aria-expanded=true]\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\"*\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()","equals":true}]'
+```
+
 ### refused-send-names-the-session-in-the-way
 Viewports: both
 A folder that cannot get a worktree (here a plain folder) takes one working

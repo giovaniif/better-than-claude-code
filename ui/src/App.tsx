@@ -2028,7 +2028,7 @@ function ChipMenu(props: {
   const { open, setOpen } = props;
   useEscape(open, () => setOpen(false));
   return (
-    <div className="picker">
+    <div className={`picker${props.wide ? " picker-wide" : ""}`}>
       <button className="chip" aria-haspopup="true" aria-expanded={open} title={props.title} onClick={() => setOpen(!open)}>
         {props.icon}
         <span className="chip-label">{props.label}</span>
