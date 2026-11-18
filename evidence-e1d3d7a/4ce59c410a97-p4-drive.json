@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ed9a99268",
+  "build": {
+    "sha": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+    "short": "e1d3d7a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:55:52.472Z"
+  },
+  "dir": ".verify/evidence/chevron-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2290,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/chevron-head-d/account-chip-long-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const s = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

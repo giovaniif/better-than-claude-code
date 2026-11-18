@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ed9a99268",
+  "build": {
+    "sha": "e08783d14f99924cf4bb6dd14f7e54e9c9a3d7de",
+    "short": "e08783d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:55:33.100Z"
+  },
+  "dir": ".verify/evidence/chevron-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2344,
+      "steps": 2,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/chevron-base/longacct-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

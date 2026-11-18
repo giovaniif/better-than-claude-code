@@ -1,0 +1,172 @@
+{
+  "v": 1,
+  "claim": "Under a session's composer, a long account name squeezes the account chip's chevron to a dot (390 px), so the chip stops looking like a menu",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-708b",
+  "base": "53dbe575669a5ca261397d271ae6454e090e1086",
+  "head": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T07:55:28.525Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e08783d14f99924cf4bb6dd14f7e54e9c9a3d7de",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6e966d96d336513ae7073334f4a9e4de205d8b4ecee4f654c96eae8fd1538e1f"
+        },
+        {
+          "path": "p1-longacct-mobile.png",
+          "sha256": "692cf655a259bc50ed31c15d41693c03459cf6aa0d8e414ebf16afcc2e4604fe"
+        }
+      ],
+      "addedAt": "2026-11-18T07:55:36.123Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e08783d14f99924cf4bb6dd14f7e54e9c9a3d7de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "c4183483061c1d61007b3aabb95346d0b79ca6587d5767e66616e4bba0516e9e"
+        }
+      ],
+      "addedAt": "2026-11-18T07:55:36.173Z",
+      "cmd": "verify/yv map run accounts --recipe account-chip-chevron-keeps-its-size",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "36326bb0dc85a095af2aff051510609d93fb2f286d3dc4cfc8f3394692c5128a"
+        },
+        {
+          "path": "p3-account-chip-long-mobile.png",
+          "sha256": "a26c3c35682e23a3fd271666981b425270375c6294ac6227fb9b511260dad1fe"
+        }
+      ],
+      "addedAt": "2026-11-18T07:55:58.368Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4ce59c410a97e7cb635183de9c72867b0f6a66849db3514429cdc845ef1a9e20"
+        },
+        {
+          "path": "p4-account-chip-long-desktop.png",
+          "sha256": "b703eb95a681b8c97f1d685289a88721ba7759e5b60d02a4eb0b256edb4c4ff1"
+        }
+      ],
+      "addedAt": "2026-11-18T07:55:58.410Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "20af831d3bab26eba287909b823fd6e56c7013daeb511c33962dd45278f09680"
+        }
+      ],
+      "addedAt": "2026-11-18T07:55:58.451Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run accounts --recipe account-chip-chevron-keeps-its-size",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "4d02d2d73ded4a7664b50fa525eb708e793e500a025c15fa9ffa8d77c5345354"
+        }
+      ],
+      "addedAt": "2026-11-18T07:56:05.338Z",
+      "cmd": "verify/yv design-check --base 53dbe575669a",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e1d3d7ae00c5f3675e21418a8cd45a63813856de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-accounts.json",
+          "sha256": "11824029f85027300dbbf99d33e8482bb71b5ed0066617db8665ee16c503d333"
+        }
+      ],
+      "addedAt": "2026-11-18T07:56:21.080Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/empty-name-add-looks-disabled",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right",
+        "accounts/account-chip-shows-the-whole-name",
+        "accounts/account-chip-chevron-keeps-its-size"
+      ]
+    }
+  ]
+}
