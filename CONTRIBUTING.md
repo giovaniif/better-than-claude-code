@@ -63,8 +63,9 @@ Compiling isn't proof: for anything user-visible, drive the feature through the 
 ## Releasing
 
 1. Add a `## X.Y.Z (date)` section to [CHANGELOG.md](CHANGELOG.md): what changed, for people who use the app. It becomes the release notes.
-2. Run `scripts/release.sh X.Y.Z` on `main`. It sets the version in yardd and the app, commits, tags `vX.Y.Z` and pushes.
-3. `.github/workflows/release.yml` checks the versions, builds the signed DMG, the signed update package (`Switchyard.app.tar.gz` and `latest.json`, which installed apps poll) and both Linux packages, and publishes the release. The Docker workflow tags the image `X.Y.Z` too.
+2. On a release branch, run `scripts/release.sh X.Y.Z --prepare`. It updates yardd, the app and Cargo.lock and commits the version and changelog. Push the branch and merge its PR after the required CI checks pass.
+3. Check out the merged `origin/main` commit (detached is fine), wait for its CI, then run `scripts/release.sh X.Y.Z`. It checks the clean checkout and versions and pushes only the `vX.Y.Z` tag; it never pushes directly to the protected `main` branch.
+4. `.github/workflows/release.yml` checks the versions, builds the signed DMG, the signed update package (`Switchyard.app.tar.gz` and `latest.json`, which installed apps poll) and both Linux packages, and publishes the release. The Docker workflow tags the image `X.Y.Z` too.
 
 Asset names never change, so `releases/latest/download/Switchyard.dmg` and the server installer always get the newest release.
 

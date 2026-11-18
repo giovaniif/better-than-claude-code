@@ -2,6 +2,19 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.11.0 (2026-11-18)
+
+- **Gemini CLI joins the engines.** Start Gemini sessions alongside Claude Code, Codex, OpenCode and Grok, with streaming replies, tools and diffs, approvals, permission modes, Stop, resume and hand-offs. Install `@google/gemini-cli` on the host; Switchyard reuses its login and discovers its models. Added accounts keep separate logins. For a fresh Google login, Hosts shows the terminal command and checks it when you return. Gemini does not report plan limits or offer an effort control here.
+- **Dedicated Hosts, Sessions and Subscriptions pages.** Browse hosts and open one host's details, manage engine accounts separately, find sessions with tabs and search, and inspect subscription limits across hosts. The sidebar's compact Usage row opens a summary with a link to the full Subscriptions page. Empty session searches offer Clear search.
+- **Save defaults deliberately.** Settings keeps independent default hosts, models and efforts for new sessions and for Switchy. A one-off selection does not overwrite them. Removing a default host falls back to an available host while keeping your saved model when possible.
+- **More control over Switchy.** Host and source scope, model and effort, voice and access controls work together; questions wait when their inference host is busy. Answers show readable model names. A stopped answer is a quiet note, while a refused question keeps its reason visible in red under the message box.
+- **iPhone and iPad companion foundation.** A SwiftUI app loads your privately reachable Switchyard host, with native voice and local notifications, simulator tests and a TestFlight build workflow. Hosts always offers phone setup, and the session's Workspace sheet gives phones access to Changes, Terminal, Pull request and Processes. A TestFlight invitation appears when one is configured.
+- **Attachments stay with your message.** Editing a queued message or stopping its turn restores its files to the reply box. Selecting more than 20 files explains the limit and disables Send rather than losing the message. On phones, a long attachment list scrolls within its own row so Send stays reachable.
+- **Clearer process controls.** Stop with children fits inside the process table, including on phones. Opening Processes for an offline host says it is offline instead of leaving a stale process list on screen.
+- **More reliable turn history.** Work durations exclude time spent waiting for your approval. OpenCode and Grok output arriving after a stopped turn is dropped instead of leaking into the next answer. Long first prompts get useful titles, including prompts that begin with a long URL.
+- **Layout fixes across desktop and phone.** Connectors' filter tabs stay on one row; folder and effort menus stay on screen; long host, folder and account names preserve their icons and chevrons. Desktop account chips show the whole name, and Import always shows the last-used age on phones. Host and session rows align with their pages, Workspace lines up with Delete, and disabled primary buttons look disabled.
+- **Release and verification maintenance.** Releases now prepare their version change in a PR and publish only the tag after it is merged, preserving required CI on `main`. Verification recipes and session routing were repaired, and failed post-merge jobs get one retry before a revert is proposed.
+
 ## 0.10.0 (2026-11-18)
 
 - **Connectors, focused on what you use.** The page opens on connected services for one host and engine account. Unused entries stay under Available; search, status filters and eight-row pages keep long catalogs manageable. Sign-in progress stays visible through completion.
