@@ -50,6 +50,16 @@ row warns before importing (two writers would interleave one conversation).
 yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog","text":"Used in the last 10 minutes"},{"expect":{"css":".import-row","hasText":"TEST-fix the login redirect"},"text":"close it there first"},{"expect":{"css":".import-row","hasText":"TEST-old refactor of the parser"},"text":"3 d ago"}]'
 ```
 
+### age-stays-visible
+Each row's second line ends with when the session was last used ("3 d ago"),
+and it shows in full at both viewports: a long folder or branch shrinks with
+an ellipsis instead. At 390 px the folder used to push the age out of sight.
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"eval":"[...document.querySelectorAll(\".import-meta\")].map((m) => { const w = document.createTreeWalker(m, NodeFilter.SHOW_TEXT); let n, last = null; while ((n = w.nextNode())) if (n.textContent.trim()) last = n; const r = document.createRange(); r.setStart(last, last.length - 1); r.setEnd(last, last.length); return last.textContent.trim().endsWith(\"ago\") && r.getBoundingClientRect().right <= m.getBoundingClientRect().right + 1; }).join(\",\")","equals":"true,true,true"},{"shot":"import-ages"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":{"role":"button","name":"Import","exact":true}},{"expect":"role:dialog","text":"TEST-old refactor of the parser"},{"eval":"[...document.querySelectorAll(\".import-meta\")].map((m) => { const w = document.createTreeWalker(m, NodeFilter.SHOW_TEXT); let n, last = null; while ((n = w.nextNode())) if (n.textContent.trim()) last = n; const r = document.createRange(); r.setStart(last, last.length - 1); r.setEnd(last, last.length); return last.textContent.trim().endsWith(\"ago\") && r.getBoundingClientRect().right <= m.getBoundingClientRect().right + 1; }).join(\",\")","equals":"true,true,true"},{"shot":"import-ages"}]'
+```
+
 ### import-opens-the-session
 Viewports: desktop
 Importing opens a Claude session in that folder with its history and a note;
