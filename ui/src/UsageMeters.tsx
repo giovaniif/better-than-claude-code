@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { AnchoredPopover } from "./AnchoredPopover";
 import type { Engine, EngineStates } from "./protocol";
 import { formatReset, metersFor, noLimitsNote, percentText, reportsLimits, stripGroups, type Meter, type UsageSource } from "./usage";
+import { Icon } from "./App";
 import { DEFAULT_ACCOUNT } from "./accounts";
 import { ENGINES, ENGINE_NAME } from "./engines";
 
+const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
 const LIMIT_ENGINES = ENGINES.filter(reportsLimits);
 
 function useNow() {
@@ -104,7 +106,14 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
   const signIns = others.filter((row) => row.loggedIn === false).length;
   return (
     <div className={compact ? "mobile-usage" : "usage-dock"}>
-      <button ref={anchor} className={compact ? "btn mobile-usage-trigger" : "btn-quiet usage-trigger"} aria-label="Subscription usage" aria-haspopup="dialog" aria-expanded={open} onClick={() => open ? close() : setOpen(true)}>
+      <button
+        ref={anchor}
+        className={`btn-quiet ${compact ? "mobile-usage-trigger" : "usage-trigger"}`}
+        aria-label="Subscription usage"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => open ? close() : setOpen(true)}
+      >
         {compact && highest ? (
           <><span className="usage-chip-track" aria-hidden="true"><span style={{ width: `${highest.percent}%` }} /></span><span>{percentText(highest.percent)}</span></>
         ) : (
@@ -121,7 +130,7 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
             <span className="spacer" />
             {canRefresh && (
               <button className="btn-icon" aria-label="Refresh usage" title="Refresh usage" disabled={refreshing} onClick={refresh}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" /></svg>
+                <Icon d={REFRESH} size={16} />
               </button>
             )}
             <button className="btn-icon" aria-label="Close usage popover" onClick={close}>×</button>
@@ -135,7 +144,10 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
               </div>
               {selectedHost?.online === false && <p className="muted small">The selected host is offline.</p>}
               {active?.loggedIn === false ? (
-                <p className="muted small">Needs sign-in. <button className="btn-text" onClick={() => manage(active.host)}>Sign in</button></p>
+                <p className="muted small">
+                  Needs sign-in.
+                  <button className="btn-text" onClick={() => manage(active.host)}>Sign in</button>
+                </p>
               ) : active?.meters.length ? active.meters.map((m) => (
                 <div key={m.key} className={`compact-meter level-${m.level}`}>
                   <span>{m.label}</span><span className="usage-percent">{percentText(m.percent)}</span>
@@ -146,7 +158,12 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
             </section>
           ) : <p className="muted small">No subscription limits reported yet.</p>}
           {refreshing && <p className="muted small" role="status">Refreshing usage…</p>}
-          {failure && <p className="bad small" role="alert">{failure} <button className="btn-text" onClick={refresh}>Try again</button></p>}
+          {failure && (
+            <p className="bad small" role="alert">
+              {failure}
+              <button className="btn-text" onClick={refresh}>Try again</button>
+            </p>
+          )}
           {others.length > 0 && (
             <>
               <button className="btn-quiet usage-other-toggle" aria-expanded={showOthers} onClick={() => setShowOthers(!showOthers)}>

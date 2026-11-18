@@ -397,7 +397,9 @@ function AddConnector(props: { state: State; actions: Actions; host: string; eng
           )}
           {busy && <p className="muted small" role="status">Adding {pending}…</p>}
           {change?.state === "failed" && <p className="bad small" role="alert">{change.error}</p>}
-          <div className="popover-footer"><button className="btn-text" onClick={close}>Cancel</button></div>
+          <div className="popover-footer">
+            <button className="btn-text" onClick={close}>Cancel</button>
+          </div>
         </AnchoredPopover>
       )}
     </div>
