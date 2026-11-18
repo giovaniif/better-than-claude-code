@@ -39,6 +39,17 @@ yv drive 'new' --viewport desktop --steps '[{"expect":"role:button:Subscription 
 yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage","text":"Claude · TEST-Work"},{"expect":"role:dialog:Subscription usage","text":"91%"},{"expect":"role:dialog:Subscription usage","text":"Codex · Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
 ```
 
+### usage-row-lines-up-with-host-rows
+Viewports: both
+The sidebar's Usage row spans the same width as the host rows under it. It used
+to start 8 px left of them, against the sidebar's edge, and end 8 px short,
+from the quiet button's negative margin.
+
+```sh
+yv drive 'new' --viewport desktop --steps '[{"expect":"role:button:Subscription usage"},{"expect":"css:.host-row"},{"eval":"const u = document.querySelector(\".usage-trigger\").getBoundingClientRect(); const h = document.querySelector(\".host-row\").getBoundingClientRect(); [u.left - h.left, u.right - h.right].map(Math.round).join()","equals":"0,0"},{"hover":"role:button:Subscription usage"},{"shot":"usage-row"}]'
+yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage"},{"wait":400},{"eval":"const u = document.querySelector(\".usage-trigger\").getBoundingClientRect(); const h = document.querySelector(\".host-row\").getBoundingClientRect(); [u.left - h.left, u.right - h.right].map(Math.round).join()","equals":"0,0"},{"hover":"role:button:Subscription usage"},{"shot":"usage-row"}]'
+```
+
 ### subscriptions-page
 Viewports: both
 Accounts appear once, with reset times and source host badges. Reload preserves the route.
