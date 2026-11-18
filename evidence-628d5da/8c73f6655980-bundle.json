@@ -1,0 +1,189 @@
+{
+  "v": 1,
+  "claim": "Sending more than 20 files from a session composer: yardd refuses it (at most 20 attachments per message), but the composer has already cleared, so the typed message and every file are lost. The composer now says 'Too many files' and keeps Send off until one is removed.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3",
+  "base": "e298ae283e7de94a71c365af2f47f576dffef541",
+  "head": "628d5da7cc6fd7829e9e06a5f59556ac2afbb5ef",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/attach.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/attach.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T09:43:27.110Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "95d3425166e9f493e97f21b867af044ac74b7e80",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "5e99bdbd7a8f87326547f374bcc2cf9510fcbf7ef1e5b81d3eaa456ea3e9e0b1"
+        },
+        {
+          "path": "p1-before-send-mobile.png",
+          "sha256": "844f1e3f20472e04a244eaa3421f149dd4bd8fb6d380e8bc8521202b856ac353"
+        },
+        {
+          "path": "p1-after-send-mobile.png",
+          "sha256": "565d65a380610b00f5e670ebfbddd704e166efa84d46be20a0c80009c7f136e5"
+        },
+        {
+          "path": "p1-before-send-desktop.png",
+          "sha256": "f66162df6d86d1784cd3f850b5505f39de9e35f9aa73088cfeaef2b6104bc8f6"
+        },
+        {
+          "path": "p1-after-send-desktop.png",
+          "sha256": "bfffbbec38b51bd819f05acdd2bc6fbbd327cc39f22a7ebeb213adcfa82dcf81"
+        }
+      ],
+      "addedAt": "2026-11-18T09:43:51.400Z",
+      "failedApi": [
+        "session.send: at most 20 attachments per message",
+        "session.send: at most 20 attachments per message"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "95d3425166e9f493e97f21b867af044ac74b7e80",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9256b2c11b9ae8238337be8217a457250bfc668e34bd554a2ee0c02756355c39"
+        }
+      ],
+      "addedAt": "2026-11-18T09:43:51.448Z",
+      "cmd": "verify/yv map run attachments --recipe too-many-files-keeps-the-draft",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "628d5da7cc6fd7829e9e06a5f59556ac2afbb5ef",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "965004c4d082f39aaad5df15f6c4988fe91110b7233836d8dbe1ecae64466db4"
+        },
+        {
+          "path": "p3-before-send-mobile.png",
+          "sha256": "fca03120745447fdbb8b0f9ca072650795c1bf906310b5f9565118160b6fd612"
+        },
+        {
+          "path": "p3-after-send-mobile.png",
+          "sha256": "fca03120745447fdbb8b0f9ca072650795c1bf906310b5f9565118160b6fd612"
+        },
+        {
+          "path": "p3-after-remove-mobile.png",
+          "sha256": "b096d7c18441601c47b2c1cad8ee19fef501bdb10e1d0d3808c6f6cede32f78b"
+        },
+        {
+          "path": "p3-before-send-desktop.png",
+          "sha256": "801638b43a8155e772cfda7532377e395bd0ef777a1444767e4a2408c4f6927a"
+        },
+        {
+          "path": "p3-after-send-desktop.png",
+          "sha256": "368b152fd903f129b90acfda9b26dd7608f4de9a6fc4a4b52684b66259c7030e"
+        },
+        {
+          "path": "p3-after-remove-desktop.png",
+          "sha256": "6b5371a347a5782f7b23dba9a8cb78b94e1e4dfdd501377712f7d8f03c514216"
+        }
+      ],
+      "addedAt": "2026-11-18T09:44:44.369Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "628d5da7cc6fd7829e9e06a5f59556ac2afbb5ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "5ddd467be87caf1b66b0aa98c9312414729e09a0ada39ec5333572e1647b4d9b"
+        }
+      ],
+      "addedAt": "2026-11-18T09:44:44.416Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "628d5da7cc6fd7829e9e06a5f59556ac2afbb5ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "afbfaa8a14d2d7684ee21254ebb1d335e6f522d848e21cfda964b5bb6e5aa8c7"
+        }
+      ],
+      "addedAt": "2026-11-18T09:45:40.329Z",
+      "cmd": "verify/yv design-check --base e298ae283e7d",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "628d5da7cc6fd7829e9e06a5f59556ac2afbb5ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-attachments.json",
+          "sha256": "a60afcddd487805d7e3ff0e0bc64e5901580d11c51969274591de623cf3fbd5b"
+        }
+      ],
+      "addedAt": "2026-11-18T09:45:40.414Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api",
+        "attachments/too-many-files-keeps-the-draft"
+      ]
+    }
+  ]
+}

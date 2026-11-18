@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "95d3425166e9f493e97f21b867af044ac74b7e80",
+    "short": "95d3425",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:43:31.586Z"
+  },
+  "dir": ".verify/evidence/attachment-count-cap-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 6413,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-count-cap-base/before-send-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-count-cap-base/after-send-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.send",
+          "message": "at most 20 attachments per message"
+        }
+      ],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 6384,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-count-cap-base/before-send-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-count-cap-base/after-send-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "session.send",
+          "message": "at most 20 attachments per message"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

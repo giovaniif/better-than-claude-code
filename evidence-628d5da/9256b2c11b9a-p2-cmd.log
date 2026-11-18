@@ -1,0 +1,45 @@
+$ verify/yv map run attachments --recipe too-many-files-keeps-the-draft
+# exit 1 after 27707 ms at 95d3425166e9f493e97f21b867af044ac74b7e80
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "attachments",
+      "at": "2026-11-18T09:44:19.151Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "too-many-files-keeps-the-draft",
+          "status": "fail",
+          "ms": 26849,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"expect\":\"css:.attachments-error\",\"text\":\"Too many files: 21. The limit is 20 per message.\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-43-53-191Z/fail-mobile-step3.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"expect\":\"css:.attachments-error\",\"text\":\"Too many files: 21. The limit is 20 per message.\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-43-53-191Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "T-many-10.txt 13 B\\n  - button \\\"Remove TEST-many-10.txt\\\"\\n  - text: TEST-many-11.txt 13 B\\n  - button \\\"Remove TEST-many-11.txt\\\"\\n  - text: TEST-many-12.txt 13 B\\n  - button \\\"Remove TEST-many-12.txt\\\"\\n  - text: TEST-many-13.txt 13 B\\n  - button \\\"Remove TEST-many-13.txt\\\"\\n  - text: TEST-many-14.txt 13 B\\n  - button \\\"Remove TEST-many-14.txt\\\"\\n  - text: TEST-many-15.txt 13 B\\n  - button \\\"Remove TEST-many-15.txt\\\"\\n  - text: TEST-many-16.txt 13 B\\n  - button \\\"Remove TEST-many-16.txt\\\"\\n  - text: TEST-many-17.txt 13 B\\n  - button \\\"Remove TEST-many-17.txt\\\"\\n  - text: TEST-many-18.txt 13 B\\n  - button \\\"Remove TEST-many-18.txt\\\"\\n  - text: TEST-many-19.txt 13 B\\n  - button \\\"Remove TEST-many-19.txt\\\"\\n  - text: TEST-many-20.txt 13 B\\n  - button \\\"Remove TEST-many-20.txt\\\"\\n  - text: TEST-many-21.txt 13 B\\n  - button \\\"Remove TEST-many-21.txt\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n    - text: TEST-twenty one files\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\"\\n  - paragraph: me@example.com\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - combobox \\\"Workspace view\\\":\\n    - option \\\"Changes\\\" [selected]\\n    - option \\\"Terminal\\\"\\n    - option \\\"Pull request\\\"\\n    - option \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - text: No changes in this folder.\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"expect\\\":\\\"css:.attachments-error\\\",\\\"text\\\":\\\"Too many files: 21. The limit is 20 per message.\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-43-53-191Z/fail-mobile-step3.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"expect\\\":\\\"css:.attachments-error\\\",\\\"text\\\":\\\"Too many files: 21. The limit is 20 per message.\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-43-53-191Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "attachments/too-many-files-keeps-the-draft",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
