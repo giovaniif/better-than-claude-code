@@ -1,0 +1,32 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-18T04:15:19.546Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "automatic-diagrams",
+          "status": "pass",
+          "ms": 9000
+        },
+        {
+          "label": "diagram-fallbacks",
+          "status": "pass",
+          "ms": 5830
+        },
+        {
+          "label": "safe-long-diagram-and-loading",
+          "status": "pass",
+          "ms": 7202
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
