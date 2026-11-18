@@ -11,7 +11,9 @@ and what to read back, then fenced `sh` blocks of `yv` commands; a block fails
 when any command exits non-zero), and **Gotchas**. `(manual: why)` marks a
 flow the CLI cannot drive. `Needs: VAR` marks a recipe that runs only when the
 variable is set. `Viewports:` says which viewports a recipe covers when it is
-not both.
+not both. A recipe never contains three backticks in a row, even inside a
+JSON string: the first one ends its `sh` block. Write them as `\u0060` in the
+JSON (a message with a fenced code block, for example).
 
 Data is synthetic: the seeded repositories, sessions and PR are all named
 `TEST-…`, the engines are the scripted fakes in `crates/yardd/tests/fake-codex`,
