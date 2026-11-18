@@ -207,7 +207,9 @@ pub fn next_after<Tz: TimeZone>(schedule: &Schedule, window: Option<&Window>, fr
         }
         let mut next = None;
         for (start, end) in window.spans(from, tz)? {
-            let (lo, hi) = (local_ms(start, tz)?, local_ms(end, tz)?);
+            let (Some(lo), Some(hi)) = (local_ms(start, tz), local_ms(end, tz)) else {
+                continue;
+            };
             let mut slot = start;
             while slot < end {
                 if let Some(ms) = local_ms(slot, tz) {

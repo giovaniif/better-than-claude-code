@@ -1858,9 +1858,12 @@ async fn automation_window_survives_partial_edits_and_null_clears_it() {
     for schedule in [json!({ "kind": "daily", "time": "09:00" }), json!({ "kind": "weekly", "day": 1, "time": "09:00" }), json!({ "kind": "manual" })] {
         assert!(save_automation(&mut c, json!({ "id": id, "schedule": schedule })).await.unwrap_err().contains("interval"));
     }
+    let before = chrono::Utc::now().timestamp_millis() as u64;
     let clear = save_automation(&mut c, json!({ "id": id, "window": null })).await.unwrap();
+    let after = chrono::Utc::now().timestamp_millis() as u64;
     assert!(clear["window"].is_null());
-    assert_ne!(clear["nextRun"], on["nextRun"], "clearing the window recomputes the schedule");
+    let next = clear["nextRun"].as_u64().unwrap();
+    assert!((before + 3_600_000..=after + 3_600_000).contains(&next), "clearing the window recomputes the ordinary interval");
 }
 
 #[tokio::test]
