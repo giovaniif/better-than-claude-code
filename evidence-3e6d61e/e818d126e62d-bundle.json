@@ -1,0 +1,189 @@
+{
+  "v": 1,
+  "claim": "Connectors at mobile width: the All filter tab wrapped onto a line of its own under the other three, where it read as a separate control",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "6433eee61b9ce7f61248829691f1631494b170be",
+  "head": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:57:12.131Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "027237fac73fce58f9a678ea8832e631c400b741",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "be83cdc2b8df28a031380f05f07c347436f21f7c811e118aeda25303fe8e9931"
+        },
+        {
+          "path": "p1-connectors-mobile.png",
+          "sha256": "e8361b879453c2bcd31688b17fa9435326342cf8a0c9ea05032e296d9cc7ae28"
+        },
+        {
+          "path": "p1-connectors-desktop.png",
+          "sha256": "306ab987652744f96478967ab288e25ef4ffd33e16edf1473a11ab287ffa74af"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:22.852Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "027237fac73fce58f9a678ea8832e631c400b741",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "61f5ddd4507c5bb27ae170536f9ad96551fc96cd6a1755d8d456c62b0d9dde19"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:22.903Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "bb174cd18073104f4d07443969e2f6725b56cd06aec3999cb428925dbefe8c10"
+        },
+        {
+          "path": "p3-connectors-desktop.png",
+          "sha256": "58c15b848be721fc3478e06f8cc8e7f3592e5bf23829303a4dc546d17c916854"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:37.380Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "c357546d3b5859354800e7037e58cedc1d8987ab2e762cdb0330d80d24608b4c"
+        },
+        {
+          "path": "p4-connectors-mobile.png",
+          "sha256": "6478f2114271542844ae762afaa1f2de5a977027bf083e8c481041c4addbce39"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:40.388Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "05dba5ca7583951bde0a3e314e050fe5a57100c1e80a2708b5d7ecd68e23f0cc"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:40.432Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "771fd537fa3813378f70d322517b6e95f1714c3b4b96f78723680f84358e5d75"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:40.627Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "7f6ecef24f15c54dda2ac10ae17c0abf357f34e40810901b88a37e7dd76e72d7"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:47.248Z",
+      "cmd": "verify/yv design-check --base 6433eee61b9c",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3e6d61ed063de8703eb59552b42a0cfa6926efac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-connectors.json",
+          "sha256": "e9f309335624960e2895fea523e7219e751addbd56d55a1726325c104947bdd5"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:47.337Z",
+      "cmd": "verify/yv map run connectors",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/connectors-list",
+        "connectors/focused-search-and-status",
+        "connectors/filters-stay-on-one-row",
+        "connectors/claude-sign-in",
+        "connectors/codex-sign-in-pasted",
+        "connectors/add-linear",
+        "connectors/codex-chart",
+        "connectors/claude-chart",
+        "connectors/large-catalog-stays-bounded"
+      ]
+    }
+  ]
+}

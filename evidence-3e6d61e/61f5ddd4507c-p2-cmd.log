@@ -1,0 +1,40 @@
+$ verify/yv map run connectors --recipe filters-stay-on-one-row
+# exit 1 after 6590 ms at 027237fac73fce58f9a678ea8832e631c400b741
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-18T01:57:29.489Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "filters-stay-on-one-row",
+          "status": "fail",
+          "ms": 5477,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"eval\":\"(() => { const group = document.querySelector(\\\".connector-filters\\\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\\\"button\\\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-57-24-282Z/fail-mobile-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "t working\\\": Not working 1\\n  - button \\\"All\\\": All 4\\n- searchbox \\\"Search connectors\\\"\\n- list:\\n  - listitem:\\n    - text: chart Your config widgets 3 tools Connected\\n    - button \\\"Remove chart\\\": Remove\\n- button \\\"Add connector\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(() => { const group = document.querySelector(\\\".connector-filters\\\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\\\"button\\\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 2203,\n      \"steps\": 4,\n      \"failed\": null,\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-57-24-282Z/filters-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(() => { const group = document.querySelector(\\\".connector-filters\\\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\\\"button\\\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"eval\\\":\\\"(() => { const group = document.querySelector(\\\\\\\".connector-filters\\\\\\\"); const box = group.getBoundingClientRect(); const tabs = [...group.querySelectorAll(\\\\\\\"button\\\\\\\")].map((b) => b.getBoundingClientRect()); return tabs.length === 4 && tabs.every((t) => t.top === tabs[0].top && t.left >= box.left && t.right <= box.right + 0.5); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-57-24-282Z/fail-mobile-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "connectors/filters-stay-on-one-row",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
