@@ -1,0 +1,296 @@
+{
+  "v": 1,
+  "claim": "An existing host UI opens on the phone but never acknowledges its connection, so setup times out and the host is not saved.",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916",
+  "base": "9b5e35f8af1a542b894d0648a7e0fa4d7c6f9c4c",
+  "head": "898eb4579143835022cc4adbffc97eb35f2c216b",
+  "changed": [
+    {
+      "status": "A",
+      "path": ".github/workflows/ios-app.yml"
+    },
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
+    {
+      "status": "M",
+      "path": "CLAUDE.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/mobile.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/mobile.rs"
+    },
+    {
+      "status": "M",
+      "path": "docker-compose.yml"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/IOS_BUILDS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/web.md"
+    },
+    {
+      "status": "A",
+      "path": "mobile/README.md"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/Assets.xcassets/AppIcon.appiconset/Contents.json"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/Assets.xcassets/Contents.json"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/ContentView.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/HostAddress.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/HostWebView.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/PrivacyInfo.xcprivacy"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/SpeechBridge.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/SwitchyardApp.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/Switchyard/bridge.js"
+    },
+    {
+      "status": "A",
+      "path": "mobile/SwitchyardTests/HostAddressTests.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/project.yml"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/icon.swift"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/prepare.sh"
+    },
+    {
+      "status": "A",
+      "path": "mobile/scripts/testflight.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/MobileSetup.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobile.test.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobile.ts"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/mobileBridge.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/notify.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/useVoice.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/mobile.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T00:52:51.694Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "6f7a736cb72ad086334a4287a2c2aa9a339c1548",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "43ad34afd75f2e9cab03bf01b1e1ae95042b5e6c46abe336596f5038260a83a3"
+        }
+      ],
+      "addedAt": "2026-11-18T00:53:19.891Z",
+      "cmd": "bun test ./ui/src/mobileBridge.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T00:53:20.092Z",
+      "text": "no-repro: The defect is a WKWebView handshake with an older host. The committed regression test replays the older same-origin hub snapshot and fails without the native connection acknowledgement; browser screenshots cannot show saved native host state on this Linux server."
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "ad2939555a9250e3aaafbb38108e17976a9d58c52fc71ca754ae3ea22b089f71"
+        }
+      ],
+      "addedAt": "2026-11-18T00:53:20.187Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "regression",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-map-mobile.json",
+          "sha256": "44cdb68f09d2deaffaee73a94811627d7becbf2afbffe76e22db6f2a6849df61"
+        }
+      ],
+      "addedAt": "2026-11-18T00:53:29.039Z",
+      "cmd": "verify/yv map run mobile",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/phone-workspace",
+        "mobile/successful-connection-removes-shortcuts"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "58766fe9b98621f8f890be8207de9e590a8eeae763f4b797c580f39077600361"
+        }
+      ],
+      "addedAt": "2026-11-18T00:55:00.656Z",
+      "cmd": "verify/yv design-check --base 9b5e35f8af1a",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "a5772df207c749bc47c42eb485c042b7e64b6d4464a9cefbe53dce844098b8f7"
+        },
+        {
+          "path": "p6-configured-session-mobile.png",
+          "sha256": "f5e06cf1687cf13fb0d52d380f307e1c7dd282a7277d50ece4810bf7111d6662"
+        },
+        {
+          "path": "p6-configured-session-desktop.png",
+          "sha256": "86d1e1546cdc96f5cbf1659cdfd9dacd2190b7e5a452bda124cb938e165b08a8"
+        }
+      ],
+      "addedAt": "2026-11-18T00:55:39.233Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "note",
+      "at": "898eb4579143835022cc4adbffc97eb35f2c216b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T00:55:39.331Z",
+      "text": "The head fix proof checks the shared mobile UI and persistent setup reminder in both viewports. The native older-host handshake itself is verified by the failing-first bridge regression, including foreign origins/ports, malformed frames and remote snapshots. Physical iPhone installation, speech permissions and audio remain unverified on this Linux server."
+    }
+  ]
+}

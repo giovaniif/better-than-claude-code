@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec257bb36",
+  "build": {
+    "sha": "898eb4579143835022cc4adbffc97eb35f2c216b",
+    "short": "898eb45",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:54:01.542Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916/.verify/drives/2026-11-18T00-54-22-760Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3872,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916/.verify/drives/2026-11-18T00-54-22-760Z/configured-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3194,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916/.verify/drives/2026-11-18T00-54-22-760Z/configured-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,36 @@
+$ bun test ./ui/src/mobileBridge.test.ts
+# exit 1 after 26 ms at 6f7a736cb72ad086334a4287a2c2aa9a339c1548
+
+bun test v1.4.4 (38afee6c8)
+
+
+ui/src/mobileBridge.test.ts:
+22 |   }
+23 |   const socket = new window.WebSocket("wss://yard.test/ws");
+24 |   for (const data of ["bad json", "null", JSON.stringify({ op: "host.snapshot", sessions: [] }), JSON.stringify({ op: "snapshot" })]) socket.message(data);
+25 |   expect(sent).toEqual([]);
+26 |   socket.message(JSON.stringify({ op: "snapshot", sessions: [] }));
+27 |   expect(sent).toEqual([{ op: "connected" }]);
+                    ^
+error: expect(received).toEqual(expected)
+
+- [
+-   {
+-     "op": "connected",
+-   },
+- ]
++ []
+
+- Expected  - 5
++ Received  + 1
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/yard-lets-build-the-mobile-app-3916/ui/src/mobileBridge.test.ts:27:16)
+(fail) older hosts acknowledge a real hub snapshot without needing updated host JavaScript [4.18ms]
+(pass) native recognition gives the shared voice hook interim and final results and isolates generations [1.91ms]
+(pass) native speech completion is matched to its utterance and cancel drops stale callbacks [1.35ms]
+(pass) native notification permissions resolve only for their request [1.00ms]
+
+ 3 pass
+ 1 fail
+ 13 expect() calls
+Ran 4 tests across 1 file. [22.00ms]
