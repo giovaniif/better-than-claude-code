@@ -1,0 +1,208 @@
+{
+  "v": 1,
+  "claim": "Map maintenance: new Sessions page Active/All/Archived tabs recipe, two drift fixes (native-app-menu sidebar list, attach-terminal-rows via Workspace view select), README index rows for five unlisted areas, a thread Gotcha. No product code.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d",
+  "base": "cd979a6a1bf203ff109b502804dc5325f2281abf",
+  "head": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T07:50:11.389Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T07:50:11.439Z",
+      "text": "no-repro: map-only PR, no product behaviour changes; the drift is in recipes, shown by the head runs of the fixed recipes"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T07:50:11.473Z",
+      "text": "no-failing-test: map-only PR; negative controls instead: with sid_think not archived the Active count:0 step fails, and on the Active tab the every-row-Archived eval fails, at both viewports"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "626fd6ef12f3bfa7a44922fa1bdbdb215b0a4504e09072f93cc77ef89c742ce5"
+        },
+        {
+          "path": "p3-all-sessions-mobile.png",
+          "sha256": "6b08906340752be1c1dcf59423f4d85e4be0663cc09ee29dc6aa6e489a1ad00b"
+        },
+        {
+          "path": "p3-archived-only-mobile.png",
+          "sha256": "4bfbdd07c12cc7e96cb0e1952f187c912fc94d521986da754fe7b1651dc6def5"
+        },
+        {
+          "path": "p3-all-sessions-desktop.png",
+          "sha256": "f6bbbc7f2c3a051cce4c940b46dffdf318c4b4c6404d53a2b21f3660aa44bb01"
+        },
+        {
+          "path": "p3-archived-only-desktop.png",
+          "sha256": "7e45d65cf7dd20d764d593d95ecb202804fc60569fa36e666fc6c0538d6d1dab"
+        },
+        {
+          "path": "p3-2-all-sessions-desktop.png",
+          "sha256": "f6bbbc7f2c3a051cce4c940b46dffdf318c4b4c6404d53a2b21f3660aa44bb01"
+        },
+        {
+          "path": "p3-2-all-sessions-mobile.png",
+          "sha256": "6b08906340752be1c1dcf59423f4d85e4be0663cc09ee29dc6aa6e489a1ad00b"
+        },
+        {
+          "path": "p3-2-archived-only-desktop.png",
+          "sha256": "7e45d65cf7dd20d764d593d95ecb202804fc60569fa36e666fc6c0538d6d1dab"
+        },
+        {
+          "path": "p3-2-archived-only-mobile.png",
+          "sha256": "4bfbdd07c12cc7e96cb0e1952f187c912fc94d521986da754fe7b1651dc6def5"
+        }
+      ],
+      "addedAt": "2026-11-18T07:50:11.511Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "d500b852cbae84d19b41bc8a605be14f4b2e7ac37da1f51e4470dc6ab62e5222"
+        }
+      ],
+      "addedAt": "2026-11-18T07:50:11.558Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "0e4c54902635252227e61b6dec4f7ac015f5b5434481cccda1e7b70ba51789a9"
+        }
+      ],
+      "addedAt": "2026-11-18T07:51:45.345Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "a2a5b860d7329379aa7914ac430df20d545933c60874894dede85b943b0f31b0"
+        }
+      ],
+      "addedAt": "2026-11-18T07:52:24.209Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "32a7d2624d1efa9bf876de76fe02829be1eaecf26df3336ab0cd7990820553aa"
+        }
+      ],
+      "addedAt": "2026-11-18T07:53:44.808Z",
+      "cmd": "verify/yv selftest --smoke",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "31cda68b0c6dcb4dbaa92b4126b181c8fba19f6ebd363e4ee4263f275bebae1c"
+        }
+      ],
+      "addedAt": "2026-11-18T07:54:05.683Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "1e0f30dffe595c06056e5697d5870c6580526bbd2c7b9710eef75a2072c1bda0"
+        }
+      ],
+      "addedAt": "2026-11-18T07:54:05.893Z",
+      "cmd": "verify/yv design-check",
+      "exit": 0
+    }
+  ]
+}

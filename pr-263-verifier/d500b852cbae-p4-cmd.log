@@ -1,0 +1,91 @@
+$ verify/yv map run focused-pages
+# exit 0 after 93740 ms at 3b1eb6be8962c18d3018c32d9966ce120414009c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T07:51:45.293Z",
+      "counts": {
+        "pass": 14
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selected-host-tabs",
+          "status": "pass",
+          "ms": 5532
+        },
+        {
+          "label": "compact-usage-popover",
+          "status": "pass",
+          "ms": 4949
+        },
+        {
+          "label": "usage-row-lines-up-with-host-rows",
+          "status": "pass",
+          "ms": 5477
+        },
+        {
+          "label": "subscriptions-page",
+          "status": "pass",
+          "ms": 6838
+        },
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 4854
+        },
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 11049
+        },
+        {
+          "label": "sessions-search-and-archive",
+          "status": "pass",
+          "ms": 7874
+        },
+        {
+          "label": "sessions-visibility-tabs",
+          "status": "pass",
+          "ms": 6856
+        },
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 4734
+        },
+        {
+          "label": "host-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4417
+        },
+        {
+          "label": "session-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4664
+        },
+        {
+          "label": "offline-host-and-selection-fallback",
+          "status": "pass",
+          "ms": 8799
+        },
+        {
+          "label": "workspace-widths-and-views",
+          "status": "pass",
+          "ms": 9385
+        },
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 7278
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

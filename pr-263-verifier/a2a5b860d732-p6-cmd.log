@@ -1,0 +1,82 @@
+$ verify/yv map run terminal
+# exit 0 after 80558 ms at 3b1eb6be8962c18d3018c32d9966ce120414009c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-18T07:53:44.763Z",
+      "counts": {
+        "pass": 11,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "runs-command",
+          "status": "pass",
+          "ms": 4936
+        },
+        {
+          "label": "keys-arrive-in-order",
+          "status": "pass",
+          "ms": 6072
+        },
+        {
+          "label": "second-terminal",
+          "status": "pass",
+          "ms": 4450
+        },
+        {
+          "label": "scrollback-after-reload",
+          "status": "pass",
+          "ms": 7045
+        },
+        {
+          "label": "scrollback-keeps-wrapped-lines",
+          "status": "pass",
+          "ms": 6188
+        },
+        {
+          "label": "scrollback-matches-after-reloads",
+          "status": "pass",
+          "ms": 17746
+        },
+        {
+          "label": "last-terminal-closed-offers-a-new-one",
+          "status": "pass",
+          "ms": 5448
+        },
+        {
+          "label": "exited-shell-survives-reload",
+          "status": "pass",
+          "ms": 9424
+        },
+        {
+          "label": "close-terminal",
+          "status": "pass",
+          "ms": 5916
+        },
+        {
+          "label": "folder-gone",
+          "status": "pass",
+          "ms": 4120
+        },
+        {
+          "label": "attach-terminal-rows",
+          "status": "pass",
+          "ms": 8346
+        },
+        {
+          "label": "attach-terminal-selection",
+          "status": "manual",
+          "why": "needs a mouse selection inside xterm"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

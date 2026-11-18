@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "3b1eb6be8962c18d3018c32d9966ce120414009c",
+    "short": "3b1eb6b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:42:06.298Z"
+  },
+  "dir": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d/.verify/drives/2026-11-18T07-42-59-658Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2146,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d/.verify/drives/2026-11-18T07-42-59-658Z/all-sessions-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d/.verify/drives/2026-11-18T07-42-59-658Z/archived-only-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "Active"
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "All sessions"
+        },
+        {
+          "step": 13,
+          "eval": "[...document.querySelectorAll(\".focused-session-row .focused-session-state\")].every((el) => el.textContent.trim() === \"Archived\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2542,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d/.verify/drives/2026-11-18T07-42-59-658Z/all-sessions-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-208d/.verify/drives/2026-11-18T07-42-59-658Z/archived-only-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "Active"
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "All sessions"
+        },
+        {
+          "step": 13,
+          "eval": "[...document.querySelectorAll(\".focused-session-row .focused-session-state\")].every((el) => el.textContent.trim() === \"Archived\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
