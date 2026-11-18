@@ -1,0 +1,32 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "launch-defaults",
+      "at": "2026-11-18T05:52:55.135Z",
+      "counts": {
+        "pass": 3
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "independent-defaults",
+          "status": "pass",
+          "ms": 28256
+        },
+        {
+          "label": "reset-defaults",
+          "status": "pass",
+          "ms": 9286
+        },
+        {
+          "label": "removed-default-host-keeps-the-model",
+          "status": "pass",
+          "ms": 10459
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

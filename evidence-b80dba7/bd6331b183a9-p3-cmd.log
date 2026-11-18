@@ -1,0 +1,45 @@
+$ verify/yv map run launch-defaults --recipe removed-default-host-keeps-the-model
+# exit 1 after 27779 ms at 919c01b4a17d799c558955cb071b817f74bf2ce8
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "launch-defaults",
+      "at": "2026-11-18T05:47:48.384Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "removed-default-host-keeps-the-model",
+          "status": "fail",
+          "ms": 26472,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"expect\":\"role:button:Model Fake Deep\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73/.verify/drives/2026-11-18T05-47-22-492Z/fail-mobile-step3.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"expect\":\"role:button:Model Fake Deep\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73/.verify/drives/2026-11-18T05-47-22-492Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "rs\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 8% · 69%\\\"\\n  - button \\\"TEST-default-host 7% · 69%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- 'button \\\"Account: Claude, Default\\\"': Claude · Default\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- paragraph: me@example.com\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"localStorage.setItem(\\\"yard.defaults.sessions\\\",JSON.stringify({host:\\\"h1a1ed3208d7e\\\",choice:{engine:\\\"codex\\\",model:\\\"fake-deep\\\",effort:\\\"xhigh\\\"}})); true\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"expect\\\":\\\"role:button:Model Fake Deep\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73/.verify/drives/2026-11-18T05-47-22-492Z/fail-mobile-step3.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"expect\\\":\\\"role:button:Model Fake Deep\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73/.verify/drives/2026-11-18T05-47-22-492Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "launch-defaults/removed-default-host-keeps-the-model",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b80dba7253aac2ced8ddb3c5a1e42b9db8d13778",
+    "short": "b80dba7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T05:47:52.736Z"
+  },
+  "dir": ".verify/evidence/removed-default-host-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3966,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-head/new-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/removed-default-host-head/settings-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3588a92\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2913,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-head/new-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/removed-default-host-head/settings-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3588a92\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
