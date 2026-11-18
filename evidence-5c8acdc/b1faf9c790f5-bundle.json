@@ -1,0 +1,220 @@
+{
+  "v": 1,
+  "claim": "Hourly automations cannot be limited to overnight hours without starting daytime sessions",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4",
+  "base": "c63f940862eac05ba501977888331044044b7132",
+  "head": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+  "changed": [
+    {
+      "status": "M",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/automations.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/automations.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/loops.json"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/loop.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T13:39:59.940Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "2af77a89053f937520d5ab711b0adf5726f1c46c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T13:39:59.990Z",
+      "text": "no-repro: New optional scheduler capability; the API regression proves the existing daemon silently drops the requested active window."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "2af77a89053f937520d5ab711b0adf5726f1c46c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ee08348587fac213b892aa001bacecb1a8af038f29292d627cafb3f2cd2ebfdc"
+        }
+      ],
+      "addedAt": "2026-11-18T13:40:00.034Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd automation_window_survives_partial_edits_and_null_clears_it -- --exact",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "c4e5787f71934f734411d4d16e0cbce2d45d0e952119b909421d88be95cce0d9"
+        }
+      ],
+      "addedAt": "2026-11-18T13:42:51.172Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "151532657298b25010142ee153d3ee60e6a7941293a99704c2dd4f38a5a48275"
+        },
+        {
+          "path": "p4-window-invalid-desktop.png",
+          "sha256": "da6cac500a2da86b8c2885ab06182ebea57de70b7bcc211da7894ca5285a9137"
+        },
+        {
+          "path": "p4-window-form-desktop.png",
+          "sha256": "3e8942fa4e751d666b84ffb244ceecfd51030d1364f0e1fab084f6b3e6024723"
+        },
+        {
+          "path": "p4-window-card-desktop.png",
+          "sha256": "b910c662a64e456e6d6fb1d15c638749c0e3371a64768277946a3213e394840e"
+        }
+      ],
+      "addedAt": "2026-11-18T13:45:05.811Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "793b226b8de4a0a80d1fa25cf5ac724e2d745d0968871129df6044eb60635440"
+        }
+      ],
+      "addedAt": "2026-11-18T13:45:05.854Z",
+      "cmd": "verify/yv design-check --base c63f940862ea",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "1d44e88f5de733717c9016c20e3772faab7163f8b9f10b4f1d64d14c47ab7f08"
+        },
+        {
+          "path": "p6-window-form-mobile.png",
+          "sha256": "3d22d8eb1b51f314c0d0d746f014c97ed13d68b1071fffc266f72de76c3cdefa"
+        },
+        {
+          "path": "p6-window-card-mobile.png",
+          "sha256": "2b54ce29dfeeea2a44c48908bbb09ac982493a286f016eca69ac60b866c4d40f"
+        }
+      ],
+      "addedAt": "2026-11-18T13:45:12.637Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-automations.json",
+          "sha256": "c5507144639560650704ae18b7abbdd0be356942c1b92561c18045b90aa1edf1"
+        }
+      ],
+      "addedAt": "2026-11-18T13:46:49.657Z",
+      "cmd": "verify/yv map run automations",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "automations/list-shows-schedule-next-and-last",
+        "automations/create-from-the-form",
+        "automations/run-now-archives-and-lists-the-run",
+        "automations/pinning-a-run-brings-it-back",
+        "automations/run-time-is-how-long-it-ran",
+        "automations/grid-of-cards-and-the-run-strip",
+        "automations/edit-changes-the-schedule",
+        "automations/edit-keeps-an-unlisted-model",
+        "automations/disable-stops-the-schedule",
+        "automations/reload-and-back-keep-the-page",
+        "automations/delete-removes-the-automation-and-frees-its-runs",
+        "automations/claude-usage-limit-skips",
+        "automations/run-now-failure-says-why-once",
+        "automations/interval-and-weekly-schedules-from-the-form",
+        "automations/a-working-run-dots-the-automations-button",
+        "automations/manual-run-with-its-own-prompt",
+        "automations/interval-active-window"
+      ]
+    }
+  ]
+}
