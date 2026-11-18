@@ -24,7 +24,7 @@ Viewports: desktop
 The edit session lists src/lib.rs with +1 −0 and the added line.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"expect":"label:Workspace view","value":"changes"},{"expect":{"role":"region","name":"Workspace"},"text":"src/lib.rs"},{"expect":{"role":"region","name":"Workspace"},"text":"+1 −0"},{"expect":{"role":"region","name":"Workspace"},"text":"fn added() {}"},{"shot":"changes"}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"expect":"css:.workspace-tabs button[aria-pressed=true]","text":"Changes"},{"expect":{"role":"region","name":"Workspace"},"text":"src/lib.rs"},{"expect":{"role":"region","name":"Workspace"},"text":"+1 −0"},{"expect":{"role":"region","name":"Workspace"},"text":"fn added() {}"},{"shot":"changes"}]'
 ```
 
 ### empty-folder

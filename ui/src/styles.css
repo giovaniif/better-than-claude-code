@@ -1108,11 +1108,13 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 
 /* Follow the resized pane independently of window width. */
 .pane { container-type: inline-size; container-name: workspace; }
-.workspace-picker { display: none; min-width: 0; max-width: 100%; height: 32px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; }
 .workspace-tabs .tab { flex: none; white-space: nowrap; }
+.workspace-pr-short { display: none; }
 @container workspace (max-width: 440px) {
-  .workspace-tabs > .tab { display: none; }
-  .workspace-tabs .workspace-picker { display: block; align-self: center; }
+  .pane .workspace-tabs { flex-wrap: nowrap; gap: 2px; padding-inline: 6px; }
+  .workspace-tabs .tab { padding-inline: 4px; }
+  .workspace-pr-full { display: none; }
+  .workspace-pr-short { display: inline; }
 }
 @media (max-width: 700px) {
   .focused-page { padding: 20px 16px; gap: 20px; }
@@ -1131,6 +1133,3 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
   .subscription-row { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 20px 0; }
   .subscription-meters { gap: 16px; }
 }
-
-.composer-identity { overflow-wrap: anywhere; padding: 0 6px; }
-.dock > .composer-identity { max-width: 680px; margin: 6px auto 0; }

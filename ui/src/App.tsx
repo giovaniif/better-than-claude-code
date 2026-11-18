@@ -1095,12 +1095,6 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
   );
 }
 
-function ComposerIdentity({ state, host, engine, account }: { state: State; host: string; engine: Engine; account: string }) {
-  const engines = state.engines[host];
-  const login = account === DEFAULT_ACCOUNT ? engines?.[engine] : engines?.accounts?.[account];
-  return login?.account ? <p className="composer-identity muted small">{login.account}</p> : null;
-}
-
 function AccountPicker({
   state,
   host,
@@ -1869,6 +1863,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // A configured host stays selected while reconnecting. Never silently send
   // a remote task to another machine because its connection briefly dropped.
   const target = host === "local" || !state.connected || state.hosts.some((h) => h.id === host) ? host : "local";
+  const online = hostOnline(state, target);
   const models = modelsOn(state, target);
   const home = homeOn(state, target);
   const workspace = state.workspace[target] || home;
@@ -1945,9 +1940,9 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // whether this folder is one and what it can start from.
   const branchList = state.branches[branchKey(target, cwd)];
   useEffect(() => {
-    if (!cwd || !state.connected) return;
+    if (!cwd || !online) return;
     actions.loadBranches(cwd, target);
-  }, [cwd, target, state.connected]);
+  }, [cwd, target, online]);
   useEffect(() => setBase(""), [cwd, target]);
   const isRepo = !!branchList?.current;
   // A remembered folder can be deleted since; Send would only be refused.
@@ -1988,14 +1983,13 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          busy={pending || !state.connected || !hostOnline(state, target) || !choice.model || !cwd || gone}
+          busy={pending || !online || !choice.model || !cwd || gone}
         >
           <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts", host: target, tab: "engines" })} />
           <ModelPicker models={models} value={choice} engines={[choice.engine]} onChange={choose} />
           <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
-        <ComposerIdentity state={state} host={target} engine={choice.engine} account={picks[choice.engine]} />
         <div className="new-chips">
           <HostPicker state={state} value={target} onChange={setHost} onAddHost={() => actions.go({ page: "hosts" })} />
           <FolderPicker
@@ -2536,7 +2530,6 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
-          <ComposerIdentity state={state} host={host} engine={meta.engine} account={accountOf(meta)} />
         </div>
       </main>
       <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
@@ -3077,14 +3070,6 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         onWidth={setPaneW}
       />
       <header className="bar tabs workspace-tabs">
-        <select className="workspace-picker" aria-label="Workspace view" value={tab} onChange={(e) => {
-          const next = e.target.value as typeof tab;
-          setTab(next);
-          if (next === "terminal") setTerminalUsed(true);
-          if (next === "pr") setPrUsed(true);
-        }}>
-          <option value="changes">Changes</option><option value="terminal">Terminal</option><option value="pr">Pull request</option><option value="procs">Processes</option>
-        </select>
         <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={props.onClose}><Icon d={CLOSE} /></button>
         <button className={`tab ${tab === "changes" ? "active" : ""}`} aria-pressed={tab === "changes"} onClick={() => setTab("changes")}>
           Changes
@@ -3102,12 +3087,14 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         <button
           className={`tab ${tab === "pr" ? "active" : ""}`}
           aria-pressed={tab === "pr"}
+          aria-label="Pull request"
           onClick={() => {
             setTab("pr");
             setPrUsed(true);
           }}
         >
-          Pull request
+          <span className="workspace-pr-full">Pull request</span>
+          <span className="workspace-pr-short">PR</span>
         </button>
         <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>
           Processes

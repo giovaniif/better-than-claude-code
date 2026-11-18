@@ -35,7 +35,7 @@ All workspace tabs can be reached and the conversation can be reopened without
 losing its composer. The terminal starts only when opened.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-draft on phone"},{"click":"role:button:Workspace"},{"expect":"role:region:Workspace"},{"expect":"role:button:Changes"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm"},{"select":"label:Workspace view","value":"pr"},{"select":"label:Workspace view","value":"procs"},{"expect":"role:button:Refresh processes"},{"click":"role:button:Back to conversation"},{"expect":"label:Message","value":"TEST-draft on phone"},{"shot":"conversation-restored"}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-draft on phone"},{"click":"role:button:Workspace"},{"expect":"role:region:Workspace"},{"expect":"role:button:Changes"},{"click":"role:button:Terminal"},{"expect":"css:.xterm"},{"click":"role:button:Pull request"},{"click":"role:button:Processes"},{"expect":"role:button:Refresh processes"},{"click":"role:button:Back to conversation"},{"expect":"label:Message","value":"TEST-draft on phone"},{"shot":"conversation-restored"}]'
 ```
 
 ### workspace-button-text-centered
