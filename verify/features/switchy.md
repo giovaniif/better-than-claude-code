@@ -52,6 +52,17 @@ yv api '{"op":"host.remove","hostId":"{{scope_host}}"}'
 yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.composer-chips .chip","text":"All hosts"},{"fill":"label:Message","value":"TEST-after the host went away"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-after the host went away"},"text":"This is a scripted Switchy answer."},{"expect":"css:.assistant-notice","count":0},{"shot":"scope-after-removal"}]'
 ```
 
+### refusal-notice-is-red
+Viewports: both
+A question yardd refuses (here one over 8,000 bytes) is not sent, and the
+reason under the composer is red like every other error, not grey like the
+disclaimer below it. (`.assistant-notice` used to override `.bad` with the
+muted colour.) The refusal is the point, so the run allows that failed call.
+
+```sh
+yv drive switchy --allow-errors --steps '[{"expect":"role:heading:Switchy"},{"eval":"(() => { const box = document.querySelector(\"textarea\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \"value\").set; set.call(box, \"TEST-too long \" + \"x\".repeat(8001)); box.dispatchEvent(new Event(\"input\", { bubbles: true })); return true; })()","equals":true},{"click":"role:button:Send"},{"expect":"css:.assistant-notice","text":"at most 8,000 bytes"},{"eval":"(() => { const probe = document.createElement(\"span\"); probe.className = \"bad\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\".assistant-notice\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()","equals":true},{"shot":"refusal-notice"}]'
+```
+
 ### shared-composer
 Viewports: both
 Switchy uses the session composer: one-line auto-growing input, the same
