@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+    "short": "8adef58",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T10:04:52.062Z"
+  },
+  "dir": ".verify/evidence/attachment-row-scrolls-r2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4875,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/twenty-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/after-remove-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/sent-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":797.609375,\"vh\":844,\"composer\":298}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 5994,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/twenty-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/after-remove-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-r2-head/sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":845.609375,\"vh\":900,\"composer\":257}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

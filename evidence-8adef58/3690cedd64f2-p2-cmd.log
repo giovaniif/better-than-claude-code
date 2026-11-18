@@ -1,0 +1,40 @@
+$ verify/yv map run attachments --recipe many-files-keep-send-on-screen
+# exit 1 after 8252 ms at 457d526f1bf8cb3a0c8ec9bb4a0677e04c457fc6
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "attachments",
+      "at": "2026-11-18T10:04:46.946Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "many-files-keep-send-on-screen",
+          "status": "fail",
+          "ms": 7386,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"expect\":{\"role\":\"button\",\"name\":\"Send\"},\"inViewport\":true}: expected {\"role\":\"button\",\"name\":\"Send\"} inside the 390x844 viewport, box {\"x\":333,\"y\":894,\"width\":32,\"height\":32}",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T10-04-40-420Z/fail-mobile-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": " B\\n  - button \\\"Remove TEST-many-04.txt\\\"\\n  - text: TEST-many-05.txt 13 B\\n  - button \\\"Remove TEST-many-05.txt\\\"\\n  - text: TEST-many-06.txt 13 B\\n  - button \\\"Remove TEST-many-06.txt\\\"\\n  - text: TEST-many-07.txt 13 B\\n  - button \\\"Remove TEST-many-07.txt\\\"\\n  - text: TEST-many-08.txt 13 B\\n  - button \\\"Remove TEST-many-08.txt\\\"\\n  - text: TEST-many-09.txt 13 B\\n  - button \\\"Remove TEST-many-09.txt\\\"\\n  - text: TEST-many-10.txt 13 B\\n  - button \\\"Remove TEST-many-10.txt\\\"\\n  - text: TEST-many-11.txt 13 B\\n  - button \\\"Remove TEST-many-11.txt\\\"\\n  - text: TEST-many-12.txt 13 B\\n  - button \\\"Remove TEST-many-12.txt\\\"\\n  - text: TEST-many-13.txt 13 B\\n  - button \\\"Remove TEST-many-13.txt\\\"\\n  - text: TEST-many-14.txt 13 B\\n  - button \\\"Remove TEST-many-14.txt\\\"\\n  - text: TEST-many-15.txt 13 B\\n  - button \\\"Remove TEST-many-15.txt\\\"\\n  - text: TEST-many-16.txt 13 B\\n  - button \\\"Remove TEST-many-16.txt\\\"\\n  - text: TEST-many-17.txt 13 B\\n  - button \\\"Remove TEST-many-17.txt\\\"\\n  - text: TEST-many-18.txt 13 B\\n  - button \\\"Remove TEST-many-18.txt\\\"\\n  - text: TEST-many-19.txt 13 B\\n  - button \\\"Remove TEST-many-19.txt\\\"\\n  - text: TEST-many-20.txt 13 B\\n  - button \\\"Remove TEST-many-20.txt\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n    - text: TEST-twenty files\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\"\\n  - paragraph: me@example.com\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 3610,\n      \"steps\": 7,\n      \"failed\": null,\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"expect\\\":{\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Send\\\"},\\\"inViewport\\\":true}: expected {\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"Send\\\"} inside the 390x844 viewport, box {\\\"x\\\":333,\\\"y\\\":894,\\\"width\\\":32,\\\"height\\\":32}\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T10-04-40-420Z/fail-mobile-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "attachments/many-files-keep-send-on-screen",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

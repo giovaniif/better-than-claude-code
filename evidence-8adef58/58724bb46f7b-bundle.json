@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "claim": "At phone width, attaching many files (twenty is allowed) stacks one chip per row, so the composer grows taller than the screen: the session header scrolls off the top and Send sits below the fold. The chip row now caps its height and scrolls.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3",
+  "base": "73c5af0b182ad2de6f6899a9b4d9d99675996849",
+  "head": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T10:04:24.731Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "457d526f1bf8cb3a0c8ec9bb4a0677e04c457fc6",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6b819da7fadcb6786a0ec5bf21ecb300b821e6188403e4e29cfd5f76a0a300bf"
+        },
+        {
+          "path": "p1-twenty-mobile.png",
+          "sha256": "75f290933435f45320bd5b9027c0f9712306ca6ae8f195fb601dc6c4a59971d0"
+        },
+        {
+          "path": "p1-twenty-desktop.png",
+          "sha256": "973445522651f7fa58e8d293a4ddc1e06bc746f8abab9f96f312db71d90808df"
+        }
+      ],
+      "addedAt": "2026-11-18T10:04:38.652Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "457d526f1bf8cb3a0c8ec9bb4a0677e04c457fc6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "3690cedd64f211bb619ae839a02f5bcf8fcf061f83a70950952c4cc5d34647a3"
+        }
+      ],
+      "addedAt": "2026-11-18T10:04:38.698Z",
+      "cmd": "verify/yv map run attachments --recipe many-files-keep-send-on-screen",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "fef053bf5b6e53699a4488431265977ff98800d3ad5b655a3cac4174515198b6"
+        },
+        {
+          "path": "p3-twenty-mobile.png",
+          "sha256": "ac129b356ecd8950eea3088698e1675472028a7eddfe033860c81eece761da53"
+        },
+        {
+          "path": "p3-after-remove-mobile.png",
+          "sha256": "d0eaf9ad0c7475bf6dadd6693a709e5328db3856ddb551aae8cb5db6cd54a683"
+        },
+        {
+          "path": "p3-sent-mobile.png",
+          "sha256": "6ffac37259b6cb0e898dba541028a1d7460bde830ac0b875fabbe272768afa39"
+        },
+        {
+          "path": "p3-twenty-desktop.png",
+          "sha256": "3ffa7c32f2ea84624b6892320924e7878d77f9c5434351fcd9ff5e9a70c90673"
+        },
+        {
+          "path": "p3-after-remove-desktop.png",
+          "sha256": "8ced83292ce265164847358b13de5b965ce2eb350bea51064ebb9070fc817527"
+        },
+        {
+          "path": "p3-sent-desktop.png",
+          "sha256": "237e825acdfde4832cb71d116cfbf046c9aea4d642c82792d2646d57b9bc42d5"
+        }
+      ],
+      "addedAt": "2026-11-18T10:05:03.755Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "1cffc39365f449d106ebd9b33c5e8ac313ca9101bc7cff1fa8efa1d49146b0a3"
+        }
+      ],
+      "addedAt": "2026-11-18T10:05:03.804Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "260c12419dc81554dbf516e31c1d16bd9e2eaeb940768802795519de221878bd"
+        }
+      ],
+      "addedAt": "2026-11-18T10:05:52.783Z",
+      "cmd": "verify/yv design-check --base 73c5af0b182a",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "8adef58cb77d895bd91097a6eaf1efef571da70a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-attachments.json",
+          "sha256": "23877f36adbe597244714df09bb65dffbd629ce39880bd66bbb83479cc8e4281"
+        }
+      ],
+      "addedAt": "2026-11-18T10:05:52.866Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api",
+        "attachments/too-many-files-keeps-the-draft",
+        "attachments/many-files-keep-send-on-screen"
+      ]
+    }
+  ]
+}
