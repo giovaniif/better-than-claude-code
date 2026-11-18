@@ -96,5 +96,15 @@ yv drive 'new' --viewport desktop --steps '[{"click":"css:.account-trigger"},{"e
 yv api '{"op":"account.remove","id":"{{work_acct}}"}' --wait '{"op":"accounts"}'
 ```
 
+### subscriptions-note-names-every-silent-engine
+Viewports: both
+The note under the meters names every engine that reports no plan limits:
+OpenCode, Grok and Gemini. It named only OpenCode and Grok after Gemini was
+added (#226), as if Gemini's limits were shown above.
+
+```sh
+yv drive 'subscriptions' --steps '[{"expect":"role:heading:Subscriptions"},{"expect":"css:.subscription-note","text":"OpenCode, Grok and Gemini don\u0027t report subscription limits."},{"shot":"subscriptions-note"}]'
+```
+
 ## Gotchas
 - The 5-hour and week limits come from the engines (Claude's `rate_limit_event` during a turn and its usage report, read without a turn at start, every 10 minutes and when an account is added or logs in; Codex's `account/rateLimits`). A yardd started with `YARD_CLAUDE_USAGE_EVERY_MS=0` (the daemon tests) shows no Claude meters until a session has run (later restarts keep the last ones, from `usage.json`).
