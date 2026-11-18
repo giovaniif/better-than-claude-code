@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "a3dcb2391ee5ac9f2863a96b147ed0753f48fd5d",
+    "short": "a3dcb23",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:48:57.048Z"
+  },
+  "dir": ".verify/evidence/attachment-row-scrolls-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3504,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-base/twenty-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":926,\"vh\":844,\"composer\":1132}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3157,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-base/twenty-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":845.609375,\"vh\":900,\"composer\":441}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

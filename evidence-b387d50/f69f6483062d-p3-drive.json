@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "b387d50fdde12a2ee5628eccacf96a64c5b56992",
+    "short": "b387d50",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:49:17.328Z"
+  },
+  "dir": ".verify/evidence/attachment-row-scrolls-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5921,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-head/twenty-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-head/after-remove-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/attachment-row-scrolls-head/sent-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":797.609375,\"vh\":844,\"composer\":298}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 5334,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-head/twenty-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-head/after-remove-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/attachment-row-scrolls-head/sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(()=>{const s=document.querySelector('button.send').getBoundingClientRect();return JSON.stringify({sendBottom:s.bottom,vh:innerHeight,composer:document.querySelector('.composer').getBoundingClientRect().height})})()",
+          "value": "{\"sendBottom\":845.609375,\"vh\":900,\"composer\":257}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
