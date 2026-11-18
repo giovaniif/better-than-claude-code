@@ -13,7 +13,7 @@ import { size, stateText } from "./hosts";
 import { SettingsPage } from "./SettingsPage";
 import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, DEFAULT_ACCOUNT } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
-import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
+import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge, tooMany } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { PrPane } from "./PrPane";
 import { PeekScope, PrLink } from "./PrHoverCard";
@@ -1516,8 +1516,9 @@ export function Composer(props: {
   useEffect(() => () => !draftKey && live.current.forEach((f) => f.preview && URL.revokeObjectURL(f.preview)), []);
 
   const failed = files.some((f) => f.state === "error");
+  const crowded = tooMany(files.length);
   // Quotes alone can go, like files alone: "this" with the part pointed at.
-  const canSend = (text.trim() !== "" || quotes.length > 0 || snippets.length > 0 || files.length > 0) && !failed && !props.busy && !sending;
+  const canSend = (text.trim() !== "" || quotes.length > 0 || snippets.length > 0 || files.length > 0) && !failed && !crowded && !props.busy && !sending;
   const submit = async () => {
     const value = withQuotes(
       quotes.map((q) => q.text),
@@ -1608,6 +1609,11 @@ export function Composer(props: {
           {files.map((f) => (
             <PendingChip key={f.key} file={f} onRemove={() => removeFile(f.key)} />
           ))}
+        </div>
+      )}
+      {crowded && (
+        <div className="attachments-error error-line small" role="alert">
+          {crowded}
         </div>
       )}
       {quotes.length > 0 && (
