@@ -73,6 +73,16 @@ yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"fill":"label:
 yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":false}'
 ```
 
+### sessions-search-no-match-says-so
+Viewports: both
+A search that matches nothing says so and offers to clear it. It used to say
+"No sessions to show. Start a session whenever you're ready." with a New
+session button, as if there were no sessions at all.
+
+```sh
+yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"fill":"label:Search sessions","value":"TEST-matches-nothing"},{"expect":"css:.focused-session-row","count":0},{"expect":"css:.focused-empty","text":"No sessions match your search."},{"expect":{"css":".focused-empty button","hasText":"New session"},"count":0},{"shot":"no-match"},{"click":{"css":".focused-empty button","hasText":"Clear search"}},{"expect":"label:Search sessions","value":""},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}}]'
+```
+
 ### offline-host-and-selection-fallback
 Viewports: both
 An unreachable host shows its problem, retains System actions, and removing it returns selection to the local host.
