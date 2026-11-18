@@ -4,10 +4,28 @@ import { runInNewContext } from "node:vm";
 
 function bridge() {
   const sent: any[] = [];
-  const window: any = { webkit: { messageHandlers: { switchyard: { postMessage: (m: any) => sent.push(m) } } }, dispatchEvent() {} };
-  runInNewContext(readFileSync(new URL("../../mobile/Switchyard/bridge.js", import.meta.url), "utf8"), { window, navigator: { language: "en-US" }, CustomEvent: class {} });
+  class Socket {
+    listeners: ((event: any) => void)[] = [];
+    constructor(public url: string) {}
+    addEventListener(type: string, listener: (event: any) => void) { if (type === "message") this.listeners.push(listener); }
+    message(data: string) { for (const listener of this.listeners) listener({ data }); }
+  }
+  const window: any = { WebSocket: Socket, location: { origin: "https://yard.test" }, webkit: { messageHandlers: { switchyard: { postMessage: (m: any) => sent.push(m) } } }, dispatchEvent() {} };
+  runInNewContext(readFileSync(new URL("../../mobile/Switchyard/bridge.js", import.meta.url), "utf8"), { window, URL, navigator: { language: "en-US" }, CustomEvent: class {} });
   return { window, sent, receive: window.SwitchyardMobile.receive };
 }
+
+test("older hosts acknowledge a real hub snapshot without needing updated host JavaScript", () => {
+  const { window, sent } = bridge();
+  for (const url of ["wss://other.test/ws", "wss://yard.test:444/ws", "wss://yard.test/terminal", "ws://yard.test/ws"]) {
+    new window.WebSocket(url).message(JSON.stringify({ op: "snapshot", sessions: [] }));
+  }
+  const socket = new window.WebSocket("wss://yard.test/ws");
+  for (const data of ["bad json", "null", JSON.stringify({ op: "host.snapshot", sessions: [] }), JSON.stringify({ op: "snapshot" })]) socket.message(data);
+  expect(sent).toEqual([]);
+  socket.message(JSON.stringify({ op: "snapshot", sessions: [] }));
+  expect(sent).toEqual([{ op: "connected" }]);
+});
 
 test("native recognition gives the shared voice hook interim and final results and isolates generations", () => {
   const { window, sent, receive } = bridge();
