@@ -51,6 +51,19 @@ for vp in desktop mobile; do
 done
 ```
 
+### long-second-word-is-cut-not-dropped
+A short word followed by one that runs past 60 characters (a pasted URL) is
+cut through that word and marked with "…": the header reads "TEST-fix
+https://github.com/example-org/example-repo/issues…", not just "TEST-fix…".
+(Backing up to the last whole word used to throw the URL away.)
+
+```sh
+for vp in desktop mobile; do
+  yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"TEST-fix https://github.com/example-org/example-repo/issues/12345#issuecomment-987654321-'$vp'"}' --wait '{"op":"created"}' --save url_sid=sessionId
+  yv drive 'session:{{url_sid}}' --viewport $vp --steps '[{"expect":"css:.thread","text":"Echo: TEST-fix https://github.com"},{"expect":"role:heading:TEST-fix https://github.com"},{"shot":"url-title-'$vp'"},{"eval":"document.querySelector(\"h1\").textContent","equals":"TEST-fix https://github.com/example-org/example-repo/issues…"}]'
+done
+```
+
 ### empty-prompt-cannot-send
 Expect Send disabled with nothing typed, enabled after typing, disabled again
 after clearing.
