@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec52f1602",
+  "build": {
+    "sha": "b88ff5ef993823e66ef59fb3fb736b9ba19430ad",
+    "short": "b88ff5e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:43:40.956Z"
+  },
+  "dir": ".verify/evidence/title-long-second-word-base",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/evidence/title-long-second-word-base/session_s1a1ec52f1602-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2362,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/evidence/title-long-second-word-base/session_s1a1ec52f1602-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2193,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

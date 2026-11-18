@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_long_first_line_is_titled_at_a_word_with_an_ellipsis
+# exit 101 after 1227 ms at b88ff5ef993823e66ef59fb3fb736b9ba19430ad
+
+
+running 1 test
+test a_long_first_line_is_titled_at_a_word_with_an_ellipsis ... FAILED
+
+failures:
+
+---- a_long_first_line_is_titled_at_a_word_with_an_ellipsis stdout ----
+
+thread 'a_long_first_line_is_titled_at_a_word_with_an_ellipsis' (2347257) panicked at crates/yardd/tests/daemon.rs:173:5:
+assertion `left == right` failed
+  left: String("fix…")
+ right: "fix https://github.com/example-org/example-repo/issues/1234…"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2347256-long-title-0 for inspection
+
+
+failures:
+    a_long_first_line_is_titled_at_a_word_with_an_ellipsis
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 76 filtered out; finished in 0.27s
+
+
+   Compiling yardd v0.10.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.91s
+     Running tests/daemon.rs (target/debug/build/yardd/ce7f5d8862b1c5b5/out/daemon-ce7f5d8862b1c5b5)
+error: test failed, to rerun pass `-p yardd --test daemon`

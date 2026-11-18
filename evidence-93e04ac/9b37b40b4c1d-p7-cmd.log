@@ -1,0 +1,26 @@
+$ verify/yv map run new-session --recipe long-second-word-is-cut-not-dropped
+# exit 0 after 7500 ms at 93e04acf77d8c9d640d5031068eccbe58596fe4e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T01:45:40.204Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-second-word-is-cut-not-dropped",
+          "status": "pass",
+          "ms": 6641
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

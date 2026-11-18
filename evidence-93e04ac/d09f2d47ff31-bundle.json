@@ -1,0 +1,195 @@
+{
+  "v": 1,
+  "claim": "A first line like 'fix <long URL>' was titled just 'fix…': the title backed up to the last whole word however far back that was",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "f850d917a60498de4d4b0e6432ed3f44f32f8367",
+  "head": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T01:43:35.307Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b88ff5ef993823e66ef59fb3fb736b9ba19430ad",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-session_s1a1ec52f1602.json",
+          "sha256": "6708cbd03a861bf921a6cf6ff188adb8bbaf399dbdacb9d69c3456a420689cd0"
+        },
+        {
+          "path": "p1-session_s1a1ec52f1602-mobile.png",
+          "sha256": "0979d2ea3f47f7427192639e2f79b15ed98353018ed61614eaeac095d47e7c27"
+        },
+        {
+          "path": "p1-session_s1a1ec52f1602-desktop.png",
+          "sha256": "071a41bf81085d0b4a7aea3c9612ded319ac217e1f268a7e859a2852e287ebf0"
+        }
+      ],
+      "addedAt": "2026-11-18T01:43:53.392Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b88ff5ef993823e66ef59fb3fb736b9ba19430ad",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "6739c449f5e8f367c75a43ad1572730cb0aa382fd02cf39b7136beb85b1c6576"
+        }
+      ],
+      "addedAt": "2026-11-18T01:43:53.439Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_long_first_line_is_titled_at_a_word_with_an_ellipsis",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "b88ff5ef993823e66ef59fb3fb736b9ba19430ad",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4fe436945d28f33581a78614accc9dd340dfaaa0597ad0e859d6f5a964f89d3c"
+        }
+      ],
+      "addedAt": "2026-11-18T01:43:54.718Z",
+      "cmd": "verify/yv map run new-session --recipe long-second-word-is-cut-not-dropped",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "592be371375a2f509682d11c725bba1c4c32df25693528bfb9d5c1cb6df6c1d5"
+        },
+        {
+          "path": "p4-after-desktop-desktop.png",
+          "sha256": "d7331d1f18b48c2d330397ec3ddf1e7fa184391ec1e7afe6d8db4dee054dee52"
+        }
+      ],
+      "addedAt": "2026-11-18T01:44:26.097Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "0bdfbdc6f9f6e2cb97767cd909f32f793571681cf47d1333e34223a6ea5159b3"
+        },
+        {
+          "path": "p5-after-mobile-mobile.png",
+          "sha256": "cab0da9f9ed0468897d594d97d52185febf340f8faacf10ba0cdde2e1b25cd1b"
+        }
+      ],
+      "addedAt": "2026-11-18T01:44:29.266Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "75095b05f90bd0c9d4d017658ed018cb16d8b7c8b33f262647a8bfe5961e6201"
+        }
+      ],
+      "addedAt": "2026-11-18T01:44:37.100Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "9b37b40b4c1dc74dd87e068934fb8567dcdf81aab0376f5a611ced9ec50bbebb"
+        }
+      ],
+      "addedAt": "2026-11-18T01:45:32.707Z",
+      "cmd": "verify/yv map run new-session --recipe long-second-word-is-cut-not-dropped",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-new-session.json",
+          "sha256": "a6e46d8ee0192f44cd346b06b56137088144300d8798036019a268bf6ef74b2b"
+        }
+      ],
+      "addedAt": "2026-11-18T01:45:40.253Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/long-prompt-titled-at-a-word",
+        "new-session/long-second-word-is-cut-not-dropped",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    }
+  ]
+}

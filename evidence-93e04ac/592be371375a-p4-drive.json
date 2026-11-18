@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec5395202",
+  "build": {
+    "sha": "93e04acf77d8c9d640d5031068eccbe58596fe4e",
+    "short": "93e04ac",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:44:22.868Z"
+  },
+  "dir": ".verify/evidence/title-long-second-word-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2308,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/title-long-second-word-head-desktop/after-desktop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\"h1\").textContent",
+          "value": "TEST-fix https://github.com/example-org/example-repo/issues…"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

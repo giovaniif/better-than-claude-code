@@ -1,0 +1,78 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T01:46:54.268Z",
+      "counts": {
+        "pass": 11,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 3959
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 5777
+        },
+        {
+          "label": "long-prompt-titled-at-a-word",
+          "status": "pass",
+          "ms": 5979
+        },
+        {
+          "label": "long-second-word-is-cut-not-dropped",
+          "status": "pass",
+          "ms": 6132
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 3939
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 3370
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 5372
+        },
+        {
+          "label": "typed-path-with-no-match-says-so",
+          "status": "pass",
+          "ms": 8219
+        },
+        {
+          "label": "remembered-folder-that-is-gone-says-so",
+          "status": "pass",
+          "ms": 7244
+        },
+        {
+          "label": "refused-send-names-the-session-in-the-way",
+          "status": "pass",
+          "ms": 9529
+        },
+        {
+          "label": "task-draft-survives-opening-a-session",
+          "status": "pass",
+          "ms": 13643
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
