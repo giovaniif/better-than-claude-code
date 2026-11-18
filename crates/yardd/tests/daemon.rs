@@ -1841,6 +1841,32 @@ async fn automations_are_saved_listed_edited_and_deleted() {
 }
 
 #[tokio::test]
+async fn automation_window_survives_partial_edits_and_null_clears_it() {
+    let sb = Sandbox::new("auto-window");
+    let cwd = sb.folder("proj");
+    let d = sb.start_with(&[("TZ", "UTC")]);
+    let mut c = d.client().await;
+    let window = json!({ "start": "21:00", "end": "09:00", "days": [1, 5] });
+    let a = save_automation(&mut c, automation_of(&cwd, json!({ "window": window }))).await.unwrap();
+    assert_eq!(a["window"], window);
+    let id = a["id"].as_str().unwrap();
+    let off = save_automation(&mut c, json!({ "id": id, "enabled": false })).await.unwrap();
+    assert_eq!(off["window"], window);
+    let on = save_automation(&mut c, json!({ "id": id, "enabled": true })).await.unwrap();
+    assert_eq!(on["window"], window);
+    assert_eq!(d.client().await.log[0]["automations"][0]["window"], window);
+    for schedule in [json!({ "kind": "daily", "time": "09:00" }), json!({ "kind": "weekly", "day": 1, "time": "09:00" }), json!({ "kind": "manual" })] {
+        assert!(save_automation(&mut c, json!({ "id": id, "schedule": schedule })).await.unwrap_err().contains("interval"));
+    }
+    let before = chrono::Utc::now().timestamp_millis() as u64;
+    let clear = save_automation(&mut c, json!({ "id": id, "window": null })).await.unwrap();
+    let after = chrono::Utc::now().timestamp_millis() as u64;
+    assert!(clear["window"].is_null());
+    let next = clear["nextRun"].as_u64().unwrap();
+    assert!((before + 3_600_000..=after + 3_600_000).contains(&next), "clearing the window recomputes the ordinary interval");
+}
+
+#[tokio::test]
 async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
     let sb = Sandbox::new("auto-run");
     let repo = make_repo(&sb, "repo");
@@ -2101,6 +2127,28 @@ async fn the_scheduler_fires_a_missed_run_once_and_automations_survive_a_restart
 }
 
 #[tokio::test]
+async fn a_missed_run_outside_the_window_creates_no_session_but_run_now_does() {
+    use chrono::{Duration, Utc};
+    let sb = Sandbox::new("auto-window-missed");
+    let cwd = sb.folder("proj");
+    let now = Utc::now();
+    let window = json!({ "start": (now + Duration::hours(2)).format("%H:%M").to_string(), "end": (now + Duration::hours(3)).format("%H:%M").to_string() });
+    let mut a = automation_of(&cwd, json!({ "id": "a1", "window": window, "nextRun": 1, "createdAt": 1 }));
+    a["enabled"] = json!(true);
+    fs::write(sb.data().join("automations.json"), json!([a]).to_string()).unwrap();
+    let d = sb.start_with(&[("TZ", "UTC"), ("YARD_AUTOMATION_TICK_MS", "30")]);
+    let mut c = d.client().await;
+    // The scheduler may move the slot before the client connects; its first
+    // snapshot is just as conclusive as a later rescheduling broadcast.
+    let moved = c.wait_for("rescheduled instead of fired", |m| (m["op"] == "automations" || m["op"] == "snapshot") && m["automations"][0]["nextRun"].as_u64().is_some_and(|n| n > now.timestamp_millis() as u64)).await;
+    let next = moved["automations"][0]["nextRun"].as_i64().unwrap();
+    assert_eq!(chrono::DateTime::from_timestamp_millis(next).unwrap().format("%H:%M").to_string(), window["start"].as_str().unwrap());
+    assert!(d.client().await.log[0]["sessions"].as_array().unwrap().is_empty());
+    assert!(moved["automations"][0]["lastRun"].is_null(), "not even a skipped run");
+    assert_eq!(run_automation(&mut c, "a1", true).await["outcome"], "started", "Run now ignores active hours");
+}
+
+#[tokio::test]
 async fn a_hub_routes_automations_to_the_host_that_runs_them() {
     let remote_sb = Sandbox::new("auto-remote");
     let remote = remote_sb.start();
@@ -2117,12 +2165,15 @@ async fn a_hub_routes_automations_to_the_host_that_runs_them() {
     c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
 
     let cwd = remote_sb.folder("proj");
+    let window = json!({ "start": "21:00", "end": "09:00", "days": [5] });
     let from = c.mark();
-    c.send(json!({ "op": "automation.save", "host": host, "automation": automation_of(&cwd, json!({})), "ref": "save" })).await;
+    c.send(json!({ "op": "automation.save", "host": host, "automation": automation_of(&cwd, json!({ "window": window })), "ref": "save" })).await;
     let saved = c.wait_after(from, "saved on the remote", |m| m["op"] == "automation.saved" && m["ref"] == "save").await;
     let id = saved["automation"]["id"].as_str().unwrap().to_string();
     let list = c.wait_after(from, "the remote's list", |m| m["op"] == "automations" && m["hostId"] == host).await;
     assert_eq!(list["automations"][0]["id"], id);
+    assert_eq!(list["automations"][0]["window"], window);
+    assert_eq!(remote.client().await.log[0]["automations"][0]["window"], window);
 
     // It lives on the remote; the hub keeps none of its own.
     assert_eq!(remote.client().await.log[0]["automations"][0]["id"], id);

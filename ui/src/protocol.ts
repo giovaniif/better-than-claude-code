@@ -768,6 +768,13 @@ export type Schedule =
   | { kind: "weekly"; day: number; time: string }
   | { kind: "manual" };
 
+/** Active hours for an interval; days name the day the window starts (0 = Sunday). */
+export interface AutomationWindow {
+  start: string;
+  end: string;
+  days?: number[];
+}
+
 export interface LastRun {
   at: number;
   outcome: "started" | "skipped" | "failed";
@@ -789,6 +796,7 @@ export interface Automation {
   /** The branch runs are cut from; empty is the repository's default branch. */
   base: string;
   schedule: Schedule;
+  window?: AutomationWindow | null;
   skipWhileRunning: boolean;
   /** Skip a scheduled run while the engine's usage is above these percentages. */
   maxFiveHour: number | null;

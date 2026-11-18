@@ -2,6 +2,10 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.12.0 (2026-11-18)
+
+- **Active hours for automations.** Limit an interval to a local time window, including overnight hours and selected start days. Hourly 21:00–09:00 runs from 21:00 through 08:00; daytime hours create no sessions, even after a restart. The form and cards show the hours and real next slot; Run now remains available anytime. Loop patrol now uses this overnight window once the server is updated and loop automations are applied.
+
 ## 0.11.0 (2026-11-18)
 
 - **Gemini CLI joins the engines.** Start Gemini sessions alongside Claude Code, Codex, OpenCode and Grok, with streaming replies, tools and diffs, approvals, permission modes, Stop, resume and hand-offs. Install `@google/gemini-cli` on the host; Switchyard reuses its login and discovers its models. Added accounts keep separate logins. For a fresh Google login, Hosts shows the terminal command and checks it when you return. Gemini does not report plan limits or offer an effort control here.
