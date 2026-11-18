@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe workspace-tabs-fit-minimum-width
+# exit 1 after 4962 ms at 607b476ef3e68e10358ab19096d9fa6ddc974e6f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-18T01:58:43.172Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "workspace-tabs-fit-minimum-width",
+          "status": "fail",
+          "ms": 4092,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"(() => { const bar=document.querySelector(\\\".pane .tabs\\\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\\\".pane .tabs button\\\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-58-39-311Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "tton \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\"\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: src/lib.rs\\n  - code: +1 −0\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-58-39-311Z/minimum-pane-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"localStorage.setItem(\\\"yard.paneWidth\\\",\\\"300\\\") ?? true\",\n          \"value\": true\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const bar=document.querySelector(\\\".pane .tabs\\\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\\\".pane .tabs button\\\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"(() => { const bar=document.querySelector(\\\\\\\".pane .tabs\\\\\\\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\\\\\\\".pane .tabs button\\\\\\\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-58-39-311Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/workspace-tabs-fit-minimum-width",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

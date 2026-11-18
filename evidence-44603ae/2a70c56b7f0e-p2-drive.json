@@ -1,0 +1,63 @@
+{
+  "ok": false,
+  "route": "session:s1a1ec5ddc948",
+  "build": {
+    "sha": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+    "short": "607b476",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:55:36.283Z"
+  },
+  "dir": "/tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-55-37-292Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3562,
+      "steps": 7,
+      "failed": {
+        "step": 4,
+        "action": {
+          "eval": "(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": "/tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-55-37-292Z/fail-desktop-step4.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - group \"Plan usage\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\n  - button \"iso-host 17% · 66%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"[edit] TEST-fix the greeting\" [level=1]\n  - code: yard/edit-test-fix-the-greeting-c7e7\n  - button \"Set up iPhone app\"\n  - button \"Delete\"\n  - text: \"[edit] TEST-fix the greeting\"\n  - code: src/lib.rs\n  - text: \"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\"\n  - paragraph: Edited src/lib.rs.\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\": Fake Fast\n  - button \"Effort Low\": Low\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Changes\" [pressed]\n  - button \"Terminal\"\n  - button \"Pull request\"\n  - button \"Processes\"\n  - button \"Refresh changes\"\n  - code: src/lib.rs\n  - code: +1 −0\n  - code: src/lib.rs\n  - text: \"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-55-37-292Z/minimum-pane-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 4 {\"eval\":\"(() => { const bar=document.querySelector(\\\".pane .tabs\\\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\\\".pane .tabs button\\\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see /tmp/switchyard-focused-base/.verify/drives/2026-11-18T01-55-37-292Z/fail-desktop-step4.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,362 @@
+{
+  "v": 1,
+  "claim": "Approved Focused pages redesign separates host activity, engine logins and system controls, compacts sidebar subscription usage, makes account identity explicit, and prevents workspace tabs wrapping or clipping.",
+  "repo": "/tmp/switchyard-workspace-tabs-20261118",
+  "base": "f850d917a60498de4d4b0e6432ed3f44f32f8367",
+  "head": "44603aea4724aa7f01b1d808449dda707325180f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mermaid.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mobile.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/queue.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/session-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:58:38.117Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "f08ecc466baf1a84ed474890f017f49fbbb6d79145cc4b3ecb85b76645fe6ff7"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:38.215Z",
+      "cmd": "verify/yv map run layout --recipe workspace-tabs-fit-minimum-width",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "2a70c56b7f0e12850bfe9b6a5f92b8be14a13a8ba28d3ddbe39bac8442b9228e"
+        },
+        {
+          "path": "p2-minimum-pane-desktop.png",
+          "sha256": "25427630c44c33f0efb2bcd87a7c7025d6b5fdacb386a557a43efa9fc98e6f8b"
+        },
+        {
+          "path": "p2-fail-desktop-step4.png",
+          "sha256": "0da6e9650515478de613cb9edde6d9d44435fbacb2265998893ce97151a65c7f"
+        }
+      ],
+      "addedAt": "2026-11-18T01:59:18.249Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "34d27821a63a053e990cbddd174c8d3e7e59cb0757a617734ce5d1960937986f"
+        }
+      ],
+      "addedAt": "2026-11-18T02:03:35.997Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "7ab9c9d1883cb0dfbae6abffee4fbeeaf4c5d98a013709fc420efdde08026669"
+        }
+      ],
+      "addedAt": "2026-11-18T02:03:36.588Z",
+      "cmd": "verify/yv design-check --base f850d917a604",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-hosts.json",
+          "sha256": "b410e32060146b0b96978aef08d1e05a36daf16b04f5f4092bb4c53f04b263e1"
+        },
+        {
+          "path": "p5-hosts-mobile.png",
+          "sha256": "2de7ac6950e59b2625c128b297c614c18c88ca968a7d9848436566550ce84d69"
+        },
+        {
+          "path": "p5-hosts-desktop.png",
+          "sha256": "309ff033aa389643cff30fa698fe1c55892ce4f6374d2770667081a794683aaf"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:54.130Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-new.json",
+          "sha256": "7f0e85dffd75ae29a25d5ed2884522e88052deae1f14192bdaf057150cef6dcf"
+        },
+        {
+          "path": "p6-new-mobile.png",
+          "sha256": "7062cb5e256354d0cf7e54bc4ff6cb82c3a34c0687c74c350c975bd275aefd16"
+        },
+        {
+          "path": "p6-new-desktop.png",
+          "sha256": "5f59cf3a75ca49ca34ad22f15fc1faaa54a06a65454c8894c45f3dc77241d1f0"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:54.171Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-subscriptions.json",
+          "sha256": "61e320abd82a08e407e9f6c90920360595bc86c830c57344d1ab5d7663bf6141"
+        },
+        {
+          "path": "p7-subscriptions-mobile.png",
+          "sha256": "3af6aa68af520d215a5336cfbf323388780d0d34daf21c3ec5c1a9abc5e96605"
+        },
+        {
+          "path": "p7-subscriptions-desktop.png",
+          "sha256": "57a2cdd2989f59021b6e0914d315a326b7a8dedcd1d2eb0528675c547cd7bd45"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:54.212Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-focused-approved-final-map.json",
+          "sha256": "a7bea8aae60bd48c958f06d6c1332633c5bd3211a17b8f44cf6fffb5365e2204"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:54.255Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "base",
+      "kind": "repro",
+      "at": "607b476ef3e68e10358ab19096d9fa6ddc974e6f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "3e0213b0a06ef4ad4f70544874beddeed7a4f9dca9bcfc9889396fa95e11a239"
+        },
+        {
+          "path": "p9-before-expanded-host-mobile.png",
+          "sha256": "15aad914b4bc7d9dc22a0edda75108c05390b30d43e8b9dcabda2b23ff72657d"
+        },
+        {
+          "path": "p9-before-expanded-host-desktop.png",
+          "sha256": "50539af2fc0f83c701536476f11931a8f4d5638e2b14c91e649532e02f888c3b"
+        }
+      ],
+      "addedAt": "2026-11-18T02:05:48.364Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "note",
+      "at": "44603aea4724aa7f01b1d808449dda707325180f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-focused-cargo-tests.log",
+          "sha256": "3e18284ae3318ba32579de75f44911ef225cbc81b61c3b72e83419d13626b10c"
+        },
+        {
+          "path": "p10-focused-sidecar-tests.log",
+          "sha256": "8a2d7a44b4fc5bc873895bde3ae8a28263716dff475dba68223c2c8ec639e54f"
+        }
+      ],
+      "addedAt": "2026-11-18T02:05:48.412Z",
+      "text": "All daemon (182), UI (392), sidecar (40), and verification CLI (53) tests passed. Scripted browser maps also passed: hosts (13), accounts (11), usage (9), settings (3), and new-session (10); the final focused-pages map passes all 9 recipes. Real SSH installation and native macOS packaging were not exercised."
+    }
+  ]
+}
