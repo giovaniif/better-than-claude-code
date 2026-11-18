@@ -1050,7 +1050,16 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
  *  without efforts (some OpenCode and Grok ones) runs as it is: no chip. */
 export function EffortPicker({ models, value, onChange }: { models: Models; value: Choice; onChange(effort: string): void }) {
   const [open, setOpen] = useState(false);
+  const menu = useRef<HTMLDivElement>(null);
   useEscape(open, () => setOpen(false));
+  // The chip can sit last in a narrow row (Settings on a phone), where a menu
+  // hanging from its left edge ran past the screen: pull it back inside.
+  useLayoutEffect(() => {
+    const el = menu.current;
+    if (!el) return;
+    const over = el.getBoundingClientRect().right - (document.documentElement.clientWidth - 8);
+    if (over > 0) el.style.left = `${el.offsetLeft - over}px`;
+  }, [open]);
   const efforts = models[value.engine]?.find((m) => m.id === value.model)?.efforts ?? [];
   if (efforts.length === 0) return null;
   return (
@@ -1064,7 +1073,7 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
       {open && (
         <>
           <div className="scrim" onClick={() => setOpen(false)} />
-          <div className="popover effort-menu" role="menu" aria-label="Effort">
+          <div ref={menu} className="popover effort-menu" role="menu" aria-label="Effort">
             {efforts.map((e) => (
               <button
                 key={e}
