@@ -136,6 +136,12 @@ ends, and `verify/yv loop tidy` frees the `target/` of a run idle for two hours.
 - Branch every fix from `origin/main` (`git checkout -b patrol/<slug>
   origin/main`), never `git checkout main`: a worktree's local `main` can be
   days old.
+- When main moves under an open PR (conflict, or a re-prove), rebase the
+  branch onto origin/main and force-push; don't merge main in. A merge moves
+  the merge-base, `evidence retarget` then refuses the base proofs
+  (`base-moved`), and there is no test-only commit on the new base to record
+  them at. After a rebase, start a new bundle with the base proofs at the
+  rebased test commit.
 - `iso restart` keeps the data dir. When you re-record proofs on the same iso
   (after a rebase or a review fix), use names not taken by the first run, or
   yardd refuses them as duplicates and the head shows failed API calls.
