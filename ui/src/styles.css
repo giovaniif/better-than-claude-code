@@ -474,7 +474,9 @@ h1, h2, h3, p { margin: 0; }
 .settings-text h2 { font-size: 15px; font-weight: 600; }
 .settings-list { display: flex; flex-direction: column; gap: 10px; }
 .settings-host { font-size: 13px; }
-.settings-host-name { flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The name truncates in its own box: an ellipsis never applies to a flex
+   container's text, and clipping here would take the cloud icon with it. */
+.settings-host-name { flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; gap: 6px; }
 .host-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .host-row code.bad { color: var(--bad-ink); }
 .bar-host { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
