@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "f0151f5830e7fc8c99c096d5c4d3c0bfe62a06ee",
+    "short": "f0151f5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:00:46.164Z"
+  },
+  "dir": ".verify/evidence/effort-menu-on-screen2-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2164,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/effort-menu-on-screen2-base/effort-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1817,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/effort-menu-on-screen2-base/effort-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

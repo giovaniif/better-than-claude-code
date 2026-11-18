@@ -1,0 +1,26 @@
+$ verify/yv map run launch-defaults --recipe effort-menu-stays-on-screen
+# exit 0 after 8924 ms at 60472a02a9a27156b606236d0562be689e7b6c60
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "launch-defaults",
+      "at": "2026-11-18T09:01:18.043Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "effort-menu-stays-on-screen",
+          "status": "pass",
+          "ms": 7628
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

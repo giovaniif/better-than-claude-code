@@ -1,0 +1,40 @@
+$ verify/yv map run launch-defaults --recipe effort-menu-stays-on-screen
+# exit 1 after 8787 ms at f0151f5830e7fc8c99c096d5c4d3c0bfe62a06ee
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "launch-defaults",
+      "at": "2026-11-18T09:00:59.679Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "effort-menu-stays-on-screen",
+          "status": "fail",
+          "ms": 7516,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"eval\":\"(() => { const r = document.querySelector(\\\".effort-menu\\\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T09-00-52-223Z/fail-mobile-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "   },\n      \"captures\": [\n        {\n          \"viewport\": \"mobile\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T09-00-52-223Z/sessions-effort-menu-mobile.png\",\n          \"size\": {\n            \"width\": 780,\n            \"height\": 1688\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 3,\n          \"eval\": \"(() => { const r = document.querySelector(\\\".effort-menu\\\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 3371,\n      \"steps\": 9,\n      \"failed\": null,\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T09-00-52-223Z/sessions-effort-menu-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        },\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T09-00-52-223Z/switchy-effort-menu-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 3,\n          \"eval\": \"(() => { const r = document.querySelector(\\\".effort-menu\\\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 8,\n          \"eval\": \"(() => { const r = document.querySelector(\\\".effort-menu\\\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"eval\\\":\\\"(() => { const r = document.querySelector(\\\\\\\".effort-menu\\\\\\\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499/.verify/drives/2026-11-18T09-00-52-223Z/fail-mobile-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "launch-defaults/effort-menu-stays-on-screen",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

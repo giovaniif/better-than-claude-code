@@ -1,0 +1,222 @@
+{
+  "v": 1,
+  "claim": "On a phone, the effort menu in Settings' New session and Switchy defaults rows ran past the screen's right edge, cutting off its right side",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-e499",
+  "base": "36c6fd3e98f322059314d657dc0758501150d5b0",
+  "head": "60472a02a9a27156b606236d0562be689e7b6c60",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T09:00:41.363Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "f0151f5830e7fc8c99c096d5c4d3c0bfe62a06ee",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "31780def6fd8df39debefca63e2f183be2f8f1040a615fc3ef2e9396e17b7400"
+        },
+        {
+          "path": "p1-effort-menu-mobile.png",
+          "sha256": "6701c67dc8610a62bdc568a37397da9ed135ed88b72e2573edae71fdd6b48d74"
+        },
+        {
+          "path": "p1-effort-menu-desktop.png",
+          "sha256": "a24dbd31d17f9473e35790c90be7bb9db78d37fd84a6cf7c6131c7c81601fd73"
+        }
+      ],
+      "addedAt": "2026-11-18T09:00:50.853Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "f0151f5830e7fc8c99c096d5c4d3c0bfe62a06ee",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ba4521ea2155826cab0cb80c746eacdb0bb84ab3f7ee508666f30f2ad10e3c3c"
+        }
+      ],
+      "addedAt": "2026-11-18T09:00:50.895Z",
+      "cmd": "verify/yv map run launch-defaults --recipe effort-menu-stays-on-screen",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "c6f733463ff01ef8d612159d3205fc4a08cbfc8645a7b37f09c66c557eb53c04"
+        },
+        {
+          "path": "p3-effort-menu-mobile.png",
+          "sha256": "f11d771d925c92fe4734f17d5151780210ed7d31dd2e0ce245a7e70148ee9802"
+        },
+        {
+          "path": "p3-effort-menu-desktop.png",
+          "sha256": "d158bb726b743f2c89830baca569a4c73cc222379821bc6785ad8c59f002a317"
+        }
+      ],
+      "addedAt": "2026-11-18T09:01:09.079Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "2f57d63e461e9cf4a6630696ff1705f04d83ca6c1c3a1b02d83eb3ca1efe0025"
+        }
+      ],
+      "addedAt": "2026-11-18T09:01:09.122Z",
+      "cmd": "verify/yv map run launch-defaults --recipe effort-menu-stays-on-screen",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "6b8ddb3fa821217afc7ef614b2116632ad86104b307f4007bcdef6d5e94e3d74"
+        }
+      ],
+      "addedAt": "2026-11-18T09:01:18.088Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "e821a9a22b5728df2f04ce62305a022538a6957ff8267f1f5bc3ff71321437e6"
+        }
+      ],
+      "addedAt": "2026-11-18T09:01:18.255Z",
+      "cmd": "verify/yv design-check --base 36c6fd3e98f3",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-launch-defaults.json",
+          "sha256": "1acdf49b9a26d13e631f628701acc6e47643509121531d3c01b9ff89a43ff63a"
+        }
+      ],
+      "addedAt": "2026-11-18T09:01:18.334Z",
+      "cmd": "verify/yv map run launch-defaults",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "launch-defaults/independent-defaults",
+        "launch-defaults/effort-menu-stays-on-screen",
+        "launch-defaults/reset-defaults",
+        "launch-defaults/removed-default-host-keeps-the-model"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-session-defaults.json",
+          "sha256": "50a87d98d25368944b8cd48e9e41325f2e970d347c9bea5b4ea9f02966aab6ea"
+        }
+      ],
+      "addedAt": "2026-11-18T09:02:12.919Z",
+      "cmd": "verify/yv map run session-defaults",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "session-defaults/remembers-remote-session",
+        "session-defaults/remembers-changes-in-existing-chat"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "60472a02a9a27156b606236d0562be689e7b6c60",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-new-session.json",
+          "sha256": "a7832017122fe702323df901c4c9f1994ca10334a0a898b05c6e8b3083bf2f21"
+        }
+      ],
+      "addedAt": "2026-11-18T09:02:59.211Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/long-prompt-titled-at-a-word",
+        "new-session/long-second-word-is-cut-not-dropped",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/long-folder-keeps-its-chip-icon",
+        "new-session/folder-menu-stays-on-screen",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    }
+  ]
+}

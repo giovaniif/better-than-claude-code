@@ -1,0 +1,88 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-18T09:04:25.557Z",
+      "counts": {
+        "pass": 13,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 4054
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 5725
+        },
+        {
+          "label": "long-prompt-titled-at-a-word",
+          "status": "pass",
+          "ms": 6967
+        },
+        {
+          "label": "long-second-word-is-cut-not-dropped",
+          "status": "pass",
+          "ms": 6190
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 3590
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 3360
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 5763
+        },
+        {
+          "label": "typed-path-with-no-match-says-so",
+          "status": "pass",
+          "ms": 7259
+        },
+        {
+          "label": "remembered-folder-that-is-gone-says-so",
+          "status": "pass",
+          "ms": 7484
+        },
+        {
+          "label": "long-folder-keeps-its-chip-icon",
+          "status": "pass",
+          "ms": 5875
+        },
+        {
+          "label": "folder-menu-stays-on-screen",
+          "status": "pass",
+          "ms": 6402
+        },
+        {
+          "label": "refused-send-names-the-session-in-the-way",
+          "status": "pass",
+          "ms": 9854
+        },
+        {
+          "label": "task-draft-survives-opening-a-session",
+          "status": "pass",
+          "ms": 12988
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
