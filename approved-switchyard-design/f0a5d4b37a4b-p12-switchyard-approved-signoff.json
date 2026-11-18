@@ -1,0 +1,47 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approved-design",
+      "at": "2026-11-18T21:25:36.107Z",
+      "counts": {
+        "pass": 6
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "terminal-first-and-external-pr",
+          "status": "pass",
+          "ms": 4534
+        },
+        {
+          "label": "one-row-composers",
+          "status": "pass",
+          "ms": 6957
+        },
+        {
+          "label": "account-card-separation",
+          "status": "pass",
+          "ms": 5455
+        },
+        {
+          "label": "compact-usage",
+          "status": "pass",
+          "ms": 2964
+        },
+        {
+          "label": "phone-usage-opens-from-header",
+          "status": "pass",
+          "ms": 2422
+        },
+        {
+          "label": "toolbar-at-320-with-full-access",
+          "status": "pass",
+          "ms": 3240
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

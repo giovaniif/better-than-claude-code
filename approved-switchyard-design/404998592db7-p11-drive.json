@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "7127396a13cd25bef76f302b2cbd49d178cba360",
+    "short": "7127396",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T21:25:09.741Z"
+  },
+  "dir": "/tmp/switchyard-approved/.verify/drives/2026-11-18T21-25-33-063Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2736,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-approved/.verify/drives/2026-11-18T21-25-33-063Z/narrow-full-access-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 8,
+          "eval": "(() => {const row=document.querySelector(\".composer-row\"); const a=row.querySelector(\".attach-btn\").getBoundingClientRect(); const s=row.querySelector(\".send\").getBoundingClientRect(); return document.documentElement.scrollWidth <= innerWidth && (Math.abs(a.top+a.bottom-s.top-s.bottom) < 3) && s.right <= innerWidth;})()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

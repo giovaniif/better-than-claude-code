@@ -1,0 +1,38 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f08d820e8",
+  "build": {
+    "sha": "7127396a13cd25bef76f302b2cbd49d178cba360",
+    "short": "7127396",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T21:25:09.741Z"
+  },
+  "dir": ".verify/shots/approved-terminal",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2402,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/shots/approved-terminal/terminal-first-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

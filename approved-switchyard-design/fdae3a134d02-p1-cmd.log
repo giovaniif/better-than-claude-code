@@ -1,0 +1,40 @@
+$ verify/yv map run approved-design --recipe terminal-first-and-external-pr
+# exit 1 after 19004 ms at 3ed2a7145410ecd94576a567c7a2614824892b14
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "approved-design",
+      "at": "2026-11-18T21:23:45.952Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "terminal-first-and-external-pr",
+          "status": "fail",
+          "ms": 13007,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":\"css:.workspace-tabs .tab\",\"count\":2}: expected 2 visible \"css:.workspace-tabs .tab\", found 4",
+              "hint": "see /tmp/switchyard-direct-tabs-base/.verify/drives/2026-11-18T21-23-33-157Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "utton \\\"New session\\\"\\n  - button \\\"Hosts\\\"\\n  - button \\\"Switchy\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Connectors\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 17% · 51%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"[edit] TEST-fix the greeting\\\" [level=1]\\n  - code: yard/edit-test-fix-the-greeting-2597\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Delete\\\"\\n  - text: \\\"[edit] TEST-fix the greeting\\\"\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\\n  - paragraph: Edited src/lib.rs.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Changes\\\" [pressed]\\n  - button \\\"Terminal\\\"\\n  - button \\\"Pull request\\\": PR\\n  - button \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: src/lib.rs\\n  - code: +1 −0\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":\\\"css:.workspace-tabs .tab\\\",\\\"count\\\":2}: expected 2 visible \\\"css:.workspace-tabs .tab\\\", found 4\",\n      \"hint\": \"see /tmp/switchyard-direct-tabs-base/.verify/drives/2026-11-18T21-23-33-157Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "approved-design/terminal-first-and-external-pr",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

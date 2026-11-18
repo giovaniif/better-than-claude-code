@@ -1,0 +1,391 @@
+{
+  "v": 1,
+  "claim": "Switchyard implements the approved Terminal and Processes workspace, single-row composer, compact usage and per-account connectors.",
+  "repo": "/tmp/switchyard-approved",
+  "base": "dae8e47011f3762da619ef529ab6bcdea8728c29",
+  "head": "7127396a13cd25bef76f302b2cbd49d178cba360",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "D",
+      "path": "ui/src/PrPane.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SessionPullRequest.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "D",
+      "path": "ui/src/prPane.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/approved-design.md"
+    },
+    {
+      "status": "D",
+      "path": "verify/features/changes-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mobile.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T21:23:26.882Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "3ed2a7145410ecd94576a567c7a2614824892b14",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "fdae3a134d0240bf2f790858fba7cbd3bb9302193a52aa7f769144d928dfd505"
+        }
+      ],
+      "addedAt": "2026-11-18T21:23:26.952Z",
+      "cmd": "verify/yv map run approved-design --recipe terminal-first-and-external-pr",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "3ed2a7145410ecd94576a567c7a2614824892b14",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "5064ce3e3dfcae0de43027aa31a176a9b33b1c5d7f6e8881c25536ca9b3d94cc"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "45a6f3aebb703e2a73fbe88aa741ab3c75c9a1b49086ffb8914010bffe9c8df5"
+        }
+      ],
+      "addedAt": "2026-11-18T21:25:42.332Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "0418eb71ab473459b1837c09a8f0d374cfcecf72b39c35ac4febbf75017520ca"
+        }
+      ],
+      "addedAt": "2026-11-18T21:25:42.379Z",
+      "cmd": "(cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "f83c725d003af2eaf748b3ef8845a7010d979b319d7711a0b1d0bd14b2279145"
+        }
+      ],
+      "addedAt": "2026-11-18T21:25:43.165Z",
+      "cmd": "verify/yv design-check --base dae8e47011f3",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-switchyard-approved-terminal.json",
+          "sha256": "6c54138266f59053444b183f8ca77beea3e684576e3d114717e044c0e52c35a0"
+        },
+        {
+          "path": "p5-terminal-first-desktop.png",
+          "sha256": "9187d2ab7d51650eaf0f57c44bc186256a3c61d002bbd3305ca3ac0a5803ed05"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.288Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "e1c1ff1a900d2cc27bbd42509f50c936f3709ae418fac18480b9dd03183bd84f"
+        },
+        {
+          "path": "p6-workspace-desktop.png",
+          "sha256": "b14767e8a26e7673fa6763d434fd1f1c3058d371c646cf884369312414ff4b25"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.331Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "fad2e2eaabb433239281b073704edb0b6cae20fc824b0c598df57ecfde7ee481"
+        },
+        {
+          "path": "p7-new-composer-mobile.png",
+          "sha256": "9ae4b634853a1f13dd46e787f6d337eb12fc6f09058666c36fdc9692cf628ffa"
+        },
+        {
+          "path": "p7-new-composer-desktop.png",
+          "sha256": "fcdda9ac51cf577448f0d722fd5c1b2a48d326a76fc671c8b882b2368fb1023f"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.374Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "b535fd45176c1b16d687e0211578095a45b4887e2426dca55249ca4141eff818"
+        },
+        {
+          "path": "p8-reply-composer-mobile.png",
+          "sha256": "c7e1d21122d9b3da2903ff2dc5f960eee03c3d6d8263161e44602184275a0bc0"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.417Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "9627235fb7de44a2b169c9b71b7fe4e729e379b5ef57c121bb5b198638bfef00"
+        },
+        {
+          "path": "p9-per-account-connectors-mobile.png",
+          "sha256": "57098e7897868f43c3e00f0d35d4d7e25b5dcc4cfb175d94d7f3d17d4b61766f"
+        },
+        {
+          "path": "p9-per-account-connectors-desktop.png",
+          "sha256": "43bb06435483bede6b5f997101a7dd289ad4f934e5c3a62704d2551b8d231b33"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.460Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-drive.json",
+          "sha256": "0d723fb485ce4ff1bfbbce949031107923bd09ef4b6ab370d6cfd4d8f46449f7"
+        },
+        {
+          "path": "p10-usage-desktop.png",
+          "sha256": "bcff92f9d44c913291cfbf8fa9eb9677b24cf3225deb68660610f9282ea48800"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.504Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p11-drive.json",
+          "sha256": "404998592db76fc3992da385c58555cb733ab07bcf818bd6dfdb585f668b8b6d"
+        },
+        {
+          "path": "p11-narrow-full-access-mobile.png",
+          "sha256": "5029c125cab5724cea3b2a33327bbfabc47765628866ed9464c2efd1dd8be2b9"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.544Z",
+      "failedApi": []
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "7127396a13cd25bef76f302b2cbd49d178cba360",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-switchyard-approved-signoff.json",
+          "sha256": "f0a5d4b37a4bfbe3087f6b0083a987db0afc61f9653669e8386c5663ae7e18a9"
+        }
+      ],
+      "addedAt": "2026-11-18T21:26:11.586Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/terminal-first-and-external-pr",
+        "approved-design/one-row-composers",
+        "approved-design/account-card-separation",
+        "approved-design/compact-usage",
+        "approved-design/phone-usage-opens-from-header",
+        "approved-design/toolbar-at-320-with-full-access"
+      ]
+    }
+  ]
+}

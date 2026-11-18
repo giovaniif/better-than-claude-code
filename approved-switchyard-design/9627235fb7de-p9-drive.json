@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "7127396a13cd25bef76f302b2cbd49d178cba360",
+    "short": "7127396",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T21:25:09.741Z"
+  },
+  "dir": "/tmp/switchyard-approved/.verify/drives/2026-11-18T21-25-22-254Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2567,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-approved/.verify/drives/2026-11-18T21-25-22-254Z/per-account-connectors-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2281,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-approved/.verify/drives/2026-11-18T21-25-22-254Z/per-account-connectors-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
