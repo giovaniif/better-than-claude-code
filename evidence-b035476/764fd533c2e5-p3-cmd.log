@@ -1,0 +1,71 @@
+$ verify/yv map run processes
+# exit 0 after 77051 ms at b035476642d804bf333e39c0f5fe35006f01903d
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-18T11:03:49.583Z",
+      "counts": {
+        "pass": 10
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "lists-the-process-tree",
+          "status": "pass",
+          "ms": 4597
+        },
+        {
+          "label": "nothing-running",
+          "status": "pass",
+          "ms": 3453
+        },
+        {
+          "label": "terminal-shell-is-listed",
+          "status": "pass",
+          "ms": 7862
+        },
+        {
+          "label": "stop-a-terminal-command",
+          "status": "pass",
+          "ms": 9073
+        },
+        {
+          "label": "force-kill-what-ignores-sigterm",
+          "status": "pass",
+          "ms": 13705
+        },
+        {
+          "label": "stop-with-children",
+          "status": "pass",
+          "ms": 8700
+        },
+        {
+          "label": "stop-with-children-fits-the-pane",
+          "status": "pass",
+          "ms": 8931
+        },
+        {
+          "label": "agent-offers-no-stop",
+          "status": "pass",
+          "ms": 5182
+        },
+        {
+          "label": "refused-outside-the-session",
+          "status": "pass",
+          "ms": 280
+        },
+        {
+          "label": "listed-from-the-workspace-sheet",
+          "status": "pass",
+          "ms": 9555
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

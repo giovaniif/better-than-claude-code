@@ -1,0 +1,26 @@
+$ verify/yv map run processes --recipe listed-from-the-workspace-sheet
+# exit 0 after 14546 ms at b035476642d804bf333e39c0f5fe35006f01903d
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-18T11:04:04.173Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "listed-from-the-workspace-sheet",
+          "status": "pass",
+          "ms": 13682
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
