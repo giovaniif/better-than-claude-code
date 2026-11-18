@@ -1,3 +1,4 @@
+import { loadDefaults } from "./launchDefaults";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ApprovalCard,
@@ -126,11 +127,18 @@ export function AssistantPage({
   actions: Actions;
 }) {
   const conversation = state.switchy;
+  const [defaults] = useState(() => loadDefaults("switchy"));
   const [selectedPermission, setPermission] = useState<Permission | null>(null);
-  const [selectedEffort, setEffort] = useState<string | null>(null);
+  const [selectedEffort, setEffort] = useState<string | null>(
+    defaults?.choice.effort ?? null,
+  );
   const [starting, setStarting] = useState(false);
-  const [selection, setSelection] = useState<string | null>(null);
-  const [chosenScope, setScope] = useState<string | null>(null);
+  const [selection, setSelection] = useState<string | null>(() =>
+    defaults ? `${defaults.choice.engine}:${defaults.choice.model}` : null,
+  );
+  const [chosenScope, setScope] = useState<string | null>(
+    defaults?.host ?? null,
+  );
   const [contextOpen, setContextOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");

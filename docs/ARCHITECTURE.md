@@ -416,6 +416,19 @@ Next:
 - Two agents in one worktree will fight. Enforce one writer.
 - If yardd is killed with SIGKILL, an SSH tunnel it started is left running. A normal stop kills it.
 
+## Saved launch defaults
+
+Settings offers separate defaults for New sessions and Switchy, using the shared
+host/model/effort pickers. `launchDefaults.ts` stores explicit `{ host, choice }`
+preferences in `yard.defaults.sessions` and `yard.defaults.switchy` in this browser.
+One-off selections and `rememberSession` never overwrite them. New-session models
+are validated against the selected host, retaining the intended default while
+catalogs load; configured offline hosts remain selected and cannot silently run
+on another host. Removed hosts/models fall back to available choices without
+rewriting the saved preference. Switchy's model runs locally; its default host
+selects context scope and may be All hosts. Clearing a default restores the prior
+last-used behavior. Existing sessions are unaffected.
+
 ## Switchy
 
 `#/assistant` is Switchy, a persistent quick-question conversation separate from

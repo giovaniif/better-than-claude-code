@@ -1,3 +1,4 @@
+import { loadDefaults } from "./launchDefaults";
 import type { Engine, Models, SessionMeta } from "./protocol";
 import { ENGINES } from "./engines";
 
@@ -18,7 +19,7 @@ function write(key: string, value: string) {
   try { localStorage.setItem(key, value); } catch { /* Browsing still works without storage. */ }
 }
 
-export const loadHost = () => read("yard.host") || "local";
+export const loadHost = () => loadDefaults("sessions")?.host || read("yard.host") || "local";
 export const loadFolder = (host: string) => read(cwdKey(host)) || "";
 
 export function readRecent(host: string): string[] {
@@ -39,6 +40,8 @@ export function validChoice(models: Models, wanted: Choice): Choice {
 }
 
 export function loadChoice(models: Models, host = "local"): Choice {
+  const defaults = loadDefaults("sessions");
+  if (defaults?.host === host) return validChoice(models, defaults.choice);
   for (const key of [choiceKey(host), "yard.choice"]) {
     try {
       const saved = JSON.parse(read(key) ?? "null");
