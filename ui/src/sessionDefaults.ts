@@ -39,9 +39,12 @@ export function validChoice(models: Models, wanted: Choice): Choice {
   return { engine, model: model.id, effort };
 }
 
-export function loadChoice(models: Models, host = "local"): Choice {
+/** `wanted` is the host New session asked for; `host` is where it runs. They
+ *  differ when the saved default host was removed: the session falls back to
+ *  local, and the saved default model still applies, as Settings shows it. */
+export function loadChoice(models: Models, host = "local", wanted = host): Choice {
   const defaults = loadDefaults("sessions");
-  if (defaults?.host === host) return validChoice(models, defaults.choice);
+  if (defaults?.host === wanted) return validChoice(models, defaults.choice);
   for (const key of [choiceKey(host), "yard.choice"]) {
     try {
       const saved = JSON.parse(read(key) ?? "null");

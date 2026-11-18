@@ -1846,7 +1846,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const home = homeOn(state, target);
   const workspace = state.workspace[target] || home;
   const [loggingIn, setLoggingIn] = useState(false);
-  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target));
+  const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target, host));
   const choicePicked = useRef(false);
   const choose = (next: Choice) => { choicePicked.current = true; setChoice(next); };
   // The account per engine on this host, remembered like the model. One that
@@ -1896,7 +1896,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     const changed = previousTarget.current !== target;
     if (changed) choicePicked.current = false;
     setChoice((current) => {
-      const next = changed || (!choicePicked.current && loadDefaults("sessions")?.host === target) ? loadChoice(models, target) : validChoice(models, current);
+      const next = changed || (!choicePicked.current && loadDefaults("sessions")?.host === host) ? loadChoice(models, target, host) : validChoice(models, current);
       return next.engine === current.engine && next.model === current.model && next.effort === current.effort ? current : next;
     });
     if (previousTarget.current !== target) setCwd(loadFolder(target) || workspace);
