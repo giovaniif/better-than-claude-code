@@ -1,0 +1,67 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-18T11:09:21.115Z",
+      "counts": {
+        "pass": 10
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "lists-the-process-tree",
+          "status": "pass",
+          "ms": 4624
+        },
+        {
+          "label": "nothing-running",
+          "status": "pass",
+          "ms": 3409
+        },
+        {
+          "label": "terminal-shell-is-listed",
+          "status": "pass",
+          "ms": 7738
+        },
+        {
+          "label": "stop-a-terminal-command",
+          "status": "pass",
+          "ms": 9331
+        },
+        {
+          "label": "force-kill-what-ignores-sigterm",
+          "status": "pass",
+          "ms": 13464
+        },
+        {
+          "label": "stop-with-children",
+          "status": "pass",
+          "ms": 8703
+        },
+        {
+          "label": "stop-with-children-fits-the-pane",
+          "status": "pass",
+          "ms": 9103
+        },
+        {
+          "label": "agent-offers-no-stop",
+          "status": "pass",
+          "ms": 5118
+        },
+        {
+          "label": "refused-outside-the-session",
+          "status": "pass",
+          "ms": 279
+        },
+        {
+          "label": "hidden-on-mobile",
+          "status": "pass",
+          "ms": 3549
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

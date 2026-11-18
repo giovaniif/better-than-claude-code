@@ -1,0 +1,26 @@
+$ verify/yv map run hosts --recipe processes-say-the-host-is-offline
+# exit 0 after 10847 ms at aa61d4f8d18a8a3127281f56e749346c588bdab0
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-18T11:07:25.472Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "processes-say-the-host-is-offline",
+          "status": "pass",
+          "ms": 9599
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
