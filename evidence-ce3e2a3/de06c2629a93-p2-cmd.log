@@ -1,0 +1,45 @@
+$ verify/yv map run switchy --recipe refusal-notice-is-red
+# exit 1 after 8368 ms at df71a351ecb0113f60d558ec4503499b6acbdece
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-18T01:49:20.970Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "refusal-notice-is-red",
+          "status": "fail",
+          "ms": 7521,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"(() => { const probe = document.createElement(\\\"span\\\"); probe.className = \\\"bad\\\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\\\".assistant-notice\\\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-49-13-682Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"(() => { const probe = document.createElement(\\\"span\\\"); probe.className = \\\"bad\\\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\\\".assistant-notice\\\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-49-13-682Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const box = document.querySelector(\\\"textarea\\\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \\\"value\\\").set; set.call(box, \\\"TEST-too long \\\" + \\\"x\\\".repeat(8001)); box.dispatchEvent(new Event(\\\"input\\\", { bubbles: true })); return true; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const probe = document.createElement(\\\"span\\\"); probe.className = \\\"bad\\\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\\\".assistant-notice\\\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"error\",\n          \"for\": \"switchy.send\",\n          \"message\": \"Ask a question of at most 8,000 bytes\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"(() => { const probe = document.createElement(\\\\\\\"span\\\\\\\"); probe.className = \\\\\\\"bad\\\\\\\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\\\\\\\".assistant-notice\\\\\\\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-49-13-682Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"(() => { const probe = document.createElement(\\\\\\\"span\\\\\\\"); probe.className = \\\\\\\"bad\\\\\\\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\\\\\\\".assistant-notice\\\\\\\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-49-13-682Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "switchy/refusal-notice-is-red",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

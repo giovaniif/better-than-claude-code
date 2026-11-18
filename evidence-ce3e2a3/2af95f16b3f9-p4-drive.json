@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+    "short": "ce3e2a3",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:49:25.373Z"
+  },
+  "dir": ".verify/evidence/switchy-refusal-red-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3079,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-refusal-red-head-mobile/after-mobile-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const box = document.querySelector(\"textarea\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \"value\").set; set.call(box, \"TEST-too long \" + \"x\".repeat(8001)); box.dispatchEvent(new Event(\"input\", { bubbles: true })); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "switchy.send",
+          "message": "Ask a question of at most 8,000 bytes"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

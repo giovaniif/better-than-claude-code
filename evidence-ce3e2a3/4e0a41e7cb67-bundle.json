@@ -1,0 +1,205 @@
+{
+  "v": 1,
+  "claim": "A Switchy question yardd refuses shows its reason under the composer in small grey text, like the disclaimer, so it is easy to miss that nothing was sent; every other error is red",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "f850d917a60498de4d4b0e6432ed3f44f32f8367",
+  "head": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:48:59.905Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "df71a351ecb0113f60d558ec4503499b6acbdece",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "4915957bd9827b8f3f0186dbaba3068290533298cf1ccc951a0f85d27e2bedda"
+        },
+        {
+          "path": "p1-before-mobile.png",
+          "sha256": "31ff4c0a874d7de97c2dd2a99689be0a5ba9f204683fb5714bab169dc885c95f"
+        },
+        {
+          "path": "p1-before-desktop.png",
+          "sha256": "41110fbc9e4f8e88f91f69b8ee64d1272876462703370c977293725d5450ed1d"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:12.559Z",
+      "failedApi": [
+        "switchy.send: Ask a question of at most 8,000 bytes",
+        "switchy.send: Ask a question of at most 8,000 bytes"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "df71a351ecb0113f60d558ec4503499b6acbdece",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "de06c2629a9377ebfe00e5fa332c852f5e828b04f6c707b2bf0c31e153546189"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:12.606Z",
+      "cmd": "verify/yv map run switchy --recipe refusal-notice-is-red",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "ee89b8a2e24ae700e2f645e600c213b20198f196e142d155ebadd7ec5b254030"
+        },
+        {
+          "path": "p3-after-desktop-desktop.png",
+          "sha256": "c95ac1a7d48962afe705f2306ada302357c93329d55e6be9fc95911df4fafe22"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:29.696Z",
+      "failedApi": [
+        "switchy.send: Ask a question of at most 8,000 bytes"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "2af95f16b3f901462addc65f32810d05fd66b019899e74d26d045a9fa1ecfcb1"
+        },
+        {
+          "path": "p4-after-mobile-mobile.png",
+          "sha256": "60cf5320701e8ebbacffbcbe1e1cb920d99b0be2046ee547b4c0a84f4bc66cda"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:33.378Z",
+      "failedApi": [
+        "switchy.send: Ask a question of at most 8,000 bytes"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T01:49:33.423Z",
+      "text": "expected-api: switchy.send: the proof is the refusal of a question over 8,000 bytes; base refuses it the same way"
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "4d684cf868acf1bd083a0bf37b8dca923daadf4b1cdc854938169d7479a51783"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:33.470Z",
+      "cmd": "verify/yv map run switchy --recipe refusal-notice-is-red",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "6a127905e09e936032078afd4b2c33d2ba190867ee713d7fe070ffa921cedc7b"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:41.842Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "8cdce2b87c9f445fcd8af1a694f19c2330d011822223c376bafd02429f4128c9"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:42.046Z",
+      "cmd": "verify/yv design-check --base f850d917a604",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "ce3e2a3a44af38ba7d241e07e50de76b39104772",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-switchy.json",
+          "sha256": "96300b00a997780201eb2a31650140497d53a918072aac85fbe923a7d29a16b0"
+        }
+      ],
+      "addedAt": "2026-11-18T01:49:42.146Z",
+      "cmd": "verify/yv map run switchy",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "switchy/ask-and-reload",
+        "switchy/context-and-followup",
+        "switchy/removed-host-scope-falls-back",
+        "switchy/refusal-notice-is-red",
+        "switchy/shared-composer",
+        "switchy/controls-and-approvals",
+        "switchy/voice-roundtrip"
+      ]
+    }
+  ]
+}

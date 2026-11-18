@@ -1,0 +1,26 @@
+$ verify/yv map run switchy --recipe refusal-notice-is-red
+# exit 0 after 8325 ms at ce3e2a3a44af38ba7d241e07e50de76b39104772
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-18T01:49:41.793Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "refusal-notice-is-red",
+          "status": "pass",
+          "ms": 7408
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

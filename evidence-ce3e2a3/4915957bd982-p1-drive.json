@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "df71a351ecb0113f60d558ec4503499b6acbdece",
+    "short": "df71a35",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:49:05.070Z"
+  },
+  "dir": ".verify/evidence/switchy-refusal-red-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3621,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-refusal-red-base/before-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const box = document.querySelector(\"textarea\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \"value\").set; set.call(box, \"TEST-too long \" + \"x\".repeat(8001)); box.dispatchEvent(new Event(\"input\", { bubbles: true })); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "switchy.send",
+          "message": "Ask a question of at most 8,000 bytes"
+        }
+      ],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3171,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-refusal-red-base/before-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const box = document.querySelector(\"textarea\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \"value\").set; set.call(box, \"TEST-too long \" + \"x\".repeat(8001)); box.dispatchEvent(new Event(\"input\", { bubbles: true })); return true; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "switchy.send",
+          "message": "Ask a question of at most 8,000 bytes"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
