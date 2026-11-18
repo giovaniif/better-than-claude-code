@@ -123,6 +123,17 @@ after Send. Found as patrol finding #171.
 yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.cwd\",\"{{work}}/TEST-gone-later\");return 1})()","equals":1},{"reload":true},{"goto":"new"},{"expect":"css:.new-chips .bad","text":"no longer exists"},{"expect":"text:Works in the folder itself","visible":false},{"fill":"label:Message","value":"TEST-into a gone folder"},{"expect":{"role":"button","name":"Send","exact":true},"enabled":false},{"shot":"gone-folder"}]'
 ```
 
+### long-folder-keeps-its-chip-icon
+Viewports: both
+A folder name long enough to be cut with "…" keeps its chip's icon at full
+size (and its chevron), as on a short name, instead of the label squeezing
+them (#170: the 14 px folder icon rendered 8 px wide).
+
+```sh
+mkdir -p "$(v work)/TEST-a-really-long-project-folder-name-for-the-mobile-chips"
+yv drive new --steps '[{"eval":"(()=>{localStorage.setItem(\"yard.cwd\",\"{{work}}/TEST-a-really-long-project-folder-name-for-the-mobile-chips\");return 1})()","equals":1},{"reload":true},{"goto":"new"},{"expect":{"css":".new-chips .chip","hasText":"TEST-a-really-long"}},{"eval":"(() => { const icons = [...document.querySelectorAll(\".new-chips .chip svg\")]; return icons.length >= 2 && icons.every((i) => i.getBoundingClientRect().width === Number(i.getAttribute(\"width\"))); })()","equals":true},{"shot":"long-folder-chip"}]'
+```
+
 ### refused-send-names-the-session-in-the-way
 Viewports: both
 A folder that cannot get a worktree (here a plain folder) takes one working
