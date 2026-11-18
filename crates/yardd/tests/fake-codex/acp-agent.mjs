@@ -62,12 +62,14 @@ export function runAgent({ engine, state, account, loggedIn }) {
     return list;
   };
   const modes = (s) =>
-    engine === "grok"
+    engine === "gemini"
+      ? { currentModeId: s.mode, availableModes: ["default", "auto_edit", "yolo"].map((id) => ({ id, name: id })) }
+      : engine === "grok"
       ? { currentModeId: s.mode, availableModes: ["default", "acceptEdits", "plan", "bypassPermissions"].map((id) => ({ id, name: id })) }
       : undefined;
   const opened = (id) => {
     const s = sessions.get(id);
-    return { configOptions: configOptions(s), ...(modes(s) ? { modes: modes(s) } : {}) };
+    return { ...(engine === "gemini" ? { models: { currentModelId: s.model, availableModels: MODELS.map(({ modelId, name }) => ({ modelId, name })) } } : { configOptions: configOptions(s) }), ...(modes(s) ? { modes: modes(s) } : {}) };
   };
 
   async function prompt(id, params) {
@@ -175,7 +177,7 @@ export function runAgent({ engine, state, account, loggedIn }) {
           id: msg.id,
           result: {
             protocolVersion: 1,
-            agentCapabilities: { loadSession: true, promptCapabilities: { image: true }, sessionCapabilities: { resume: {} } },
+            agentCapabilities: { loadSession: true, promptCapabilities: { image: true }, ...(engine === "gemini" ? {} : { sessionCapabilities: { resume: {} } }) },
             authMethods: [{ id: engine, name: engine }],
             ...(engine === "grok"
               ? {
@@ -200,7 +202,7 @@ export function runAgent({ engine, state, account, loggedIn }) {
       case "session/new": {
         if (!loggedIn()) return write({ id: msg.id, error: { code: -32000, message: "Authentication required", data: "no auth method id provided" } });
         const sid = `${engine}-ses-${process.pid}-${++n}`;
-        sessions.set(sid, { cwd: p.cwd, model: modelIds[0], effort: "default", mode: engine === "grok" ? "default" : "build" });
+        sessions.set(sid, { cwd: p.cwd, model: modelIds[0], effort: "default", mode: engine === "opencode" ? "build" : "default" });
         save();
         return write({ id: msg.id, result: { sessionId: sid, ...opened(sid) } });
       }
@@ -213,7 +215,15 @@ export function runAgent({ engine, state, account, loggedIn }) {
         }
         return write({ id: msg.id, result: opened(p.sessionId) });
       }
+      case "session/set_model": {
+        const s = sessions.get(p.sessionId);
+        if (!s || !modelIds.includes(p.modelId)) return write({ id: msg.id, error: { code: -32602, message: "unknown model" } });
+        s.model = p.modelId;
+        save();
+        return write({ id: msg.id, result: {} });
+      }
       case "session/set_config_option": {
+        if (engine === "gemini") return write({ id: msg.id, error: { code: -32601, message: "unsupported" } });
         const s = sessions.get(p.sessionId);
         if (!s) return write({ id: msg.id, error: { code: -32602, message: "unknown session" } });
         const value = typeof p.value === "string" ? p.value : p.value?.value;

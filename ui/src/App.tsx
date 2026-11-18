@@ -46,6 +46,7 @@ export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, st
     codex: "Sandboxed to the folder, asks to go further",
     opencode: "Asks before commands, edits and web fetches",
     grok: "Asks before commands and edits",
+    gemini: "Asks before commands and edits",
   },
   {
     id: "acceptEdits",
@@ -54,6 +55,7 @@ export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, st
     codex: "Edits in the folder freely, asks to go further",
     opencode: "Edits files freely, asks before commands",
     grok: "Edits files freely, asks before commands",
+    gemini: "Edits files freely, asks before commands",
   },
   {
     id: "plan",
@@ -62,8 +64,9 @@ export const PERMISSIONS: ({ id: Permission; label: string } & Record<Engine, st
     codex: "Read-only: looks, never changes",
     opencode: "OpenCode's plan agent: edits are refused",
     grok: "Grok's plan mode: edits are refused",
+    gemini: "Edits are refused; commands ask for approval",
   },
-  { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks", opencode: "Never asks. Runs anything", grok: "Never asks. Runs anything" },
+  { id: "full", label: "Full access", claude: "Never asks. Runs anything", codex: "No sandbox, never asks", opencode: "Never asks. Runs anything", grok: "Never asks. Runs anything", gemini: "Never asks. Runs anything" },
 ];
 export const STATUS_LABEL: Record<Status, string> = {
   idle: "Idle",
@@ -3372,6 +3375,19 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
   let body: ReactNode;
   if (!login || login.state === "starting" || login.state === "cancelled") {
     body = <p className="muted">Starting the login on {machine}…</p>;
+  } else if (login.state === "terminal") {
+    body = (
+      <>
+        <p>Run this in a terminal on {machine}, then choose Log in with Google:</p>
+        <div className="login-code login-command">
+          <code>{login.command}</code>
+          <button className="btn" onClick={() => copy(login.command ?? "gemini")}>{copied ? "Copied" : "Copy"}</button>
+        </div>
+        {login.instructions && <p className="muted small">{login.instructions}</p>}
+        <p className="muted small">Gemini CLI keeps the login on that machine. After signing in, check it here.</p>
+        <button className="btn-primary" onClick={() => actions.login(host, engine, account)}>Check login</button>
+      </>
+    );
   } else if (login.state === "providers") {
     body = <ProviderPicker providers={login.providers ?? []} onPick={(provider, method) => actions.loginChoose(host, provider, method, account)} />;
   } else if (login.state === "key") {

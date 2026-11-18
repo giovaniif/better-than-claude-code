@@ -2,13 +2,13 @@
 import type { Engine, Models } from "./protocol";
 
 /** Every engine, in the order pickers and the Hosts page list them. */
-export const ENGINES: Engine[] = ["claude", "codex", "opencode", "grok"];
+export const ENGINES: Engine[] = ["claude", "codex", "opencode", "grok", "gemini"];
 
 /** Short names: "Hand off to Codex". */
-export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex", opencode: "OpenCode", grok: "Grok" };
+export const ENGINE_NAME: Record<Engine, string> = { claude: "Claude", codex: "Codex", opencode: "OpenCode", grok: "Grok", gemini: "Gemini" };
 
 /** Product names, for logins and the Hosts page. */
-export const ENGINE_LABEL: Record<Engine, string> = { claude: "Claude Code", codex: "Codex", opencode: "OpenCode", grok: "Grok" };
+export const ENGINE_LABEL: Record<Engine, string> = { claude: "Claude Code", codex: "Codex", opencode: "OpenCode", grok: "Grok", gemini: "Gemini" };
 
 /** How to install each CLI on a host. */
 export const ENGINE_INSTALL: Record<Engine, string> = {
@@ -16,6 +16,7 @@ export const ENGINE_INSTALL: Record<Engine, string> = {
   codex: "npm i -g @openai/codex",
   opencode: "npm i -g opencode-ai",
   grok: "npm i -g @xai-official/grok",
+  gemini: "npm i -g @google/gemini-cli",
 };
 
 /** How to log each CLI in from a terminal, for a host the app cannot reach yet. */
@@ -24,16 +25,17 @@ export const ENGINE_LOGIN: Record<Engine, string> = {
   codex: "codex login --device-auth",
   opencode: "opencode auth login",
   grok: "grok login --device-auth",
+  gemini: "gemini",
 };
 
 /** Where a device-code login signs in, for "sign in with your … account". */
-export const ENGINE_ACCOUNT: Partial<Record<Engine, string>> = { codex: "ChatGPT", grok: "Grok (x.ai)", claude: "Claude" };
+export const ENGINE_ACCOUNT: Partial<Record<Engine, string>> = { codex: "ChatGPT", grok: "Grok (x.ai)", claude: "Claude", gemini: "Google" };
 
 /** OpenCode runs on providers, each logged in on its own: its Log in adds one. */
 export const addsProviders = (engine: Engine) => engine === "opencode";
 
 /** Whether a message sent mid-turn joins the running turn at the agent's next
- *  step (yardd's `engines::can_steer`). OpenCode and Grok take no input inside
+ *  step (yardd's `engines::can_steer`). The ACP engines take no input inside
  *  a turn, so yardd sends it as the next one. */
 export const canSteer = (engine: Engine) => engine === "claude" || engine === "codex";
 

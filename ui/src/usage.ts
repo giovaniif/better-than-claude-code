@@ -158,6 +158,8 @@ function newer(engine: Engine, a: Usage, b: Usage): boolean {
  *  is the same subscription on every machine, so one host's figures stand for
  *  all. Engines in the order given, Default first, then accounts as they appear. */
 export function stripGroups(sources: UsageSource[], engines: Engine[]): StripGroup[] {
+  // ACP engines have no plan-limit reports, even when they have added accounts.
+  engines = engines.filter((engine) => engine === "claude" || engine === "codex");
   const found = new Map<string, StripGroup>();
   const offer = (key: string, group: StripGroup) => {
     if (metersFor(group.engine, group.usage).length === 0) return;

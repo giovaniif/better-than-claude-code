@@ -527,7 +527,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             // Each engine logs `approval_resolved` itself, before it passes the answer on.
             match meta.engine.as_str() {
                 "codex" => codex::approve(app, sid, request_id, decision).await?,
-                "opencode" | "grok" => crate::acp::approve(app, sid, request_id, decision).await?,
+                "opencode" | "grok" | "gemini" => crate::acp::approve(app, sid, request_id, decision).await?,
                 _ => claude::approve(app, sid, request_id, decision)?,
             }
         }
@@ -668,7 +668,7 @@ async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     app.guard.forget(sid);
     match meta.engine.as_str() {
         "codex" => codex::forget(app, sid).await,
-        "opencode" | "grok" => crate::acp::forget(app, sid),
+        "opencode" | "grok" | "gemini" => crate::acp::forget(app, sid),
         _ => {}
     }
     pty::close_session(app, sid);

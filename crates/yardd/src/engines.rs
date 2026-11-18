@@ -3,7 +3,7 @@
 //! assuming there are two.
 
 /// Every engine, in the order the UI lists them.
-pub const ALL: [&str; 4] = ["claude", "codex", "opencode", "grok"];
+pub const ALL: [&str; 5] = ["claude", "codex", "opencode", "grok", "gemini"];
 
 pub fn is_engine(engine: &str) -> bool {
     ALL.contains(&engine)
@@ -16,6 +16,7 @@ pub fn name(engine: &str) -> &'static str {
         "claude" => "Claude",
         "opencode" => "OpenCode",
         "grok" => "Grok",
+        "gemini" => "Gemini",
         _ => "an unknown engine",
     }
 }

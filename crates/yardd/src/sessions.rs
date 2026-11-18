@@ -68,7 +68,7 @@ async fn start_engine(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
     let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
     match engine.as_str() {
         "codex" => codex::create(app, sid).await,
-        "opencode" | "grok" => acp::create(app, sid).await,
+        "opencode" | "grok" | "gemini" => acp::create(app, sid).await,
         _ => claude::create(app, sid).await,
     }
 }
@@ -140,7 +140,7 @@ async fn start_turn(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]
     let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
     let sent = match engine.as_str() {
         "codex" => codex::send(app, sid, text, attachments).await,
-        "opencode" | "grok" => acp::send(app, sid, text, attachments).await,
+        "opencode" | "grok" | "gemini" => acp::send(app, sid, text, attachments).await,
         _ => claude::send(app, sid, text, attachments),
     };
     if let Err(e) = sent {
@@ -183,7 +183,7 @@ pub async fn interrupt(app: &Arc<App>, sid: &str) -> anyhow::Result<()> {
             Ok(r) => r,
             Err(_) => Err(anyhow::anyhow!("Codex did not answer turn/interrupt")),
         },
-        "opencode" | "grok" => acp::interrupt(app, sid),
+        "opencode" | "grok" | "gemini" => acp::interrupt(app, sid),
         _ => claude::interrupt(app, sid),
     };
     if let Err(e) = &asked {
