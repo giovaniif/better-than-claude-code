@@ -54,7 +54,7 @@ composer had already cleared the message and every chip.
 
 ```sh
 for i in $(seq -w 1 21); do echo "TEST-note $i" > "$(v work)/TEST-many-$i.txt"; done
-yv drive 'session:{{sid_echo}}' --steps '[{"upload":"input","files":["{{work}}/TEST-many-01.txt","{{work}}/TEST-many-02.txt","{{work}}/TEST-many-03.txt","{{work}}/TEST-many-04.txt","{{work}}/TEST-many-05.txt","{{work}}/TEST-many-06.txt","{{work}}/TEST-many-07.txt","{{work}}/TEST-many-08.txt","{{work}}/TEST-many-09.txt","{{work}}/TEST-many-10.txt","{{work}}/TEST-many-11.txt","{{work}}/TEST-many-12.txt","{{work}}/TEST-many-13.txt","{{work}}/TEST-many-14.txt","{{work}}/TEST-many-15.txt","{{work}}/TEST-many-16.txt","{{work}}/TEST-many-17.txt","{{work}}/TEST-many-18.txt","{{work}}/TEST-many-19.txt","{{work}}/TEST-many-20.txt","{{work}}/TEST-many-21.txt"]},{"expect":"css:.attachments","text":"TEST-many-21.txt"},{"fill":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachments-error","text":"Too many files: 21. The limit is 20 per message."},{"expect":{"role":"button","name":"Send"},"enabled":false},{"press":"Enter"},{"expect":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachment","count":21},{"click":"role:button:Remove TEST-many-21.txt"},{"expect":"css:.attachments-error","visible":false},{"expect":{"role":"button","name":"Send"},"enabled":true}]'
+yv drive 'session:{{sid_echo}}' --steps '[{"upload":"input","files":["{{work}}/TEST-many-01.txt","{{work}}/TEST-many-02.txt","{{work}}/TEST-many-03.txt","{{work}}/TEST-many-04.txt","{{work}}/TEST-many-05.txt","{{work}}/TEST-many-06.txt","{{work}}/TEST-many-07.txt","{{work}}/TEST-many-08.txt","{{work}}/TEST-many-09.txt","{{work}}/TEST-many-10.txt","{{work}}/TEST-many-11.txt","{{work}}/TEST-many-12.txt","{{work}}/TEST-many-13.txt","{{work}}/TEST-many-14.txt","{{work}}/TEST-many-15.txt","{{work}}/TEST-many-16.txt","{{work}}/TEST-many-17.txt","{{work}}/TEST-many-18.txt","{{work}}/TEST-many-19.txt","{{work}}/TEST-many-20.txt","{{work}}/TEST-many-21.txt"]},{"expect":"css:.composer .attachments","text":"TEST-many-21.txt"},{"fill":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachments-error","text":"Too many files: 21. The limit is 20 per message."},{"expect":{"role":"button","name":"Send"},"enabled":false},{"press":"Enter"},{"expect":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachment","count":21},{"click":"role:button:Remove TEST-many-21.txt"},{"expect":"css:.attachments-error","visible":false},{"expect":{"role":"button","name":"Send"},"enabled":true}]'
 ```
 
 ### queued-files-come-back
@@ -69,6 +69,17 @@ for vp in mobile desktop; do
   yv api '{"op":"session.interrupt","sessionId":"{{sid_echo}}"}'
   yv drive 'session:{{sid_echo}}' --viewport $vp --steps "$steps"
 done
+```
+
+### many-files-keep-send-on-screen
+Twenty files (the most one message takes) keep the composer inside the
+screen: the chips scroll in their own row, so Send and the session header
+stay in view. Before, at 390 px the chips stacked one per row, the composer
+grew to 1132 px, the header scrolled off the top and Send sat below the fold.
+
+```sh
+for i in $(seq -w 1 20); do echo "TEST-note $i" > "$(v work)/TEST-many-$i.txt"; done
+yv drive 'session:{{sid_echo}}' --steps '[{"upload":"input","files":["{{work}}/TEST-many-01.txt","{{work}}/TEST-many-02.txt","{{work}}/TEST-many-03.txt","{{work}}/TEST-many-04.txt","{{work}}/TEST-many-05.txt","{{work}}/TEST-many-06.txt","{{work}}/TEST-many-07.txt","{{work}}/TEST-many-08.txt","{{work}}/TEST-many-09.txt","{{work}}/TEST-many-10.txt","{{work}}/TEST-many-11.txt","{{work}}/TEST-many-12.txt","{{work}}/TEST-many-13.txt","{{work}}/TEST-many-14.txt","{{work}}/TEST-many-15.txt","{{work}}/TEST-many-16.txt","{{work}}/TEST-many-17.txt","{{work}}/TEST-many-18.txt","{{work}}/TEST-many-19.txt","{{work}}/TEST-many-20.txt"]},{"expect":"css:.composer .attachments","text":"TEST-many-20.txt"},{"fill":"label:Message","value":"TEST-twenty files"},{"expect":{"role":"button","name":"Send"},"inViewport":true},{"expect":"role:button:Delete","inViewport":true},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-twenty files"}]'
 ```
 
 ### paste-and-drop (manual: clipboard and OS drag events are not scripted)
