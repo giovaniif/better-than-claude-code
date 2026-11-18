@@ -1,0 +1,93 @@
+{
+  "ok": true,
+  "route": "session:s1a1f05396276",
+  "build": {
+    "sha": "9114cfb4b6000e8d46599f84693fde196f2d4d2a",
+    "short": "9114cfb",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T20:22:51.824Z"
+  },
+  "dir": "/tmp/switchyard-thread-links/.verify/drives/2026-11-18T20-23-10-903Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3085,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-thread-links/.verify/drives/2026-11-18T20-23-10-903Z/web-links-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".thread .prose a\")].map(a => [a.getAttribute(\"href\"), a.target, a.rel])",
+          "value": [
+            [
+              "https://claude.ai/artifact/example",
+              "_blank",
+              "noopener noreferrer"
+            ],
+            [
+              "https://example.com/path?mode=review",
+              "_blank",
+              "noopener noreferrer"
+            ]
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2305,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-thread-links/.verify/drives/2026-11-18T20-23-10-903Z/web-links-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".thread .prose a\")].map(a => [a.getAttribute(\"href\"), a.target, a.rel])",
+          "value": [
+            [
+              "https://claude.ai/artifact/example",
+              "_blank",
+              "noopener noreferrer"
+            ],
+            [
+              "https://example.com/path?mode=review",
+              "_blank",
+              "noopener noreferrer"
+            ]
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

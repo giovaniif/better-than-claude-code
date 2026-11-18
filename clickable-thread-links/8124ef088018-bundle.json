@@ -1,0 +1,126 @@
+{
+  "v": 1,
+  "claim": "Agent replies show web link labels as inline code and leave bare external URLs inert.",
+  "repo": "/tmp/switchyard-thread-links",
+  "base": "6609806134c2856517b015aefa320d7fa7f3ee45",
+  "head": "9114cfb4b6000e8d46599f84693fde196f2d4d2a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T20:23:17.383Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "6609806134c2856517b015aefa320d7fa7f3ee45",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "bd80a2b5721ec0d47fe8b1d75b961b4fabf5e40b111dd6aeab22ab8187e52353"
+        }
+      ],
+      "addedAt": "2026-11-18T20:23:17.427Z",
+      "cmd": "verify/yv map run thread --recipe web-links-open-outside-the-thread",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6609806134c2856517b015aefa320d7fa7f3ee45",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "f52d6d2bd7d3b5e1cc10357efcd4edd71d98553ce90defa77ccb3f8f94a7e8ba"
+        },
+        {
+          "path": "p2-fail-mobile-step0.png",
+          "sha256": "3bd450a3dffd20846abc64ffec76ea327508392041b387c18212437abb6c390c"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "da0061497445ef00d64d25cad257e3c1cf9d79ab720bdeb846c32b60cfd93c22"
+        }
+      ],
+      "addedAt": "2026-11-18T20:24:13.687Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "9114cfb4b6000e8d46599f84693fde196f2d4d2a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "eed8448f43b740b199812a4c54c5cf650a5af7800711d18c5520c3b68591cb89"
+        },
+        {
+          "path": "p3-web-links-mobile.png",
+          "sha256": "a4865f49141a3fe436fbbd0f92446e28fd58ee6b2a690b571d37ad9f36b066f1"
+        },
+        {
+          "path": "p3-web-links-desktop.png",
+          "sha256": "28d145bc0f1edb0c741ac737694e9278a32d29a9a8be368c4858e4732ef1bf8a"
+        }
+      ],
+      "addedAt": "2026-11-18T20:24:13.736Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "9114cfb4b6000e8d46599f84693fde196f2d4d2a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "4fbf95fafc605f4317d224e1bae0c4f734ab24c4d47348c0f44b08432e4b2051"
+        }
+      ],
+      "addedAt": "2026-11-18T20:24:13.779Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "9114cfb4b6000e8d46599f84693fde196f2d4d2a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "aa0b682a07202f9cc4db409269f4fe427a4417ff9ed86ac8488930788ce4f7d2"
+        }
+      ],
+      "addedAt": "2026-11-18T20:24:14.356Z",
+      "cmd": "verify/yv design-check --base 6609806134c2",
+      "exit": 0
+    }
+  ]
+}
