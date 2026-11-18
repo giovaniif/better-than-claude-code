@@ -1,0 +1,45 @@
+$ verify/yv map run focused-pages --recipe session-rows-line-up-with-the-page
+# exit 1 after 8837 ms at 74364c3fbfbda8b72c76089d337fc1bd84a7ef4d
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:50:15.071Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "session-rows-line-up-with-the-page",
+          "status": "fail",
+          "ms": 3961,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"const col = document.querySelector(\\\".focused-session-list\\\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\\\".focused-session-row\\\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-50-11-330Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"const col = document.querySelector(\\\".focused-session-list\\\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\\\".focused-session-row\\\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-50-11-330Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "ix the greeting Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[edit] TEST-fix the greeting\\\"\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"TEST-say hello Codex · Default · iso-host Idle —\\\":\\n  - strong: TEST-say hello\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"[think] TEST-plan the refactor Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[think] TEST-plan the refactor\\\"\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"[fail] TEST-failing turn Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[fail] TEST-failing turn\\\"\\n  - text: Codex · Default · iso-host Idle —\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"const col = document.querySelector(\\\".focused-session-list\\\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\\\".focused-session-row\\\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"const col = document.querySelector(\\\\\\\".focused-session-list\\\\\\\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\\\\\\\".focused-session-row\\\\\\\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-50-11-330Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"const col = document.querySelector(\\\\\\\".focused-session-list\\\\\\\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\\\\\\\".focused-session-row\\\\\\\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67/.verify/drives/2026-11-18T04-50-11-330Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "focused-pages/session-rows-line-up-with-the-page",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run focused-pages --recipe session-rows-line-up-with-the-page
+# exit 0 after 5138 ms at e3c8aff6c52d766e32375d481c75db3dbaa861c5
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:50:34.180Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "session-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 3930
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [164.00ms]

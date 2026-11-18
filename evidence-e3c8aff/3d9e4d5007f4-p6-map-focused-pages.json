@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:51:55.910Z",
+      "counts": {
+        "pass": 12
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selected-host-tabs",
+          "status": "pass",
+          "ms": 5562
+        },
+        {
+          "label": "compact-usage-popover",
+          "status": "pass",
+          "ms": 4971
+        },
+        {
+          "label": "subscriptions-page",
+          "status": "pass",
+          "ms": 6215
+        },
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 4918
+        },
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 10824
+        },
+        {
+          "label": "sessions-search-and-archive",
+          "status": "pass",
+          "ms": 7945
+        },
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 5339
+        },
+        {
+          "label": "host-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4661
+        },
+        {
+          "label": "session-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4719
+        },
+        {
+          "label": "offline-host-and-selection-fallback",
+          "status": "pass",
+          "ms": 8698
+        },
+        {
+          "label": "workspace-widths-and-views",
+          "status": "pass",
+          "ms": 9463
+        },
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 7247
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

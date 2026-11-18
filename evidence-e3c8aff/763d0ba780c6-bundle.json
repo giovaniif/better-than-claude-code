@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "claim": "Sessions page, both viewports: every session row starts 8 px left of the tabs, search box and list column above it, and its divider ends 8 px short of the column's right edge.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-3d67",
+  "base": "d9a5cdafaa2adb6c0bee71b64a22b24ac6f2c347",
+  "head": "e3c8aff6c52d766e32375d481c75db3dbaa861c5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T04:50:06.146Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "74364c3fbfbda8b72c76089d337fc1bd84a7ef4d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "704af0c7c757bb948483aa6281ed163f0865fdbc2304bb0c59478a4f452e6897"
+        },
+        {
+          "path": "p1-base-session-rows-mobile.png",
+          "sha256": "e6b06110c31b6858d793edd7315eecd768c3ca350238960450cc6d76fe1bbb10"
+        },
+        {
+          "path": "p1-fail-mobile-step2.png",
+          "sha256": "e6b06110c31b6858d793edd7315eecd768c3ca350238960450cc6d76fe1bbb10"
+        },
+        {
+          "path": "p1-base-session-rows-desktop.png",
+          "sha256": "9f732b59a51460070c711e3b9906ec9202567a2b3a889b4662d7ce9e97d195a3"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "9f732b59a51460070c711e3b9906ec9202567a2b3a889b4662d7ce9e97d195a3"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:06.186Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "74364c3fbfbda8b72c76089d337fc1bd84a7ef4d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "d855104b9f53bc193fc56a9af7a3d5be4c93c50783453e31a70f730d44a48c74"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:06.240Z",
+      "cmd": "verify/yv map run focused-pages --recipe session-rows-line-up-with-the-page",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e3c8aff6c52d766e32375d481c75db3dbaa861c5",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "d162a46a9b9c971903c057897646ac30cc3786be87cc5d09f068886f212f0baa"
+        },
+        {
+          "path": "p3-head-session-rows-mobile.png",
+          "sha256": "6477f31cec1c20955cd99640af2a6a9b3759c0fb001ec2b1718c916da074985b"
+        },
+        {
+          "path": "p3-head-session-rows-desktop.png",
+          "sha256": "1b5c3f99a7481421eb0b0140a5fa5c51e4163802dd6f7d11b6e2437e325b680c"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:29.002Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "e3c8aff6c52d766e32375d481c75db3dbaa861c5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "5087db1642bd17e53dc106e474fb436c87e33bc78e2c6d2d598e50149b89e987"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:29.046Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run focused-pages --recipe session-rows-line-up-with-the-page",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "e3c8aff6c52d766e32375d481c75db3dbaa861c5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "e8c3819302f98ec8965823ecdc545915cb55dbb39677d01f7a545350bbbef239"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:34.226Z",
+      "cmd": "verify/yv design-check --base d9a5cdafaa2a",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e3c8aff6c52d766e32375d481c75db3dbaa861c5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-focused-pages.json",
+          "sha256": "3d9e4d5007f415261daec34b85070a91583780cbd7c72b681e0a51062e1667f7"
+        }
+      ],
+      "addedAt": "2026-11-18T04:50:34.307Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    }
+  ]
+}
