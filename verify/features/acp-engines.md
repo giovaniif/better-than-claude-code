@@ -1,8 +1,7 @@
 # OpenCode, Grok and Gemini
 
 OpenCode (`opencode acp`), Grok (`grok agent stdio`) and Gemini (`gemini --acp`) run through yardd's
-ACP driver. Where their CLI is installed, the model picker lists each as its
-own row next to Claude and Codex; a session on either streams its reply,
+ACP driver. Where their CLI is installed, the account picker lists its identities and the separate model picker lists its models; a session on either streams its reply,
 asks before commands and edits (Ask first), and takes the approval like the
 other engines. Messages sent mid-turn wait for the next turn: neither engine
 takes input inside a running one. The scripted `opencode` and `grok` in
@@ -25,13 +24,10 @@ yv iso down
 ## Recipes
 
 ### picker-lists-opencode-and-grok
-Expect at both viewports: the model picker on the new-session page has a
-folded row per engine, "OpenCode · 1 model" (the fake's free model; more
-appear once a provider is added) and "Grok · 2 models", and opening Grok's
-row lists its models.
+Expect at both viewports: the account picker lists OpenCode, Grok and Gemini identities. Choosing Grok opens its own model list.
 
 ```sh
-yv drive new --steps '[{"click":{"css":".picker .btn-quiet","nth":0}},{"expect":"role:button:OpenCode · 1 model"},{"click":"role:button:Grok · 2 models"},{"expect":{"css":".picker-model","hasText":"Fake Large"}},{"shot":"picker"}]'
+yv drive new --steps '[{"click":"css:.account-trigger"},{"expect":{"role":"menuitemradio","name":"OpenCode · Default"}},{"expect":{"role":"menuitemradio","name":"Gemini · Default"}},{"click":{"role":"menuitemradio","name":"Grok · Default"}},{"click":"css:button[aria-label^=\"Model \"]"},{"expect":{"css":".picker-model","hasText":"Fake Large"}},{"shot":"picker"}]'
 ```
 
 ### opencode-session-streams-a-reply
@@ -39,7 +35,7 @@ Expect at both viewports: a session started on OpenCode's free model answers
 "Echo: <prompt>" and its row names the model.
 
 ```sh
-yv drive new --steps '[{"click":{"css":".picker .btn-quiet","nth":0}},{"click":"role:button:OpenCode · 1 model"},{"click":{"css":".picker-model","hasText":"Fake Free (opencode)"}},{"fill":"label:Message","value":"TEST-hello from OpenCode"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-hello from OpenCode","timeout":15000},{"shot":"opencode-session"}]'
+yv drive new --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"OpenCode · Default"}},{"click":"css:button[aria-label^=\"Model \"]"},{"click":{"css":".picker-model","hasText":"Fake Free (opencode)"}},{"fill":"label:Message","value":"TEST-hello from OpenCode"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-hello from OpenCode","timeout":15000},{"shot":"opencode-session"}]'
 ```
 
 ### grok-command-asks-first
@@ -47,7 +43,7 @@ Expect at both viewports: a Grok session in Ask first shows the command's
 approval card; Allow once runs it and the reply follows.
 
 ```sh
-yv drive new --steps '[{"click":{"css":".picker .btn-quiet","nth":0}},{"click":"role:button:Grok · 2 models"},{"click":{"css":".picker-model","hasText":"Fake Small"}},{"fill":"label:Message","value":"[cmd] TEST-check with Grok"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Allow this command?","timeout":15000},{"shot":"approval"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it.","timeout":15000}]'
+yv drive new --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Grok · Default"}},{"click":"css:button[aria-label^=\"Model \"]"},{"click":{"css":".picker-model","hasText":"Fake Small"}},{"fill":"label:Message","value":"[cmd] TEST-check with Grok"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Allow this command?","timeout":15000},{"shot":"approval"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it.","timeout":15000}]'
 ```
 
 ### opencode-hands-off-from-its-picker
@@ -57,7 +53,7 @@ and Grok into rows that say switching hands off.
 Viewports: desktop
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":{"css":".picker .btn-quiet","nth":0}},{"click":"role:button:OpenCode · 1 model"},{"click":{"css":".picker-model","hasText":"Fake Free (opencode)"}},{"fill":"label:Message","value":"TEST-hand-off source"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-hand-off source","timeout":15000},{"click":{"css":".picker .btn-quiet","nth":0}},{"expect":"role:button:Grok · 2 models · switching hands off"},{"expect":"role:button:Codex · 2 models · switching hands off"}]'
+yv drive new --viewport desktop --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"OpenCode · Default"}},{"click":"css:button[aria-label^=\"Model \"]"},{"click":{"css":".picker-model","hasText":"Fake Free (opencode)"}},{"fill":"label:Message","value":"TEST-hand-off source"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-hand-off source","timeout":15000},{"click":"css:button[aria-label^=\"Model \"]"},{"expect":"role:button:Grok · 2 models · switching hands off"},{"expect":"role:button:Codex · 2 models · switching hands off"}]'
 ```
 
 ### queued-message-waits-for-next-turn
@@ -77,7 +73,7 @@ Expect at both viewports: Gemini lists its session-discovered models; its
 session streams a reply, asks before a command and takes Allow once.
 
 ```sh
-yv drive new --steps '[{"click":{"css":".picker .btn-quiet","nth":0}},{"click":"role:button:Gemini · 2 models"},{"click":{"css":".picker-model","hasText":"Fake Small"}},{"fill":"label:Message","value":"[cmd] TEST-check with Gemini"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Allow this command?","timeout":15000},{"shot":"gemini-approval"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it.","timeout":15000},{"expect":"role:button:Model Fake Small"},{"shot":"gemini-reply"}]'
+yv drive new --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Gemini · Default"}},{"click":"css:button[aria-label^=\"Model \"]"},{"click":{"css":".picker-model","hasText":"Fake Small"}},{"fill":"label:Message","value":"[cmd] TEST-check with Gemini"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Allow this command?","timeout":15000},{"shot":"gemini-approval"},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it.","timeout":15000},{"expect":"role:button:Model Fake Small"},{"shot":"gemini-reply"}]'
 ```
 
 ### gemini-separate-account-terminal-login
@@ -87,7 +83,7 @@ dialog. Closing it returns to Hosts without starting a model turn.
 
 ```sh
 yv api '{"op":"account.add","engine":"gemini","name":"TEST-Gemini Work"}' --wait '{"op":"accounts"}'
-yv drive hosts --steps '[{"click":"role:button:Details: iso-host"},{"expect":{"css":".account-row","hasText":"TEST-Gemini Work"}},{"click":"role:button:Log in TEST-Gemini Work"},{"expect":"css:.login-command","text":"GEMINI_CLI_HOME="},{"expect":"role:button:Check login"},{"shot":"gemini-login"},{"click":"role:button:Close"}]'
+yv drive hosts --steps '[{"click":"role:tab:Engine logins"},{"expect":{"css":".account-row","hasText":"TEST-Gemini Work"}},{"click":"role:button:Log in TEST-Gemini Work"},{"expect":"css:.login-command","text":"GEMINI_CLI_HOME="},{"expect":"role:button:Check login"},{"shot":"gemini-login"},{"click":"role:button:Close"}]'
 ```
 
 ## Gotchas

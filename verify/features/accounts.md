@@ -120,7 +120,8 @@ Viewports: both
 Desktop actions align at the right; on mobile the whole action group moves under the login identity, with no overflow.
 
 ```sh
-yv drive 'hosts' --steps '[{"click":"role:tab:Engine logins"},{"expect":"role:button:Add OpenCode account"},{"expect":"role:button:Add Gemini account"},{"eval":"[...document.querySelectorAll(\".engine-actions\")].every(a => { const r=a.getBoundingClientRect(), p=a.closest(\".engine-row\").getBoundingClientRect(); return r.left>=p.left && r.right<=p.right+1; })","equals":true},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"engine-actions"}]'```
+yv drive 'hosts' --steps '[{"click":"role:tab:Engine logins"},{"expect":"role:button:Add OpenCode account"},{"expect":"role:button:Add Gemini account"},{"eval":"[...document.querySelectorAll(\".engine-actions\")].every(a => { const r=a.getBoundingClientRect(), p=a.closest(\".engine-row\").getBoundingClientRect(); return r.left>=p.left && r.right<=p.right+1; })","equals":true},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"engine-actions"}]'
+```
 
 ### install-command-stays-at-the-right
 An engine that is not installed shows its install command at the right edge
