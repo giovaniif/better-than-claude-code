@@ -1,0 +1,27 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "launch-defaults",
+      "at": "2026-11-18T06:01:36.316Z",
+      "counts": {
+        "pass": 2
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "independent-defaults",
+          "status": "pass",
+          "ms": 29203
+        },
+        {
+          "label": "reset-defaults",
+          "status": "pass",
+          "ms": 8353
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

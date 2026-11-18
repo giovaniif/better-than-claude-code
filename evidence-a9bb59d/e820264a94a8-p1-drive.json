@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "1727ac5d5c5fb45c207834e650c2001a7299c677",
+    "short": "1727ac5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T05:59:21.217Z"
+  },
+  "dir": ".verify/evidence/disabled-primary-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3666,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/disabled-primary-base/settings-offline-default-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3a48383\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(()=>{const b=document.querySelector(\"section[aria-labelledby=defaults-sessions] .btn-primary\"); return JSON.stringify({disabled:b.disabled, opacity:getComputedStyle(b).opacity})})()",
+          "value": "{\"disabled\":true,\"opacity\":\"1\"}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3003,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/disabled-primary-base/settings-offline-default-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3a48383\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(()=>{const b=document.querySelector(\"section[aria-labelledby=defaults-sessions] .btn-primary\"); return JSON.stringify({disabled:b.disabled, opacity:getComputedStyle(b).opacity})})()",
+          "value": "{\"disabled\":true,\"opacity\":\"1\"}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

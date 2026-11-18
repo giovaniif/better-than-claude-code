@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T06:00:57.424Z",
+      "counts": {
+        "pass": 12
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "add-account",
+          "status": "pass",
+          "ms": 4595
+        },
+        {
+          "label": "empty-name-add-looks-disabled",
+          "status": "pass",
+          "ms": 2620
+        },
+        {
+          "label": "refused-add-account-keeps-the-form",
+          "status": "pass",
+          "ms": 5530
+        },
+        {
+          "label": "log-in-account",
+          "status": "pass",
+          "ms": 3731
+        },
+        {
+          "label": "pick-account-desktop",
+          "status": "pass",
+          "ms": 5492
+        },
+        {
+          "label": "pick-account-mobile",
+          "status": "pass",
+          "ms": 5978
+        },
+        {
+          "label": "default-has-no-account-row-without-a-choice",
+          "status": "pass",
+          "ms": 2132
+        },
+        {
+          "label": "pick-other-engine-account-switches-engine",
+          "status": "pass",
+          "ms": 10431
+        },
+        {
+          "label": "remove-refused-while-in-use",
+          "status": "pass",
+          "ms": 3459
+        },
+        {
+          "label": "remove-account",
+          "status": "pass",
+          "ms": 4042
+        },
+        {
+          "label": "add-account-stays-at-the-right",
+          "status": "pass",
+          "ms": 4430
+        },
+        {
+          "label": "install-command-stays-at-the-right",
+          "status": "pass",
+          "ms": 13549
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

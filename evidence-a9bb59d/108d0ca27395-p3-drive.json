@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+    "short": "a9bb59d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T05:59:37.749Z"
+  },
+  "dir": ".verify/evidence/disabled-primary-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3735,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/disabled-primary-head/settings-offline-default-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3a48383\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "Number(getComputedStyle(document.querySelector(\"section[aria-labelledby=defaults-sessions] .btn-primary\")).opacity) < 1",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "getComputedStyle(document.querySelector(\"section[aria-labelledby=defaults-switchy] .btn-primary\")).opacity",
+          "value": "1"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3060,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/disabled-primary-head/settings-offline-default-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.defaults.sessions\",JSON.stringify({host:\"h1a1ed3a48383\",choice:{engine:\"codex\",model:\"fake-deep\",effort:\"xhigh\"}})); true",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "Number(getComputedStyle(document.querySelector(\"section[aria-labelledby=defaults-sessions] .btn-primary\")).opacity) < 1",
+          "value": true
+        },
+        {
+          "step": 5,
+          "eval": "getComputedStyle(document.querySelector(\"section[aria-labelledby=defaults-switchy] .btn-primary\")).opacity",
+          "value": "1"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

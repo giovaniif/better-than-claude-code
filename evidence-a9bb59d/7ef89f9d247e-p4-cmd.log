@@ -1,0 +1,32 @@
+$ verify/yv map run accounts --recipe empty-name-add-looks-disabled && (cd ui && bun test)
+# exit 0 after 5211 ms at a9bb59d54c34f89420f13ba25adbba3270fac170
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T05:59:50.241Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "empty-name-add-looks-disabled",
+          "status": "pass",
+          "ms": 4144
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [200.00ms]

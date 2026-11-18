@@ -1,0 +1,180 @@
+{
+  "v": 1,
+  "claim": "A disabled primary (filled) button looks exactly like an enabled one, so Add with an empty account name or Save defaults with an offline host reads as ready and silently ignores the click",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-ca73",
+  "base": "6b9220326826240da31f17e32bf31c2cbae9de5e",
+  "head": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T05:59:16.727Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1727ac5d5c5fb45c207834e650c2001a7299c677",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "e820264a94a8b1b84e007bf99dcdc3cde1f1eb07694048c66c07130f94ecacb2"
+        },
+        {
+          "path": "p1-settings-offline-default-mobile.png",
+          "sha256": "bd909d9e12b2e0c8a284e05f37a65e0a15db619248a74d3f17b468866fb82207"
+        },
+        {
+          "path": "p1-settings-offline-default-desktop.png",
+          "sha256": "b45d0bb61e8fa960698cc55523ee4065885bd9795c25802c48328992163dd5e4"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:28.538Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1727ac5d5c5fb45c207834e650c2001a7299c677",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "c43221c602eb10d1196a3a52d6161cde97162a8608ab47eb0ec4782340928ad0"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:28.581Z",
+      "cmd": "verify/yv map run accounts --recipe empty-name-add-looks-disabled",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "108d0ca2739521dc17c38acf93cb0a2a9482028c39bbfd503dca751c268f1dd2"
+        },
+        {
+          "path": "p3-settings-offline-default-mobile.png",
+          "sha256": "670facf2266e3f63768ed8a6a03ebb74ce9522cb461dd6ea07498d351bde62d5"
+        },
+        {
+          "path": "p3-settings-offline-default-desktop.png",
+          "sha256": "fa43145fcff61cba77497a923069272def3c5672479c70c11d9a9c0ee5638f94"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:45.200Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "7ef89f9d247e47031f331b45bba307a5d5954b1f87cc3cf19991743d0a0c3823"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:45.242Z",
+      "cmd": "verify/yv map run accounts --recipe empty-name-add-looks-disabled && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "a417412d0edbef673afc62ae55ababe6c01107a7289a8482f80ed942c5b3fa61"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:50.495Z",
+      "cmd": "verify/yv design-check --base 6b9220326826",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-accounts.json",
+          "sha256": "c906b5c07719372d84eff6583c4fe87b7a561b28a4f96e22133f74902f883615"
+        }
+      ],
+      "addedAt": "2026-11-18T05:59:50.578Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/empty-name-add-looks-disabled",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a9bb59d54c34f89420f13ba25adbba3270fac170",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-launch-defaults.json",
+          "sha256": "f2b332f82090c05f992f8dc705dbe7d35c6dc066af171903266f65505b4984bf"
+        }
+      ],
+      "addedAt": "2026-11-18T06:00:57.473Z",
+      "cmd": "verify/yv map run launch-defaults",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "launch-defaults/independent-defaults",
+        "launch-defaults/reset-defaults"
+      ]
+    }
+  ]
+}
