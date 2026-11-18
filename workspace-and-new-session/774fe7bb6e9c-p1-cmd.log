@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe workspace-tabs-fit-minimum-width
+# exit 1 after 17341 ms at d54474f3e387bd7a9454830c7a0017a6565928f0
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-18T19:25:59.155Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "workspace-tabs-fit-minimum-width",
+          "status": "fail",
+          "ms": 14174,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 6 {\"expect\":\"role:button:Terminal\",\"inViewport\":true}: for: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-direct-tabs-base/.verify/drives/2026-11-18T19-25-45-148Z/fail-desktop-step6.png and the aria snapshot"
+            }
+          ],
+          "tail": "dit-test-fix-the-greeting-9017\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Delete\\\"\\n  - text: \\\"[edit] TEST-fix the greeting\\\"\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\\n  - paragraph: Edited src/lib.rs.\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - paragraph: me@example.com\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - combobox \\\"Workspace view\\\":\\n    - option \\\"Changes\\\" [selected]\\n    - option \\\"Terminal\\\"\\n    - option \\\"Pull request\\\"\\n    - option \\\"Processes\\\"\\n  - button \\\"Refresh changes\\\"\\n  - code: src/lib.rs\\n  - code: +1 −0\\n  - code: src/lib.rs\\n  - text: \\\"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\\\"\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/tmp/switchyard-direct-tabs-base/.verify/drives/2026-11-18T19-25-45-148Z/minimum-pane-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"localStorage.setItem(\\\"yard.paneWidth\\\",\\\"300\\\") ?? true\",\n          \"value\": true\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const bar=document.querySelector(\\\".pane .tabs\\\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\\\".pane .tabs button\\\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 6 {\\\"expect\\\":\\\"role:button:Terminal\\\",\\\"inViewport\\\":true}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-direct-tabs-base/.verify/drives/2026-11-18T19-25-45-148Z/fail-desktop-step6.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/workspace-tabs-fit-minimum-width",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

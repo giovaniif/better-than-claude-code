@@ -1,0 +1,44 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f01e650a8",
+  "build": {
+    "sha": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+    "short": "cade855",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T19:23:26.776Z"
+  },
+  "dir": ".verify/shots/workspace-desktop-review",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3385,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/shots/workspace-desktop-review/workspace-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

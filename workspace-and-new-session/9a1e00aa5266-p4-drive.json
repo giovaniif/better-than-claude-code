@@ -1,0 +1,51 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "7685f480c40c2871a66c79d3b81f3af836c80e2b",
+    "short": "7685f48",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T19:20:34.691Z"
+  },
+  "dir": "/tmp/switchyard-direct-tabs/.verify/drives/2026-11-18T19-20-35-743Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1610,
+      "steps": 4,
+      "failed": {
+        "step": 2,
+        "action": {
+          "eval": "(async () => { const inner = document.querySelector(\".new-inner\"); const row = inner.querySelector(\".composer-row\"); const send = row.querySelector(\".send\"); for (let width = 300; width <= 580; width += 2) { inner.style.maxWidth = width + \"px\"; await new Promise(requestAnimationFrame); const lastControl = Math.max(...[...row.querySelectorAll(\"button:not(.send)\")].filter(b => b.getClientRects().length).map(b => b.getBoundingClientRect().bottom)); if (send.getBoundingClientRect().top >= lastControl) return {width}; } return true; })()",
+          "equals": true
+        },
+        "reason": "eval returned {\"width\":300}, expected true",
+        "screenshot": "/tmp/switchyard-direct-tabs/.verify/drives/2026-11-18T19-20-35-743Z/fail-desktop-step2.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Hosts\"\n  - button \"Sessions\"\n  - button \"Subscriptions\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 35% · 78%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- 'button \"Account: Claude, Default\"': Claude · Default\n- button \"Model Opus 5.5\": Opus 5.5\n- button \"Effort High\": High\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself"
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(async () => { const inner = document.querySelector(\".new-inner\"); const row = inner.querySelector(\".composer-row\"); const send = row.querySelector(\".send\"); for (let width = 300; width <= 580; width += 2) { inner.style.maxWidth = width + \"px\"; await new Promise(requestAnimationFrame); const lastControl = Math.max(...[...row.querySelectorAll(\"button:not(.send)\")].filter(b => b.getClientRects().length).map(b => b.getBoundingClientRect().bottom)); if (send.getBoundingClientRect().top >= lastControl) return {width}; } return true; })()",
+          "value": {
+            "width": 300
+          }
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 2 {\"eval\":\"(async () => { const inner = document.querySelector(\\\".new-inner\\\"); const row = inner.querySelector(\\\".composer-row\\\"); const send = row.querySelector(\\\".send\\\"); for (let width = 300; width <= 580; width += 2) { inner.style.maxWidth = width + \\\"px\\\"; await new Promise(requestAnimationFrame); const lastControl = Math.max(...[...row.querySelectorAll(\\\"button:not(.send)\\\")].filter(b => b.getClientRects().length).map(b => b.getBoundingClientRect().bottom)); if (send.getBoundingClientRect().top >= lastControl) return {width}; } return true; })()\",\"equals\":true}: eval returned {\"width\":300}, expected true",
+      "hint": "see /tmp/switchyard-direct-tabs/.verify/drives/2026-11-18T19-20-35-743Z/fail-desktop-step2.png and the aria snapshot"
+    }
+  ]
+}

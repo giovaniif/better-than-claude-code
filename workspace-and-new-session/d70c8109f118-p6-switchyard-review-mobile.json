@@ -1,0 +1,38 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f01e650a8",
+  "build": {
+    "sha": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+    "short": "cade855",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T19:23:26.776Z"
+  },
+  "dir": ".verify/shots/workspace-mobile-review",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2493,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/shots/workspace-mobile-review/workspace-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

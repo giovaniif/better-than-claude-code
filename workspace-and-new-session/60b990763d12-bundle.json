@@ -1,0 +1,376 @@
+{
+  "v": 1,
+  "claim": "New session opens with a spurious offline error and unnecessary white space. Narrow workspaces hide direct tabs and the sidebar duplicates two destinations.",
+  "repo": "/tmp/switchyard-direct-tabs",
+  "base": "d54474f3e387bd7a9454830c7a0017a6565928f0",
+  "head": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/changes-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mobile.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/pr-pane.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T19:23:53.385Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "d54474f3e387bd7a9454830c7a0017a6565928f0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "774fe7bb6e9cf822b04ce2f74de32df0024f15d637fd3123ea38888d51836543"
+        }
+      ],
+      "addedAt": "2026-11-18T19:25:41.816Z",
+      "cmd": "verify/yv map run layout --recipe workspace-tabs-fit-minimum-width",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d54474f3e387bd7a9454830c7a0017a6565928f0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "a52b937b7e0ca2ba6eda07a37fbbebef92573857bbbdaf7f59d9550cb19730b5"
+        },
+        {
+          "path": "p2-minimum-pane-desktop.png",
+          "sha256": "fdbce548d4ec4926192655cf86bf289a7a657ca7cb4414af40ba1c3753391c75"
+        },
+        {
+          "path": "p2-fail-desktop-step6.png",
+          "sha256": "be2eb5c8eb6ef20f397b80f7dff1b01e5528052601256de787ed02c1d4a178ce"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.520Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d54474f3e387bd7a9454830c7a0017a6565928f0",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "28ab8420d63b1e0b085a7b706d30ea2d6ea24fd3319e387a39f3ea4520865723"
+        },
+        {
+          "path": "p3-fail-mobile-step7.png",
+          "sha256": "423be5745675c657fe97f25109a08b1636a592db02cc7997d54746424f6dd705"
+        },
+        {
+          "path": "p3-fail-desktop-step7.png",
+          "sha256": "3304731b0aba7b4d5a9d8af9d761c038d65ff4239e027edcffd71488ac4afcd5"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.569Z",
+      "failedApi": [
+        "git.branches: this host is not connected",
+        "git.branches: this host is not connected"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7685f480c40c2871a66c79d3b81f3af836c80e2b",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "9a1e00aa5266a61a3938914656883767e06e4f962740658199f1bca56ba542d7"
+        },
+        {
+          "path": "p4-fail-desktop-step2.png",
+          "sha256": "685a98fd3b9647f55348e7eb124b74922889d4602c35a81a73924883cb787469"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.622Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-switchyard-review-new.json",
+          "sha256": "d5eba5b5545e267f2de3b4d5dbe6b46e937860fef3515dd381271343354ef67c"
+        },
+        {
+          "path": "p5-composer-mobile.png",
+          "sha256": "bd67b2f08302259fad260ac8bca55b810c8cef1f0e29f620633bd46116404558"
+        },
+        {
+          "path": "p5-composer-desktop.png",
+          "sha256": "6b0ccd612451a30f9b2b6c9105666d22eda226eb217b755e6d1069dba87d2184"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.669Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-switchyard-review-mobile.json",
+          "sha256": "d70c8109f118c35af47e05e9e7037288efc03d5e9db6ae4163aaf4c07fbcdaba"
+        },
+        {
+          "path": "p6-workspace-mobile.png",
+          "sha256": "7259a1a88454649aa2c425673ee6bc682f213548d2a64ce939334be30966948c"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.713Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-switchyard-review-desktop.json",
+          "sha256": "8386b9fedc4e1eb79fdc8c44e2a3dd2550a02697e2729882aa95d5a76a8244ec"
+        },
+        {
+          "path": "p7-workspace-desktop.png",
+          "sha256": "a51c503fc8515dda27b84201d4ee0bcc05c7e30f9fba23133b90c3cb29b66815"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.757Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "1a886fe25f8a7dae457eb1e083af6a19ef08d22f02bd81e89c087cec42e9a525"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:28.802Z",
+      "cmd": "(cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "0f51e8f257d70ec546f7b6d75855fc87534ecc8a3deca3021de10d7323224391"
+        }
+      ],
+      "addedAt": "2026-11-18T19:26:29.577Z",
+      "cmd": "verify/yv design-check --base d54474f3e387",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-switchyard-review-offline.json",
+          "sha256": "88c170ae1fdf5f8c939519408abd4f5636dac58e9164ed76e3ac28767f705491"
+        },
+        {
+          "path": "p10-offline-new-session-mobile.png",
+          "sha256": "920a91c023a40a299482cdec07669518139b94f4c308574e779b85256df29594"
+        },
+        {
+          "path": "p10-offline-new-session-desktop.png",
+          "sha256": "f8d8e2b12b87e9d8f3b72d3a0e76a72b2c90d662af9473db60b78a05023ceeb5"
+        }
+      ],
+      "addedAt": "2026-11-18T19:27:06.572Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-switchyard-layout-final.json",
+          "sha256": "85e0cb152542a7425448da2ecc417732d77a9a93324f0dc8402a6112e1a01541"
+        }
+      ],
+      "addedAt": "2026-11-18T19:27:06.625Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/new-session-send-shares-controls-row",
+        "layout/desktop-sidebar-is-a-column",
+        "layout/workspace-tabs-fit-minimum-width"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-switchyard-focused-final.json",
+          "sha256": "1fdad8199454f75a5bbf120e73ccb25aea767880641d1f90d1734744846a0a24"
+        }
+      ],
+      "addedAt": "2026-11-18T19:27:06.670Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-visibility-tabs",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins",
+        "focused-pages/sidebar-skips-duplicate-page-links"
+      ]
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cade855f30e8b83eb5f9453be3e36739e9d37f2d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-switchyard-mobile-final.json",
+          "sha256": "9a472f447c8e30f0d97f73ff62dce6adc70307bc28db3b20ea606a3183eb96f5"
+        }
+      ],
+      "addedAt": "2026-11-18T19:27:06.713Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/phone-workspace",
+        "mobile/workspace-button-text-centered",
+        "mobile/successful-connection-removes-shortcuts"
+      ]
+    }
+  ]
+}
