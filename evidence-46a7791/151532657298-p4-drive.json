@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "5c8acdca35ef3d592f5be9fb70ea79dcd25476e8",
+    "short": "5c8acdc",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T13:44:05.444Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-44-35-681Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6670,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-44-35-681Z/window-invalid-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-44-35-681Z/window-form-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-44-35-681Z/window-card-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

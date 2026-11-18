@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "46a77919cbbe9b07b2a4a548800ed817af4dc4e5",
+    "short": "46a7791",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T13:55:02.031Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-57-13-727Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5480,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-57-13-727Z/window-form-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-add-an-optional-active-window-9ac4/.verify/drives/2026-11-18T13-57-13-727Z/window-card-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
