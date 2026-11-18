@@ -58,6 +58,18 @@ yv api '{"op":"session.create","engine":"opencode","model":"opencode/fake-free",
 yv drive 'session:{{ocstuck_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working","timeout":15000},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"css:.thread","text":"OpenCode did not stop the turn, so it was ended here.","timeout":15000},{"fill":"label:Message","value":"TEST-after the stuck turn"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-after the stuck turn","timeout":15000},{"expect":{"css":".thread","hasText":"WorkingEcho"},"count":0},{"shot":"after"}]'
 ```
 
+### stuck-opencode-late-output-is-dropped
+An OpenCode turn ended here after Stop can still stream later (its prompt is
+still running on the agent's side). That late output belongs to no turn: it
+is not shown, and it does not run into the next answer. Output that arrives
+during the next turn cannot be told apart (ACP updates carry no prompt id).
+Viewports: desktop
+
+```sh
+yv api '{"op":"session.create","engine":"opencode","model":"opencode/fake-free","effort":"","cwd":"{{repo}}","worktree":true,"text":"[late] TEST-opencode streams after stop"}' --wait '{"op":"created"}' --save oclate_sid=sessionId
+yv drive 'session:{{oclate_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Working","timeout":15000},{"click":{"role":"button","name":"Stop","exact":true}},{"expect":"css:.thread","text":"OpenCode did not stop the turn, so it was ended here.","timeout":15000},{"wait":3000},{"expect":{"css":".thread","hasText":"Late words"},"count":0},{"fill":"label:Message","value":"TEST-after the late output"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-after the late output","timeout":15000},{"expect":{"css":".thread","hasText":"Late words"},"count":0},{"expect":{"css":".thread","hasText":"Late thought"},"count":0},{"shot":"after"}]'
+```
+
 ### stop-while-asking
 Stop also ends a turn that is waiting for an approval: the card's buttons go
 away and the session is idle. (The fake Codex does not answer the interrupt

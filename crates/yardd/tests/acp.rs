@@ -251,6 +251,28 @@ async fn text_of_a_turn_ended_after_stop_does_not_run_into_the_next_answer() {
 }
 
 #[tokio::test]
+async fn output_of_a_turn_ended_after_stop_that_arrives_later_is_dropped() {
+    let sb = Sandbox::new("oc-late");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "[late] forever", opencode()).await;
+    c.wait_event(&sid, "assistant_delta", 0).await;
+    c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+    c.wait_turn_done(&sid, 0).await;
+    // The fake streams a thought and "Late words" 6 s after the cancel, 1 s after the turn was ended here.
+    c.drain_for(Duration::from_secs(3)).await;
+    assert!(acp_log(&sb).contains("opencode req session/cancel"));
+    let late: Vec<_> = c.events(&sid).into_iter().filter(|e| e.to_string().contains("Late")).collect();
+    assert!(late.is_empty(), "no turn owns these: {late:?}");
+
+    let next = c.next_seq(&sid);
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "fresh" })).await;
+    c.wait_turn_done(&sid, next).await;
+    let replies: Vec<_> = c.events(&sid).into_iter().filter(|e| e["type"] == "assistant_message").collect();
+    assert_eq!(replies.last().unwrap()["text"], "Echo: fresh", "{replies:?}");
+}
+
+#[tokio::test]
 async fn an_opencode_agent_that_dies_fails_the_turn_and_the_next_one_resumes() {
     let sb = Sandbox::new("oc-exit");
     let d = sb.start();
