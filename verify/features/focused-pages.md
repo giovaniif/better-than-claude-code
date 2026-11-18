@@ -83,6 +83,16 @@ session button, as if there were no sessions at all.
 yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"fill":"label:Search sessions","value":"TEST-matches-nothing"},{"expect":"css:.focused-session-row","count":0},{"expect":"css:.focused-empty","text":"No sessions match your search."},{"expect":{"css":".focused-empty button","hasText":"New session"},"count":0},{"shot":"no-match"},{"click":{"css":".focused-empty button","hasText":"Clear search"}},{"expect":"label:Search sessions","value":""},{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}}]'
 ```
 
+### host-rows-line-up-with-the-page
+Viewports: both
+Host rows and the "Run sessions on another machine" tile span the same column
+as the host details under them. They used to start 8 px left of it (and the
+rows end 8 px short), from the quiet button's negative margin.
+
+```sh
+yv drive hosts --steps '[{"expect":"role:button:Select iso-host"},{"expect":"css:.host-empty"},{"eval":"const col = document.querySelector(\".focused-hosts\").getBoundingClientRect(); [\".host-summary\", \".host-empty\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })","equals":true},{"shot":"hosts"}]'
+```
+
 ### offline-host-and-selection-fallback
 Viewports: both
 An unreachable host shows its problem, retains System actions, and removing it returns selection to the local host.
