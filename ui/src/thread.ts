@@ -129,14 +129,24 @@ export function layout(items: Item[], running: boolean): Row[] {
   return rows;
 }
 
-/** How long this part's approvals waited for the user, within `from`..`to`. */
+/** How long this part's approvals waited for the user, within `from`..`to`.
+ *  Several can wait at once (Claude asks in parallel), so the waits are
+ *  merged: time is left out once, however many approvals shared it. */
 function waited(items: Item[], from: number, to: number): number {
-  let ms = 0;
+  const spans: [number, number][] = [];
   for (const it of items) {
     if (it.kind !== "approval" || it.askedAt == null) continue;
     const start = Math.max(it.askedAt, from);
     const end = Math.min(it.answeredAt ?? to, to);
-    if (end > start) ms += end - start;
+    if (end > start) spans.push([start, end]);
+  }
+  spans.sort((a, b) => a[0] - b[0]);
+  let ms = 0;
+  let reached = -Infinity;
+  for (const [start, end] of spans) {
+    if (end <= reached) continue;
+    ms += end - Math.max(start, reached);
+    reached = end;
   }
   return ms;
 }
