@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnchoredPopover } from "./AnchoredPopover";
 import type { EngineStates } from "./protocol";
-import { formatReset, metersFor, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
-import { ENGINE_NAME } from "./engines";
+import { formatReset, metersFor, noLimitsNote, percentText, reportsLimits, stripGroups, type Meter, type UsageSource } from "./usage";
+import { ENGINES, ENGINE_NAME } from "./engines";
 
-const LIMIT_ENGINES = ["claude", "codex"] as const;
+const LIMIT_ENGINES = ENGINES.filter(reportsLimits);
 
 function useNow() {
   const [now, setNow] = useState(Date.now);
@@ -167,7 +167,7 @@ export function Subscriptions({ sources, onManage }: { sources: SubscriptionSour
           <p className="muted">Usage appears here when Claude or Codex reports it.</p>
         </div>
       )}
-      <p className="muted small subscription-note">One limit per account, shared across its hosts. OpenCode and Grok don't report subscription limits.</p>
+      <p className="muted small subscription-note">One limit per account, shared across its hosts. {noLimitsNote()}</p>
       <button className="btn-text" onClick={onManage}>
         Manage engine logins →
       </button>
