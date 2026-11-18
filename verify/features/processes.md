@@ -3,8 +3,9 @@
 The Processes tab in the workspace pane lists what the session is running right
 now: its process tree (pid, command line shortened, CPU, memory, how long),
 including background shells and a terminal's shell. It asks yardd for the list
-(`session.procs`) when opened and every 3 s while visible. The pane is hidden
-below 1100 px, so the tab exists at desktop only.
+(`session.procs`) when opened and every 3 s while visible. Below 1100 px the
+docked pane is hidden; the header's Workspace button opens it full width in
+place of the thread, with the same view picker, Processes included.
 
 Each row but the engine's own (the Claude sidecar and its CLI) has a Stop (×,
 on hover, always on touch) that asks for a second click and sends SIGTERM
@@ -111,15 +112,19 @@ yv api '{"op":"session.kill","sessionId":"{{sid_echo}}","pid":1,"signal":"kill"}
 yv api '{"op":"session.kill","sessionId":"{{sid_echo}}","pid":2,"signal":"term"}' --wait '{"op":"session.killed"}' --expect '{"op":"session.killed","result":"refused","reason":"~not one of this session"}'
 ```
 
-### hidden-on-mobile
+### listed-from-the-workspace-sheet
 Viewports: mobile
-There is no workspace pane, so no Processes tab, below 1100 px (known).
+Below 1100 px there is no docked pane: the header's Workspace button opens it
+over the thread, and its Processes view lists the process tree, Stop included.
+(This recipe used to be `hidden-on-mobile`, which said the tab was desktop only
+and checked only that no "Processes" button showed.)
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"expect":{"role":"button","name":"Processes","exact":true},"visible":false}]'
+yv drive 'session:{{sid_cmd}}' --viewport mobile --steps '[{"expect":{"role":"region","name":"Workspace"},"visible":false},{"click":"role:button:Workspace"},{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 305 & wait\"\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 305 & wait"},"timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"PID"},{"expect":"css:.proc-row:has-text(\"sleep 305 & wait\") .proc-kill","count":1},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"sheet-processes"},{"click":"css:.proc-row:has-text(\"sleep 305 & wait\") .proc-kill"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 305"},"visible":false,"timeout":10000}]'
 ```
 
 ## Gotchas
-- Below 1100 px the pane is hidden (`@media (max-width: 1100px)`): no Processes tab on mobile.
+- Below 1100 px the docked pane is hidden (`@media (max-width: 1100px)`); the Processes view is reached through the header's Workspace button (`.workspace-open`). Mobile recipes open it first.
 - The list is the host sampler's, up to 3 s old, so a process that started a moment ago shows on the next refresh.
 - An interactive shell ignores SIGTERM, so stopping a terminal's own shell reads "Still running after SIGTERM."; Force kill ends it and the terminal.
+- `force-kill-what-ignores-sigterm` leaves `trap "" TERM` in `sid_think`'s terminal shell, and every later command in that terminal inherits the ignored SIGTERM: a Stop there reads "Still running after SIGTERM.". Recipes that stop something use a session whose terminal no other recipe traps (`sid_edit`, `sid_fail`, `sid_cmd`).
