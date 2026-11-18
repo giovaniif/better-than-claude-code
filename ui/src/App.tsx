@@ -1278,8 +1278,7 @@ export function ModelPicker(props: {
                   {folded ? (
                     <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                       <span>
-                        {ENGINE_NAME[engine]}
-                         · {list.length} {list.length === 1 ? "model" : "models"}
+                        {`${ENGINE_NAME[engine]} · ${list.length} ${list.length === 1 ? "model" : "models"}`}
                         {handoff ? " · switching hands off" : ""}
                       </span>
                       <span className="muted">
