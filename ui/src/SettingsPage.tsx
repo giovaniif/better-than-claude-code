@@ -270,7 +270,7 @@ export function SettingsPage({
                 return (
                   <div key={id} className="settings-row settings-host">
                     <span className="settings-host-name">
-                      {name}
+                      <span className="host-name">{name}</span>
                       {id !== "local" && <Cloud size={12} />}
                     </span>
                     <span className="muted small">Show in sidebar</span>
