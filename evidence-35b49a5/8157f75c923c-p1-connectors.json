@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "d48b58e7237a1fb59d564ba5d1dfd2626f83b800",
+    "short": "d48b58e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:49:37.002Z"
+  },
+  "dir": ".verify/evidence/conn-tabs-r3-base",
+  "shots": [
+    {
+      "viewport": "mobile",
+      "file": ".verify/evidence/conn-tabs-r3-base/connectors-mobile.png",
+      "size": {
+        "width": 780,
+        "height": 1688
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2258,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "file": ".verify/evidence/conn-tabs-r3-base/connectors-desktop.png",
+      "size": {
+        "width": 2880,
+        "height": 1800
+      },
+      "settled": true,
+      "banners": [],
+      "ms": 2202,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

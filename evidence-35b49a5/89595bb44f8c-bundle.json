@@ -1,0 +1,200 @@
+{
+  "v": 1,
+  "claim": "Connectors at mobile width: the All filter tab wrapped onto a line of its own under the other three, where it read as a separate control",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f",
+  "base": "f4811d88f8b636df00e79b45ec23053a26682af4",
+  "head": "35b49a56265add306bd8e533b207632b9bda1b01",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:49:32.652Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d48b58e7237a1fb59d564ba5d1dfd2626f83b800",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-connectors.json",
+          "sha256": "8157f75c923c6eb69a9c6679285cd697850bd3513d0da87a985939f464e84ebc"
+        },
+        {
+          "path": "p1-connectors-mobile.png",
+          "sha256": "e8361b879453c2bcd31688b17fa9435326342cf8a0c9ea05032e296d9cc7ae28"
+        },
+        {
+          "path": "p1-connectors-desktop.png",
+          "sha256": "18c1bcc7cfa896bb4bedb1731849f5e2230f96d6c9fd101217d5b21422f8caac"
+        }
+      ],
+      "addedAt": "2026-11-18T02:49:42.154Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "d48b58e7237a1fb59d564ba5d1dfd2626f83b800",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8587e8578046beb7a014982f9e41ddb061b9a8f93876415e53fab62fbb058f14"
+        }
+      ],
+      "addedAt": "2026-11-18T02:49:42.196Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "e090f0ad7b3a19cb476ee7b7598723aee4aa252bdb9bd3d9bdc56f1d42bd7ebc"
+        },
+        {
+          "path": "p3-after-mobile.png",
+          "sha256": "6478f2114271542844ae762afaa1f2de5a977027bf083e8c481041c4addbce39"
+        }
+      ],
+      "addedAt": "2026-11-18T02:49:58.445Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "fce972114944337ffa8c60df6a30414bff936817c52564c6f5d181cc7200c379"
+        },
+        {
+          "path": "p4-after-desktop.png",
+          "sha256": "18c1bcc7cfa896bb4bedb1731849f5e2230f96d6c9fd101217d5b21422f8caac"
+        }
+      ],
+      "addedAt": "2026-11-18T02:49:58.485Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "746d502021e8d6f95ef7947e2cb86eb5cc5089bdd73a6c4d2eced327dde80db6"
+        }
+      ],
+      "addedAt": "2026-11-18T02:49:58.526Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "b6dbacbb328d29ccf7d7aff55e7dbb7b42679c41fe73b7eebedda1b8d407a4da"
+        }
+      ],
+      "addedAt": "2026-11-18T02:50:05.227Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "9bb41ca7f52a0485c87f634955427f8e331b148620e299497e1bea2a1655359c"
+        }
+      ],
+      "addedAt": "2026-11-18T02:50:05.387Z",
+      "cmd": "verify/yv design-check --base f4811d88f8b6",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-connectors.json",
+          "sha256": "8c1938c7fcbbd2c2821af2be46e8c7e06744bbaa8a4b4c146c1a805bb6749cc0"
+        }
+      ],
+      "addedAt": "2026-11-18T02:50:05.468Z",
+      "cmd": "verify/yv map run connectors",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/connectors-list",
+        "connectors/focused-search-and-status",
+        "connectors/filters-stay-on-one-row",
+        "connectors/claude-sign-in",
+        "connectors/codex-sign-in-pasted",
+        "connectors/add-linear",
+        "connectors/codex-chart",
+        "connectors/claude-chart",
+        "connectors/large-catalog-stays-bounded"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "note",
+      "at": "35b49a56265add306bd8e533b207632b9bda1b01",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T02:51:13.718Z",
+      "text": "rebased onto f4811d8 (#228 landed; before that #226). Same diff as 8bc8baf (PASS+NOTES) and 8531e80 (PASS+NOTES); the focus-ring review fix and its failing-first recipe were recorded in the earlier bundles"
+    }
+  ]
+}
