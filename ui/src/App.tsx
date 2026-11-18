@@ -4336,13 +4336,26 @@ function SessionRows({
   sessions,
   empty = "No sessions to show",
   showHost = false,
+  search,
 }: {
   state: State;
   actions: Actions;
   sessions: SessionMeta[];
   empty?: string;
   showHost?: boolean;
+  search?: { query: string; clear: () => void };
 }) {
+  // An empty search result is not an empty list: "start a session" would
+  // read as if the user had none.
+  if (!sessions.length && search?.query.trim())
+    return (
+      <div className="focused-empty" role="status">
+        <strong>No sessions match your search.</strong>
+        <button className="btn" onClick={search.clear}>
+          Clear search
+        </button>
+      </div>
+    );
   if (!sessions.length)
     return (
       <div className="focused-empty">
@@ -4428,7 +4441,7 @@ function SessionsPage({ state, actions }: { state: State; actions: Actions }) {
             </div>
             <input className="field" aria-label="Search sessions" placeholder="Search sessions" value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
-          <SessionRows state={state} actions={actions} sessions={sessions} showHost />
+          <SessionRows state={state} actions={actions} sessions={sessions} showHost search={{ query, clear: () => setQuery("") }} />
         </div>
       </div>
     </div>
