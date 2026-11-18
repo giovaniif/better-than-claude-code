@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "claim": "Pressing Stop while Switchy answers ends the turn with 'Stopped by you.' in red, announced as an alert, like a real failure; a stop is not a failure and session turns show it quietly",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f",
+  "base": "88cb5a864349cfa7e0139787b0a52bdf9759b97b",
+  "head": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/switchy.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/switchy.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T06:46:29.968Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "71cadc4b7c2e2fcd2be37c7757b26388a4650874",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "ff51c89345a0702bf5960320ffbd79150d70dc95253806d595e3de81d6a3e949"
+        },
+        {
+          "path": "p1-base-stopped-mobile.png",
+          "sha256": "09d861d4cb075bb449113e12566badedcdb65a49ba14e2737af4d39a53913a02"
+        },
+        {
+          "path": "p1-base-stopped-desktop.png",
+          "sha256": "cf7555e2285c57b44893fcfa003f17b74d9c64b94517f691b78be5679df027cd"
+        }
+      ],
+      "addedAt": "2026-11-18T06:46:48.906Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "71cadc4b7c2e2fcd2be37c7757b26388a4650874",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "749249ce18336c47002a644119b22cfe078543252748fd9fe903b5c81c5516ad"
+        }
+      ],
+      "addedAt": "2026-11-18T06:46:48.956Z",
+      "cmd": "verify/yv map run switchy --recipe stopped-answer-is-quiet",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "0123cd6d53f1092dcf7f8594e7ae5753e9fcd21b6ac1adaabc216bb8f3052614"
+        },
+        {
+          "path": "p3-head-stopped-mobile.png",
+          "sha256": "2434903caea04acbf43964dff0f6ad19aaa02f826cca92c2771145885c8a8134"
+        },
+        {
+          "path": "p3-head-stopped-desktop.png",
+          "sha256": "7a0c24a5a2bcd94e15bbba3d87708203279dd5551363090ad548b44859fdff25"
+        }
+      ],
+      "addedAt": "2026-11-18T06:47:19.493Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "3c7dcdc0721e63101cbe2d32430f0a69ccd968cfc75ad1cd89b709030dfaa464"
+        }
+      ],
+      "addedAt": "2026-11-18T06:47:24.662Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "2826097827d1127cb7051767093c57cda9f2b6a3ea589295264891cde11402c8"
+        }
+      ],
+      "addedAt": "2026-11-18T06:47:24.880Z",
+      "cmd": "verify/yv design-check --base 88cb5a864349",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-switchy.json",
+          "sha256": "fe4eec3fb3257f5d10378312c0510ecbb41c9ec9eb3c8a7007644c0497e12eb6"
+        }
+      ],
+      "addedAt": "2026-11-18T06:47:24.969Z",
+      "cmd": "verify/yv map run switchy",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "switchy/ask-and-reload",
+        "switchy/context-and-followup",
+        "switchy/removed-host-scope-falls-back",
+        "switchy/answer-names-the-model",
+        "switchy/refusal-notice-is-red",
+        "switchy/stopped-answer-is-quiet",
+        "switchy/shared-composer",
+        "switchy/controls-and-approvals",
+        "switchy/voice-roundtrip"
+      ]
+    }
+  ]
+}

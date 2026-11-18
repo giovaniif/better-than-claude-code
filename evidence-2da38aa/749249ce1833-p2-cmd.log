@@ -1,0 +1,45 @@
+$ verify/yv map run switchy --recipe stopped-answer-is-quiet
+# exit 1 after 10629 ms at 71cadc4b7c2e2fcd2be37c7757b26388a4650874
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-18T06:46:59.581Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stopped-answer-is-quiet",
+          "status": "fail",
+          "ms": 9768,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 6 {\"eval\":\"(() => { const turn = [...document.querySelectorAll(\\\".assistant-answer\\\")].at(-1); const line = [...turn.querySelectorAll(\\\"p\\\")].find((p) => p.textContent === \\\"Stopped by you.\\\"); return !!line && !turn.querySelector(\\\".bad, [role=alert]\\\") && line.matches(\\\".muted\\\"); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T06-46-50-032Z/fail-mobile-step6.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 6 {\"eval\":\"(() => { const turn = [...document.querySelectorAll(\\\".assistant-answer\\\")].at(-1); const line = [...turn.querySelectorAll(\\\"p\\\")].find((p) => p.textContent === \\\"Stopped by you.\\\"); return !!line && !turn.querySelector(\\\".bad, [role=alert]\\\") && line.matches(\\\".muted\\\"); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T06-46-50-032Z/fail-desktop-step6.png and the aria snapshot"
+            }
+          ],
+          "tail": "g\\n    - alert: Stopped by you.\\n    - group: 11 sources · 03:46 AM\\n  - article:\\n    - text: \\\"[slow] TEST-stop this answer\\\"\\n    - strong: Switchy\\n    - text: Fake Fast\\n    - paragraph: Working\\n    - alert: Stopped by you.\\n    - group: 11 sources · 03:46 AM\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Ask about your servers or your work…\\n  - button \\\"Attach files\\\" [disabled]\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Plan only\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - button \\\"All hosts\\\"\\n  - paragraph: Context comes from selected hosts. Tools run on iso-host with the access selected above.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 6,\n          \"eval\": \"(() => { const turn = [...document.querySelectorAll(\\\".assistant-answer\\\")].at(-1); const line = [...turn.querySelectorAll(\\\"p\\\")].find((p) => p.textContent === \\\"Stopped by you.\\\"); return !!line && !turn.querySelector(\\\".bad, [role=alert]\\\") && line.matches(\\\".muted\\\"); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 6 {\\\"eval\\\":\\\"(() => { const turn = [...document.querySelectorAll(\\\\\\\".assistant-answer\\\\\\\")].at(-1); const line = [...turn.querySelectorAll(\\\\\\\"p\\\\\\\")].find((p) => p.textContent === \\\\\\\"Stopped by you.\\\\\\\"); return !!line && !turn.querySelector(\\\\\\\".bad, [role=alert]\\\\\\\") && line.matches(\\\\\\\".muted\\\\\\\"); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T06-46-50-032Z/fail-mobile-step6.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 6 {\\\"eval\\\":\\\"(() => { const turn = [...document.querySelectorAll(\\\\\\\".assistant-answer\\\\\\\")].at(-1); const line = [...turn.querySelectorAll(\\\\\\\"p\\\\\\\")].find((p) => p.textContent === \\\\\\\"Stopped by you.\\\\\\\"); return !!line && !turn.querySelector(\\\\\\\".bad, [role=alert]\\\\\\\") && line.matches(\\\\\\\".muted\\\\\\\"); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-f57f/.verify/drives/2026-11-18T06-46-50-032Z/fail-desktop-step6.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "switchy/stopped-answer-is-quiet",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

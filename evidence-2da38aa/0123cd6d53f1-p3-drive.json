@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "2da38aaaa16dd2b3814f7c075cd622941d37c9bd",
+    "short": "2da38aa",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T06:47:10.301Z"
+  },
+  "dir": ".verify/evidence/switchy-stop-quiet-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4437,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-stop-quiet-head/head-stopped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); const line = [...turn.querySelectorAll(\"p\")].find((p) => p.textContent === \"Stopped by you.\"); return !!line && !turn.querySelector(\".bad, [role=alert]\") && line.matches(\".muted[role=status]\"); })()",
+          "value": true
+        },
+        {
+          "step": 7,
+          "eval": "[...document.querySelectorAll(\".assistant-answer\")].some((t) => t.querySelector(\".bad[role=alert]\")?.textContent === \"fake failure: the model is unavailable\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4087,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-stop-quiet-head/head-stopped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); const line = [...turn.querySelectorAll(\"p\")].find((p) => p.textContent === \"Stopped by you.\"); return !!line && !turn.querySelector(\".bad, [role=alert]\") && line.matches(\".muted[role=status]\"); })()",
+          "value": true
+        },
+        {
+          "step": 7,
+          "eval": "[...document.querySelectorAll(\".assistant-answer\")].some((t) => t.querySelector(\".bad[role=alert]\")?.textContent === \"fake failure: the model is unavailable\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

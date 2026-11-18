@@ -1,0 +1,79 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "71cadc4b7c2e2fcd2be37c7757b26388a4650874",
+    "short": "71cadc4",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T06:46:34.557Z"
+  },
+  "dir": ".verify/evidence/switchy-stop-quiet-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4165,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-stop-quiet-base/base-stopped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); return turn.querySelector(\".bad[role=alert]\")?.textContent ?? null; })()",
+          "value": "Stopped by you."
+        },
+        {
+          "step": 7,
+          "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks and some more words to see wrapping\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 11 sources · 03:42 AM\n  - article:\n    - text: \"[fail] TEST-fail please\"\n    - strong: Switchy\n    - text: Fake Fast\n    - alert: \"fake failure: the model is unavailable\"\n    - group: 11 sources · 03:42 AM\n  - article:\n    - text: \"[slow] TEST-slow\"\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 11 sources · 03:43 AM\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:43 AM\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:43 AM\n  - article:\n    - text: \"[slow] TEST-base stop\"\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 12 sources · 03:46 AM\n  - textbox \"Message\":\n    - /placeholder: Ask about your servers or your work…\n  - button \"Attach files\" [disabled]\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\": Fake Fast\n  - button \"Effort Low\": Low\n  - button \"Plan only\"\n  - button \"Send\" [disabled]\n  - button \"All hosts\"\n  - paragraph: Context comes from selected hosts. Tools run on iso-host with the access selected above."
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4042,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-stop-quiet-base/base-stopped-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); return turn.querySelector(\".bad[role=alert]\")?.textContent ?? null; })()",
+          "value": "Stopped by you."
+        },
+        {
+          "step": 7,
+          "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Hosts\"\n  - button \"Sessions\"\n  - button \"Subscriptions\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 8% · 68%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Switchy\" [level=1]\n  - button \"Context\"\n- main:\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks and some more words to see wrapping\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 11 sources · 03:42 AM\n  - article:\n    - text: \"[fail] TEST-fail please\"\n    - strong: Switchy\n    - text: Fake Fast\n    - alert: \"fake failure: the model is unavailable\"\n    - group: 11 sources · 03:42 AM\n  - article:\n    - text: \"[slow] TEST-slow\"\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 11 sources · 03:43 AM\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:43 AM\n  - article:\n    - text: TEST-averyveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaksaveryveryverylongwordwithoutanybreaks\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: The host snapshot is available [local:1]. This is a scripted Switchy answer.\n    - group: 12 sources · 03:43 AM\n  - article:\n    - text: \"[slow] TEST-base stop\"\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 12 sources · 03:46 AM\n  - article:\n    - text: \"[slow] TEST-base stop\"\n    - strong: Switchy\n    - text: Fake Fast\n    - paragraph: Working\n    - alert: Stopped by you.\n    - group: 12 sources · 03:46 AM\n  - textbox \"Message\":\n    - /placeholder: Ask about your servers or your work…\n  - button \"Attach files\" [disabled]\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\": Fake Fast\n  - button \"Effort Low\": Low\n  - button \"Plan only\"\n  - button \"Send\" [disabled]\n  - button \"All hosts\"\n  - paragraph: Context comes from selected hosts. Tools run on iso-host with the access selected above."
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
