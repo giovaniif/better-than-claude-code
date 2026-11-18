@@ -62,3 +62,13 @@ The phone header opens the compact usage sheet without opening the sidebar.
 ```sh
 yv drive new --viewport mobile --steps '[{"click":"css:.new-bar .mobile-usage-trigger"},{"expect":"role:dialog:Subscription usage","inViewport":true},{"expect":"css:.app.drawer-open","count":0},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0}]'
 ```
+
+
+### toolbar-at-320-with-full-access
+Viewports: mobile
+The narrowest phone keeps a single toolbar row and a visible warning state.
+Its settings sheet and nested permission menu stay on screen.
+
+```sh
+yv drive new --viewport mobile --steps '[{"resize":{"width":320,"height":568}},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup","inViewport":true},{"click":"role:button:Ask first"},{"expect":"role:dialog:Permissions","inViewport":true},{"click":"role:menuitemradio:Full access"},{"press":"Escape"},{"expect":"css:.composer-setup.permission-full"},{"eval":"(() => {const row=document.querySelector(\".composer-row\"); const a=row.querySelector(\".attach-btn\").getBoundingClientRect(); const s=row.querySelector(\".send\").getBoundingClientRect(); return document.documentElement.scrollWidth <= innerWidth && (Math.abs(a.top+a.bottom-s.top-s.bottom) < 3) && s.right <= innerWidth;})()","equals":true},{"resize":{"width":390,"height":844}},{"shot":"narrow-full-access"}]'
+```

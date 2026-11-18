@@ -361,6 +361,14 @@ export type Step = Record<string, any>;
 async function runStep(page: Page, iso: Iso, step: Step, w: Watch, ctx: { dir: string; vp: ViewportName; captures: Capture[]; notes: any[]; problems: NonNullable<Result["problems"]>; idx: number }) {
   const timeout = step.timeout ?? 10000;
   if (step.goto !== undefined) return goRoute(page, iso, step.goto, w);
+  if (step.resize) {
+    const { width, height } = step.resize;
+    if (!Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
+      throw new Usage("resize needs positive integer width and height");
+    }
+    await page.setViewportSize({ width, height });
+    return settle(page, w);
+  }
   if (step.click) {
     await locate(page, step.click).click({ timeout, button: step.button ?? "left" });
     return settle(page, w);
