@@ -45,6 +45,16 @@ yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-blocks\n\n#
 yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose h3","hasText":"Summary"}},{"expect":{"css":".prose li","hasText":"src/b.ts"}},{"expect":{"css":".prose p","hasText":"Changes:"}},{"expect":{"css":".prose","hasText":"## Summary"},"visible":false},{"expect":{"css":".prose","hasText":"- src/a.ts"},"visible":false},{"shot":"blocks"}]'
 ```
 
+### web-links-open-outside-the-thread
+Viewports: both
+A labeled web link and a bare URL open in a new tab. Local files, inline code
+and non-web destinations stay inert.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-links\n\n[Review and comment on the Claude Design prototype](https://claude.ai/artifact/example).\n\n(https://example.com/path?mode=review).\n\n[Local file](/tmp/example.txt) [Script](javascript:alert%281%29) `https://example.com/code`"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":"role:link:Review and comment on the Claude Design prototype"},{"expect":"role:link:https://example.com/path?mode=review"},{"eval":"[...document.querySelectorAll(\".thread .prose a\")].map(a => [a.getAttribute(\"href\"), a.target, a.rel])","equals":[["https://claude.ai/artifact/example","_blank","noopener noreferrer"],["https://example.com/path?mode=review","_blank","noopener noreferrer"]]},{"expect":{"css":".thread .prose code","hasText":"Local file"}},{"expect":{"css":".thread .prose code","hasText":"Script"}},{"expect":{"css":".thread .prose code","hasText":"https://example.com/code"}},{"shot":"web-links"}]'
+```
+
 ### thinking-folds
 A finished turn with thinking folds into "Worked for …"; opening it shows the
 thought's first line.
