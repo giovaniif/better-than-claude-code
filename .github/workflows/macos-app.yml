@@ -6,6 +6,15 @@ name: macOS app
 
 on:
   workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Source commit or tag to build (defaults to this workflow ref)
+        type: string
+        default: ""
+      intel_arm64:
+        description: Build Apple Silicon on an Intel runner when ARM runners are unavailable
+        type: boolean
+        default: false
   workflow_call:
   push:
     branches: [main]
@@ -20,21 +29,52 @@ concurrency:
 
 jobs:
   dmg:
-    runs-on: macos-15 # Apple Silicon
+    # Both paths produce Apple Silicon artifacts; Intel is a manual recovery option.
+    runs-on: ${{ inputs.intel_arm64 && 'macos-15-intel' || 'macos-15' }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - uses: oven-sh/setup-bun@v2
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ inputs.intel_arm64 && 'arm64-from-intel' || 'native-arm64' }}
 
       - name: Build Switchyard.app
+        if: ${{ !inputs.intel_arm64 }}
         env:
           CARGO_BUILD_JOBS: "3"
         run: app/build.sh
+
+      - name: Build Apple Silicon artifacts on Intel
+        if: ${{ inputs.intel_arm64 }}
+        env:
+          CARGO_BUILD_JOBS: "3"
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          export YARD_BUILD_ID="$(git rev-parse --short HEAD)"
+          (cd ui && bun install --frozen-lockfile && bunx vite build)
+          mkdir -p target/sidecar target/release
+          (cd sidecar/yard-claude && bun install --frozen-lockfile \
+            && bun build --compile --target=bun-darwin-arm64 src/main.ts --outfile "$GITHUB_WORKSPACE/target/sidecar/yard-claude")
+          cargo build --release -p yardd --target aarch64-apple-darwin
+          cp target/aarch64-apple-darwin/release/yardd target/release/yardd
+          (cd app && bun install --frozen-lockfile \
+            && bunx tauri build --target aarch64-apple-darwin --bundles app --config src-tauri/tauri.bundle.json)
+          mkdir -p target/release/bundle/macos
+          cp -R target/aarch64-apple-darwin/release/bundle/macos/Switchyard.app target/release/bundle/macos/
+          app=target/release/bundle/macos/Switchyard.app
+          lipo -verify_arch arm64 "$app/Contents/MacOS/switchyard"
+          lipo -verify_arch arm64 "$app/Contents/Resources/yard/bin/yardd"
+          lipo -verify_arch arm64 "$app/Contents/Resources/yard/bin/yard-claude"
 
       - name: Sign, notarize, make DMG
         env:
