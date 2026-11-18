@@ -1218,3 +1218,14 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
   .session-toolbar { gap: 5px; }
   .setup-effort { display: none; }
 }
+
+.mobile-usage, .new-connectors-shortcut { display: none; }
+@media (max-width: 700px) {
+  .mobile-usage { display: flex; flex: none; }
+  .new-connectors-shortcut { display: flex; flex: none; }
+  .mobile-usage-trigger { display: flex; gap: 6px; height: 32px; padding-inline: 8px; border-radius: 16px; font-size: 12px; font-weight: 600; }
+  .usage-chip-track { width: 14px; height: 4px; border-radius: 4px; overflow: hidden; background: var(--fill-strong); }
+  .usage-chip-track > span { display: block; height: 100%; background: var(--ink); border-radius: inherit; }
+  .connectors-mobile-header .connector-refresh { width: 32px; padding: 0; }
+  .connectors-mobile-header .connector-refresh > span { display: none; }
+}

@@ -2,7 +2,7 @@
 // config files, ChatGPT apps) each engine account can use on each host, whether
 // it works, and a way to sign it in. Opening the page asks yardd to list them;
 // for Claude that starts Claude Code with no prompt, so it spends no usage.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnchoredPopover } from "./AnchoredPopover";
 import { accountChoices, DEFAULT_ACCOUNT } from "./accounts";
 import { actionFor, CONNECTOR_PAGE_SIZE, filterServers, type ConnectorFilter, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
@@ -15,7 +15,7 @@ import { ENGINE_NAME } from "./engines";
 const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
 const ENGINES: Engine[] = ["claude", "codex"];
 
-export function ConnectorsPage({ state, actions }: { state: State; actions: Actions }) {
+export function ConnectorsPage({ state, actions, usage }: { state: State; actions: Actions; usage: ReactNode }) {
   const hosts = ["local", ...state.hosts.map((host) => host.id)];
   const [pickedHost, setHost] = useState(loadHost);
   const host = hosts.includes(pickedHost) ? pickedHost : hosts[0];
@@ -40,9 +40,9 @@ export function ConnectorsPage({ state, actions }: { state: State; actions: Acti
   }, [actions, host, loading, online, pending?.key]);
 
   const refresh = (
-    <button className="btn connector-refresh" disabled={!online || loading || !eligible.length} onClick={() => setRecheck(eligible.map((account) => account.key))}>
+    <button className="btn connector-refresh" aria-label={loading ? "Checking…" : "Check again"} disabled={!online || loading || !eligible.length} onClick={() => setRecheck(eligible.map((account) => account.key))}>
       <Icon d={REFRESH} size={13} />
-      {loading ? "Checking…" : "Check again"}
+      <span>{loading ? "Checking…" : "Check again"}</span>
     </button>
   );
   return (
@@ -51,6 +51,7 @@ export function ConnectorsPage({ state, actions }: { state: State; actions: Acti
         <MenuButton />
         <h1>Connectors</h1>
         <span className="spacer" />
+        {usage}
         {refresh}
       </header>
       <div className="scroll">

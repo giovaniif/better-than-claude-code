@@ -144,6 +144,17 @@ export function App() {
   const { state, actions } = useYard();
   const { route } = state;
   const [draftUsageAccount, setDraftUsageAccount] = useState<UsageAccount>();
+  const visibleHosts = shownHosts(["local", ...state.hosts.map((host) => host.id)], useHiddenHosts());
+  const selectedSession = route.page === "session" ? state.sessions[route.id] : undefined;
+  const selectedUsageAccount = selectedSession ? { host: hostOf(selectedSession), engine: selectedSession.engine, account: accountOf(selectedSession) }
+    : route.page === "new" ? draftUsageAccount : undefined;
+  const usage = {
+    sources: visibleHosts.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host], online: hostOnline(state, host) })),
+    selected: selectedUsageAccount,
+    onViewAll: () => actions.go({ page: "subscriptions" }),
+    onManage: (host: string) => actions.go({ page: "hosts", host, tab: "engines" }),
+    onRefresh: actions.refreshUsage,
+  };
   const [importing, setImporting] = useState(false);
   const [navigating, setNavigating] = useState(false);
   const navigationOrigin = useRef<HTMLElement | null>(null);
@@ -239,7 +250,7 @@ export function App() {
   return (
     <DrawerContext.Provider value={drawerCtx}>
       <div className={`app ${drawer ? "drawer-open" : ""}`} inert={navigating || undefined} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-        <Sidebar state={state} actions={sidebarActions} draftUsageAccount={draftUsageAccount} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
+        <Sidebar state={state} actions={sidebarActions} shown={visibleHosts} usage={<UsageStrip {...usage} />} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
         {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
         <Resizer
           width={sidebarW}
@@ -276,6 +287,8 @@ export function App() {
                 <MenuButton />
                 <h2 className="label-narrow">New session</h2>
                 <span className="spacer" />
+                <UsageStrip {...usage} compact />
+                <button className="btn-icon new-connectors-shortcut" aria-label="Connectors" onClick={() => actions.go({ page: "connectors" })}><Icon d={PLUG} size={17} /></button>
                 <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
               </header>
               <NewSession state={state} actions={actions} onUsageAccount={setDraftUsageAccount} />
@@ -287,7 +300,7 @@ export function App() {
           {route.page === "sessions" && <SessionsPage state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
-          {route.page === "connectors" && <ConnectorsPage state={state} actions={actions} />}
+          {route.page === "connectors" && <ConnectorsPage state={state} actions={actions} usage={<UsageStrip {...usage} compact />} />}
           {route.page === "automation" &&
             // The form reads its automation once, on mount: after a reload it waits on the list
             // until the host's snapshot has it, instead of opening blank and saving a copy.
@@ -779,7 +792,7 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions, draftUsageAccount, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; draftUsageAccount?: UsageAccount; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
+function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; shown: string[]; usage: ReactNode; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -789,11 +802,6 @@ function Sidebar({ state, actions, draftUsageAccount, open, nativeMenu, onImport
   const groupNames = [...new Set(all.filter((s) => s.group && !s.archived).map((s) => s.group as string))].sort((a, b) => a.localeCompare(b));
   const [collapsed, toggleGroup] = useCollapsedGroups();
   const { route } = state;
-  // The hosts picked in Settings: their rows, and their plan usage in the strip.
-  const shown = shownHosts(["local", ...state.hosts.map((h) => h.id)], useHiddenHosts());
-  const selectedSession = route.page === "session" ? state.sessions[route.id] : undefined;
-  const selectedUsageAccount = selectedSession ? { host: hostOf(selectedSession), engine: selectedSession.engine, account: accountOf(selectedSession) }
-    : route.page === "new" ? draftUsageAccount : undefined;
   const narrow = useMedia(NARROW);
   // The row being dragged. The ref answers dragover at once; the state (the
   // dimmed row, the empty Sessions slot) renders a tick later, because
@@ -964,13 +972,7 @@ function Sidebar({ state, actions, draftUsageAccount, open, nativeMenu, onImport
           {showArchived && <div className="archived-list">{archived.map(row)}</div>}
         </div>
       )}
-      <UsageStrip
-        sources={shown.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host], online: hostOnline(state, host) }))}
-        selected={selectedUsageAccount}
-        onViewAll={() => actions.go({ page: "subscriptions" })}
-        onManage={(host) => actions.go({ page: "hosts", host, tab: "engines" })}
-        onRefresh={actions.refreshUsage}
-      />
+      {usage}
       {shown.length > 0 && (
         <div className="sidebar-bottom">
           {shown.map((id) => {

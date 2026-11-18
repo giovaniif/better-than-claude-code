@@ -62,9 +62,10 @@ function subscriptionRows(sources: SubscriptionSource[], now: number) {
   });
 }
 
-export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh }: {
+export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, compact = false }: {
   sources: SubscriptionSource[];
   selected?: UsageAccount;
+  compact?: boolean;
   onViewAll(): void;
   onManage(host: string): void;
   onRefresh(host: string, engine: Engine, account: string): Promise<{ error?: string }>;
@@ -90,7 +91,7 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh }
   const [failure, setFailure] = useState("");
   const anchor = useRef<HTMLButtonElement>(null);
   const highest = rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
-  const close = () => { setOpen(false); setShowOthers(false); };
+  const close = () => { setOpen(false); setShowOthers(false); setFailure(""); };
   const refresh = async () => {
     if (!canRefresh || refreshing || !activeHost || !activeEngine || !accountId) return;
     setRefreshing(true);
@@ -102,13 +103,16 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh }
   const manage = (host: string) => { close(); onManage(host); };
   const signIns = others.filter((row) => row.loggedIn === false).length;
   return (
-    <div className="usage-dock">
-      <button ref={anchor} className="btn-quiet usage-trigger" aria-label="Subscription usage" aria-haspopup="dialog" aria-expanded={open} onClick={() => open ? close() : setOpen(true)}>
-        <span aria-hidden="true">◷</span><span>Usage</span><span className="spacer" />
-        <span className={highest?.level === "high" ? "bad" : highest?.level === "warn" ? "warn" : "muted"}>
-          {highest ? `${percentText(highest.percent)} used` : "View limits"}
-        </span>
-        <span aria-hidden="true">›</span>
+    <div className={compact ? "mobile-usage" : "usage-dock"}>
+      <button ref={anchor} className={compact ? "btn mobile-usage-trigger" : "btn-quiet usage-trigger"} aria-label="Subscription usage" aria-haspopup="dialog" aria-expanded={open} onClick={() => open ? close() : setOpen(true)}>
+        {compact && highest ? (
+          <><span className="usage-chip-track" aria-hidden="true"><span style={{ width: `${highest.percent}%` }} /></span><span>{percentText(highest.percent)}</span></>
+        ) : (
+          <>
+            <span aria-hidden="true">◷</span><span>Usage</span>
+            {!compact && <><span className="spacer" /><span className={highest?.level === "high" ? "bad" : highest?.level === "warn" ? "warn" : "muted"}>{highest ? `${percentText(highest.percent)} used` : "View limits"}</span><span aria-hidden="true">›</span></>}
+          </>
+        )}
       </button>
       {open && (
         <AnchoredPopover anchor={anchor} label="Subscription usage" side="right" variant="usage-popover" onClose={close}>
@@ -129,6 +133,7 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh }
                 <strong>{activeLabel}</strong>
                 {active?.meters.some((meter) => meter.level !== "ok") && <span className="usage-near-limit">Near limit</span>}
               </div>
+              {selectedHost?.online === false && <p className="muted small">The selected host is offline.</p>}
               {active?.loggedIn === false ? (
                 <p className="muted small">Needs sign-in. <button className="btn-text" onClick={() => manage(active.host)}>Sign in</button></p>
               ) : active?.meters.length ? active.meters.map((m) => (
