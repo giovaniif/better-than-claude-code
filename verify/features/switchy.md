@@ -52,6 +52,15 @@ yv api '{"op":"host.remove","hostId":"{{scope_host}}"}'
 yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.composer-chips .chip","text":"All hosts"},{"fill":"label:Message","value":"TEST-after the host went away"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-after the host went away"},"text":"This is a scripted Switchy answer."},{"expect":"css:.assistant-notice","count":0},{"shot":"scope-after-removal"}]'
 ```
 
+### answer-names-the-model
+Viewports: both
+Each answer's label names the model the way the picker does ("Fake Fast"),
+not by its id ("fake-fast"). It used to show the id (#194).
+
+```sh
+yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"fill":"label:Message","value":"TEST-which model answers?"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-which model answers?"},"text":"This is a scripted Switchy answer."},{"eval":"(() => { const label = [...document.querySelectorAll(\".assistant-answer-label .muted\")].at(-1).textContent; const picker = document.querySelector(\".composer .picker > button\").textContent; return label === picker && label === \"Fake Fast\"; })()","equals":true},{"shot":"answer-model-name"}]'
+```
+
 ### refusal-notice-is-red
 Viewports: both
 A question yardd refuses (here one over 8,000 bytes) is not sent, and the
