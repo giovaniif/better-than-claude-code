@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnchoredPopover } from "./AnchoredPopover";
 import type { EngineStates } from "./protocol";
-import { formatReset, metersFor, noLimitsNote, percentText, stripGroups, type Meter, type UsageSource } from "./usage";
-import { ENGINE_NAME } from "./engines";
+import { formatReset, metersFor, noLimitsNote, percentText, reportsLimits, stripGroups, type Meter, type UsageSource } from "./usage";
+import { ENGINES, ENGINE_NAME } from "./engines";
 
-const LIMIT_ENGINES = ["claude", "codex"] as const;
+const LIMIT_ENGINES = ENGINES.filter(reportsLimits);
 
 function useNow() {
   const [now, setNow] = useState(Date.now);
