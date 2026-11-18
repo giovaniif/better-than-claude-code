@@ -1,3 +1,4 @@
+import { loadDefaults } from "./launchDefaults";
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
@@ -1761,6 +1762,8 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   const workspace = state.workspace[target] || home;
   const [loggingIn, setLoggingIn] = useState(false);
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target));
+  const choicePicked = useRef(false);
+  const choose = (next: Choice) => { choicePicked.current = true; setChoice(next); };
   // The account per engine on this host, remembered like the model. One that
   // was removed meanwhile falls back to Default.
   const accounts = accountsOn(state, target);
@@ -1776,7 +1779,7 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
     setPicked({ ...picked, [pickKey(engine)]: id });
     // Picking an account under the other engine means running on it.
     const next = engine === choice.engine ? null : choiceOnEngine(models, engine, choice.effort);
-    if (next) setChoice(next);
+    if (next) choose(next);
   };
   const [permission, setPermission] = useState<Permission>(() => {
     const saved = localStorage.getItem("yard.permission");
@@ -1806,8 +1809,9 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
   // Models and the home folder arrive after the first render, and differ per host.
   useEffect(() => {
     const changed = previousTarget.current !== target;
+    if (changed) choicePicked.current = false;
     setChoice((current) => {
-      const next = changed ? loadChoice(models, target) : validChoice(models, current);
+      const next = changed || (!choicePicked.current && loadDefaults("sessions")?.host === target) ? loadChoice(models, target) : validChoice(models, current);
       return next.engine === current.engine && next.model === current.model && next.effort === current.effort ? current : next;
     });
     if (previousTarget.current !== target) setCwd(loadFolder(target) || workspace);
@@ -1881,9 +1885,9 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
             accounts={accounts}
             picks={picks}
             onAccount={pickAccount}
-            onChange={setChoice}
+            onChange={choose}
           />
-          <EffortPicker models={models} value={choice} onChange={(effort) => setChoice({ ...choice, effort })} />
+          <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
         <div className="new-chips">
@@ -1963,7 +1967,7 @@ function ChipMenu(props: {
   );
 }
 
-export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void; contextScope?: boolean }) {
+export function HostPicker(props: { state: State; value: string; onChange(host: string): void; onAddHost(): void; contextScope?: boolean; allowOffline?: boolean }) {
   const { state, value } = props;
   const [open, setOpen] = useState(false);
   const pick = (host: string) => {
@@ -1987,7 +1991,7 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
       {state.hosts.map((h) => {
         const online = hostOnline(state, h.id);
         return (
-          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online && !props.contextScope} onClick={() => pick(h.id)}>
+          <button key={h.id} className={`picker-item menu-item ${value === h.id ? "active" : ""}`} disabled={!online && !props.contextScope && !props.allowOffline} onClick={() => pick(h.id)}>
             <Icon d={CLOUD} />
             <span>{h.name}</span>
             {!online && <span className="muted small menu-aside">{h.status === "error" ? "unreachable" : h.status}</span>}
