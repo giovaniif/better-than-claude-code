@@ -1,0 +1,54 @@
+$ verify/yv map run mobile --recipe setup-entry-points && verify/yv map run mobile --recipe successful-connection-removes-shortcuts && (cd ui && bun test)
+# exit 0 after 27252 ms at 759d524a2409b136e20eeea03d1b92a5cba6e8cb
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mobile",
+      "at": "2026-11-18T04:07:18.389Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "setup-entry-points",
+          "status": "pass",
+          "ms": 10600
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "mobile",
+      "at": "2026-11-18T04:07:34.050Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "successful-connection-removes-shortcuts",
+          "status": "pass",
+          "ms": 14803
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [126.00ms]

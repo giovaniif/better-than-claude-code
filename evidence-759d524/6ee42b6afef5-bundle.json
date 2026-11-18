@@ -1,0 +1,201 @@
+{
+  "v": 1,
+  "claim": "The Set up iPhone app button in every session header opens Hosts, which since #228 shows nothing about the iPhone app: the setup card is gone",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451",
+  "base": "a6fdde866eff34f5b9eb485e431bd4488a00cf63",
+  "head": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T04:05:09.766Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a6fdde866eff34f5b9eb485e431bd4488a00cf63",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "83ecbc39435a93034041028375a19326040e0120dca8f485f43a7051251cc8ba"
+        },
+        {
+          "path": "p1-hosts-after-shortcut-mobile.png",
+          "sha256": "5319da73e885109a7773e9e8331b2c72ec1233078d88620b6dc409ec69747bac"
+        },
+        {
+          "path": "p1-hosts-after-shortcut-desktop.png",
+          "sha256": "239745c17a4c150cbe43a55bd9adb88612edc8ce0574ffab310fe029b0900184"
+        }
+      ],
+      "addedAt": "2026-11-18T04:05:21.785Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "a6fdde866eff34f5b9eb485e431bd4488a00cf63",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e9123a9bd745ca248fc7b254a2e2068fc788d5352bd321bd5baabaf83c964dc9"
+        }
+      ],
+      "addedAt": "2026-11-18T04:05:21.828Z",
+      "cmd": "verify/yv map run mobile --recipe setup-entry-points",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "regression",
+      "at": "a6fdde866eff34f5b9eb485e431bd4488a00cf63",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-mobile.json",
+          "sha256": "d200113e9ac6b6174369638667db21a758cda8e72f8c95faf4ee136a80ceecfb"
+        }
+      ],
+      "addedAt": "2026-11-18T04:05:46.765Z",
+      "cmd": "verify/yv map run mobile",
+      "exit": 1,
+      "failingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/successful-connection-removes-shortcuts"
+      ],
+      "passingRecipes": [
+        "mobile/phone-workspace",
+        "mobile/workspace-button-text-centered"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "0d0e9a2ca480dd41bd7eacb38fe4ebc870ff36bb7daa3e994e8a7693c35b7b38"
+        },
+        {
+          "path": "p4-hosts-after-shortcut-mobile.png",
+          "sha256": "be72de643faabf7da0e9ce5d1b08ad971c4a8dc2210fd46eda53df641463b437"
+        },
+        {
+          "path": "p4-hosts-after-shortcut-desktop.png",
+          "sha256": "6bc7fb23eba987f20aed72d4b465a9fea492a7ad856ae6d60ada57492ad34380"
+        }
+      ],
+      "addedAt": "2026-11-18T04:07:06.895Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "db02b651629883b0d581280aa56013665789182eefd4c63f979c99fc09cab897"
+        }
+      ],
+      "addedAt": "2026-11-18T04:07:06.934Z",
+      "cmd": "verify/yv map run mobile --recipe setup-entry-points && verify/yv map run mobile --recipe successful-connection-removes-shortcuts && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "31cf4f43931dcb86cb5cc815361460e80db6e1d8702cd073b1412a61ec479ec9"
+        }
+      ],
+      "addedAt": "2026-11-18T04:07:34.227Z",
+      "cmd": "verify/yv design-check --base a6fdde866eff",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-mobile.json",
+          "sha256": "c510a594912d2b1b6dafd523ffc9fc01953ec24d16237edde945148678eb7f47"
+        }
+      ],
+      "addedAt": "2026-11-18T04:07:34.307Z",
+      "cmd": "verify/yv map run mobile",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "mobile/setup-entry-points",
+        "mobile/phone-workspace",
+        "mobile/workspace-button-text-centered",
+        "mobile/successful-connection-removes-shortcuts"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "759d524a2409b136e20eeea03d1b92a5cba6e8cb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-focused-pages.json",
+          "sha256": "cb23821066cebdba97de7ea4ed09f4136660558ee821a839e264514048f704d2"
+        }
+      ],
+      "addedAt": "2026-11-18T04:08:10.588Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    }
+  ]
+}
