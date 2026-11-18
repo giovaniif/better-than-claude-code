@@ -1841,6 +1841,29 @@ async fn automations_are_saved_listed_edited_and_deleted() {
 }
 
 #[tokio::test]
+async fn automation_window_survives_partial_edits_and_null_clears_it() {
+    let sb = Sandbox::new("auto-window");
+    let cwd = sb.folder("proj");
+    let d = sb.start_with(&[("TZ", "UTC")]);
+    let mut c = d.client().await;
+    let window = json!({ "start": "21:00", "end": "09:00", "days": [1, 5] });
+    let a = save_automation(&mut c, automation_of(&cwd, json!({ "window": window }))).await.unwrap();
+    assert_eq!(a["window"], window);
+    let id = a["id"].as_str().unwrap();
+    let off = save_automation(&mut c, json!({ "id": id, "enabled": false })).await.unwrap();
+    assert_eq!(off["window"], window);
+    let on = save_automation(&mut c, json!({ "id": id, "enabled": true })).await.unwrap();
+    assert_eq!(on["window"], window);
+    assert_eq!(d.client().await.log[0]["automations"][0]["window"], window);
+    for schedule in [json!({ "kind": "daily", "time": "09:00" }), json!({ "kind": "weekly", "day": 1, "time": "09:00" }), json!({ "kind": "manual" })] {
+        assert!(save_automation(&mut c, json!({ "id": id, "schedule": schedule })).await.unwrap_err().contains("interval"));
+    }
+    let clear = save_automation(&mut c, json!({ "id": id, "window": null })).await.unwrap();
+    assert!(clear["window"].is_null());
+    assert_ne!(clear["nextRun"], on["nextRun"], "clearing the window recomputes the schedule");
+}
+
+#[tokio::test]
 async fn run_now_starts_a_worktree_session_that_is_archived_when_it_ends() {
     let sb = Sandbox::new("auto-run");
     let repo = make_repo(&sb, "repo");
