@@ -126,7 +126,7 @@ Every engine's Add account sits at the right edge of its row on the Hosts
 page, also at 390 px where OpenCode's row (with Add provider) wraps.
 
 ```sh
-yv drive hosts --steps '[{"click":"role:button:Details: iso-host"},{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0]},{"shot":"add-account-buttons"}]'
+yv drive hosts --steps '[{"click":"role:button:Details: iso-host"},{"expect":"role:button:Add OpenCode account"},{"eval":"[...document.querySelectorAll(\".engine-add\")].map((b) => Math.round(b.closest(\".engine-row\").getBoundingClientRect().right - b.getBoundingClientRect().right))","equals":[0,0,0,0,0]},{"shot":"add-account-buttons"}]'
 ```
 
 ### install-command-stays-at-the-right

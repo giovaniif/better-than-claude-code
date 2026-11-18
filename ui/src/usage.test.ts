@@ -246,3 +246,12 @@ describe("stripGroups", () => {
     expect(stripGroups([], BOTH)).toEqual([]);
   });
 });
+
+
+test("ACP accounts do not add empty plan-usage rows", () => {
+  expect(stripGroups([{ host: "local", usage: {}, accounts: [
+    { id: "g", engine: "gemini", name: "Work" },
+    { id: "o", engine: "opencode", name: "Work" },
+    { id: "x", engine: "grok", name: "Work" },
+  ] }], ["claude", "codex", "opencode", "grok", "gemini"])).toEqual([]);
+});

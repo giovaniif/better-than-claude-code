@@ -141,9 +141,9 @@ done
 [ -n "$health" ] || fail "yardd did not answer on port $port; see $logs"
 echo "Running: $health"
 
-# What the engines look like from the service's PATH. OpenCode and Grok are
+# What the engines look like from the service's PATH. OpenCode, Grok and Gemini are
 # optional: they are named only where they are installed.
-for engine in claude codex opencode grok; do
+for engine in claude codex opencode grok gemini; do
   bin="$(PATH="$login_path" command -v "$engine" || true)"
   if [ -z "$bin" ]; then
     case "$engine" in claude|codex) echo "@@engine $engine missing" ;; esac

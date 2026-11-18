@@ -8,7 +8,8 @@ const account = process.env.GEMINI_CLI_HOME?.split("/").pop() ?? "default";
 if (process.argv.includes("--version")) {
   console.log("0.54.0");
 } else if (process.argv.includes("--acp")) {
-  runAgent({ engine: "gemini", state, account, loggedIn: () => existsSync(`${state}/logged-in`) || (account === "default" && existsSync(`${dir}/gemini-logged-in`)) });
+  if (process.env.NO_BROWSER !== "true" || process.argv.slice(-2).join(" ") !== "--approval-mode default") throw new Error("Gemini must start in default mode without browser authentication");
+  runAgent({ engine: "gemini", state: process.cwd().endsWith("/gemini-probe") ? `${state}/probe` : state, account, loggedIn: () => existsSync(`${state}/logged-in`) || (account === "default" && existsSync(`${dir}/gemini-logged-in`)) });
 } else {
   mkdirSync(state, { recursive: true });
   writeFileSync(`${state}/logged-in`, "");

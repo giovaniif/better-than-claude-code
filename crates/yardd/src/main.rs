@@ -8,6 +8,7 @@ mod automations;
 mod claude;
 mod codex;
 mod engines;
+mod gemini;
 mod git;
 mod grok;
 mod handoff;
@@ -127,6 +128,11 @@ async fn main() -> anyhow::Result<()> {
         if let Err(e) = opencode::load_models(&boot).await {
             eprintln!("yardd: opencode unavailable: {e:#}");
         }
+    });
+    // Gemini lists its models when a prompt-free session opens.
+    let boot = app.clone();
+    tokio::spawn(async move {
+        let _ = gemini::status(&boot, crate::accounts::DEFAULT).await;
     });
     // Grok lists its models when its agent starts, logged in or not.
     let boot = app.clone();

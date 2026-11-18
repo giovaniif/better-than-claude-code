@@ -1,6 +1,6 @@
 //! Engines that speak ACP (the Agent Client Protocol: JSON-RPC over stdio):
-//! OpenCode (`opencode acp`) and Grok (`grok agent stdio`). One agent process
-//! per engine and account, started on first use like Codex's app-server, holds
+//! OpenCode (`opencode acp`), Grok (`grok agent stdio`) and Gemini
+//! (`gemini --acp`). One agent process per engine and account, started on first use like Codex's app-server, holds
 //! all of that account's sessions. Its `session/update` notifications are
 //! normalized into session events here; `session/request_permission` becomes
 //! an approval, answered by the user or by the session's permission mode.
@@ -45,7 +45,7 @@ const MAX_OUTPUT: usize = 50_000;
 pub const OPENCODE_PERMISSION: &str = r#"{"edit":"ask","bash":"ask","webfetch":"ask"}"#;
 
 /// The command that runs an engine's ACP agent.
-fn agent_command(engine: &str) -> Result<Command> {
+pub(crate) fn agent_command(engine: &str) -> Result<Command> {
     let mut cmd = match engine {
         "opencode" => {
             let mut cmd = Command::new("opencode");
@@ -55,6 +55,12 @@ fn agent_command(engine: &str) -> Result<Command> {
         "grok" => {
             let mut cmd = Command::new("grok");
             cmd.args(["agent", "stdio"]);
+            cmd
+        }
+        "gemini" => {
+            let mut cmd = Command::new("gemini");
+            // Override a saved yolo mode; yardd applies each session's choice.
+            cmd.args(["--acp", "--approval-mode", "default"]).env("NO_BROWSER", "true");
             cmd
         }
         other => bail!("{other} does not speak ACP"),
@@ -438,6 +444,9 @@ impl Client {
     fn attach(&self, app: &Arc<App>, sid: &str, acp_sid: &str, answer: &Value) {
         self.sessions.lock().unwrap().insert(acp_sid.to_string(), sid.to_string());
         self.options.lock().unwrap().insert(acp_sid.to_string(), json!({ "configOptions": answer["configOptions"], "modes": answer["modes"] }));
+        if self.engine == "gemini" && self.account == crate::accounts::DEFAULT {
+            crate::gemini::publish_models(app, answer);
+        }
         app.set_engine_ref(sid, acp_sid);
         if let Some(s) = app.sessions.lock().unwrap().get_mut(sid) {
             s.backend = Backend::Acp { session_id: acp_sid.to_string(), epoch: self.epoch, turn: None, applied: None };
@@ -504,10 +513,16 @@ impl Client {
                 }
             }
         }
-        let wanted: &[&str] = match permission {
-            "plan" => &["plan"],
-            "full" => &["bypassPermissions", "build", "default"],
-            "acceptEdits" => &["acceptEdits", "build", "default"],
+        let wanted: &[&str] = match (self.engine.as_str(), permission) {
+            // Plan is optional in Gemini. Fall back to default (even after
+            // yolo), with edit refusals enforced by yardd's policy.
+            ("gemini", "plan") => &["plan", "default"],
+            ("gemini", "full") => &["yolo"],
+            ("gemini", "acceptEdits") => &["auto_edit"],
+            ("gemini", _) => &["default"],
+            (_, "plan") => &["plan"],
+            (_, "full") => &["bypassPermissions", "build", "default"],
+            (_, "acceptEdits") => &["acceptEdits", "build", "default"],
             _ => &["build", "default"],
         };
         if let Some(o) = config("mode") {

@@ -2180,7 +2180,7 @@ async fn an_account_is_added_logged_in_and_removed_without_touching_default() {
     let dup = c.wait_error(from, "account.add").await;
     assert!(dup.contains("already"), "{dup}");
     let from = c.mark();
-    c.send(json!({ "op": "account.add", "engine": "gemini", "name": "X" })).await;
+    c.send(json!({ "op": "account.add", "engine": "not-an-engine", "name": "X" })).await;
     c.wait_error(from, "account.add").await;
 
     // Status is per account: Default and Work are both logged out.

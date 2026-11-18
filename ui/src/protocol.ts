@@ -1,6 +1,6 @@
 // Shapes shared with yardd (crates/yardd). Keep the two in step.
 
-export type Engine = "claude" | "codex" | "opencode" | "grok";
+export type Engine = "claude" | "codex" | "opencode" | "grok" | "gemini";
 export type Status = "idle" | "queued" | "running" | "needs_approval" | "error";
 export type Decision = "allow" | "allow_always" | "deny";
 
@@ -237,7 +237,9 @@ export type EngineStates = Partial<Record<Engine, EngineState>> & {
  *  { provider, method }`) asks for an API `key`, or goes on as `url` (paste
  *  the code back) or `code` (a device code; it finishes by itself). */
 export interface LoginState {
-  state: "starting" | "providers" | "key" | "code" | "url" | "checking" | "done" | "failed" | "cancelled";
+  /** CLI-managed login that needs an interactive terminal on the host. */
+  command?: string;
+  state: "starting" | "terminal" | "providers" | "key" | "code" | "url" | "checking" | "done" | "failed" | "cancelled";
   url?: string;
   code?: string | null;
   error?: string;

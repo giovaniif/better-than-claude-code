@@ -65,6 +65,7 @@ async fn engine_status(app: &Arc<App>, engine: &str, account: &str) -> Value {
         "codex" => codex_status(app, account).await,
         "opencode" => crate::opencode::status(app, account).await,
         "grok" => crate::grok::status(app, account).await,
+        "gemini" => crate::gemini::status(app, account).await,
         _ => claude_status(app, account).await,
     }
 }
@@ -124,6 +125,7 @@ pub async fn start(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
         "claude" => start_claude(app, account),
         "opencode" => crate::opencode::start(app, account).await,
         "grok" => crate::grok::start(app, account),
+        "gemini" => crate::gemini::start(app, account).await,
         _ => bail!("unknown engine {engine}"),
     }
 }
@@ -291,6 +293,7 @@ pub async fn cancel(app: &Arc<App>, engine: &str, account: &str) -> Result<()> {
         "claude" => cancel_claude(app, account),
         "opencode" => crate::opencode::cancel(app, account),
         "grok" => crate::grok::cancel(app, account),
+        "gemini" => {}, // The CLI login runs in the user's terminal.
         "codex" => {
             let old = app.logins.codex.lock().unwrap().remove(account);
             if let (Some(id), Some(client)) = (old, app.codex_running(account)) {
