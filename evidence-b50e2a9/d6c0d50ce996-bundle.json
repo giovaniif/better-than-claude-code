@@ -1,0 +1,206 @@
+{
+  "v": 1,
+  "claim": "Cmd-K session rows showed the full worktree path under yardd's data dir, cut off before the branch, so rows from one repo looked the same apart from the title",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "f4aee2ff44601e9f84b20e97e67967f6845944d1",
+  "head": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/navigation.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/navigation.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:53:31.738Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "69a5d2da89720ff9b920494929a8daba8362b08c",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "88f817f93e470420176b10b157dbd57f0ea5754b896aa19e60e9b27f5ea323be"
+        },
+        {
+          "path": "p1-palette-mobile.png",
+          "sha256": "72a75bde561dc5890a2bd63656236e3a631b8ce4e41e84038c4f77d859d466f8"
+        },
+        {
+          "path": "p1-palette-desktop.png",
+          "sha256": "b47a1a408d7ab5145e8778b1c2a01be68f376d0539cc5040eee2c46eec36a6fb"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:40.981Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "69a5d2da89720ff9b920494929a8daba8362b08c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "2c075cf94569de49fd35512bfe716268eecd6780b504552df4f804c7205cc2f1"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:41.030Z",
+      "cmd": "cd ui && bun test src/navigation.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "69a5d2da89720ff9b920494929a8daba8362b08c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "298e577539dd122f112744e5bdbfb37fed3703ce5e60c01ee86b24a41e239f96"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:41.090Z",
+      "cmd": "verify/yv map run navigation --recipe command-k-rows-name-repo-and-branch",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "629dc73606d4f5f82014461da4b7a3b33d5397e4bb3a854ade5ca4d9fa9ce1d6"
+        },
+        {
+          "path": "p4-palette-desktop.png",
+          "sha256": "2f132d854164efc76f5350d2bce7bcb2a71664abda11559591b2225e770a67ee"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:52.861Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "0add92df88940f3d0c6619bad77609e3930b769a5122e9f0d3e33517e73f2d3c"
+        },
+        {
+          "path": "p5-palette-mobile.png",
+          "sha256": "cdfb7f2be6ad5429aa0cb3d888a2fcb3f5124ca3eb65d41eba80d43083a5c19c"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:55.611Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "61d73393935b8ef7b0537026a4e430de7b79a2495d843199e1a4b3929865d404"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:55.655Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "d1eb94a80e93ca703e415c60f952a139516d23d38b080d9d41392d4deb569093"
+        }
+      ],
+      "addedAt": "2026-11-18T01:53:55.825Z",
+      "cmd": "verify/yv map run navigation --recipe command-k-rows-name-repo-and-branch",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "68bb6177234a22607a5ca9984f76938fe4ffa4ecc05b164d278f94ae1f731d33"
+        }
+      ],
+      "addedAt": "2026-11-18T01:54:00.787Z",
+      "cmd": "verify/yv design-check --base f4aee2ff4460",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-navigation.json",
+          "sha256": "dc6cbf4cff60765a84b97c4be86b3afa9d741e4b59dc9ae048157c665aca4d97"
+        }
+      ],
+      "addedAt": "2026-11-18T01:54:00.895Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "navigation/command-k-navigation",
+        "navigation/command-k-finds-switchy",
+        "navigation/command-k-rows-name-repo-and-branch",
+        "navigation/recent-list-skips-automation-runs",
+        "navigation/native-app-menu"
+      ]
+    }
+  ]
+}

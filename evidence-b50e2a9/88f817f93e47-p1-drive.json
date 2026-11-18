@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "69a5d2da89720ff9b920494929a8daba8362b08c",
+    "short": "69a5d2d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:53:36.131Z"
+  },
+  "dir": ".verify/evidence/cmdk-repo-not-path-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2476,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/cmdk-repo-not-path-base/palette-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1599,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cmdk-repo-not-path-base/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

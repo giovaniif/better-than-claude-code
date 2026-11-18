@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b50e2a9932f1bff166c912973d9b6694888cb11f",
+    "short": "b50e2a9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T01:53:50.553Z"
+  },
+  "dir": ".verify/evidence/cmdk-repo-not-path-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1589,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/cmdk-repo-not-path-head-desktop/palette-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

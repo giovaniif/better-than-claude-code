@@ -1,0 +1,45 @@
+$ verify/yv map run navigation --recipe command-k-rows-name-repo-and-branch
+# exit 1 after 4894 ms at 69a5d2da89720ff9b920494929a8daba8362b08c
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-18T01:53:45.982Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-rows-name-repo-and-branch",
+          "status": "fail",
+          "ms": 4045,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"/^Codex · iso-host · TEST-demo-app · yard\\\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\\\".navigation-option .navigation-detail\\\").textContent)\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-53-42-169Z/fail-mobile-step4.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"eval\":\"/^Codex · iso-host · TEST-demo-app · yard\\\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\\\".navigation-option .navigation-detail\\\").textContent)\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-53-42-169Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "\"Actions for [fail] TEST-failing turn\\\"\\n  - group \\\"Plan usage\\\": Claude 5-hour 47% Week 17% Codex 5-hour 12% Week 34%\\n  - button \\\"iso-host 25% · 65%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- dialog \\\"Go to session or page\\\":\\n  - banner:\\n    - combobox \\\"Search sessions and pages\\\" [expanded]: TEST-fix the greeting\\n    - button \\\"Close\\\": Esc\\n  - listbox \\\"Sessions and pages\\\":\\n    - option \\\"[edit] TEST-fix the greeting Codex · iso-host · /tmp/yv-map-navigation-2484053-mwlgwf8p/data/wt/TEST-demo-app/yard-edit-test-fix-the-greeting-ac77 · yard/edit-test-fix-the-greeting-ac77\\\" [selected]\\n  - contentinfo: ↑ ↓ to navigate Enter to open\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 4,\n          \"eval\": \"/^Codex · iso-host · TEST-demo-app · yard\\\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\\\".navigation-option .navigation-detail\\\").textContent)\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"/^Codex · iso-host · TEST-demo-app · yard\\\\\\\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\\\\\\\".navigation-option .navigation-detail\\\\\\\").textContent)\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-53-42-169Z/fail-mobile-step4.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"eval\\\":\\\"/^Codex · iso-host · TEST-demo-app · yard\\\\\\\\/edit-test-fix-the-greeting-[0-9a-f]+$/.test(document.querySelector(\\\\\\\".navigation-option .navigation-detail\\\\\\\").textContent)\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/.verify/drives/2026-11-18T01-53-42-169Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "navigation/command-k-rows-name-repo-and-branch",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

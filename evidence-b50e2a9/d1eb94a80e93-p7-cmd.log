@@ -1,0 +1,26 @@
+$ verify/yv map run navigation --recipe command-k-rows-name-repo-and-branch
+# exit 0 after 4919 ms at b50e2a9932f1bff166c912973d9b6694888cb11f
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-18T01:54:00.741Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-rows-name-repo-and-branch",
+          "status": "pass",
+          "ms": 4063
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

@@ -1,0 +1,26 @@
+$ cd ui && bun test src/navigation.test.ts
+# exit 1 after 16 ms at 69a5d2da89720ff9b920494929a8daba8362b08c
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/navigation.test.ts:
+20 |     expect(navigationEntries([s], context, "archived")[0]?.title).toBe("investigation");
+21 |   });
+22 |   test("a session's detail names its repository and branch, not the worktree path under the data dir", () => {
+23 |     const s = session("fix login", { cwd: "/home/me/.yard/wt/app/yard-fix-login-1a2b", repo: "/work/app", branch: "yard/fix-login-1a2b" });
+24 |     const [row] = navigationEntries([s], context, "");
+25 |     expect(row.detail).toBe("Codex · This Mac · app · yard/fix-login-1a2b");
+                            ^
+error: expect(received).toBe(expected)
+
+Expected: "Codex · This Mac · app · yard/fix-login-1a2b"
+Received: "Codex · This Mac · /home/me/.yard/wt/app/yard-fix-login-1a2b · yard/fix-login-1a2b"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d/ui/src/navigation.test.ts:25:24)
+(fail) navigationEntries > a session's detail names its repository and branch, not the worktree path under the data dir [0.55ms]
+
+ 7 pass
+ 1 fail
+ 23 expect() calls
+Ran 8 tests across 1 file. [11.00ms]
