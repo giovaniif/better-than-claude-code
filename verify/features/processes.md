@@ -35,7 +35,7 @@ under the sidecar. The tab shows it, and the sidecar above it.
 
 ```sh
 yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","effort":"medium","cwd":"{{repo}}","worktree":true,"text":"[subagent] TEST-procs"}' --wait '{"op":"created"}' --save procs_sid=sessionId
-yv drive 'session:{{procs_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-procs","timeout":20000},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"role":"region","name":"Workspace"},"text":"sleep 30","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"yard-claude"},{"expect":{"role":"region","name":"Workspace"},"text":"PID"},{"shot":"processes"}]'
+yv drive 'session:{{procs_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-procs","timeout":20000},{"select":"label:Workspace view","value":"procs"},{"expect":{"role":"region","name":"Workspace"},"text":"sleep 30","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"yard-claude"},{"expect":{"role":"region","name":"Workspace"},"text":"PID"},{"shot":"processes"}]'
 ```
 
 ### nothing-running
@@ -43,7 +43,7 @@ Viewports: desktop
 A session with no processes says so.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session."}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"procs"},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session."}]'
 ```
 
 ### terminal-shell-is-listed
@@ -51,7 +51,7 @@ Viewports: desktop
 The shell of the session's terminal shows, tagged as the terminal's.
 
 ```sh
-yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"expect":"css:.xterm","text":"$"},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"css":".proc-tag","hasText":"terminal"},"timeout":20000},{"shot":"terminal-shell"}]'
+yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-tag","hasText":"terminal"},"timeout":20000},{"shot":"terminal-shell"}]'
 ```
 
 ### stop-a-terminal-command
@@ -60,7 +60,7 @@ A long command in the session's terminal shows in the tab; its Stop asks for a
 second click, then SIGTERM ends it and the row goes.
 
 ```sh
-yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"wait":"label:Terminal input"},{"type":"sleep 300\n","target":"label:Terminal input"},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"css":".proc-row","hasText":"sleep 300"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 300\") .proc-kill"},{"expect":"role:button:Confirm stop process","text":"Stop?"},{"shot":"stop-armed"},{"click":"role:button:Confirm stop process"},{"expect":{"css":".proc-row","hasText":"sleep 300"},"visible":false,"timeout":10000},{"expect":{"css":".proc-tag","hasText":"terminal"}},{"shot":"stopped"}]'
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"sleep 300\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 300"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 300\") .proc-kill"},{"expect":"role:button:Confirm stop process","text":"Stop?"},{"shot":"stop-armed"},{"click":"role:button:Confirm stop process"},{"expect":{"css":".proc-row","hasText":"sleep 300"},"visible":false,"timeout":10000},{"expect":{"css":".proc-tag","hasText":"terminal"}},{"shot":"stopped"}]'
 ```
 
 ### force-kill-what-ignores-sigterm
@@ -69,7 +69,7 @@ A command that ignores SIGTERM is still there after Stop: the row says so and
 offers Force kill, which asks again, then SIGKILL ends it.
 
 ```sh
-yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"wait":"label:Terminal input"},{"type":"trap \"\" TERM; sleep 301\n","target":"label:Terminal input"},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"css":".proc-row","hasText":"sleep 301"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 301\") .proc-kill"},{"click":"role:button:Confirm stop process"},{"expect":"css:.proc-note","text":"Still running after SIGTERM.","timeout":10000},{"shot":"still-running"},{"click":"role:button:Force kill process"},{"expect":"role:button:Confirm force kill process","text":"Force kill?"},{"click":"role:button:Confirm force kill process"},{"expect":{"css":".proc-row","hasText":"sleep 301"},"visible":false,"timeout":10000}]'
+yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"trap \"\" TERM; sleep 301\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 301"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 301\") .proc-kill"},{"click":"role:button:Confirm stop process"},{"expect":"css:.proc-note","text":"Still running after SIGTERM.","timeout":10000},{"shot":"still-running"},{"click":"role:button:Force kill process"},{"expect":"role:button:Confirm force kill process","text":"Force kill?"},{"click":"role:button:Confirm force kill process"},{"expect":{"css":".proc-row","hasText":"sleep 301"},"visible":false,"timeout":10000}]'
 ```
 
 ### stop-with-children
@@ -77,7 +77,7 @@ Viewports: desktop
 A process with a child offers "Stop with children", which ends both.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":{"role":"button","name":"Terminal","exact":true}},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 302 & wait\"\n","target":"label:Terminal input"},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"css":".proc-row","hasText":"sleep 302 & wait"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 302 & wait\") .proc-kill"},{"expect":"role:button:with its children","text":"Stop with children"},{"shot":"stop-with-children"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 302"},"visible":false,"timeout":10000}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 302 & wait\"\n","target":"label:Terminal input"},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 302 & wait"},"timeout":20000},{"click":"css:.proc-row:has-text(\"sleep 302 & wait\") .proc-kill"},{"expect":"role:button:with its children","text":"Stop with children"},{"shot":"stop-with-children"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 302"},"visible":false,"timeout":10000}]'
 ```
 
 ### agent-offers-no-stop
@@ -87,7 +87,7 @@ The Claude sidecar is the session's agent: its row has no Stop. The
 
 ```sh
 yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","effort":"medium","cwd":"{{repo}}","worktree":true,"text":"[subagent] TEST-kill-agent"}' --wait '{"op":"created"}' --save agent_sid=sessionId
-yv drive 'session:{{agent_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-kill-agent","timeout":20000},{"click":{"role":"button","name":"Processes","exact":true}},{"expect":{"css":".proc-row","hasText":"sleep 30"},"timeout":20000},{"expect":{"css":".proc-row","hasText":"yard-claude"}},{"expect":"css:.proc-row:has-text(\"yard-claude\") .proc-kill","count":0},{"expect":"css:.proc-row:has-text(\"sleep 30\") .proc-kill","count":1},{"shot":"agent-row"}]'
+yv drive 'session:{{agent_sid}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-kill-agent","timeout":20000},{"select":"label:Workspace view","value":"procs"},{"expect":{"css":".proc-row","hasText":"sleep 30"},"timeout":20000},{"expect":{"css":".proc-row","hasText":"yard-claude"}},{"expect":"css:.proc-row:has-text(\"yard-claude\") .proc-kill","count":0},{"expect":"css:.proc-row:has-text(\"sleep 30\") .proc-kill","count":1},{"shot":"agent-row"}]'
 ```
 
 ### refused-outside-the-session

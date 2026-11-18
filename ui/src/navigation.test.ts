@@ -11,13 +11,13 @@ describe("navigationEntries", () => {
   test("recent sessions come first, followed by every page and Import", () => {
     const entries = navigationEntries([session("old"), session("new", { updatedAt: 5 })], context, "");
     expect(entries.slice(0, 2).map((e) => e.title)).toEqual(["new", "old"]);
-    expect(entries.filter((e) => e.group === "Pages").map((e) => e.title)).toEqual(["New session", "Switchy", "Automations", "Connectors", "Settings", "Hosts", "Import"]);
+    expect(entries.filter((e) => e.group === "Pages").map((e) => e.title)).toEqual(["New session", "Switchy", "Automations", "Connectors", "Settings", "Hosts", "Subscriptions", "Sessions", "Import"]);
   });
   test("search includes archived sessions and runs, matching every word across metadata", () => {
     const s = session("investigation", { host: "remote", archived: true, automation: "a", branch: "fix/login", group: "Backend" });
     expect(navigationEntries([s], context, "DEV login backend")[0]?.route).toEqual({ page: "session", id: "investigation" });
     expect(navigationEntries([s], context, "login absent")).toEqual([]);
-    expect(navigationEntries([s], context, "archived")[0]?.title).toBe("investigation");
+    expect(navigationEntries([s], context, "archived").find(e => e.group === "Sessions")?.title).toBe("investigation");
   });
   test("a session's detail names its repository and branch, not the worktree path under the data dir", () => {
     const s = session("fix login", { cwd: "/home/me/.yard/wt/app/yard-fix-login-1a2b", repo: "/work/app", branch: "yard/fix-login-1a2b" });

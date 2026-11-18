@@ -1,0 +1,101 @@
+# Focused pages
+
+The approved design has compact host rows and one selected host inspector,
+separate Sessions / Engine logins / System tabs, dedicated session and
+subscription pages, a sidebar usage popover, and a separate account picker.
+The model menu never changes the account of an existing conversation.
+
+## Setup
+
+```sh
+yv iso up
+yv iso seed
+yv api '{"op":"account.add","engine":"claude","name":"TEST-Work"}' --wait '{"op":"accounts"}' --save work_acct='accounts[name=TEST-Work].id'
+yv api '{"op":"account.add","engine":"codex","name":"TEST-Codex"}' --wait '{"op":"accounts"}' --save codex_acct='accounts[name=TEST-Codex].id'
+```
+
+## Cleanup
+
+```sh
+yv iso down
+```
+
+## Recipes
+
+### selected-host-tabs
+Viewports: both
+Only one inspector appears. Engine logins and queue policy are in separate tabs.
+
+```sh
+yv drive 'hosts' --steps '[{"expect":"role:button:Select iso-host"},{"expect":"css:.host-inspector","count":1},{"expect":"role:tab:Sessions"},{"expect":"css:.engines","count":0},{"click":"role:tab:Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"expect":"css:.account-row","text":"TEST-Work"},{"click":"role:tab:System"},{"expect":"css:.host-system","text":"Session capacity"},{"expect":"css:.host-inspector-panel","text":"New sessions are queued while load is above"},{"expect":"css:.engines","count":0},{"eval":"document.documentElement.scrollWidth === innerWidth && document.querySelector(\".main\").scrollWidth === document.querySelector(\".main\").clientWidth","equals":true},{"shot":"host-system"},{"click":"role:tab:Sessions"},{"shot":"host-sessions"}]'
+```
+
+### compact-usage-popover
+Viewports: both
+Usage takes one footer row. The popover shows every reported account, is contained by the viewport and closes on Escape, restoring focus.
+
+```sh
+yv drive 'new' --viewport desktop --steps '[{"expect":"role:button:Subscription usage"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage","text":"Claude · TEST-Work"},{"expect":"role:dialog:Subscription usage","text":"91%"},{"expect":"role:dialog:Subscription usage","text":"Codex · Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage","text":"Claude · TEST-Work"},{"expect":"role:dialog:Subscription usage","text":"91%"},{"expect":"role:dialog:Subscription usage","text":"Codex · Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+```
+
+### subscriptions-page
+Viewports: both
+Accounts appear once, with reset times and source host badges. Reload preserves the route.
+
+```sh
+yv drive 'subscriptions' --steps '[{"expect":"role:heading:Subscriptions"},{"expect":"role:region:Claude · TEST-Work","text":"91% used"},{"expect":"role:region:Claude · Default","count":1},{"expect":"role:region:Codex · Default","text":"34% used"},{"expect":"css:.subscription-hosts","text":"iso-host"},{"expect":"css:.subscription-row","text":"resets in"},{"eval":"document.documentElement.scrollWidth === innerWidth && document.querySelector(\".main\").scrollWidth === document.querySelector(\".main\").clientWidth","equals":true},{"shot":"subscriptions"},{"reload":true},{"expect":"role:heading:Subscriptions"}]'
+```
+
+### account-picker-separate-from-model
+Viewports: both
+Choosing a named account updates a separate chip, preserves the task draft, and the model menu contains models without segmented account buttons.
+
+```sh
+yv drive 'new' --steps '[{"fill":"label:Message","value":"TEST-keep this draft"},{"click":"css:.account-trigger"},{"expect":"role:dialog:Engine account identity","text":"Choose an account"},{"click":{"role":"menuitemradio","name":"Claude · TEST-Work"}},{"expect":"role:button:Account: Claude, TEST-Work"},{"expect":"label:Message","value":"TEST-keep this draft"},{"click":"role:button:Model Opus 5.5"},{"expect":"css:.picker-accounts","count":0},{"expect":{"css":".picker-model","hasText":"Sonnet 5.5"}},{"press":"Escape"},{"eval":"document.documentElement.scrollWidth === innerWidth && document.querySelector(\".main\").scrollWidth === document.querySelector(\".main\").clientWidth","equals":true},{"shot":"separate-account"}]'
+```
+
+### other-engine-account-and-fixed-session
+Viewports: both
+An account on another engine switches both together. Sending uses that account, which stays read-only in the resulting session.
+
+```sh
+yv drive 'new' --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-Codex"}},{"expect":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-focused account"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-focused account"},{"click":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:dialog:Engine account identity","text":"This session runs as"},{"expect":"css:.anchored-popover [role=menuitemradio]","count":0},{"shot":"fixed-account"},{"press":"Escape"}]'
+```
+
+### sessions-search-and-archive
+Viewports: both
+The session page searches active conversations, opens a result, and finds an archived conversation through its filter.
+
+```sh
+yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":true}'
+yv drive 'sessions' --steps '[{"expect":"role:heading:Sessions"},{"fill":"label:Search sessions","value":"TEST-say hello"},{"expect":"css:.focused-session-row","count":1},{"click":"css:.focused-session-row"},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"goto":"sessions"},{"click":{"role":"button","name":"Archived","exact":true}},{"expect":{"css":".focused-session-row","hasText":"TEST-plan the refactor"}},{"fill":"label:Search sessions","value":"TEST-no-match"},{"expect":"css:.focused-session-row","count":0},{"expect":"css:.focused-empty"},{"shot":"empty-search"}]'
+yv api '{"op":"session.update","sessionId":"{{sid_think}}","archived":false}'
+```
+
+### offline-host-and-selection-fallback
+Viewports: both
+An unreachable host shows its problem, retains System actions, and removing it returns selection to the local host.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-offline","kind":"ssh","destination":"test@unreachable.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-offline","status":"error"}]}'
+yv drive 'hosts' --viewport desktop --steps '[{"click":"role:button:Select TEST-offline"},{"expect":"css:.host-problem"},{"expect":"css:.host-inspector-panel","text":"reconnects"},{"click":"role:tab:System"},{"eval":"document.documentElement.scrollWidth === innerWidth && document.querySelector(\".main\").scrollWidth === document.querySelector(\".main\").clientWidth","equals":true},{"shot":"offline-system"},{"click":"role:button:Remove host"},{"click":"role:button:Click again to remove"},{"expect":"role:button:Select TEST-offline","count":0},{"expect":"role:button:Select iso-host"},{"expect":"css:.host-inspector-heading","text":"iso-host"}]'
+yv api '{"op":"host.add","name":"TEST-offline","kind":"ssh","destination":"test@unreachable.invalid"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-offline","status":"error"}]}'
+yv drive 'hosts' --viewport mobile --steps '[{"click":"role:button:Select TEST-offline"},{"expect":"css:.host-problem"},{"expect":"css:.host-inspector-panel","text":"reconnects"},{"click":"role:tab:System"},{"eval":"document.documentElement.scrollWidth === innerWidth && document.querySelector(\".main\").scrollWidth === document.querySelector(\".main\").clientWidth","equals":true},{"shot":"offline-system"},{"click":"role:button:Remove host"},{"click":"role:button:Click again to remove"},{"expect":"role:button:Select TEST-offline","count":0},{"expect":"role:button:Select iso-host"},{"expect":"css:.host-inspector-heading","text":"iso-host"}]'
+```
+
+### workspace-widths-and-views
+Viewports: desktop
+Across eight pane widths the header stays one row and every control stays inside it. The native selector opens all four views without discarding the shell.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () => { const pane=document.querySelector(\".pane\"); for (const width of [300,350,400,440,441,460,520,600]) { pane.style.setProperty(\"--pane-w\",width+\"px\"); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const bar=pane.querySelector(\".tabs\").getBoundingClientRect(); const controls=[...pane.querySelectorAll(\".tabs button,.tabs select\")].filter(b=>b.getClientRects().length); if (Math.round(bar.height)!==52 || controls.some(b=>{ const r=b.getBoundingClientRect(); return r.left<bar.left || r.right>bar.right+.5 || r.bottom>bar.bottom; })) return {badWidth:width}; } return true; })()","equals":true},{"eval":"document.querySelector(\".pane\").style.setProperty(\"--pane-w\",\"300px\"); true","equals":true},{"select":"label:Workspace view","value":"terminal"},{"expect":"label:Terminal input"},{"select":"label:Workspace view","value":"pr"},{"expect":"css:.pr-head"},{"select":"label:Workspace view","value":"procs"},{"expect":"css:.proc-table"},{"select":"label:Workspace view","value":"changes"},{"expect":"role:button:Refresh changes"},{"shot":"workspace-selector"}]'
+```
+
+### manage-accounts-opens-logins
+Viewports: both
+The account identity is visible below the composer. Manage accounts opens Engine logins on the selected host and keeps that destination after a reload.
+
+```sh
+yv drive new --steps '[{"expect":"css:.composer-identity","text":"me@example.com"},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+```

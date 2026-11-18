@@ -4,13 +4,14 @@ import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
-import { UsageStrip } from "./UsageMeters";
+import { Subscriptions, UsageStrip } from "./UsageMeters";
+import { AnchoredPopover } from "./AnchoredPopover";
 import { shownHosts, useHiddenHosts } from "./sidebarHosts";
 import { nameFromDestination } from "./addHost";
 import { AssistantPage } from "./AssistantPage";
-import { engineGlance, sessionGlance, size, stateText } from "./hosts";
+import { size, stateText } from "./hosts";
 import { SettingsPage } from "./SettingsPage";
-import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, DEFAULT_ACCOUNT, type AccountChoice } from "./accounts";
+import { accountChoices, accountLabel, accountName, accountOf, choiceOnEngine, DEFAULT_ACCOUNT } from "./accounts";
 import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, homeOn, loginKey, hostName, hostOf, hostOnline, modelsOn, routeHash, usageOn, useYard, type Actions, type Route, type State, type UploadTarget } from "./store";
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge } from "./attach";
 import { TerminalPane } from "./TerminalPane";
@@ -281,6 +282,8 @@ export function App() {
           )}
           {route.page === "assistant" && <AssistantPage state={state} actions={actions} />}
           {route.page === "hosts" && <Hosts state={state} actions={actions} />}
+          {route.page === "subscriptions" && <SubscriptionsPage state={state} actions={actions} />}
+          {route.page === "sessions" && <SessionsPage state={state} actions={actions} />}
           {route.page === "settings" && <SettingsPage state={state} actions={actions} />}
           {route.page === "automations" && <AutomationsPage state={state} actions={actions} />}
           {route.page === "connectors" && <ConnectorsPage state={state} actions={actions} />}
@@ -886,6 +889,9 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
           <Icon d={PLUS} />
           New session
         </button>
+        <button className={`nav-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}><Icon d={CLOUD} />Hosts</button>
+        <button className={`nav-row ${route.page === "sessions" ? "active" : ""}`} onClick={() => actions.go({ page: "sessions" })}><Icon d={MENU} />Sessions</button>
+        <button className={`nav-row ${route.page === "subscriptions" ? "active" : ""}`} onClick={() => actions.go({ page: "subscriptions" })}><Icon d={CLOCK} />Subscriptions</button>
         <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
           <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
           Switchy
@@ -956,7 +962,7 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
           {showArchived && <div className="archived-list">{archived.map(row)}</div>}
         </div>
       )}
-      <UsageStrip sources={shown.map((host) => ({ host, usage: usageOn(state, host), accounts: accountsOn(state, host) }))} />
+      <UsageStrip sources={shown.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host] }))} onViewAll={() => actions.go({ page: "subscriptions" })} />
       {shown.length > 0 && (
         <div className="sidebar-bottom">
           {shown.map((id) => {
@@ -1080,27 +1086,122 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
   );
 }
 
+function ComposerIdentity({ state, host, engine, account }: { state: State; host: string; engine: Engine; account: string }) {
+  const engines = state.engines[host];
+  const login = account === DEFAULT_ACCOUNT ? engines?.[engine] : engines?.accounts?.[account];
+  return login?.account ? <p className="composer-identity muted small">{login.account}</p> : null;
+}
+
+function AccountPicker({
+  state,
+  host,
+  engine,
+  account,
+  onPick,
+  onManage,
+}: {
+  state: State;
+  host: string;
+  engine: Engine;
+  account: string;
+  onPick?(engine: Engine, account: string): void;
+  onManage(): void;
+}) {
+  const anchor = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const accounts = accountsOn(state, host);
+  const name = accountName(accounts, engine, account);
+  const states = state.engines[host];
+  const login = (e: Engine, id: string) => (id === DEFAULT_ACCOUNT ? states?.[e] : states?.accounts?.[id]);
+  const current = login(engine, account);
+  return (
+    <div className="picker account-picker">
+      <button
+        ref={anchor}
+        className="btn-quiet account-trigger"
+        aria-label={`Account: ${ENGINE_NAME[engine]}, ${name}`}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+      >
+        <span className="account-avatar" aria-hidden="true">
+          {name[0]}
+        </span>
+        <span className="account-trigger-name">
+          {ENGINE_NAME[engine]} · {name}
+        </span>
+        <Icon d={CHEVRON_DOWN} size={12} />
+      </button>
+      {open && (
+        <AnchoredPopover anchor={anchor} label="Engine account identity" onClose={() => setOpen(false)}>
+          <div className="popover-heading">
+            <strong>{onPick ? "Choose an account" : "This session runs as"}</strong>
+            <button className="btn-icon" aria-label="Close account picker" onClick={() => setOpen(false)}>
+              ×
+            </button>
+          </div>
+          {onPick ? (
+            <div role="menu" aria-label="Engine accounts">
+              {pickerEngines(modelsOn(state, host), engine).flatMap((e) =>
+                accountChoices(accounts, e).map((a) => (
+                  <button
+                    key={`${e}:${a.id}`}
+                    className="btn-quiet account-option"
+                    role="menuitemradio"
+                    aria-checked={e === engine && a.id === account}
+                    disabled={!modelsOn(state, host)[e]?.length}
+                    onClick={() => {
+                      onPick(e, a.id);
+                      setOpen(false);
+                    }}
+                  >
+                    <span>
+                      <strong>
+                        {ENGINE_NAME[e]} · {a.name}
+                      </strong>
+                      <small>{login(e, a.id)?.account || (login(e, a.id) ? stateText(login(e, a.id)!) : "Checking login…")}</small>
+                    </span>
+                    {e === engine && a.id === account && <span aria-hidden="true">✓</span>}
+                  </button>
+                )),
+              )}
+            </div>
+          ) : (
+            <div className="account-detail">
+              <strong>
+                {ENGINE_NAME[engine]} · {name}
+              </strong>
+              <p className="muted">{current?.account || (current ? stateText(current) : "Login status unavailable")}</p>
+              <span className="account-host-badge">{hostName(state, host)}</span>
+            </div>
+          )}
+          <div className="popover-footer">
+            <span className="muted small">{onPick ? hostName(state, host) : "Fixed for this session"}</span>
+            <button
+              className="btn-text"
+              onClick={() => {
+                setOpen(false);
+                onManage();
+              }}
+            >
+              {onPick ? "Manage accounts →" : "New session →"}
+            </button>
+          </div>
+        </AnchoredPopover>
+      )}
+    </div>
+  );
+}
+
 export function ModelPicker(props: {
   models: Models;
   value: Choice;
   engines: Engine[];
-  /** The host's added accounts. An engine with any gets an account row; shown only where there is a choice. */
-  accounts?: AccountEntry[];
-  /** The account picked per engine; Default where missing. */
-  picks?: Partial<Record<Engine, string>>;
-  /** Without it the account is fixed (a session's) and only named. */
-  onAccount?(engine: Engine, account: string): void;
   onChange(next: Choice): void;
   /** In a session, a model of another engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
-  const { models, value, engines, onChange, handoff, accounts, picks, onAccount } = props;
-  const choicesOf = (engine: Engine): AccountChoice[] => accountChoices(accounts, engine);
-  const pickOf = (engine: Engine) => picks?.[engine] ?? DEFAULT_ACCOUNT;
-  const several = (engine: Engine) => choicesOf(engine).length > 1;
-  // Which account the models run on: named wherever the engine has more than one.
-  const accountFor = (engine: Engine) => (several(engine) ? accountName(accounts, engine, pickOf(engine)) : null);
-  const triggerAccount = accountFor(value.engine);
+  const { models, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
@@ -1129,11 +1230,10 @@ export function ModelPicker(props: {
         className="btn-quiet"
         aria-haspopup="true"
         aria-expanded={open}
-        aria-label={`Model ${current?.name ?? value.model}${triggerAccount ? ` · ${triggerAccount}` : ""}`}
+        aria-label={`Model ${current?.name ?? value.model}`}
         onClick={() => (open ? close() : setOpen(true))}
       >
         <span>{current?.name ?? value.model}</span>
-        {triggerAccount && <span className="muted picker-account">{triggerAccount}</span>}
         <span className="muted">
           <Icon d={CHEVRON_DOWN} size={12} />
         </span>
@@ -1178,8 +1278,7 @@ export function ModelPicker(props: {
                   {folded ? (
                     <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                       <span>
-                        {ENGINE_NAME[engine]}
-                        {accountFor(engine) ? ` (${accountFor(engine)})` : ""} · {list.length} {list.length === 1 ? "model" : "models"}
+                        {`${ENGINE_NAME[engine]} · ${list.length} ${list.length === 1 ? "model" : "models"}`}
                         {handoff ? " · switching hands off" : ""}
                       </span>
                       <span className="muted">
@@ -1190,27 +1289,7 @@ export function ModelPicker(props: {
                     <>
                       <div className="picker-head">
                         <span>{ENGINE_NAME[engine]}</span>
-                        {accountFor(engine) && !isHandoff && <span className="picker-head-account">{accountFor(engine)} account</span>}
                       </div>
-                      {choicesOf(engine).length > 1 && onAccount && !isHandoff && (
-                        <div className="picker-accounts" role="group" aria-label={`${ENGINE_NAME[engine]} account`}>
-                          <span className="muted small picker-accounts-label">Account</span>
-                          {choicesOf(engine).map((a) => (
-                            <button
-                              key={a.id}
-                              className={`effort ${a.id === pickOf(engine) ? "active" : ""}`}
-                              aria-label={`Use account ${a.name}`}
-                              aria-pressed={a.id === pickOf(engine)}
-                              onClick={() => onAccount(engine, a.id)}
-                            >
-                              {a.name}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {choicesOf(engine).length > 1 && !onAccount && engine === value.engine && (
-                        <div className="picker-note">Runs on the {accountName(accounts, engine, pickOf(engine))} account. It can't change mid-session.</div>
-                      )}
                       {isHandoff && (
                         <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
                       )}
@@ -1884,18 +1963,12 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           onSubmit={start}
           busy={pending || !state.connected || !hostOnline(state, target) || !choice.model || !cwd || gone}
         >
-          <ModelPicker
-            models={models}
-            value={choice}
-            engines={pickerEngines(models)}
-            accounts={accounts}
-            picks={picks}
-            onAccount={pickAccount}
-            onChange={choose}
-          />
+          <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts", host: target, tab: "engines" })} />
+          <ModelPicker models={models} value={choice} engines={[choice.engine]} onChange={choose} />
           <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
+        <ComposerIdentity state={state} host={target} engine={choice.engine} account={picks[choice.engine]} />
         <div className="new-chips">
           <HostPicker state={state} value={target} onChange={setHost} onAddHost={() => actions.go({ page: "hosts" })} />
           <FolderPicker
@@ -2425,10 +2498,9 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             onSubmit={submit}
             voice={voice}
           >
+            <AccountPicker state={state} host={host} engine={meta.engine} account={accountOf(meta)} onManage={() => actions.go({ page: "new" })} />
             <ModelPicker
               models={models}
-              accounts={accounts}
-              picks={{ [meta.engine]: accountOf(meta) }}
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
               engines={pickerEngines(models, meta.engine)}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
@@ -2437,6 +2509,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
+          <ComposerIdentity state={state} host={host} engine={meta.engine} account={accountOf(meta)} />
         </div>
       </main>
       <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
@@ -2976,7 +3049,15 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
         label="Resize the workspace pane"
         onWidth={setPaneW}
       />
-      <header className="bar tabs">
+      <header className="bar tabs workspace-tabs">
+        <select className="workspace-picker" aria-label="Workspace view" value={tab} onChange={(e) => {
+          const next = e.target.value as typeof tab;
+          setTab(next);
+          if (next === "terminal") setTerminalUsed(true);
+          if (next === "pr") setPrUsed(true);
+        }}>
+          <option value="changes">Changes</option><option value="terminal">Terminal</option><option value="pr">Pull request</option><option value="procs">Processes</option>
+        </select>
         <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={props.onClose}><Icon d={CLOSE} /></button>
         <button className={`tab ${tab === "changes" ? "active" : ""}`} aria-pressed={tab === "changes"} onClick={() => setTab("changes")}>
           Changes
@@ -3182,87 +3263,18 @@ function Sparkline({ values }: { values: number[] }) {
 /** `8` or `0.2`, without a trailing `.0`. */
 const gbLimit = (bytes: number) => String(Number((bytes / 1024 ** 3).toFixed(1)));
 
-/** Host ids whose card details are open, per browser. Closed by default, like
- *  an automation's runs: the grid stays a page of small cards, and on a busy
- *  server the sessions alone run to dozens of rows. */
-const DETAILS_OPEN_KEY = "yard.hosts.detailsOpen";
-
-function useDetailsOpen(hostId: string): [boolean, () => void] {
-  const read = () => {
-    try {
-      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
-      return Array.isArray(v) && v.includes(hostId);
-    } catch {
-      return false;
-    }
-  };
-  const [open, setOpen] = useState(read);
-  const toggle = () => {
-    const next = !open;
-    setOpen(next);
-    try {
-      const v = JSON.parse(localStorage.getItem(DETAILS_OPEN_KEY) ?? "[]");
-      const list = (Array.isArray(v) ? v : []).filter((h: unknown) => h !== hostId);
-      localStorage.setItem(DETAILS_OPEN_KEY, JSON.stringify(next ? [...list, hostId] : list));
-    } catch {
-      // A private window may refuse storage; the details still toggle.
-    }
-  };
-  return [open, toggle];
-}
-
-/** What each session's processes use, the sessions waiting to start, and the
- *  rule that queues them: the details under a card's one-line summary. */
-function SessionUse({ host, sessions }: { host: Host; sessions: Record<string, SessionMeta> }) {
-  const reasons = new Map((host.queued ?? []).map((q) => [q.id, q.reason]));
-  const rows = (host.sessions ?? []).filter((u) => sessions[u.id]);
-  const queued = Object.values(sessions)
-    .filter((s) => s.status === "queued")
-    .sort((a, b) => a.createdAt - b.createdAt);
+/** The queue policy belongs with system capacity, not the session list. */
+function QueuePolicy({ host }: { host: Host }) {
   const limits = host.limits;
+  if (!limits) return null;
   return (
-    <section className="usage" aria-label="Sessions">
-      <h2>Sessions</h2>
-      {rows.length === 0 && queued.length === 0 ? (
-        <div className="muted small">No session is running anything.</div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Session</th>
-              <th className="num">CPU</th>
-              <th className="num">Memory</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((u) => (
-              <tr key={u.id}>
-                <td className="usage-title">{sessions[u.id].title}</td>
-                <td className="num">{u.cpuCores.toFixed(1)} cores</td>
-                <td className="num">{size(u.memBytes)}</td>
-              </tr>
-            ))}
-            {queued.map((s) => (
-              <tr key={s.id}>
-                <td className="usage-title">{s.title}</td>
-                <td className="reason" colSpan={2}>
-                  Queued: {reasons.get(s.id) ?? "waiting for room"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      {limits && (
-        <div className="muted small">
-          {limits.forced
-            ? "New sessions are queued: pressure is forced on (YARD_FORCE_PRESSURE=1)."
-            : limits.minFreeBytes > 0
-              ? `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`
-              : `New sessions are queued while load is above ${host.cores}.`}
-        </div>
-      )}
-    </section>
+    <p className="muted small">
+      {limits.forced
+        ? "New sessions are queued: pressure is forced on (YARD_FORCE_PRESSURE=1)."
+        : limits.minFreeBytes > 0
+          ? `New sessions are queued while load is above ${host.cores} or less than ${gbLimit(limits.minFreeBytes)} GB of memory is free.`
+          : `New sessions are queued while load is above ${host.cores}.`}
+    </p>
   );
 }
 
@@ -3694,127 +3706,212 @@ interface AccountActions {
   remove(id: string): void;
 }
 
-/** A host as a small card in the Hosts grid, like an automation's: its state,
- *  CPU, memory and disk, one line for its sessions and a mark per engine.
- *  Details opens the rest under it, as an automation's Runs do: the CPU
- *  history, the sessions table and queue rule, each engine's accounts with
- *  their logins, and Update or Remove for a remote host. */
-function HostCard(props: { state: State; id: string; onRemove?(): void; onInstall?(): void; onLogin?(engine: Engine): void; accountActions?: AccountActions }) {
-  const { state, id, onRemove, onInstall, onLogin, accountActions } = props;
-  const install = state.installs[id];
+function HostSummary({ state, id, selected, onSelect }: { state: State; id: string; selected: boolean; onSelect(): void }) {
+  const status = hostState(state, id);
+  const h = status === "down" || status === "connecting" ? undefined : state.host[id];
+  const entry = state.hosts.find((h) => h.id === id);
+  const where = entry ? (entry.kind === "ssh" ? entry.destination : entry.url) : "This machine";
+  return (
+    <button className="btn-quiet host-summary" aria-label={`Select ${hostName(state, id)}`} aria-pressed={selected} onClick={onSelect}>
+      <span className="host-summary-identity">
+        <span className="host-summary-name">
+          <span className={`dot host-dot-${status}`} />
+          <strong>{hostName(state, id)}</strong>
+          {entry && <Cloud size={13} />}
+        </span>
+        <span className="muted small">{where}</span>
+        <span className={`small host-state-${status}`}>{!h && status === "ok" ? "Waiting for stats…" : HOST_STATE_LABEL[status]}</span>
+      </span>
+      {(
+        [
+          ["CPU", h ? pct(h.cpu) : "—"],
+          ["Memory", h ? `${gb(h.memUsed)} GB` : "—"],
+          ["Disk", h ? `${gb(h.diskUsed)} GB` : "—"],
+        ] as const
+      ).map(([label, value]) => (
+        <span key={label} className="host-summary-metric">
+          <span className="muted small">{label}</span>
+          <strong>{value}</strong>
+        </span>
+      ))}
+      <Icon d={CHEVRON_RIGHT} size={13} />
+    </button>
+  );
+}
+
+function HostInspector({
+  state,
+  actions,
+  id,
+  onLogin,
+  accountActions,
+  initialTab = "sessions",
+}: {
+  state: State;
+  actions: Actions;
+  id: string;
+  initialTab?: "sessions" | "engines" | "system";
+  onLogin(engine: Engine): void;
+  accountActions: AccountActions;
+}) {
+  const [tab, setTab] = useState<"sessions" | "engines" | "system">(initialTab);
   const entry = state.hosts.find((h) => h.id === id);
   const status = hostState(state, id);
   const host = status === "down" || status === "connecting" ? undefined : state.host[id];
-  const sessions = Object.fromEntries(Object.entries(state.sessions).filter(([, s]) => hostOf(s) === id));
-  const name = hostName(state, id);
-  const where = entry ? ((entry.kind === "ssh" ? entry.destination : entry.url) ?? "") : "This machine";
+  const sessions = Object.values(state.sessions).filter((s) => hostOf(s) === id);
+  const active = sessions.filter(
+    (s) => s.status === "running" || s.status === "needs_approval" || s.status === "queued" || host?.sessions?.some((u) => u.id === s.id),
+  );
+  const install = state.installs[id];
   const problem = entry && status === "down" ? explainHostError(entry) : null;
-  const engines = host ? state.engines[id] : undefined;
-  const accounts = accountsOn(state, id);
-  const glance = host ? sessionGlance(host, sessions) : null;
-  const [open, toggle] = useDetailsOpen(id);
+  const name = hostName(state, id);
+  const engines = hostOnline(state, id) ? state.engines[id] : undefined;
+  const count = active.length;
   return (
-    <section className="host-card" aria-label={name}>
-      <div className="host-head">
-        <span className={`dot host-dot-${status}`} aria-hidden="true" />
-        <h2 className="host-card-name" title={name}>
-          {name}
-        </h2>
+    <section className="host-inspector" aria-label={`${name} details`}>
+      <div className="host-inspector-heading">
+        <h2>{name}</h2>
         {entry && <Cloud size={13} />}
         <span className="spacer" />
-        <span className={`small host-state-${status}`} title={host?.pressure ?? undefined}>
-          {HOST_STATE_LABEL[status]}
-        </span>
-      </div>
-      <div className="muted small host-where" title={where}>
-        {where}
+        <span className={`small host-state-${status}`}>{HOST_STATE_LABEL[status]}</span>
       </div>
       {install && (install.running || !install.ok || status !== "ok") && <InstallLog install={install} machine={name} />}
-      {problem && !install?.running && !install?.ok && (
+      {problem && !install?.running && (
         <div className="host-problem">
-          <div>{problem.title}</div>
-          {problem.hint && <div className="muted small">{problem.hint}</div>}
-          {problem.install && onInstall && (
-            <div className="row">
-              <button className="btn-primary" onClick={onInstall}>
-                Install Switchyard on {name}
-              </button>
-            </div>
+          <strong>{problem.title}</strong>
+          {problem.hint && <p className="muted small">{problem.hint}</p>}
+          {problem.install && entry?.kind === "ssh" && (
+            <button className="btn" onClick={() => actions.installHost(id)}>
+              Install Switchyard on {name}
+            </button>
           )}
           {entry?.error && problem.title !== entry.error && (
-            <details className="small muted">
+            <details>
               <summary>Details</summary>
               <code>{entry.error}</code>
             </details>
           )}
         </div>
       )}
-      {status === "connecting" && <div className="muted small">Opening the SSH tunnel…</div>}
-      {host && (
-        <div className="stat-grid">
-          <Stat label="CPU" value={host.cpu} big={pct(host.cpu)} detail={`load ${host.load.toFixed(1)} of ${host.cores}`} warn={host.load > host.cores} />
-          <Stat
-            label="Memory"
-            value={(host.memUsed / host.memTotal) * 100}
-            big={`${gb(host.memUsed)} GB`}
-            detail={`of ${gb(host.memTotal)} GB`}
-            warn={host.memUsed / host.memTotal > 0.9}
-          />
-          <Stat
-            label="Disk"
-            value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
-            big={`${gb(host.diskUsed)} GB`}
-            detail={`of ${gb(host.diskTotal)} GB`}
-            warn={host.diskTotal > 0 && host.diskUsed / host.diskTotal > 0.9}
-          />
-        </div>
-      )}
-      {!host && status !== "down" && status !== "connecting" && <div className="muted small">Waiting for the first sample.</div>}
-      {engines ? (
-        <ul className="host-engines" aria-label={`Engines on ${name}`}>
-          {engineGlance(engines, accounts).map((e) => (
-            <li key={e.engine} className={`host-engine engine-${e.tone}`} title={e.title}>
-              <span className={`dot ${e.tone === "ok" ? "host-dot-ok" : e.tone === "warn" ? "host-dot-busy" : "host-dot-down"}`} aria-hidden="true" />
-              <span className="host-engine-label">
-                {e.label}
-                {e.note && <span className="host-engine-note"> · {e.note}</span>}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        install?.ok && !install.running && <EngineSummary install={install} machine={name} />
-      )}
-      <div className="host-card-foot">
-        {glance && (
-          <span className="small host-sessions" title={`Sessions on ${name}: ${glance.text}${glance.queued ? `, ${glance.queued} queued` : ""}`}>
-            <span className="muted">{glance.text}</span>
-            {glance.queued > 0 && <span className="warn"> · {glance.queued} queued</span>}
-          </span>
-        )}
-        <span className="spacer" />
-        <button
-          className="btn-text host-more"
-          aria-expanded={open}
-          aria-label={`Details: ${name}`}
-          title={open ? "Hide the details" : "Sessions, engine accounts and logins"}
-          onClick={toggle}
-        >
-          Details
-          <span className={`tool-chevron ${open ? "open" : ""}`}>
-            <Icon d={CHEVRON_RIGHT} size={11} />
-          </span>
-        </button>
+      {status === "connecting" && <p className="muted">Opening the SSH tunnel…</p>}
+      <div className="focused-tabs" role="tablist" aria-label="Host details">
+        {(
+          [
+            ["sessions", `Sessions${count ? ` · ${count}` : ""}`],
+            ["engines", "Engine logins"],
+            ["system", "System"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            className="tab"
+            key={key}
+            id={`host-tab-${key}`}
+            role="tab"
+            aria-selected={tab === key}
+            aria-controls="host-panel"
+            onClick={() => setTab(key)}
+            onKeyDown={(e) => {
+              const keys = ["sessions", "engines", "system"] as const;
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+              e.preventDefault();
+              const next = e.key === "Home" ? "sessions" : e.key === "End" ? "system" : keys[(keys.indexOf(key) + (e.key === "ArrowRight" ? 1 : 2)) % 3];
+              setTab(next);
+              document.getElementById(`host-tab-${next}`)?.focus();
+            }}
+            tabIndex={tab === key ? 0 : -1}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      {open && (
-        <div className="host-details">
-          {host && <Sparkline values={host.cpuHistory ?? []} />}
-          {host && <SessionUse host={host} sessions={sessions} />}
-          {engines && <Engines engines={engines} accounts={accounts} accountActions={accountActions} errorCount={state.errorCount} connected={state.connected} onLogin={onLogin} />}
-          {onRemove && <RemoveHost onConfirm={onRemove} onUpdate={entry?.kind === "ssh" && host && !install?.running ? onInstall : undefined} />}
-          {!host && !onRemove && <div className="muted small">Nothing more until the first sample.</div>}
-        </div>
-      )}
+      <div className="host-inspector-panel" id="host-panel" role="tabpanel" aria-labelledby={`host-tab-${tab}`}>
+        {tab === "sessions" && (
+          <>
+            {host ? (
+              <SessionRows state={state} actions={actions} sessions={active} empty={`Nothing running on ${name}`} />
+            ) : (
+              <p className="muted">{hostOnline(state, id) ? "Waiting for session activity…" : "Session activity is available when this host reconnects."}</p>
+            )}
+            <button className="btn-text" onClick={() => actions.go({ page: "sessions" })}>
+              View all sessions →
+            </button>
+          </>
+        )}
+        {tab === "engines" && (
+          <>
+            {engines ? (
+              <Engines
+                engines={engines}
+                accounts={accountsOn(state, id)}
+                accountActions={accountActions}
+                errorCount={state.errorCount}
+                connected={state.connected && hostOnline(state, id)}
+                onLogin={onLogin}
+              />
+            ) : (
+              <p className="muted">{hostOnline(state, id) ? "Checking engine logins…" : "Engine logins are available when this host reconnects."}</p>
+            )}
+            <button className="btn-text" onClick={() => actions.go({ page: "subscriptions" })}>
+              View subscription usage →
+            </button>
+          </>
+        )}
+        {tab === "system" && (
+          <>
+            <dl className="host-system">
+              <div>
+                <dt>Connection</dt>
+                <dd>{entry ? entry.destination || entry.url : "This machine"}</dd>
+              </div>
+              <div>
+                <dt>Session capacity</dt>
+                <dd>{host?.pressure || HOST_STATE_LABEL[status]}</dd>
+              </div>
+              {host && (
+                <div>
+                  <dt>Processor</dt>
+                  <dd>
+                    {host.cores} cores · load {host.load.toFixed(1)}
+                  </dd>
+                </div>
+              )}
+            </dl>
+            {host && (
+              <>
+                <div className="stat-grid">
+                  <Stat
+                    label="CPU"
+                    value={host.cpu}
+                    big={pct(host.cpu)}
+                    detail={`load ${host.load.toFixed(1)} of ${host.cores}`}
+                    warn={host.load > host.cores}
+                  />
+                  <Stat
+                    label="Memory"
+                    value={host.memTotal ? (host.memUsed / host.memTotal) * 100 : 0}
+                    big={`${gb(host.memUsed)} GB`}
+                    detail={`of ${gb(host.memTotal)} GB`}
+                  />
+                  <Stat
+                    label="Disk"
+                    value={host.diskTotal ? (host.diskUsed / host.diskTotal) * 100 : 0}
+                    big={`${gb(host.diskUsed)} GB`}
+                    detail={`of ${gb(host.diskTotal)} GB`}
+                  />
+                </div>
+                <Sparkline values={host.cpuHistory ?? []} />
+                <QueuePolicy host={host} />
+              </>
+            )}
+            {entry && (
+              <RemoveHost
+                onConfirm={() => actions.removeHost(id)}
+                onUpdate={entry.kind === "ssh" && host && !install?.running ? () => actions.installHost(id) : undefined}
+              />
+            )}
+          </>
+        )}
+      </div>
     </section>
   );
 }
@@ -3826,7 +3923,11 @@ function InstallLog({ install, machine }: { install: State["installs"][string]; 
   return (
     <div className="host-problem">
       <div>
-        {install.running ? `Installing Switchyard on ${machine}…` : install.ok ? `Installed. Connecting to ${machine}…` : `The install on ${machine} failed${failure ? `: ${failure}` : "."}`}
+        {install.running
+          ? `Installing Switchyard on ${machine}…`
+          : install.ok
+            ? `Installed. Connecting to ${machine}…`
+            : `The install on ${machine} failed${failure ? `: ${failure}` : "."}`}
       </div>
       {lines.length > 0 && (
         <pre className="install-log" aria-live="polite">
@@ -3852,9 +3953,7 @@ function EngineSummary({ install, machine }: { install: State["installs"][string
           <span className={`dot ${e.state === "ok" ? "host-dot-ok" : "host-dot-busy"}`} aria-hidden="true" />
           <span>{ENGINE_LABEL[e.name as Engine] ?? e.name}</span>
           <span className="muted small">{e.state === "ok" ? "ready" : e.state === "missing" ? "not installed" : "not logged in"}</span>
-          {e.state !== "ok" && (
-            <code className="engine-cmd">{e.state === "missing" ? ENGINE_INSTALL[e.name as Engine] : ENGINE_LOGIN[e.name as Engine]}</code>
-          )}
+          {e.state !== "ok" && <code className="engine-cmd">{e.state === "missing" ? ENGINE_INSTALL[e.name as Engine] : ENGINE_LOGIN[e.name as Engine]}</code>}
         </div>
       ))}
       {notReady.length > 0 && <div className="muted small">Run the command on {machine} once, over SSH. Sessions with that engine work after that.</div>}
@@ -4084,8 +4183,7 @@ function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: numb
     <section className="host-card add-host" aria-label="Add host">
       <h2>Add a host</h2>
       <div className="muted small">
-        Run sessions on another machine you can <code>ssh</code> into without a password. If Switchyard isn't there yet, you can install it from
-        here next.
+        Run sessions on another machine you can <code>ssh</code> into without a password. If Switchyard isn't there yet, you can install it from here next.
       </div>
       {!direct && (
         <input
@@ -4103,7 +4201,14 @@ function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: numb
       {more && (
         <div className="form-grid">
           <label htmlFor="host-name">Name</label>
-          <input id="host-name" type="text" placeholder={nameFromDestination(destination) || "devbox"} value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
+          <input
+            id="host-name"
+            type="text"
+            placeholder={nameFromDestination(destination) || "devbox"}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            spellCheck={false}
+          />
           {direct ? (
             <>
               <label htmlFor="host-url">URL</label>
@@ -4142,12 +4247,15 @@ function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: numb
 
 function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [adding, setAdding] = useState(false);
+  const route = state.route.page === "hosts" ? state.route : null;
+  const [selected, setSelected] = useState(route?.host ?? "local");
+  const id = selected === "local" || state.hosts.some((h) => h.id === selected) ? selected : "local";
   const [login, setLogin] = useState<{ host: string; engine: Engine; account?: string } | null>(null);
-  const accountActions = (host: string): AccountActions => ({
-    login: (engine, account) => setLogin({ host, engine, account }),
-    add: (engine, name) => actions.addAccount(host, engine, name),
-    remove: (id) => actions.removeAccount(host, id),
-  });
+  const accountActions: AccountActions = {
+    login: (engine, account) => setLogin({ host: id, engine, account }),
+    add: (engine, name) => actions.addAccount(id, engine, name),
+    remove: (account) => actions.removeAccount(id, account),
+  };
   return (
     <div className="hosts">
       <header className="bar">
@@ -4162,33 +4270,165 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
         )}
       </header>
       <div className="scroll">
-        <div className="hosts-inner host-list">
-          <MobileSetup mobile={state.mobile} />
-          {adding && <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />}
-          <div className="host-grid">
-            <HostCard state={state} id="local" accountActions={accountActions("local")} onLogin={(engine) => setLogin({ host: "local", engine })} />
-            {state.hosts.map((h) => (
-              <HostCard
-                key={h.id}
-                state={state}
-                id={h.id}
-                onRemove={() => actions.removeHost(h.id)}
-                onInstall={h.kind === "ssh" ? () => actions.installHost(h.id) : undefined}
-                accountActions={accountActions(h.id)}
-                onLogin={(engine) => setLogin({ host: h.id, engine })}
-              />
+        <div className="focused-page">
+          {adding && (
+            <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />
+          )}
+          <div className="focused-hosts" aria-label="Choose a host">
+            {["local", ...state.hosts.map((h) => h.id)].map((h) => (
+              <HostSummary key={h} state={state} id={h} selected={h === id} onSelect={() => setSelected(h)} />
             ))}
-            {state.hosts.length === 0 && !adding && (
-              <button className="host-empty" onClick={() => setAdding(true)}>
-                <Icon d={CLOUD} size={16} />
-                <span>
-                  <strong>Run sessions on another machine</strong>
-                  <span className="muted small">A server or desktop you reach over SSH. Its sessions show up here next to this one's.</span>
-                </span>
-              </button>
-            )}
           </div>
-          {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} account={login.account} onClose={() => setLogin(null)} />}
+          <HostInspector
+            key={id}
+            initialTab={route?.host === undefined || route.host === id ? route?.tab : undefined}
+            state={state}
+            actions={actions}
+            id={id}
+            onLogin={(engine) => setLogin({ host: id, engine })}
+            accountActions={accountActions}
+          />
+          {state.hosts.length === 0 && !adding && (
+            <button className="btn-quiet host-empty" onClick={() => setAdding(true)}>
+              <Icon d={CLOUD} />
+              <span>
+                <strong>Run sessions on another machine</strong>
+                <span className="muted small">Add a server or desktop you reach over SSH.</span>
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+      {login && <LoginDialog state={state} actions={actions} host={login.host} engine={login.engine} account={login.account} onClose={() => setLogin(null)} />}
+    </div>
+  );
+}
+
+function SubscriptionsPage({ state, actions }: { state: State; actions: Actions }) {
+  return (
+    <div className="hosts">
+      <header className="bar">
+        <MenuButton />
+        <h1>Subscriptions</h1>
+      </header>
+      <div className="scroll">
+        <div className="focused-page">
+          <p className="muted">Your accounts and usage, across all hosts</p>
+          <Subscriptions
+            sources={["local", ...state.hosts.map((h) => h.id)].map((host) => ({
+              host,
+              name: hostName(state, host),
+              usage: usageOn(state, host),
+              accounts: accountsOn(state, host),
+              engines: state.engines[host],
+            }))}
+            onManage={() => actions.go({ page: "hosts", tab: "engines" })}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SessionRows({
+  state,
+  actions,
+  sessions,
+  empty = "No sessions to show",
+  showHost = false,
+}: {
+  state: State;
+  actions: Actions;
+  sessions: SessionMeta[];
+  empty?: string;
+  showHost?: boolean;
+}) {
+  if (!sessions.length)
+    return (
+      <div className="focused-empty">
+        <strong>{empty}</strong>
+        <p className="muted">Start a session whenever you're ready.</p>
+        <button className="btn" onClick={() => actions.go({ page: "new" })}>
+          New session
+        </button>
+      </div>
+    );
+  return (
+    <div className="focused-session-list">
+      {sessions.map((s) => {
+        const host = hostOf(s);
+        const usage = state.host[host]?.sessions?.find((u) => u.id === s.id);
+        const queued = state.host[host]?.queued?.find((q) => q.id === s.id)?.reason;
+        return (
+          <button key={s.id} className="btn-quiet focused-session-row" onClick={() => actions.go({ page: "session", id: s.id })}>
+            <span className="focused-session-identity">
+              <strong>{s.title}</strong>
+              <span className="muted small">
+                {ENGINE_NAME[s.engine]} · {accountName(accountsOn(state, host), s.engine, accountOf(s))}
+                {showHost ? ` · ${hostName(state, host)}` : ""}
+              </span>
+              {s.status === "queued" && queued && <span className="muted small">{queued}</span>}
+            </span>
+            <span className={`focused-session-state ${s.status === "needs_approval" ? "warn" : "muted"}`}>
+              <span className={`dot dot-${s.status}`} />
+              {!hostOnline(state, host) ? "Offline" : s.archived ? "Archived" : STATUS_LABEL[s.status]}
+            </span>
+            <span className="focused-session-resources muted small">
+              {usage ? (
+                <>
+                  {size(usage.memBytes)}
+                  <br />
+                  {usage.cpuCores.toFixed(1)} cores
+                </>
+              ) : (
+                "—"
+              )}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function SessionsPage({ state, actions }: { state: State; actions: Actions }) {
+  const [filter, setFilter] = useState<"active" | "all" | "archived">("active");
+  const [query, setQuery] = useState("");
+  const sessions = Object.values(state.sessions)
+    .filter((s) => !hiddenFromSidebar(s))
+    .filter((s) => (filter === "archived" ? s.archived : filter === "all" || !s.archived))
+    .filter((s) => `${s.title} ${s.cwd} ${ENGINE_NAME[s.engine]} ${hostName(state, hostOf(s))}`.toLowerCase().includes(query.toLowerCase()))
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+  return (
+    <div className="hosts">
+      <header className="bar">
+        <MenuButton />
+        <h1>Sessions</h1>
+        <span className="spacer" />
+        <button className="btn" onClick={() => actions.go({ page: "new" })}>
+          <Icon d={PLUS} />
+          New session
+        </button>
+      </header>
+      <div className="scroll">
+        <div className="focused-page">
+          <div className="sessions-toolbar">
+            <div className="focused-tabs" role="group" aria-label="Session visibility">
+              {(
+                [
+                  ["active", "Active"],
+                  ["all", "All sessions"],
+                  ["archived", "Archived"],
+                ] as const
+              ).map(([key, label]) => (
+                <button className={`tab ${filter === key ? "active" : ""}`} key={key} aria-pressed={filter === key} onClick={() => setFilter(key)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <input className="field" aria-label="Search sessions" placeholder="Search sessions" value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
+          <SessionRows state={state} actions={actions} sessions={sessions} showHost />
         </div>
       </div>
     </div>

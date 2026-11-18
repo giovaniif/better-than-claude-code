@@ -56,7 +56,7 @@ The Hosts page says the host is under pressure on its card, and its Details
 say why new sessions wait.
 
 ```sh
-yv drive hosts --steps '[{"expect":{"css":"section.host-card[aria-label=\"iso-host\"] .host-state-busy"},"text":"Under pressure"},{"click":"role:button:Details: iso-host"},{"expect":"role:region:iso-host","text":"New sessions are queued: pressure is forced on"}]'
+yv drive hosts --steps '[{"expect":{"css":".host-summary .host-state-busy"},"text":"Under pressure"},{"click":"role:tab:System"},{"expect":"css:.host-inspector-panel","text":"New sessions are queued: pressure is forced on"}]'
 ```
 
 ## Gotchas
