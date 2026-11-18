@@ -143,6 +143,18 @@ installed and drops the socket once to ask again.
 yv drive hosts --steps '[{"click":"role:tab:Engine logins"},{"expect":"role:button:Add OpenCode account"},{"eval":"(() => { const d = Object.getOwnPropertyDescriptor(MessageEvent.prototype, \"data\"); let closed = false; Object.defineProperty(MessageEvent.prototype, \"data\", { configurable: true, get() { const v = d.get.call(this); if (!closed && this.target instanceof WebSocket) { closed = true; this.target.close(); } if (typeof v !== \"string\") return v; let m; try { m = JSON.parse(v); } catch { return v; } if (m.op !== \"engines\") return v; m.engines.grok = { installed: false, loggedIn: false }; return JSON.stringify(m); } }); return true; })()"},{"expect":"css:.engine-cmd","text":"grok"},{"eval":"(() => { const c=document.querySelector(\".engine-cmd\").getBoundingClientRect(), p=document.querySelector(\".engine-cmd\").closest(\".engine-row\").getBoundingClientRect(); return c.left>=p.left && c.right<=p.right+1; })()","equals":true},{"shot":"install-command"}]'
 ```
 
+### account-chip-shows-the-whole-name
+Viewports: both
+The account chip under a session's composer shows "Codex · Default" in full
+when the row has room for it, and a long account name stops at 230 px with an
+ellipsis instead of pushing the row wider. (`.account-trigger { max-width: 100% }`
+resolved against the picker's own shrink-to-fit width, so at desktop the chip
+clipped itself to "Codex · Def…" next to free space.)
+
+```sh
+yv drive 'session:{{sid_edit}}' --steps '[{"expect":"css:.composer .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()","equals":true},{"shot":"account-chip"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), row = document.querySelector(\".composer-row\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.width <= 230.5 && b.right <= row.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()","equals":true}]'
+```
+
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
