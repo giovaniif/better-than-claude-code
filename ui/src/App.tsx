@@ -1,5 +1,5 @@
 import { loadDefaults } from "./launchDefaults";
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Changes, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
@@ -3155,32 +3155,36 @@ function WorkPane(props: { sessionId: string; changes: Changes | undefined; conn
 
 /* ---------- markdown (rendered as elements, never as HTML) ---------- */
 
-// Markdown links, code, bold, and bare PR URLs. One capturing group, so split keeps every match at an odd index.
-const INLINE = new RegExp(`(${[/\[`?[^\]`]+`?\]\([^)]+\)/.source, /`[^`]+`/.source, /\*\*[^*]+\*\*/.source, PR_URL_SOURCE].join("|")})`, "g");
+const WEB_URL = /https?:\/\/(?:[^\s<>()\[\]{}"`']|\([^\s<>()]*\))+/;
+const INLINE = new RegExp(`(${[/\[`?[^\]`]+`?\]\([^)]+\)/.source, /`[^`]+`/.source, /\*\*[^*]+\*\*/.source, PR_URL_SOURCE, WEB_URL.source].join("|")})`, "gi");
+
+function webHref(raw: string): string | null {
+  if (!/^https?:\/\/[^\s\\]+$/i.test(raw)) return null;
+  try {
+    const url = new URL(raw);
+    return url.username || url.password ? null : url.href;
+  } catch {
+    return null;
+  }
+}
 
 function inline(text: string): ReactNode[] {
   return text.split(INLINE).map((part, i) => {
-    // Links are shown by their label only. Agents mostly link local files,
-    // and nothing here should navigate the window away. A GitHub PR is the
-    // exception: it opens in a new tab and has a hover card.
+    if (i % 2 === 0) return part;
     const link = part.match(/^\[`?([^\]`]+)`?\]\(([^)]+)\)$/);
-    if (link) {
-      return prLink(link[2]) ? (
-        <PrLink key={i} href={link[2]}>
-          {link[1]}
-        </PrLink>
-      ) : (
-        <code key={i}>{link[1]}</code>
-      );
-    }
-    const bare = i % 2 === 1 ? prLink(part) : null;
-    if (bare) {
+    const destination = link?.[2] ?? part.replace(/[.,;:!?]+$/, "");
+    const href = webHref(destination);
+    if (href) {
+      const pull = prLink(href);
+      const label = link?.[1] ?? (pull ? shortLabel(pull) : destination);
       return (
-        <PrLink key={i} href={part}>
-          {shortLabel(bare)}
-        </PrLink>
+        <Fragment key={i}>
+          {pull ? <PrLink href={href}>{label}</PrLink> : <a href={href} target="_blank" rel="noopener noreferrer">{label}</a>}
+          {!link && part.slice(destination.length)}
+        </Fragment>
       );
     }
+    if (link) return <code key={i}>{link[1]}</code>;
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2) return <code key={i}>{part.slice(1, -1)}</code>;
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i}>{part.slice(2, -2)}</strong>;
     return part;
