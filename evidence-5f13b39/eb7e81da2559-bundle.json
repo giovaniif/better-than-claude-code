@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "claim": "Connectors at mobile width: the All filter tab wrapped onto a line of its own under the other three, where it read as a separate control",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-862d",
+  "base": "6433eee61b9ce7f61248829691f1631494b170be",
+  "head": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:57:12.131Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "027237fac73fce58f9a678ea8832e631c400b741",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "be83cdc2b8df28a031380f05f07c347436f21f7c811e118aeda25303fe8e9931"
+        },
+        {
+          "path": "p1-connectors-mobile.png",
+          "sha256": "e8361b879453c2bcd31688b17fa9435326342cf8a0c9ea05032e296d9cc7ae28"
+        },
+        {
+          "path": "p1-connectors-desktop.png",
+          "sha256": "306ab987652744f96478967ab288e25ef4ffd33e16edf1473a11ab287ffa74af"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:22.852Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "027237fac73fce58f9a678ea8832e631c400b741",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "61f5ddd4507c5bb27ae170536f9ad96551fc96cd6a1755d8d456c62b0d9dde19"
+        }
+      ],
+      "addedAt": "2026-11-18T01:57:22.903Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "note",
+      "at": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T02:07:47.205Z",
+      "text": "review fix (verifier FAIL on 3e6d61e): the recipe's new focus-ring check was committed alone at a61d5a8 and failed there at mobile (step 3, ring clipped by overflow-x: auto); 5f13b39 drops the scrolling row"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "ef13d75a1e74801b758f531b5fde4cd7429cfbd0ee215e7b7edd1f4920df55b2"
+        }
+      ],
+      "addedAt": "2026-11-18T02:07:47.252Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "bc1c837bd82c0761437d7de1f3b1fb6490369a86529e84163ac44bb9b316ca62"
+        }
+      ],
+      "addedAt": "2026-11-18T02:07:47.420Z",
+      "cmd": "verify/yv map run connectors --recipe filters-stay-on-one-row",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "7f6ecef24f15c54dda2ac10ae17c0abf357f34e40810901b88a37e7dd76e72d7"
+        }
+      ],
+      "addedAt": "2026-11-18T02:07:58.485Z",
+      "cmd": "verify/yv design-check --base 6433eee61b9c",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "5f13b39777ca43c594e8505bda132ed3259c72e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-connectors.json",
+          "sha256": "9424e923081d7e77b2df7d5d7ff3131edd0541f7b47d9cdcc76d1390fe147c2a"
+        }
+      ],
+      "addedAt": "2026-11-18T02:07:58.572Z",
+      "cmd": "verify/yv map run connectors",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "connectors/connectors-list",
+        "connectors/focused-search-and-status",
+        "connectors/filters-stay-on-one-row",
+        "connectors/claude-sign-in",
+        "connectors/codex-sign-in-pasted",
+        "connectors/add-linear",
+        "connectors/codex-chart",
+        "connectors/claude-chart",
+        "connectors/large-catalog-stays-bounded"
+      ]
+    }
+  ]
+}
