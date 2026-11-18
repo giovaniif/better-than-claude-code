@@ -52,5 +52,5 @@ Viewports: desktop
 One account is shown first and other accounts can be expanded.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage"},{"expect":"role:button:Other accounts"},{"click":"role:button:Other accounts"},{"expect":"css:.compact-subscription"},{"shot":"usage"}]'
+yv drive new --viewport desktop --steps '[{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage"},{"expect":"role:button:Other accounts"},{"click":"role:button:Other accounts"},{"expect":"css:.compact-subscription"},{"click":"role:button:Refresh usage"},{"expect":"role:button:Refresh usage","enabled":true},{"shot":"usage"}]'
 ```
