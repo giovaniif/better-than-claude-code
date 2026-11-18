@@ -1,0 +1,40 @@
+$ verify/yv map run attachments --recipe queued-files-come-back
+# exit 1 after 17351 ms at c78b87a70dbbcca1c0de4bf0c15104014a283f5b
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "attachments",
+      "at": "2026-11-18T09:57:10.934Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "queued-files-come-back",
+          "status": "fail",
+          "ms": 16490,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 11 {\"expect\":\"css:.composer .attachment\",\"text\":\"TEST-queued.txt\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-56-55-132Z/fail-mobile-step11.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"api\",\n  \"ok\": true,\n  \"sent\": {\n    \"op\": \"session.interrupt\",\n    \"sessionId\": \"s1a1ee167e866\"\n  },\n  \"reply\": null,\n  \"saved\": {},\n  \"received\": 0,\n  \"problems\": []\n}\n{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1ee167e866\",\n  \"build\": {\n    \"sha\": \"c78b87a70dbbcca1c0de4bf0c15104014a283f5b\",\n    \"short\": \"c78b87a\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-18T09:56:26.314Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-56-55-132Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"mobile\",\n      \"ms\": 15488,\n      \"steps\": 20,\n      \"failed\": {\n        \"step\": 11,\n        \"action\": {\n          \"expect\": \"css:.composer .attachment\",\n          \"text\": \"TEST-queued.txt\"\n        },\n        \"reason\": \"for: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-56-55-132Z/fail-mobile-step11.png\",\n        \"aria\": \"- main:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-e6f5\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Workspace\\\"\\n  - button \\\"Stop\\\"\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: \\\"[slow] TEST-long job\\\"\\n  - paragraph: Working\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Queue a message for the agent\\n    - text: TEST-read this file\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Account: Codex, Default\\\"': Codex · Default\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Add to queue\\\"\\n  - paragraph: me@example.com\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 11 {\\\"expect\\\":\\\"css:.composer .attachment\\\",\\\"text\\\":\\\"TEST-queued.txt\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3/.verify/drives/2026-11-18T09-56-55-132Z/fail-mobile-step11.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "attachments/queued-files-come-back",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

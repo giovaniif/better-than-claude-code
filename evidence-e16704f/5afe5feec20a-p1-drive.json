@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "c78b87a70dbbcca1c0de4bf0c15104014a283f5b",
+    "short": "c78b87a",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:56:26.314Z"
+  },
+  "dir": ".verify/evidence/queued-files-come-back-base-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 8484,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-base-mobile/queued-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-base-mobile/after-edit-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

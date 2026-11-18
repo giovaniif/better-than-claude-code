@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+    "short": "e16704f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:57:15.477Z"
+  },
+  "dir": ".verify/evidence/queued-files-come-back-head2-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 9672,
+      "steps": 22,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-head2-mobile/queued-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-head2-mobile/after-edit-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-head2-mobile/after-stop-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/queued-files-come-back-head2-mobile/sent-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

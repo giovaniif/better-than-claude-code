@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+    "short": "e16704f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:57:15.477Z"
+  },
+  "dir": ".verify/evidence/queued-files-come-back-head2-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 9391,
+      "steps": 22,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head2-desktop/queued-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head2-desktop/after-edit-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head2-desktop/after-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head2-desktop/sent-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

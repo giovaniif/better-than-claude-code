@@ -1,0 +1,68 @@
+{
+  "ok": false,
+  "route": "session:s1a1ee0763ec6",
+  "build": {
+    "sha": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+    "short": "e16704f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T09:57:15.477Z"
+  },
+  "dir": ".verify/evidence/queued-files-come-back-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 19543,
+      "steps": 22,
+      "failed": {
+        "step": 20,
+        "action": {
+          "expect": "css:.attachments-sent",
+          "text": "TEST-queued.txt"
+        },
+        "reason": "expected \"css:.attachments-sent\" to contain \"TEST-queued.txt\", got \"TEST-many-01.txt",
+        "screenshot": ".verify/evidence/queued-files-come-back-head-desktop/fail-desktop-step20.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Hosts\"\n  - button \"Sessions\"\n  - button \"Subscriptions\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 7% · 72%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-3d75\n  - button \"Set up iPhone app\"\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - text: TEST-many-01.txt 13 B TEST-many-02.txt 13 B TEST-many-03.txt 13 B TEST-many-04.txt 13 B TEST-many-05.txt 13 B TEST-many-06.txt 13 B TEST-many-07.txt 13 B TEST-many-08.txt 13 B TEST-many-09.txt 13 B TEST-many-10.txt 13 B TEST-many-11.txt 13 B TEST-many-12.txt 13 B TEST-many-13.txt 13 B TEST-many-14.txt 13 B TEST-many-15.txt 13 B TEST-many-16.txt 13 B TEST-many-17.txt 13 B TEST-many-18.txt 13 B TEST-many-19.txt 13 B TEST-many-20.txt 13 B TEST-twenty\n  - paragraph: \"Echo: TEST-twenty\"\n  - paragraph: \"Attached files:\"\n  - list:\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0dea9ed/TEST-many-01.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0dea9fe/TEST-many-02.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0dea9ff/TEST-many-03.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0dea9f10/TEST-many-04.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa011/TEST-many-05.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa012/TEST-many-06.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa013/TEST-many-07.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa014/TEST-many-08.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa015/TEST-many-09.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa116/TEST-many-10.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa217/TEST-many-11.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa218/TEST-many-12.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa319/TEST-many-13.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa31a/TEST-many-14.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa31b/TEST-many-15.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa31c/TEST-many-16.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa31d/TEST-many-17.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa41e/TEST-many-18.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa41f/TEST-many-19.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee0deaa420/TEST-many-20.txt (text/plain, 13 B)\n  - text: TEST-many-02.txt 13 B TEST-many-03.txt 13 B TEST-many-04.txt 13 B TEST-many-05.txt 13 B TEST-many-06.txt 13 B TEST-many-07.txt 13 B TEST-many-08.txt 13 B TEST-many-09.txt 13 B TEST-many-10.txt 13 B TEST-many-11.txt 13 B TEST-many-12.txt 13 B TEST-many-13.txt 13 B TEST-many-14.txt 13 B TEST-many-15.txt 13 B TEST-many-16.txt 13 B TEST-many-17.txt 13 B TEST-many-18.txt 13 B TEST-many-19.txt 13 B TEST-many-20.txt 13 B TEST-twenty files\n  - paragraph: \"Echo: TEST-twenty files\"\n  - paragraph: \"Attached files:\"\n  - list:\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2c2a/TEST-many-02.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2c2c/TEST-many-03.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2c2b/TEST-many-04.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2d2e/TEST-many-05.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2d2d/TEST-many-06.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2d2f/TEST-many-07.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2d30/TEST-many-08.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2d31/TEST-many-09.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2e32/TEST-many-10.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2e33/TEST-many-11.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1ee101d2e34/TEST-many-12.txt (text/plain, 13 B)\n    - listitem: /tmp/yv-default-2072473-mwlxkm7z/data/attachments/a1a1e"
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head-desktop/queued-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head-desktop/after-edit-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/queued-files-come-back-head-desktop/after-stop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 20 {\"expect\":\"css:.attachments-sent\",\"text\":\"TEST-queued.txt\"}: expected \"css:.attachments-sent\" to contain \"TEST-queued.txt\", got \"TEST-many-01.txt",
+      "hint": "see .verify/evidence/queued-files-come-back-head-desktop/fail-desktop-step20.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+{
+  "v": 1,
+  "claim": "While a turn runs, a message queued with a file comes back without it: Edit (or Up) and Stop put its text back in the reply box but drop the file, and a files-only message comes back as nothing. The files now come back as chips and go again.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-84a3",
+  "base": "73c5af0b182ad2de6f6899a9b4d9d99675996849",
+  "head": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/compose.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T09:56:21.772Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c78b87a70dbbcca1c0de4bf0c15104014a283f5b",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "5afe5feec20adf260301fba1f97f1f78145618688f52ad5ce45afa68d5f06abe"
+        },
+        {
+          "path": "p1-queued-mobile.png",
+          "sha256": "c9cbf4a592ccdfab9aaf34d2ad70ca1431a6acac0033753d4ba5c62e616e7526"
+        },
+        {
+          "path": "p1-after-edit-mobile.png",
+          "sha256": "696b8316810d0648e223ee9bd9cec51a64dbf08a24aa9ef456461deac659f79c"
+        }
+      ],
+      "addedAt": "2026-11-18T09:56:53.486Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c78b87a70dbbcca1c0de4bf0c15104014a283f5b",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "47f1e85a0f425714caea2d188bd57b120e1eead619dbe9d2d3573f3df62517a1"
+        },
+        {
+          "path": "p2-queued-desktop.png",
+          "sha256": "0530b30b12f90479a43342a7d35ef236842e2eaa6372a8d37a9c499569fdb14e"
+        },
+        {
+          "path": "p2-after-edit-desktop.png",
+          "sha256": "f5391df6ad2cde7b107317b4578c4b4cea521250c5918932fbba5d0825777a00"
+        }
+      ],
+      "addedAt": "2026-11-18T09:56:53.539Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "c78b87a70dbbcca1c0de4bf0c15104014a283f5b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "e776c8a288d1a1db6b4839d2ca52c738c612029078141c2dc557c162df9cdc13"
+        }
+      ],
+      "addedAt": "2026-11-18T09:56:53.587Z",
+      "cmd": "verify/yv map run attachments --recipe queued-files-come-back",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "4175471b8fe3e2366ca42821248ee2ab13edd4e979f83e0f4c263750f4eec92b"
+        },
+        {
+          "path": "p4-queued-mobile.png",
+          "sha256": "889961dd5341c9971cf80911305bb6f6f8aea375c455a94edd89701a9f630486"
+        },
+        {
+          "path": "p4-after-edit-mobile.png",
+          "sha256": "d217bab4172e75cebaedf0166bc540ae8603970a333ea700db9937c03c3fded9"
+        },
+        {
+          "path": "p4-after-stop-mobile.png",
+          "sha256": "aa0a15cec8230ebeb5da778c08a068aa3a21de6a2a93ab980c321744812d1a3c"
+        },
+        {
+          "path": "p4-fail-mobile-step20.png",
+          "sha256": "8fa9e45955cba5ee6dd93e2d593819192a5c194f280cc4f47af5315462d2b8d6"
+        }
+      ],
+      "addedAt": "2026-11-18T09:57:36.777Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "49f1de975eda30787768f300fb47b7e3cdf0fc1da9af98b21f2830029312d73b"
+        },
+        {
+          "path": "p5-queued-desktop.png",
+          "sha256": "d443fdc7bcdbb8209587375458adb6854bf7c9258b3b2fdc5aeeedb9d3fd0bf5"
+        },
+        {
+          "path": "p5-after-edit-desktop.png",
+          "sha256": "c088028812d1a09d3b24544c1ac50ba408ca237e21a600fb0dc4f35da81ddb72"
+        },
+        {
+          "path": "p5-after-stop-desktop.png",
+          "sha256": "f63f227cf8bedc23b6917e5851cc4cd5f0f649a78a03b34f83cd442d8b10d493"
+        },
+        {
+          "path": "p5-fail-desktop-step20.png",
+          "sha256": "0a6c375fc779f2245dd30aea94e0d19879951ed8ff340b47e611c032cbaac7cb"
+        }
+      ],
+      "addedAt": "2026-11-18T09:57:57.418Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "aac14000d376f5b77683a07d6f24e7ebc2bf1b77077264e3956dcaf9492fcd17"
+        },
+        {
+          "path": "p6-queued-mobile.png",
+          "sha256": "5e351a6470ad41b98d6448d5407080cffa2c952042929795ba4c5e8872eaddad"
+        },
+        {
+          "path": "p6-after-edit-mobile.png",
+          "sha256": "00f29ce8e5853e8fa3b3047bdebe69a2ad8f6caa0d46e1b49bc1795cbd4243c4"
+        },
+        {
+          "path": "p6-after-stop-mobile.png",
+          "sha256": "ee4cdd8cea667579ec8c697994e7b953dfa2440af20beb4cdad5520a9deba68f"
+        },
+        {
+          "path": "p6-sent-mobile.png",
+          "sha256": "f2c765881837604722d3b59a852b5e55c721963d79c4f059138b39c4448ab645"
+        }
+      ],
+      "addedAt": "2026-11-18T09:58:18.445Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "465a2ebcd3e058aaafa86285eac4d87468f382853229f58644d6c3ba7776196f"
+        },
+        {
+          "path": "p7-queued-desktop.png",
+          "sha256": "8e25b4e60a929301b8b37a7d74ec011eb5bb30d48872ff98bed980cf5fdb895a"
+        },
+        {
+          "path": "p7-after-edit-desktop.png",
+          "sha256": "2e75316f996e8f9fa83c311f86d7da6e1a33e8e2c41366d40da532292df4cb84"
+        },
+        {
+          "path": "p7-after-stop-desktop.png",
+          "sha256": "a3fc6d285737e168e30d0301ddd206351e6f9cf11c0f740d5ab2895b6add8938"
+        },
+        {
+          "path": "p7-sent-desktop.png",
+          "sha256": "c128fcb2ffa0a99d2cfd9255a02ee10c32f4c7cf5aea32d0d111f3a9760db898"
+        }
+      ],
+      "addedAt": "2026-11-18T09:58:28.937Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "2a2b2e5f20e44b81a518eaa685804c3a622c0c6ed9545481b9c8eb57fc626a8b"
+        }
+      ],
+      "addedAt": "2026-11-18T09:58:28.985Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "58130d42bdcb7a3a10b56acd25ed5dd7d3916eb60004d9fee1df10c38aa9daea"
+        }
+      ],
+      "addedAt": "2026-11-18T09:59:17.508Z",
+      "cmd": "verify/yv design-check --base 73c5af0b182a",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-attachments.json",
+          "sha256": "ce503ab3ee30cdbfb4b23ca9ac3c0b7936aa273452c306f6329c9df80dc4bbff"
+        }
+      ],
+      "addedAt": "2026-11-18T09:59:17.594Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api",
+        "attachments/too-many-files-keeps-the-draft",
+        "attachments/queued-files-come-back"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e16704f46dc9aedea81ce67e30c9686ea6bb91a3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-stop.json",
+          "sha256": "2b70280dd9b113975772be56f82f49cbcf169bb8db26cff468a6804317174cb2"
+        }
+      ],
+      "addedAt": "2026-11-18T09:59:50.957Z",
+      "cmd": "verify/yv map run stop",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "stop/stop-slow-turn",
+        "stop/stop-stuck-codex-turn",
+        "stop/stop-stuck-claude-turn",
+        "stop/stop-stuck-opencode-turn",
+        "stop/stuck-opencode-late-output-is-dropped",
+        "stop/stop-while-asking",
+        "stop/stop-while-asking-says-not-answered"
+      ]
+    }
+  ]
+}
