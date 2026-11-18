@@ -1,0 +1,26 @@
+$ verify/yv map run switchy --recipe answer-names-the-model
+# exit 0 after 8464 ms at b3168331d25d65667151e8023dee8ccbe344cdeb
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-18T02:46:54.317Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "answer-names-the-model",
+          "status": "pass",
+          "ms": 7607
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

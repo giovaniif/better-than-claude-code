@@ -1,0 +1,188 @@
+{
+  "v": 1,
+  "claim": "Switchy labels each answer with the model's id (fake-fast, claude-haiku-5-5) while the model picker right below names it (Fake Fast, Haiku 5.5)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-3c3f",
+  "base": "f4811d88f8b636df00e79b45ec23053a26682af4",
+  "head": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/AssistantPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:46:08.164Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b2b4751cc0ff021016c69ec5da9dafa73e741fcc",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "55b75c5d771334a177f2871d647da8993e0ddb4f5ddf12ccff4d1a14c44e5eda"
+        },
+        {
+          "path": "p1-answer-mobile.png",
+          "sha256": "495f5a04f1e6938e738e95174ca2f7e453ef8109c56f0eb53de813b6c1eeb8a0"
+        },
+        {
+          "path": "p1-answer-desktop.png",
+          "sha256": "4d31e66878f9554b5906b51d262c0b8cec21ef65fe465046f5d22b87c0b56571"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:19.514Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b2b4751cc0ff021016c69ec5da9dafa73e741fcc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "322f78cb6cc6ffda808dbf6954d730f24dd5fef7c6f4af2dc8b4f1113651cde5"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:19.558Z",
+      "cmd": "verify/yv map run switchy --recipe answer-names-the-model",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "b501f1f69112e96f01130ea9ede02770268dcb8717122259cba277531ae19507"
+        },
+        {
+          "path": "p3-answer-mobile.png",
+          "sha256": "140b9df36785d32b2ee4713e0792a328f929cf6ff86ec044eca25e9c9bacc054"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:45.769Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "43131ace3013f60503aa710cce1b2bb2161c8da6b6174f0767c5e3cec3d20c1a"
+        },
+        {
+          "path": "p4-answer-desktop.png",
+          "sha256": "d0be88ddf641cd044ba46a730c560ef79a44888aaaf4bd248a6b128abc782f2b"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:45.811Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "4dc30f0eca0ed52dd082a8c2caa058f7f8b8e80e492f2ce7208e7f488d412a52"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:45.857Z",
+      "cmd": "verify/yv map run switchy --recipe answer-names-the-model",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "12921ced4061c9dbb7c2fd0574ef3ac9844fca1abc895ad0319201a24dc841d7"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:54.365Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "da1dc6c53111b26ac218d4826023ed4ba354e6cf71228accc7f6ffa99071588a"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:54.532Z",
+      "cmd": "verify/yv design-check --base f4811d88f8b6",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b3168331d25d65667151e8023dee8ccbe344cdeb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-switchy.json",
+          "sha256": "02a7a85183abcbb1901b2fdc9a7489df67800d39c3a6ca4d06bbbcb6474da9c8"
+        }
+      ],
+      "addedAt": "2026-11-18T02:46:54.611Z",
+      "cmd": "verify/yv map run switchy",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "switchy/ask-and-reload",
+        "switchy/context-and-followup",
+        "switchy/removed-host-scope-falls-back",
+        "switchy/answer-names-the-model",
+        "switchy/refusal-notice-is-red",
+        "switchy/shared-composer",
+        "switchy/controls-and-approvals",
+        "switchy/voice-roundtrip"
+      ]
+    }
+  ]
+}
