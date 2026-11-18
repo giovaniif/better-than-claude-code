@@ -1,4 +1,4 @@
-import type { SwitchyConversation } from "./protocol";
+import type { SwitchyConversation, SwitchyTurn } from "./protocol";
 import { speakable, type Cue } from "./voice";
 /** The host scope Switchy asks with: what the user picked on this page, else
  * the scope the conversation last used, else every host. A scope naming a
@@ -11,6 +11,12 @@ export function switchyScope(
 ): string {
   const scope = chosen ?? saved ?? "all";
   return scope === "all" || hosts.includes(scope) ? scope : "all";
+}
+
+/** yardd ends a turn the user stopped as failed with this text. Stopping is
+ * not a failure, so it is shown and spoken quietly, like a stopped session turn. */
+export function switchyStopped(turn: Pick<SwitchyTurn, "error">): boolean {
+  return turn.error === "Stopped by you.";
 }
 
 /** Speak terminal answers and approvals once, never individual streaming deltas. */
@@ -34,7 +40,7 @@ export function switchyVoiceCue(
     return {
       key: `${turn.id}:failed`,
       cue: {
-        kind: turn.error === "Stopped by you." ? "stopped" : "failed",
+        kind: switchyStopped(turn) ? "stopped" : "failed",
         text: turn.error ?? "The question did not finish.",
       },
     };

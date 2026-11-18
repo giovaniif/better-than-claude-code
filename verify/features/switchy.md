@@ -72,6 +72,17 @@ muted colour.) The refusal is the point, so the run allows that failed call.
 yv drive switchy --allow-errors --steps '[{"expect":"role:heading:Switchy"},{"eval":"(() => { const box = document.querySelector(\"textarea\"); const set = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, \"value\").set; set.call(box, \"TEST-too long \" + \"x\".repeat(8001)); box.dispatchEvent(new Event(\"input\", { bubbles: true })); return true; })()","equals":true},{"click":"role:button:Send"},{"expect":"css:.assistant-notice","text":"at most 8,000 bytes"},{"eval":"(() => { const probe = document.createElement(\"span\"); probe.className = \"bad\"; document.body.append(probe); const same = getComputedStyle(document.querySelector(\".assistant-notice\")).color === getComputedStyle(probe).color; probe.remove(); return same; })()","equals":true},{"shot":"refusal-notice"}]'
 ```
 
+### stopped-answer-is-quiet
+Viewports: both
+Pressing Stop while Switchy answers ends the turn with a quiet grey "Stopped by
+you.", like a stopped session turn ("Stopped after 4s"), not with the red alert
+a real failure gets (`[fail]`: "the model is unavailable"). The stop used to
+render through the error path as `.bad` `role="alert"`.
+
+```sh
+yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"fill":"label:Message","value":"[slow] TEST-stop this answer"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-stop this answer","nth":-1},"text":"Answering"},{"click":"role:button:Stop"},{"expect":{"css":".assistant-answer","hasText":"TEST-stop this answer","nth":-1},"text":"Stopped by you."},{"eval":"(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); const line = [...turn.querySelectorAll(\"p\")].find((p) => p.textContent === \"Stopped by you.\"); return !!line && !turn.querySelector(\".bad, [role=alert]\") && line.matches(\".muted\"); })()","equals":true},{"shot":"stopped-answer"}]'
+```
+
 ### shared-composer
 Viewports: both
 Switchy uses the session composer: one-line auto-growing input, the same
