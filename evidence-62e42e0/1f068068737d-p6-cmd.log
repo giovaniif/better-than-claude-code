@@ -1,0 +1,32 @@
+$ cd ui && bun test src/engines.test.ts
+# exit 1 after 11 ms at b1999128ad612c0a0446890ecf7c1e63a09ce375
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/engines.test.ts:
+(pass) engines > every engine has a name, a label, an install and a login hint [0.12ms]
+(pass) engines > a queued message says when the agent gets it: mid-turn on Claude and Codex, next turn on OpenCode and Grok [0.07ms]
+(pass) engines > Claude and Codex are always offered, the session's engine first [0.27ms]
+(pass) engines > OpenCode and Grok are offered only where their host lists models for them [0.09ms]
+(pass) engines > work on OpenCode or Grok is reviewed by Claude, else whoever has models [0.15ms]
+(pass) engines > Claude and Codex review each other [0.06ms]
+46 |   });
+47 | });
+48 | 
+49 | 
+50 | test("Gemini is offered on hosts that have it and queues messages for the next turn", () => {
+51 |   expect(ENGINES).toContain("gemini");
+                       ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "gemini"
+Received: [ "claude", "codex", "opencode", "grok" ]
+
+      at <anonymous> (/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31/ui/src/engines.test.ts:51:19)
+(fail) Gemini is offered on hosts that have it and queues messages for the next turn [1.11ms]
+
+ 6 pass
+ 1 fail
+ 30 expect() calls
+Ran 7 tests across 1 file. [7.00ms]

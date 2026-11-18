@@ -1,0 +1,279 @@
+{
+  "v": 1,
+  "claim": "Gemini CLI is available in the model picker, with streaming sessions, approvals, resume and account-specific login guidance",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31",
+  "base": "1535f0efc05270118837aa52f59d0b8a312e89e1",
+  "head": "62e42e01121035579033a280aa61fd203792758d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/accounts.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/engines.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/gemini.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/acp-agent.mjs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/gemini"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "scripts/remote-install.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T02:10:23.516Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "head",
+      "kind": "fix",
+      "at": "62e42e01121035579033a280aa61fd203792758d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "e8cca56b0e1b2e8bac85fdcc7311c938d885b7ac08a22d6a574edc53e7d378d0"
+        },
+        {
+          "path": "p1-gemini-approval-mobile.png",
+          "sha256": "74b3f267ea3afb38d8b821887c36e35ed71282835ad66eb5eb5e1af0f975f488"
+        },
+        {
+          "path": "p1-gemini-reply-mobile.png",
+          "sha256": "8a7303d229a307f277fcca1e3f852bd744e4ce87eab8b5504a0ead59652edf17"
+        },
+        {
+          "path": "p1-gemini-approval-desktop.png",
+          "sha256": "c71d0c3a8d5eef2f07e6574731aa89fc78f32e0378ab81ce3844f6160b838361"
+        },
+        {
+          "path": "p1-gemini-reply-desktop.png",
+          "sha256": "0f2ef812df0d975d205f4673e31ce1cb030e225a47101900bdeded80b72d4413"
+        }
+      ],
+      "addedAt": "2026-11-18T02:10:51.792Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "fix",
+      "at": "62e42e01121035579033a280aa61fd203792758d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "5c2905af4636d74522a7d391907ee26c2a6b91a85017825547748995a4e0f194"
+        },
+        {
+          "path": "p2-gemini-login-mobile.png",
+          "sha256": "a01752d0cba02535071b9b77624a4fbd9e15a9ffc2effdc26d1445a236fb2f0a"
+        },
+        {
+          "path": "p2-gemini-login-desktop.png",
+          "sha256": "893c054ac16810566247797ecc57ead14f1c1aa1f7edc5816bbbc067615b489f"
+        }
+      ],
+      "addedAt": "2026-11-18T02:10:51.833Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "regression",
+      "at": "62e42e01121035579033a280aa61fd203792758d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-switchyard-gemini-rebase-map.json",
+          "sha256": "78327ec759bfe390b17c2d90d91ec2e7a974d32646cefe1b9425cecdc01b5160"
+        }
+      ],
+      "addedAt": "2026-11-18T02:10:51.875Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn",
+        "acp-engines/gemini-picker-session-and-approval",
+        "acp-engines/gemini-separate-account-terminal-login"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "62e42e01121035579033a280aa61fd203792758d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "8b7bc15a43d5155310e03b6d14f7bd6074d16db5058daf42ec8b6bcc70b796ee"
+        }
+      ],
+      "addedAt": "2026-11-18T02:10:51.914Z",
+      "cmd": "verify/yv design-check --base 1535f0efc052",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "62e42e01121035579033a280aa61fd203792758d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "03b22abffd91222bc1337092bf03a524eb22df2ad6372af4f4b2e26600b0c4e0"
+        }
+      ],
+      "addedAt": "2026-11-18T02:10:51.996Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "base",
+      "kind": "test",
+      "at": "b1999128ad612c0a0446890ecf7c1e63a09ce375",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "1f068068737d0d3215997c93af4dd866c35bbd1a5d35784c21505829ed23e11f"
+        }
+      ],
+      "addedAt": "2026-11-18T02:11:55.873Z",
+      "cmd": "cd ui && bun test src/engines.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b1999128ad612c0a0446890ecf7c1e63a09ce375",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "d07ba850b310bdc334b4077d72dd78c1373d1606649f640923e5a47ab9f8a3c5"
+        },
+        {
+          "path": "p7-before-gemini-mobile.png",
+          "sha256": "928fdb38fe09ddccbcba46a44e956a84fcaa077ba9dbceb103a1ebc346c0a730"
+        },
+        {
+          "path": "p7-before-gemini-desktop.png",
+          "sha256": "d7510b4662d686255c14c938025cf81d67adf6c4f9b8fa6a31b83b6a0fe3e396"
+        }
+      ],
+      "addedAt": "2026-11-18T02:12:09.210Z",
+      "failedApi": []
+    }
+  ]
+}
