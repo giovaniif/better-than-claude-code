@@ -46,6 +46,17 @@ yv drive new --viewport desktop --steps '[{"upload":"input","files":["{{work}}/T
 yv api '{"op":"attach.put","ref":"r1","name":"TEST-note.txt","mime":"text/plain","data":"VEVTVC1ub3Rl"}' --wait '{"op":"attach.stored","ref":"r1"}' --expect '{"attachment":{"name":"TEST-note.txt"}}' --save att_id=attachment.id
 ```
 
+### too-many-files-keeps-the-draft
+More than 20 files on one message (yardd's per-message cap) says so in the
+composer and keeps Send off; Enter keeps the message and the files. Removing
+one turns Send back on. Before, Send went through, yardd refused it, and the
+composer had already cleared the message and every chip.
+
+```sh
+for i in $(seq -w 1 21); do echo "TEST-note $i" > "$(v work)/TEST-many-$i.txt"; done
+yv drive 'session:{{sid_echo}}' --steps '[{"upload":"input","files":["{{work}}/TEST-many-01.txt","{{work}}/TEST-many-02.txt","{{work}}/TEST-many-03.txt","{{work}}/TEST-many-04.txt","{{work}}/TEST-many-05.txt","{{work}}/TEST-many-06.txt","{{work}}/TEST-many-07.txt","{{work}}/TEST-many-08.txt","{{work}}/TEST-many-09.txt","{{work}}/TEST-many-10.txt","{{work}}/TEST-many-11.txt","{{work}}/TEST-many-12.txt","{{work}}/TEST-many-13.txt","{{work}}/TEST-many-14.txt","{{work}}/TEST-many-15.txt","{{work}}/TEST-many-16.txt","{{work}}/TEST-many-17.txt","{{work}}/TEST-many-18.txt","{{work}}/TEST-many-19.txt","{{work}}/TEST-many-20.txt","{{work}}/TEST-many-21.txt"]},{"expect":"css:.attachments","text":"TEST-many-21.txt"},{"fill":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachments-error","text":"Too many files: 21. The limit is 20 per message."},{"expect":{"role":"button","name":"Send"},"enabled":false},{"press":"Enter"},{"expect":"label:Message","value":"TEST-twenty one files"},{"expect":"css:.attachment","count":21},{"click":"role:button:Remove TEST-many-21.txt"},{"expect":"css:.attachments-error","visible":false},{"expect":{"role":"button","name":"Send"},"enabled":true}]'
+```
+
 ### paste-and-drop (manual: clipboard and OS drag events are not scripted)
 Pasting an image and dropping a file on the composer add chips the same way.
 
