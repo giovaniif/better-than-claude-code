@@ -1,0 +1,290 @@
+{
+  "v": 1,
+  "claim": "Gemini CLI is available in the model picker, with streaming sessions, approvals, resume and account-specific login guidance",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31",
+  "base": "089a058aba0eb0eaa1451185492d0c6861605265",
+  "head": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+  "changed": [
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/accounts.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/engines.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/gemini.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/acp-agent.mjs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/gemini"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "scripts/remote-install.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:58:56.826Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6a517876cca584b43311d9c6d20a74d6fb813a59",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "7ac2ea71a453d4bb2e21d572124041aeec26f9a44654857a4113b18b3738047f"
+        },
+        {
+          "path": "p1-before-gemini-mobile.png",
+          "sha256": "a1d502d73deb821908ff24910641850a01033da19c19fe3e9909e5be64b3dc96"
+        },
+        {
+          "path": "p1-before-gemini-desktop.png",
+          "sha256": "d4975dfc14f69e2e876c1377c26f54bda5a88d82dd151f76d7079142cb6a7f53"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:56.865Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "6a517876cca584b43311d9c6d20a74d6fb813a59",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "918f9991ef06245bf5057e639b942c9fb9e35625e10a2bd96432a48fcd6977c6"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:56.939Z",
+      "cmd": "cd ui && bun test src/engines.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "note",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T02:14:50.041Z",
+      "text": "Base repro and failing-test proofs retained across rebases: intervening main changes affect titles, navigation labels, Switchy error styling and chip icon sizing. The baseline still has no Gemini engine, and none of those changes alters the missing-engine reproduction or the regression test. Fresh head tests and both-viewport app proofs are recorded after rebasing."
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "c0849e21acad9343cf373dce0b99f3ced13808951539ac072fbbe18399f710b1"
+        }
+      ],
+      "addedAt": "2026-11-18T02:14:50.080Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-2-drive.json",
+          "sha256": "2e63929672ae59bfa8d3ef48a2621c3ddf055de93aa8d438078c7f72a296d998"
+        },
+        {
+          "path": "p5-2-gemini-approval-mobile.png",
+          "sha256": "74b3f267ea3afb38d8b821887c36e35ed71282835ad66eb5eb5e1af0f975f488"
+        },
+        {
+          "path": "p5-2-gemini-reply-mobile.png",
+          "sha256": "8a7303d229a307f277fcca1e3f852bd744e4ce87eab8b5504a0ead59652edf17"
+        },
+        {
+          "path": "p5-2-gemini-approval-desktop.png",
+          "sha256": "e27da08dae568ae0ddd6d7a01ea4136370d5d64fa48953f7af1e082e5f3bd59d"
+        },
+        {
+          "path": "p5-2-gemini-reply-desktop.png",
+          "sha256": "46e9c4675ea40bd0624f8dc1597ec1e2c6aa89eb1018cc93dbd5588fd2c83b2b"
+        }
+      ],
+      "addedAt": "2026-11-18T02:16:14.953Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-2-drive.json",
+          "sha256": "393d0455c34d62f05ffcda4c2b1989d409dc8ab6fb9fc00a52f17c49ad43b8ac"
+        },
+        {
+          "path": "p6-2-gemini-login-mobile.png",
+          "sha256": "5432e56110f504d840c755d5c0747b1ad0170cd6ae8bf3ad325ade995a8846a7"
+        },
+        {
+          "path": "p6-2-gemini-login-desktop.png",
+          "sha256": "ce98acaf969845624056523dff0f9836cfec48ddc592f92491dcb61c00456472"
+        }
+      ],
+      "addedAt": "2026-11-18T02:16:14.995Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-switchyard-gemini-final-merge-map.json",
+          "sha256": "e99fc25d352eea12ed52da39808cae7c0c45db83fde567743b0cd6d97c6920c6"
+        }
+      ],
+      "addedAt": "2026-11-18T02:16:15.036Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn",
+        "acp-engines/gemini-picker-session-and-approval",
+        "acp-engines/gemini-separate-account-terminal-login"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "design",
+      "at": "e3d290d36f8b707576dcee28e4a319ae3ea3dd4b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-design.json",
+          "sha256": "5e8d061eca6718158a855b1d3cf4063ee715e72bf98c07d9ccfd4b48f8ff288c"
+        }
+      ],
+      "addedAt": "2026-11-18T02:16:15.073Z",
+      "cmd": "verify/yv design-check --base 089a058aba0e",
+      "exit": 0
+    }
+  ]
+}
