@@ -1,0 +1,292 @@
+{
+  "v": 1,
+  "claim": "A turn that waited for an approval reads \"Worked for\" with the wait counted as work: a command allowed after 5 s reads \"Worked for 5s\" though the agent took under a second (an approval answered the next morning reads \"Worked for 9h\").",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338",
+  "base": "68d2c3610a333a336c3b7c6cd1f287bbef4752e2",
+  "head": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approvals.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T00:44:15.440Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "67c406b03ee434e296025722712cf27b32599417",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "26846454330aab43c4699d6954d4c83e48af377dfa556f97d77f38cad1701e23"
+        },
+        {
+          "path": "p1-worked-for-desktop-desktop.png",
+          "sha256": "b0a4b9f4c774f8d41967f1715988a3d422b7f86cb8aaf1ef6bc713ecad2405ed"
+        }
+      ],
+      "addedAt": "2026-11-18T00:44:53.364Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "67c406b03ee434e296025722712cf27b32599417",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "971ed283a8cf5d235f70079d3795b59ecc6cea3384af3c9d729313fb16d46835"
+        },
+        {
+          "path": "p2-worked-for-mobile-mobile.png",
+          "sha256": "372c75b98d235ee069fd82a6146967c0b4a821e8305bba30ada6136994f325f4"
+        }
+      ],
+      "addedAt": "2026-11-18T00:44:53.406Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "note",
+      "at": "67c406b03ee434e296025722712cf27b32599417",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T00:44:53.449Z",
+      "text": "base reads 'Worked for 8s · Ran 1 command' at desktop for a [cmd] turn whose agent work is instant: the 5 s+ wait on Allow once is counted (screenshot worked-for-desktop-desktop.png)"
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "67c406b03ee434e296025722712cf27b32599417",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "4a0c5b8bb52c8fea62b284342aa2738bdbac5f477054dd76944f575636d58c5c"
+        }
+      ],
+      "addedAt": "2026-11-18T00:44:53.488Z",
+      "cmd": "cd ui && bun test src/thread.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "test",
+      "at": "67c406b03ee434e296025722712cf27b32599417",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "4a1c21134703943409e2f4cbe9d5e10eddfcbd59ea6da18e8a3f04d33e667333"
+        }
+      ],
+      "addedAt": "2026-11-18T00:44:53.548Z",
+      "cmd": "verify/yv map run approvals --recipe approval-wait-is-not-work",
+      "exit": 1
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "fde325de4be7d649a2515a69f207c9f3d66804bb0de1c9eedc0d00994cf1f7ce"
+        },
+        {
+          "path": "p6-worked-for-desktop-desktop.png",
+          "sha256": "1504b53531dd5cc7c324f2975d1b4031f110598d9d127870a60a957cbfee3732"
+        }
+      ],
+      "addedAt": "2026-11-18T00:45:50.043Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "f5728e5830caf4cc39ba1ecbb65725c7c42e6e270e5641f99aadcb95597c0625"
+        },
+        {
+          "path": "p7-worked-for-mobile-mobile.png",
+          "sha256": "d1591f88d664f2ee6c71c5bc0dfd018f877c1693d27a539640b74e9189b0a826"
+        }
+      ],
+      "addedAt": "2026-11-18T00:45:50.092Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "b1d84318d5d66d0e380b7deceb6af7bb62c66fccb6f8fa1fe3f8b48f14c95f0b"
+        }
+      ],
+      "addedAt": "2026-11-18T00:45:50.130Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "test",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-cmd.log",
+          "sha256": "19e5b5aa05a28a5202888984fbb8844f218a11a5fb9437ef074dd1b3cdd00e37"
+        }
+      ],
+      "addedAt": "2026-11-18T00:46:44.899Z",
+      "cmd": "verify/yv map run approvals --recipe approval-wait-is-not-work",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "design",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-design.json",
+          "sha256": "df5b67d98181d0c196673c011e56122af441c40319aa2b9966178607cb03f7ed"
+        }
+      ],
+      "addedAt": "2026-11-18T00:47:05.763Z",
+      "cmd": "verify/yv design-check --base 68d2c3610a33",
+      "exit": 0
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-approvals.json",
+          "sha256": "5e8712854f745403d9ff9e94ac55a1129c07e9207c5be9a785ca2d487507edc1"
+        }
+      ],
+      "addedAt": "2026-11-18T00:47:05.843Z",
+      "cmd": "verify/yv map run approvals",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approvals/pending-shows-card",
+        "approvals/allow-once",
+        "approvals/allow-then-follow-up",
+        "approvals/deny",
+        "approvals/waiting-then-denied-command-did-not-run",
+        "approvals/always-allow",
+        "approvals/double-click-allow-once",
+        "approvals/approval-wait-is-not-work"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-thread.json",
+          "sha256": "4a60d4fb030972b766b298291dc8474036b7e2e14b2ec2bab63f936ba0417b94"
+        }
+      ],
+      "addedAt": "2026-11-18T00:48:12.240Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/subagent-nests-and-expands",
+        "thread/working-line-stays-in-view",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch"
+      ]
+    }
+  ]
+}

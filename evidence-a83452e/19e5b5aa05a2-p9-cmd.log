@@ -1,0 +1,26 @@
+$ verify/yv map run approvals --recipe approval-wait-is-not-work
+# exit 0 after 20825 ms at a83452e10abc0f0adf5f6a4a193bea6750921f64
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approvals",
+      "at": "2026-11-18T00:47:05.721Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "approval-wait-is-not-work",
+          "status": "pass",
+          "ms": 19955
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1ec1d95952",
+  "build": {
+    "sha": "a83452e10abc0f0adf5f6a4a193bea6750921f64",
+    "short": "a83452e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T00:45:24.046Z"
+  },
+  "dir": ".verify/evidence/worked-for-approval-wait-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8594,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/worked-for-approval-wait-head-desktop/worked-for-desktop-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "/^Worked for [01]s/.test(document.querySelector(\".fold-row\").textContent)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,40 @@
+$ cd ui && bun test src/thread.test.ts
+# exit 1 after 19 ms at 67c406b03ee434e296025722712cf27b32599417
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/thread.test.ts:
+50 |       { type: "tool_completed", itemId: "a", ok: true },
+51 |       { type: "assistant_message", itemId: "m", text: "Done." },
+52 |       { type: "turn_completed", status: "completed", at: 84_000 },
+53 |     ]);
+54 |     const f = layout(items, false).find((r) => r.type === "fold");
+55 |     expect(f?.type === "fold" && f.ms).toBe(3_000);
+                                            ^
+error: expect(received).toBe(expected)
+
+Expected: 3000
+Received: 83000
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/ui/src/thread.test.ts:55:40)
+(fail) layout > time spent waiting for an approval is not counted as work [0.80ms]
+62 |       { type: "tool_started", itemId: "a", kind: "command", title: "Ran", detail: "migrate" },
+63 |       { type: "approval_request", requestId: "r1", kind: "command", title: "migrate", detail: "", itemId: "a", at: 3_000 },
+64 |       { type: "turn_completed", status: "interrupted", at: 63_000 },
+65 |     ]);
+66 |     const f = layout(items, false).find((r) => r.type === "fold");
+67 |     expect(f?.type === "fold" && f.ms).toBe(2_000);
+                                            ^
+error: expect(received).toBe(expected)
+
+Expected: 2000
+Received: 62000
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-17-d338/ui/src/thread.test.ts:67:40)
+(fail) layout > a turn stopped while waiting for an approval counts the work before it only [0.37ms]
+
+ 22 pass
+ 2 fail
+ 41 expect() calls
+Ran 24 tests across 1 file. [15.00ms]
