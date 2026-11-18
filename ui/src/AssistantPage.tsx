@@ -12,9 +12,10 @@ import {
   Markdown,
   MenuButton,
   ModelPicker,
+  modelName,
 } from "./App";
 import { hostName, type Actions, type State } from "./store";
-import type { Permission, SwitchyTurn } from "./protocol";
+import type { Engine, Models, Permission, SwitchyTurn } from "./protocol";
 import { switchyScope, switchyVoiceCue } from "./switchy";
 
 const SPARK = "M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z";
@@ -27,10 +28,12 @@ const questions = [
 
 function Answer({
   turn,
+  models,
   actions,
   active,
 }: {
   turn: SwitchyTurn;
+  models: Models;
   actions: Actions;
   active: boolean;
 }) {
@@ -40,7 +43,11 @@ function Answer({
       <div className="assistant-answer-label">
         <Icon d={SPARK} />
         <strong>Switchy</strong>
-        <span className="muted small">{turn.model}</span>
+        {/* The name the picker shows ("Haiku 5.5"), not the id; an id the
+            host no longer lists stays as it is. */}
+        <span className="muted small">
+          {modelName(models, turn.engine as Engine, turn.model)}
+        </span>
       </div>
       {turn.answer && (
         <div className="prose">
@@ -308,6 +315,7 @@ export function AssistantPage({
                   <Answer
                     key={turn.id}
                     turn={turn}
+                    models={state.models.local ?? {}}
                     actions={actions}
                     active={turn.id === turns.at(-1)?.id && approval}
                   />
