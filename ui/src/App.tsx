@@ -4271,6 +4271,8 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
       </header>
       <div className="scroll">
         <div className="focused-page">
+          {/* The session headers' phone shortcut leads here: keep setup first. */}
+          <MobileSetup mobile={state.mobile} />
           {adding && (
             <AddHost actions={actions} hosts={state.hosts} errorCount={state.errorCount} connected={state.connected} onDone={() => setAdding(false)} />
           )}
