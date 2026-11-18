@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "c83789e80427987b3b885358760d0a6aab94f87c",
+    "short": "c83789e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:14:32.783Z"
+  },
+  "dir": ".verify/evidence/connectors-mobile-tabs-r-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3087,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/connectors-mobile-tabs-r-base/focus-all-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2268,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/connectors-mobile-tabs-r-base/focus-all-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
