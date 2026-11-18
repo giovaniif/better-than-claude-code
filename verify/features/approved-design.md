@@ -54,3 +54,11 @@ One account is shown first and other accounts can be expanded.
 ```sh
 yv drive new --viewport desktop --steps '[{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage"},{"expect":"role:button:Other accounts"},{"click":"role:button:Other accounts"},{"expect":"css:.compact-subscription"},{"click":"role:button:Refresh usage"},{"expect":"role:button:Refresh usage","enabled":true},{"shot":"usage"}]'
 ```
+
+### phone-usage-opens-from-header
+Viewports: mobile
+The phone header opens the compact usage sheet without opening the sidebar.
+
+```sh
+yv drive new --viewport mobile --steps '[{"click":"css:.new-bar .mobile-usage-trigger"},{"expect":"role:dialog:Subscription usage","inViewport":true},{"expect":"css:.app.drawer-open","count":0},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0}]'
+```
