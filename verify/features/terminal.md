@@ -25,7 +25,7 @@ Viewports: desktop
 Typing a command shows its output.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"wait":"label:Terminal input"},{"type":"echo TEST-$((40+2))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-42"},{"shot":"terminal"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"wait":"label:Terminal input"},{"type":"echo TEST-$((40+2))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-42"},{"shot":"terminal"}]'
 ```
 
 ### keys-arrive-in-order
@@ -36,7 +36,7 @@ got `…qrstuvxwyz…` (keys swapped), about half the runs; yardd handled each
 keystroke in its own task.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-order-"},{"wait":1000},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")","equals":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-order-"},{"wait":1000},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789TEST-order-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789-abcdefghijklmnopqrstuvwxyz0123456789\")","equals":true}]'
 ```
 
 ### second-terminal
@@ -44,7 +44,7 @@ Viewports: desktop
 "New terminal" adds tab 2 and selects it.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"2"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"2"}]'
 ```
 
 ### scrollback-after-reload
@@ -52,7 +52,7 @@ Viewports: desktop
 Output from before a reload is still there after it.
 
 ```sh
-yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-before-$((6*7))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-before-42"},{"reload":true},{"goto":"session:{{sid_think}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm-rows","text":"TEST-before-42","timeout":20000}]'
+yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-before-$((6*7))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-before-42"},{"reload":true},{"goto":"session:{{sid_think}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm-rows","text":"TEST-before-42","timeout":20000}]'
 ```
 
 ### scrollback-keeps-wrapped-lines
@@ -62,7 +62,7 @@ it exactly as before: both prompts intact, the command after the first one.
 Found 2026-11-15 (fixed the same day): the replay came back as `…/yard-test-say$((6*7))735$ echo TEST-before-`.
 
 ```sh
-yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-wrap-$((6*7))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true},{"reload":true},{"goto":"session:{{sid_fail}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true}]'
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-wrap-$((6*7))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true},{"reload":true},{"goto":"session:{{sid_fail}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-wrap-42"},{"eval":"document.querySelector(\".xterm-rows\").innerText.replace(/\\s+/g, \"\").includes(\"$echoTEST-wrap-$((6*7))TEST-wrap-42\")","equals":true}]'
 ```
 
 ### scrollback-matches-after-reloads
@@ -72,7 +72,7 @@ a long command that wraps over three rows. Found by the verifier on PR #1: an
 attach at xterm's default 80 columns made the shell redraw into the scrollback.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
 ```
 
 ### last-terminal-closed-offers-a-new-one
@@ -82,7 +82,7 @@ opens a terminal again. Found 2026-11-16: the pane went blank with only the
 small `+` in its strip.
 
 ```sh
-yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"click":"role:button:Close terminal"},{"expect":{"role":"tab"},"count":0},{"expect":"text:No terminal is open."},{"shot":"no-terminal"},{"click":"role:button:Open a terminal"},{"expect":{"role":"tab"},"count":1},{"expect":"css:.xterm","text":"$"},{"expect":"text:No terminal is open.","count":0}]'
+yv drive 'session:{{sid_think}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"click":"role:button:Close terminal"},{"expect":{"role":"tab"},"count":0},{"expect":"text:No terminal is open."},{"shot":"no-terminal"},{"click":"role:button:Open a terminal"},{"expect":{"role":"tab"},"count":1},{"expect":"css:.xterm","text":"$"},{"expect":"text:No terminal is open.","count":0}]'
 ```
 
 ### exited-shell-survives-reload
@@ -93,7 +93,7 @@ the exited terminal and yardd's refusal showed as a "terminal is closed"
 banner.
 
 ```sh
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-gone-$((6*7)); exit\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"shell exited"},{"reload":true},{"goto":"session:{{sid_echo}}"},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm-rows","text":"TEST-gone-42"},{"expect":"css:.xterm-rows","text":"shell exited"},{"wait":1500},{"expect":"text:terminal is closed","count":0},{"shot":"exited-after-reload"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-gone-$((6*7)); exit\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"shell exited"},{"reload":true},{"goto":"session:{{sid_echo}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm-rows","text":"TEST-gone-42"},{"expect":"css:.xterm-rows","text":"shell exited"},{"wait":1500},{"expect":"text:terminal is closed","count":0},{"shot":"exited-after-reload"}]'
 ```
 
 ### close-terminal
@@ -102,7 +102,7 @@ The selected tab has a "Close terminal" cross. Closing tab 2 removes it and
 selects tab 1 again. Read back: the daemon lists one terminal for the session.
 
 ```sh
-yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":{"role":"tab","name":"1"}},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"click":"role:button:Close terminal"},{"expect":{"role":"tab","name":"2"},"count":0},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"1"}]'
+yv drive 'session:{{sid_fail}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":{"role":"tab","name":"1"}},{"click":"role:button:New terminal"},{"expect":{"role":"tab","name":"2"}},{"click":"role:button:Close terminal"},{"expect":{"role":"tab","name":"2"},"count":0},{"eval":"document.querySelector(\"[role=tab][aria-selected=true]\")?.textContent?.trim()","equals":"1"}]'
 yv api '{"op":"term.list","sessionId":"{{sid_fail}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 1'
 ```
 
@@ -116,7 +116,7 @@ refused terminal is an API error, hence `--allow-errors`.
 ```sh
 yv state --save cmd_cwd='sessions[id={{sid_cmd}}].cwd'
 rm -rf "$(v cmd_cwd)"
-yv drive 'session:{{sid_cmd}}' --viewport desktop --allow-errors --steps '[{"expect":{"role":"region","name":"Workspace"},"text":"no longer exists"},{"expect":"text:Not a git repository.","count":0},{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.banner-error","text":"no longer exists"},{"expect":{"role":"tab","name":"1"},"count":0},{"shot":"folder-gone"}]'
+yv drive 'session:{{sid_cmd}}' --viewport desktop --allow-errors --steps '[{"expect":{"role":"region","name":"Workspace"},"text":"no longer exists"},{"expect":"text:Not a git repository.","count":0},{"click":"role:button:Terminal"},{"expect":"css:.banner-error","text":"no longer exists"},{"expect":{"role":"tab","name":"1"},"count":0},{"shot":"folder-gone"}]'
 yv api '{"op":"term.list","sessionId":"{{sid_cmd}}"}' --wait '{"op":"term.list"}' | jq -e '.reply.terms | length == 0'
 ```
 
@@ -130,7 +130,7 @@ as a labelled fenced block, and the cards go; the sent bubble shows the
 block as code.
 
 ```sh
-yv drive 'session:{{sid_claude}}' --viewport desktop --steps '[{"select":"label:Workspace view","value":"terminal"},{"expect":"css:.xterm","text":"$"},{"wait":1500},{"type":"seq -f TEST-row-%g 3\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-row-3"},{"wait":500},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Rows on screen"}},{"expect":"css:.quote-card.snippet","text":"TEST-row-3"},{"expect":"css:.quote-card.snippet .quote-card-label","text":"Terminal 1 · "},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Last 100 lines"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":2},{"click":{"role":"button","name":"Remove terminal output"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":1},{"shot":"attached"},{"fill":"label:Message","value":"TEST-what failed?"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"TEST-what failed?"},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":0},{"expect":"css:.bubble-code","text":"TEST-row-3"},{"shot":"sent"}]'
+yv drive 'session:{{sid_claude}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"wait":1500},{"type":"seq -f TEST-row-%g 3\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-row-3"},{"wait":500},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Rows on screen"}},{"expect":"css:.quote-card.snippet","text":"TEST-row-3"},{"expect":"css:.quote-card.snippet .quote-card-label","text":"Terminal 1 · "},{"click":{"role":"button","name":"Attach","exact":true}},{"click":{"role":"menuitem","name":"Last 100 lines"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":2},{"click":{"role":"button","name":"Remove terminal output"}},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":1},{"shot":"attached"},{"fill":"label:Message","value":"TEST-what failed?"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"TEST-what failed?"},{"eval":"document.querySelectorAll('\''.quote-card.snippet'\'').length","equals":0},{"expect":"css:.bubble-code","text":"TEST-row-3"},{"shot":"sent"}]'
 yv api '{"op":"session.open","sessionId":"{{sid_claude}}"}' --wait '{"op":"history"}' | jq -e '[.reply.events[] | select(.type=="user_message") | .text] | last | test("^Terminal 1, [0-9]+ lines:\\n\\x60{3}text\\n(.|\\n)*TEST-row-3\\n(.|\\n)*\\x60{3}\\n\\nTEST-what failed\\?$")'
 ```
 

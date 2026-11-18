@@ -108,6 +108,14 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"label:Me
 yv drive new --steps '[{"expect":"label:Message"},{"eval":"(() => { const row = document.querySelector(\".composer-row\").getBoundingClientRect(); const send = document.querySelector(\".composer-row .send\").getBoundingClientRect(); return Math.round(row.right - send.right); })()","equals":0}]'
 ```
 
+### new-session-send-shares-controls-row
+Viewports: desktop
+Send stays next to the composer controls as the New session box narrows.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":"label:Message"},{"expect":"role:button:Send"},{"eval":"(async () => { const inner = document.querySelector(\".new-inner\"); const row = inner.querySelector(\".composer-row\"); const send = row.querySelector(\".send\"); for (let width = 300; width <= 580; width += 2) { inner.style.maxWidth = width + \"px\"; await new Promise(requestAnimationFrame); const lastControl = Math.max(...[...row.querySelectorAll(\"button:not(.send)\")].filter(b => b.getClientRects().length).map(b => b.getBoundingClientRect().bottom)); if (send.getBoundingClientRect().top >= lastControl) return {width}; } return true; })()","equals":true},{"shot":"composer-controls"}]'
+```
+
 ### desktop-sidebar-is-a-column
 Viewports: desktop
 At 1440 px nothing changes: no menu button, and the sidebar is a 248 px column
@@ -120,11 +128,11 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"role:but
 ### workspace-tabs-fit-minimum-width
 Viewports: desktop
 At the minimum 300 px pane width, the header stays one row tall, its labels
-stay on one line, and every control stays inside the pane. A compact view
-selector keeps all four views available.
+stay on one line, and every control stays inside the pane. All four views
+are directly selectable.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"label:Workspace view"},{"expect":"role:button:Refresh changes","inViewport":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"role:button:Changes","inViewport":true},{"expect":"role:button:Terminal","inViewport":true},{"expect":"role:button:Pull request","inViewport":true},{"expect":"role:button:Processes","inViewport":true},{"expect":"role:button:Refresh changes","inViewport":true}]'
 ```
 
 ## Gotchas

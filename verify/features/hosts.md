@@ -159,7 +159,7 @@ gone_work="$(yv var get work --iso map-hosts-gone | jq -er .value)"
 yv api '{"op":"host.add","name":"TEST-gone","kind":"direct","url":"ws://127.0.0.1:'"$gone_port"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-gone","status":"connected"}]}' --save gone_id='hosts[name=TEST-gone].id'
 yv api '{"op":"session.create","host":"{{gone_id}}","engine":"codex","model":"fake-fast","effort":"low","cwd":"'"$gone_work"'","text":"TEST-procs on a host that goes"}' --wait '{"op":"created"}' --save gone_sid=sessionId
 (sleep 8; yv iso down --name map-hosts-gone >/dev/null) &
-yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"select":"label:Workspace view","value":"procs"},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session.","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
+yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"click":"role:button:Processes"},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session.","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
 wait
 ```
 
