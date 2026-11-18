@@ -420,7 +420,8 @@ Next:
 
 `#/assistant` is Switchy, a persistent quick-question conversation separate from
 coding sessions. It uses the session `Composer` and `ModelPicker` components, including auto-grow,
-dictation, draft retention and the send control. Host scope is in the header;
+dictation, hands-free voice, draft retention, effort/access pickers and the send control.
+The shared host picker sits below the composer, as on New session;
 attachments remain disabled because the Switchy protocol accepts text only. Context
 opens the host rail. Model and host scope are independent: inference runs on the
 hub's default Claude or Codex account; evidence comes from Local, a selected
@@ -428,9 +429,12 @@ remote, or All hosts. Other engines are omitted until a supported tool restricti
 path is implemented. No worktree, sidebar session or engine resume is created.
 
 - `switchy.get` returns `switchy.state`; `switchy.send { text, engine, model,
-  scope, ref }` acknowledges `switchy.accepted` and broadcasts versioned state as
+  scope, permission, effort, ref }` acknowledges `switchy.accepted` and broadcasts versioned state as
   the answer arrives. `switchy.stop` cancels the current question. One question
-  runs at a time across windows; concurrent submissions are refused. The UI keeps
+  runs at a time across windows; concurrent submissions are refused. Host pressure
+  accepts a queued question, starts it when capacity returns, and exposes Stop and
+  `switchy.startNow` (the explicit Start anyway override). Waiting does not consume
+  the answer timeout. The UI keeps
   a rejected question in the composer. Reload/reconnect fetches the conversation.
 - `crates/yardd/src/switchy.rs` owns `switchy.json` in the data directory. Atomic
   writes persist the question before inference, its evidence, and the completed
@@ -469,15 +473,21 @@ path is implemented. No worktree, sidebar session or engine resume is created.
   snapshot even if its original file or session is later changed/deleted.
 - Engine sessions use private `switchy-` IDs in memory only. They are excluded
   from snapshots, normal session operations and the session event store, then
-  removed after each answer. Codex receives an ephemeral, read-only thread with
-  approvals disabled, shell/exec, apps, browser, computer, JS/code-mode, hooks,
+  removed after each answer. In Plan only, Codex receives an ephemeral, read-only
+  thread with approvals disabled, along with shell/exec, apps, browser, computer, JS/code-mode, hooks,
   multi-agent and configured MCP/plugin tools disabled by thread-local overrides.
   Null optional fields from `config/read` are omitted from copied overrides: Codex
   converts JSON nulls to empty TOML strings, which breaks typed fields such as MCP
   timeouts. Transport settings and concrete values are retained.
   Claude receives a fresh sidecar with no tools, strict empty MCP configuration,
   no setting sources/plugins/hooks, no persisted engine session, and a denying
-  permission callback. Coding-session settings are untouched. Grok/OpenCode,
+  permission callback in Plan only. Ask first, Accept edits and Full access use
+  the coding-session engine policies, with fresh ephemeral threads and the same
+  bounded evidence. `switchy.approve` validates the active turn/request and routes
+  Allow once/Always allow/Deny; persisted approvals also survive UI reconnects.
+  Tools execute on the inference host, not automatically on context hosts. Voice
+  announces approvals and speaks completed answers, using the shared speech engine.
+  Coding-session settings are untouched. Grok/OpenCode,
   account selection and running the inference engine on a remote host are not
   implemented for Switchy.
 - Tests use scripted engines and isolated host command fixtures via

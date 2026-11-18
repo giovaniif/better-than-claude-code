@@ -17,6 +17,7 @@
 //
 // Events are already in yardd's normalized shape, so yardd only relays them.
 // Nothing else may write to stdout.
+import { readOnlySwitchy, switchyProfile } from "./switchy";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { createInterface } from "node:readline";
 import { userMessage } from "./message";
@@ -108,7 +109,7 @@ async function run(start: { switchy?: boolean; cwd: string; model: string; effor
     // itself while the mode is another one.
     allowDangerouslySkipPermissions: true,
     canUseTool: async (toolName: string, toolInput: any, ctx: { signal?: AbortSignal; suggestions?: unknown[] }) => {
-      if (start.switchy) return { behavior: "deny", message: "Switchy uses daemon-provided evidence only." };
+      if (readOnlySwitchy(start)) return { behavior: "deny", message: "Switchy uses daemon-provided evidence only." };
       const requestId = nextId("claude");
       const d = describeTool(toolName, toolInput, cwd);
       emit({
@@ -130,16 +131,7 @@ async function run(start: { switchy?: boolean; cwd: string; model: string; effor
       return { behavior: "allow", updatedInput: toolInput };
     },
   };
-  if (start.switchy) {
-    // A separate inference profile: no host tools, hooks, plugins or inherited
-    // project instructions. The daemon supplies the complete bounded context.
-    Object.assign(options, {
-      tools: [], mcpServers: {}, strictMcpConfig: true, settingSources: [],
-      plugins: [], hooks: {}, persistSession: false, maxTurns: 1,
-      systemPrompt: "You are Switchy. Answer from the supplied evidence and cite its source IDs.",
-      allowDangerouslySkipPermissions: false,
-    });
-  }
+  Object.assign(options, switchyProfile(start));
   if (start.effort && efforts.includes(start.effort)) options.effort = start.effort;
   if (start.resume) options.resume = start.resume;
   // Recent models omit thinking text unless asked; summarized is what Claude Code shows.

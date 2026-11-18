@@ -564,7 +564,7 @@ function reduceServer(state: State, msg: any): State {
 }
 
 export interface Actions {
-  switchySend(text: string, engine: string, model: string, scope: string): Promise<{ error?: string }>;
+  switchySend(text: string, engine: string, model: string, scope: string, permission?: string, effort?: string): Promise<{ error?: string }>;
 
   go(route: Route): void;
   dismissError(): void;
@@ -844,8 +844,8 @@ export function useYard(): { state: State; actions: Actions } {
 
   const actions = useMemo<Actions>(
     () => ({
-      switchySend: async (text, engine, model, scope) => {
-        const reply = await ask({ op: "switchy.send", text, engine, model, scope }, 30_000);
+      switchySend: async (text, engine, model, scope, permission, effort) => {
+        const reply = await ask({ op: "switchy.send", text, engine, model, scope, permission, effort }, 30_000);
         return reply.error ? { error: reply.error } : {};
       },
       go: (route) => dispatch({ t: "route", route }),
