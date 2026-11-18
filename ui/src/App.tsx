@@ -890,8 +890,6 @@ function Sidebar({ state, actions, open, nativeMenu, onImport, onNavigate }: { s
           New session
         </button>
         <button className={`nav-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}><Icon d={CLOUD} />Hosts</button>
-        <button className={`nav-row ${route.page === "sessions" ? "active" : ""}`} onClick={() => actions.go({ page: "sessions" })}><Icon d={MENU} />Sessions</button>
-        <button className={`nav-row ${route.page === "subscriptions" ? "active" : ""}`} onClick={() => actions.go({ page: "subscriptions" })}><Icon d={CLOCK} />Subscriptions</button>
         <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
           <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
           Switchy
@@ -1674,47 +1672,49 @@ export function Composer(props: {
         autoFocus
       />
       <div className="composer-row">
-        <button className="btn-icon attach-btn" aria-label="Attach files" disabled={!props.upload} title={props.upload ? "Attach files" : "Attachments are not supported here"} onClick={() => picker.current?.click()}>
-          <Icon d={PAPERCLIP} size={16} />
-        </button>
-        {!voiceOn && (
-          <button
-            className={`btn-icon attach-btn mic-btn${voice.dictating ? " listening" : ""}`}
-            aria-label={voice.unavailable ? "Dictate (not available here)" : voice.dictating ? "Stop dictation" : "Dictate"}
-            aria-pressed={voice.dictating}
-            aria-disabled={voice.unavailable ? true : undefined}
-            title={voice.unavailable ?? (voice.dictating ? "Stop dictation (Esc)" : "Dictate")}
-            onClick={voice.toggleDictation}
-          >
-            <Icon d={voice.dictating ? STOP : MIC} size={16} />
+        <div className="composer-controls">
+          <button className="btn-icon attach-btn" aria-label="Attach files" disabled={!props.upload} title={props.upload ? "Attach files" : "Attachments are not supported here"} onClick={() => picker.current?.click()}>
+            <Icon d={PAPERCLIP} size={16} />
           </button>
-        )}
-        {props.voice && (
-          <button
-            className={`btn-icon attach-btn voice-btn${voiceOn ? " on" : ""}`}
-            aria-label="Voice mode"
-            aria-disabled={voice.unavailable ? true : undefined}
-            aria-pressed={voiceOn}
-            title={voice.unavailable ?? (voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud")}
-            onClick={voice.toggleVoice}
-          >
-            <Icon d={WAVES} size={16} />
-          </button>
-        )}
-        <input
-          ref={picker}
-          type="file"
-          disabled={!props.upload}
-          multiple
-          hidden
-          aria-label="Attach files"
-          onChange={(e) => {
-            addFiles(Array.from(e.currentTarget.files ?? []));
-            // Picking the same file again must fire a change.
-            e.currentTarget.value = "";
-          }}
-        />
-        {props.children}
+          {!voiceOn && (
+            <button
+              className={`btn-icon attach-btn mic-btn${voice.dictating ? " listening" : ""}`}
+              aria-label={voice.unavailable ? "Dictate (not available here)" : voice.dictating ? "Stop dictation" : "Dictate"}
+              aria-pressed={voice.dictating}
+              aria-disabled={voice.unavailable ? true : undefined}
+              title={voice.unavailable ?? (voice.dictating ? "Stop dictation (Esc)" : "Dictate")}
+              onClick={voice.toggleDictation}
+            >
+              <Icon d={voice.dictating ? STOP : MIC} size={16} />
+            </button>
+          )}
+          {props.voice && (
+            <button
+              className={`btn-icon attach-btn voice-btn${voiceOn ? " on" : ""}`}
+              aria-label="Voice mode"
+              aria-disabled={voice.unavailable ? true : undefined}
+              aria-pressed={voiceOn}
+              title={voice.unavailable ?? (voiceOn ? "Turn off voice mode (Esc)" : "Voice mode: talk, it sends after a pause and reads the answer aloud")}
+              onClick={voice.toggleVoice}
+            >
+              <Icon d={WAVES} size={16} />
+            </button>
+          )}
+          <input
+            ref={picker}
+            type="file"
+            disabled={!props.upload}
+            multiple
+            hidden
+            aria-label="Attach files"
+            onChange={(e) => {
+              addFiles(Array.from(e.currentTarget.files ?? []));
+              // Picking the same file again must fire a change.
+              e.currentTarget.value = "";
+            }}
+          />
+          {props.children}
+        </div>
         <span className="spacer" />
         <button
           className="send"
