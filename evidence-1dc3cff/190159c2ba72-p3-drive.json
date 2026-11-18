@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b",
+    "short": "1dc3cff",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T04:22:02.758Z"
+  },
+  "dir": ".verify/evidence/hosts-rows-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1951,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-rows-head/hosts-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "const col = document.querySelector(\".focused-hosts\").getBoundingClientRect(); JSON.stringify([\".host-summary\", \".host-empty\"].map((s) => { const r = document.querySelector(s).getBoundingClientRect(); return [s, Math.round(r.left - col.left), Math.round(r.right - col.right)]; }))",
+          "value": "[[\".host-summary\",0,0],[\".host-empty\",0,0]]"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1872,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-rows-head/hosts-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "const col = document.querySelector(\".focused-hosts\").getBoundingClientRect(); JSON.stringify([\".host-summary\", \".host-empty\"].map((s) => { const r = document.querySelector(s).getBoundingClientRect(); return [s, Math.round(r.left - col.left), Math.round(r.right - col.right)]; }))",
+          "value": "[[\".host-summary\",0,0],[\".host-empty\",0,0]]"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

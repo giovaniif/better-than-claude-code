@@ -1,0 +1,45 @@
+$ verify/yv map run focused-pages --recipe host-rows-line-up-with-the-page
+# exit 1 after 5126 ms at 4f595d8a54562567d28a797c7f62d14af36b0127
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:21:58.462Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "host-rows-line-up-with-the-page",
+          "status": "fail",
+          "ms": 4094,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"eval\":\"const col = document.querySelector(\\\".focused-hosts\\\").getBoundingClientRect(); [\\\".host-summary\\\", \\\".host-empty\\\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451/.verify/drives/2026-11-18T04-21-54-539Z/fail-mobile-step2.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"eval\":\"const col = document.querySelector(\\\".focused-hosts\\\").getBoundingClientRect(); [\\\".host-summary\\\", \\\".host-empty\\\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451/.verify/drives/2026-11-18T04-21-54-539Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": " tablist \\\"Host details\\\":\\n    - tab \\\"Sessions · 2\\\" [selected]\\n    - tab \\\"Engine logins\\\"\\n    - tab \\\"System\\\"\\n  - tabpanel \\\"Sessions · 2\\\":\\n    - button \\\"[cmd] TEST-run the migration Codex · Default Needs approval —\\\":\\n      - strong: \\\"[cmd] TEST-run the migration\\\"\\n      - text: Codex · Default Needs approval —\\n    - button \\\"TEST-hello from Claude Claude · Default Idle 25 MB 0.0 cores\\\":\\n      - strong: TEST-hello from Claude\\n      - text: Claude · Default Idle 25 MB 0.0 cores\\n    - button \\\"View all sessions →\\\"\\n- button \\\"Run sessions on another machine Add a server or desktop you reach over SSH.\\\":\\n  - strong: Run sessions on another machine\\n  - text: Add a server or desktop you reach over SSH.\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"const col = document.querySelector(\\\".focused-hosts\\\").getBoundingClientRect(); [\\\".host-summary\\\", \\\".host-empty\\\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"eval\\\":\\\"const col = document.querySelector(\\\\\\\".focused-hosts\\\\\\\").getBoundingClientRect(); [\\\\\\\".host-summary\\\\\\\", \\\\\\\".host-empty\\\\\\\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451/.verify/drives/2026-11-18T04-21-54-539Z/fail-mobile-step2.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"eval\\\":\\\"const col = document.querySelector(\\\\\\\".focused-hosts\\\\\\\").getBoundingClientRect(); [\\\\\\\".host-summary\\\\\\\", \\\\\\\".host-empty\\\\\\\"].every((s) => { const r = document.querySelector(s).getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451/.verify/drives/2026-11-18T04-21-54-539Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "focused-pages/host-rows-line-up-with-the-page",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

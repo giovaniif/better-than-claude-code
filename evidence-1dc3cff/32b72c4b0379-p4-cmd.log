@@ -1,0 +1,82 @@
+$ verify/yv map run focused-pages && (cd ui && bun test)
+# exit 0 after 75618 ms at 1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-18T04:23:22.753Z",
+      "counts": {
+        "pass": 11
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selected-host-tabs",
+          "status": "pass",
+          "ms": 5529
+        },
+        {
+          "label": "compact-usage-popover",
+          "status": "pass",
+          "ms": 5034
+        },
+        {
+          "label": "subscriptions-page",
+          "status": "pass",
+          "ms": 6249
+        },
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 5058
+        },
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 10836
+        },
+        {
+          "label": "sessions-search-and-archive",
+          "status": "pass",
+          "ms": 7769
+        },
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 5167
+        },
+        {
+          "label": "host-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 3875
+        },
+        {
+          "label": "offline-host-and-selection-fallback",
+          "status": "pass",
+          "ms": 8242
+        },
+        {
+          "label": "workspace-widths-and-views",
+          "status": "pass",
+          "ms": 9483
+        },
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 7207
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 396 pass
+ 0 fail
+ 982 expect() calls
+Ran 396 tests across 29 files. [123.00ms]

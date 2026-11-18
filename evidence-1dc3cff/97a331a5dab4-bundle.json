@@ -1,0 +1,126 @@
+{
+  "v": 1,
+  "claim": "On Hosts the host rows start 8 px left of the page column and end 8 px short, and the add-host tile starts 8 px left, at both viewports",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-9451",
+  "base": "63cb165f9ab81a88a74e047213d3ede366fb35e7",
+  "head": "1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T04:21:44.325Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4f595d8a54562567d28a797c7f62d14af36b0127",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "8a3be7a4014d3f0a64d04c0809d99fdc7e20c9cf9ea21bff60f782205571ce19"
+        },
+        {
+          "path": "p1-hosts-mobile.png",
+          "sha256": "44d7c0e5531378e64bb7b8749954bd368a3b5a421ce64a3a5ae0dc42807cb0df"
+        },
+        {
+          "path": "p1-hosts-desktop.png",
+          "sha256": "08f0ed7a414d4ccd7ab2d1e10ad775a10658aaeac795d34688b64782d9f6da59"
+        }
+      ],
+      "addedAt": "2026-11-18T04:21:53.294Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "4f595d8a54562567d28a797c7f62d14af36b0127",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "cb709fb668f2229082867743715ebd22369461a7b7c8627f43e9a38418dcf6e7"
+        }
+      ],
+      "addedAt": "2026-11-18T04:21:53.339Z",
+      "cmd": "verify/yv map run focused-pages --recipe host-rows-line-up-with-the-page",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "190159c2ba7254a6a75694a5e22d391587651898a400795dddab60488f8bc8c2"
+        },
+        {
+          "path": "p3-hosts-mobile.png",
+          "sha256": "6c3220cc77f3dc7a34eddd6fc51ca5110052938bde65424678f4776b3e7d622d"
+        },
+        {
+          "path": "p3-hosts-desktop.png",
+          "sha256": "d40b2cbd5e12ce4e6d208c5f2f82c6e522b57059c26a453d1788de775f910436"
+        }
+      ],
+      "addedAt": "2026-11-18T04:22:07.228Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "32b72c4b037932925dd9b85e4305112aeaa6f6b71d64df93a42e9bdb2c380057"
+        }
+      ],
+      "addedAt": "2026-11-18T04:22:07.270Z",
+      "cmd": "verify/yv map run focused-pages && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "1dc3cfff1a9b2c55cc4fa2a6d1c34f2f6ef9305b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "b103459a92ede5049c3f695b9baee826797c4d3465203c9a45f894abed9f8a98"
+        }
+      ],
+      "addedAt": "2026-11-18T04:23:22.928Z",
+      "cmd": "verify/yv design-check --base 63cb165f9ab8",
+      "exit": 0
+    }
+  ]
+}
