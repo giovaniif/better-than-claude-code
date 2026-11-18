@@ -151,12 +151,15 @@ async fn approval_allow_runs_the_command() {
     assert_eq!(req["kind"], "command");
     assert_eq!(req["title"], "echo approved", "the shell wrapper is stripped");
     assert_eq!(req["detail"], "needs to run a command");
+    // The UI leaves the wait out of "Worked for".
+    assert!(req["at"].is_u64(), "an approval carries yardd's clock: {req}");
     c.wait_status(&sid, "needs_approval").await;
 
     c.send(json!({ "op": "session.approve", "sessionId": sid, "requestId": req["requestId"], "decision": "allow" }))
         .await;
     let resolved = c.wait_event(&sid, "approval_resolved", 0).await;
     assert_eq!(resolved["decision"], "allow");
+    assert!(resolved["at"].is_u64(), "its answer too: {resolved}");
     let tool = c.wait_event(&sid, "tool_completed", 0).await;
     assert_eq!(tool["ok"], true);
     assert_eq!(tool["output"], "approved\n");

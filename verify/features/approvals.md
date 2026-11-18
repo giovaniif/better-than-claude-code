@@ -96,6 +96,19 @@ yv drive 'session:{{dbl_sid}}' --viewport desktop --steps '[{"expect":"role:butt
 yv state --expect '{"sessions":[{"id":"{{dbl_sid}}","status":"idle"}]}'
 ```
 
+### approval-wait-is-not-work
+"Worked for" times the agent, not the user: a command that waited 5 s for
+"Allow once" in a turn that otherwise takes well under a second reads
+"Worked for 0s" or "1s", not "5s". (The wait used to be counted: an approval
+answered the next morning read "Worked for 9h".)
+
+```sh
+for vp in desktop mobile; do
+  yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"permission":"ask","text":"[cmd] TEST-wait for me '$vp'"}' --wait '{"op":"created"}' --save wait_sid=sessionId
+  yv drive 'session:{{wait_sid}}' --viewport $vp --steps '[{"expect":"role:button:Allow once"},{"wait":5000},{"click":"role:button:Allow once"},{"expect":"css:.thread","text":"Ran it."},{"expect":"role:button:Worked for","text":"Ran 1 command"},{"shot":"worked-for-'$vp'"},{"eval":"/^Worked for [01]s/.test(document.querySelector(\".fold-row\").textContent)","equals":true}]'
+done
+```
+
 ## Gotchas
 - A decided approval folds into the turn's "Worked for … · Ran 1 command" row; open it to read "Allowed", "Always allowed" or "Denied". One the turn ended on (Stop, a failure, a yardd restart) reads "Not answered before the turn ended".
 - `role:button:Allow` matches "Allow once" and "Always allow"; name buttons in full or use `exact`.
