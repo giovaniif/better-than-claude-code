@@ -1086,6 +1086,12 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
   );
 }
 
+function ComposerIdentity({ state, host, engine, account }: { state: State; host: string; engine: Engine; account: string }) {
+  const engines = state.engines[host];
+  const login = account === DEFAULT_ACCOUNT ? engines?.[engine] : engines?.accounts?.[account];
+  return login?.account ? <p className="composer-identity muted small">{login.account}</p> : null;
+}
+
 function AccountPicker({
   state,
   host,
@@ -1958,11 +1964,12 @@ function NewSession({ state, actions }: { state: State; actions: Actions }) {
           onSubmit={start}
           busy={pending || !state.connected || !hostOnline(state, target) || !choice.model || !cwd || gone}
         >
-          <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts" })} />
+          <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts", host: target, tab: "engines" })} />
           <ModelPicker models={models} value={choice} engines={[choice.engine]} onChange={choose} />
           <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
         </Composer>
+        <ComposerIdentity state={state} host={target} engine={choice.engine} account={picks[choice.engine]} />
         <div className="new-chips">
           <HostPicker state={state} value={target} onChange={setHost} onAddHost={() => actions.go({ page: "hosts" })} />
           <FolderPicker
@@ -2503,6 +2510,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             <EffortPicker models={models} value={{ engine: meta.engine, model: meta.model, effort: meta.effort }} onChange={(effort) => actions.setModel(meta.id, meta.model, effort)} />
             <PermissionPicker engine={meta.engine} value={meta.permission ?? "ask"} onChange={(p) => actions.setPermission(meta.id, p)} />
           </Composer>
+          <ComposerIdentity state={state} host={host} engine={meta.engine} account={accountOf(meta)} />
         </div>
       </main>
       <WorkPane sessionId={meta.id} changes={changes} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
@@ -3738,14 +3746,16 @@ function HostInspector({
   id,
   onLogin,
   accountActions,
+  initialTab = "sessions",
 }: {
   state: State;
   actions: Actions;
   id: string;
+  initialTab?: "sessions" | "engines" | "system";
   onLogin(engine: Engine): void;
   accountActions: AccountActions;
 }) {
-  const [tab, setTab] = useState<"sessions" | "engines" | "system">("sessions");
+  const [tab, setTab] = useState<"sessions" | "engines" | "system">(initialTab);
   const entry = state.hosts.find((h) => h.id === id);
   const status = hostState(state, id);
   const host = status === "down" || status === "connecting" ? undefined : state.host[id];
@@ -4238,7 +4248,8 @@ function AddHost(props: { actions: Actions; hosts: HostEntry[]; errorCount: numb
 
 function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [adding, setAdding] = useState(false);
-  const [selected, setSelected] = useState("local");
+  const route = state.route.page === "hosts" ? state.route : null;
+  const [selected, setSelected] = useState(route?.host ?? "local");
   const id = selected === "local" || state.hosts.some((h) => h.id === selected) ? selected : "local";
   const [login, setLogin] = useState<{ host: string; engine: Engine; account?: string } | null>(null);
   const accountActions: AccountActions = {
@@ -4271,6 +4282,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
           </div>
           <HostInspector
             key={id}
+            initialTab={route?.host === undefined || route.host === id ? route?.tab : undefined}
             state={state}
             actions={actions}
             id={id}
@@ -4311,7 +4323,7 @@ function SubscriptionsPage({ state, actions }: { state: State; actions: Actions 
               accounts: accountsOn(state, host),
               engines: state.engines[host],
             }))}
-            onManage={() => actions.go({ page: "hosts" })}
+            onManage={() => actions.go({ page: "hosts", tab: "engines" })}
           />
         </div>
       </div>

@@ -91,3 +91,11 @@ Across eight pane widths the header stays one row and every control stays inside
 ```sh
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () => { const pane=document.querySelector(\".pane\"); for (const width of [300,350,400,440,441,460,520,600]) { pane.style.setProperty(\"--pane-w\",width+\"px\"); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const bar=pane.querySelector(\".tabs\").getBoundingClientRect(); const controls=[...pane.querySelectorAll(\".tabs button,.tabs select\")].filter(b=>b.getClientRects().length); if (Math.round(bar.height)!==52 || controls.some(b=>{ const r=b.getBoundingClientRect(); return r.left<bar.left || r.right>bar.right+.5 || r.bottom>bar.bottom; })) return {badWidth:width}; } return true; })()","equals":true},{"eval":"document.querySelector(\".pane\").style.setProperty(\"--pane-w\",\"300px\"); true","equals":true},{"select":"label:Workspace view","value":"terminal"},{"expect":"label:Terminal input"},{"select":"label:Workspace view","value":"pr"},{"expect":"css:.pr-head"},{"select":"label:Workspace view","value":"procs"},{"expect":"css:.proc-table"},{"select":"label:Workspace view","value":"changes"},{"expect":"role:button:Refresh changes"},{"shot":"workspace-selector"}]'
 ```
+
+### manage-accounts-opens-logins
+Viewports: both
+The account identity is visible below the composer. Manage accounts opens Engine logins on the selected host and keeps that destination after a reload.
+
+```sh
+yv drive new --steps '[{"expect":"css:.composer-identity","text":"me@example.com"},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+```

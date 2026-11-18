@@ -169,6 +169,7 @@ describe("route in the URL", () => {
     for (const route of [
       { page: "new" },
       { page: "hosts" },
+      { page: "hosts", host: "h/1 space", tab: "engines" },
       { page: "subscriptions" },
       { page: "sessions" },
       { page: "settings" },

@@ -49,7 +49,7 @@ const widgets = new Map<string, Promise<{ widget?: WidgetRecord; error?: string 
 
 export type Route =
   | { page: "new" }
-  | { page: "hosts" }
+  | { page: "hosts"; host?: string; tab?: "sessions" | "engines" | "system" }
   | { page: "subscriptions" }
   | { page: "sessions" }
   | { page: "assistant" }
@@ -68,8 +68,12 @@ export function routeHash(route: Route): string {
       return `#/s/${encodeURIComponent(route.id)}`;
     case "assistant":
       return "#/assistant";
-    case "hosts":
-      return "#/hosts";
+    case "hosts": {
+      const query = new URLSearchParams();
+      if (route.host) query.set("host", route.host);
+      if (route.tab) query.set("tab", route.tab);
+      return `#/hosts${query.size ? `?${query}` : ""}`;
+    }
     case "subscriptions":
       return "#/subscriptions";
     case "sessions":
@@ -95,6 +99,12 @@ export function parseHash(hash: string): Route {
     if (a) return { page: "automation", host: decodeURIComponent(a[1]), id: decodeURIComponent(a[2]) };
   } catch {
     return { page: "new" };
+  }
+  if (hash.startsWith("#/hosts?")) {
+    const query = new URLSearchParams(hash.slice("#/hosts?".length));
+    const host = query.get("host");
+    const tab = query.get("tab");
+    return { page: "hosts", ...(host ? { host } : {}), ...(tab === "sessions" || tab === "engines" || tab === "system" ? { tab } : {}) };
   }
   if (hash === "#/subscriptions") return { page: "subscriptions" };
   if (hash === "#/sessions") return { page: "sessions" };
