@@ -1,0 +1,26 @@
+$ verify/yv map run connectors --recipe filters-stay-on-one-row
+# exit 0 after 6584 ms at 8bc8baf890d57356be35d2eec39d0b9e0a5e2506
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-18T02:41:25.915Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "filters-stay-on-one-row",
+          "status": "pass",
+          "ms": 5475
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
