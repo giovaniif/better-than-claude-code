@@ -117,6 +117,16 @@ beside the session, not a drawer.
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"role:button:Open sessions","visible":false},{"expect":"role:navigation:Sessions","inViewport":true},{"eval":"[Math.round(document.querySelector(\".sidebar\").getBoundingClientRect().width), getComputedStyle(document.querySelector(\".sidebar\")).position, Math.round(document.querySelector(\".main\").getBoundingClientRect().left)]","equals":[248,"static",248]}]'
 ```
 
+### workspace-tabs-fit-minimum-width
+Viewports: desktop
+At the minimum 300 px pane width, the header stays one row tall, its labels
+stay on one line, and every control stays inside the pane. A compact view
+selector keeps all four views available.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"label:Workspace view"},{"expect":"role:button:Refresh changes","inViewport":true}]'
+```
+
 ## Gotchas
 - Below 700 px the sidebar is a closed drawer, so a recipe that clicks or reads something in it at mobile opens it first (`{"click":"role:button:Open sessions"}`); `yv drive`'s routes do that themselves. At both viewports with one step list, split the recipe per viewport: the menu button is hidden on desktop.
 - Fixed 2026-11-16 (#8): there was no layout below ~700 px; the 248 px sidebar left the session column about 140 px wide at 390 px.
