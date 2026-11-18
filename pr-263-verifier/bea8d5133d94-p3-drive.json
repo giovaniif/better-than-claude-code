@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+    "short": "2b33772",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T07:06:41.476Z"
+  },
+  "dir": ".verify/evidence/pr-263-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2141,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/pr-263-head/all-sessions-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/pr-263-head/archived-only-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "Active"
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "All sessions"
+        },
+        {
+          "step": 13,
+          "eval": "[...document.querySelectorAll(\".focused-session-row .focused-session-state\")].every((el) => el.textContent.trim() === \"Archived\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2283,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-263-head/all-sessions-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-263-head/archived-only-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "Active"
+        },
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".sessions-toolbar button[aria-pressed=true]\").textContent",
+          "value": "All sessions"
+        },
+        {
+          "step": 13,
+          "eval": "[...document.querySelectorAll(\".focused-session-row .focused-session-state\")].every((el) => el.textContent.trim() === \"Archived\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

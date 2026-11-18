@@ -1,0 +1,197 @@
+{
+  "v": 1,
+  "claim": "Map-only PR: new focused-pages/sessions-visibility-tabs recipe, drift fixes to navigation/native-app-menu and terminal/attach-terminal-rows, five README index rows, one thread Gotcha. Verifier's own bundle; no product code changed.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-263-2026-11-b587",
+  "base": "88cb5a864349cfa7e0139787b0a52bdf9759b97b",
+  "head": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-18T07:11:59.629Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T07:11:59.668Z",
+      "text": "no-repro: map-only PR, no product behaviour changed; the new recipe adds coverage and the two drift fixes correct recipes, not the app."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-18T07:11:59.705Z",
+      "text": "no-failing-test: no product code changed. Negative control instead: the sessions-visibility-tabs Active-tab steps with sid_think not archived fail at the count:0 step (verifier run, 07:07 UTC)."
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "bea8d5133d942b90e92ab69fb788168f4e86a8fb9a7cbc86bbae5fb2643f413a"
+        },
+        {
+          "path": "p3-all-sessions-mobile.png",
+          "sha256": "b2d72b680d126aeb58b5523ede39433b035f35bc09c9ba8e8d1b2e4f20973c85"
+        },
+        {
+          "path": "p3-archived-only-mobile.png",
+          "sha256": "4bfbdd07c12cc7e96cb0e1952f187c912fc94d521986da754fe7b1651dc6def5"
+        },
+        {
+          "path": "p3-all-sessions-desktop.png",
+          "sha256": "9bd093dab3d260768ed65fb3251bb69f2cdc273f6cf3c90bb5cefcc6f6f7af8c"
+        },
+        {
+          "path": "p3-archived-only-desktop.png",
+          "sha256": "5ff8d257ebfc528ee16bf14a8a057647e2e61ec3b477f71a69888824842b22c2"
+        }
+      ],
+      "addedAt": "2026-11-18T07:12:05.693Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "b65e276cc7e4e016ec04bcc76d77ddfee87dda9879658e3ab5cdb58c171b2ce0"
+        }
+      ],
+      "addedAt": "2026-11-18T07:12:05.734Z",
+      "cmd": "verify/yv selftest --smoke && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-map-focused-pages.json",
+          "sha256": "310074cdad61fdafe42b3bd44b016b209a9289783a3c9bb158867d90c8e90579"
+        }
+      ],
+      "addedAt": "2026-11-18T07:12:26.639Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-visibility-tabs",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins"
+      ]
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-navigation.json",
+          "sha256": "426823ea80de6d77bfbb4eb6bdb53485ac5c650464de23e14d48dc845f8bf36a"
+        }
+      ],
+      "addedAt": "2026-11-18T07:14:03.631Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "navigation/command-k-navigation",
+        "navigation/command-k-finds-switchy",
+        "navigation/command-k-rows-name-repo-and-branch",
+        "navigation/recent-list-skips-automation-runs",
+        "navigation/native-app-menu"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "2b337720aa9d3c146bb5885b139fcfc6199bcdaf",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-terminal.json",
+          "sha256": "40332b2ea5df547595e6dc9a0e2e7f7f91896a857fb86c01772771aa7e1f98d8"
+        }
+      ],
+      "addedAt": "2026-11-18T07:14:42.463Z",
+      "cmd": "verify/yv map run terminal",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/runs-command",
+        "terminal/keys-arrive-in-order",
+        "terminal/second-terminal",
+        "terminal/scrollback-after-reload",
+        "terminal/scrollback-keeps-wrapped-lines",
+        "terminal/scrollback-matches-after-reloads",
+        "terminal/last-terminal-closed-offers-a-new-one",
+        "terminal/exited-shell-survives-reload",
+        "terminal/close-terminal",
+        "terminal/folder-gone",
+        "terminal/attach-terminal-rows"
+      ]
+    }
+  ]
+}

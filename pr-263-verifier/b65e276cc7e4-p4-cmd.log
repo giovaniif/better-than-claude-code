@@ -1,0 +1,65 @@
+$ verify/yv selftest --smoke && (cd ui && bun test)
+# exit 0 after 20858 ms at 2b337720aa9d3c146bb5885b139fcfc6199bcdaf
+
+{
+  "command": "selftest",
+  "ok": true,
+  "unit": {
+    "exit": 0,
+    "pass": 53,
+    "fail": 0
+  },
+  "smoke": {
+    "ok": true,
+    "steps": [
+      {
+        "cmd": "yv iso up",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv iso seed",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv state --expect {\"sessions\":[{\"title\":\"TEST-say hello\",\"status\":\"idle\"}]}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv shot session:{{sid_echo}}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_cmd}} --viewport desktop --steps [{\"click\":\"role:button:Allow once\"},{\"expect\":\"css:.thread\",\"text\":\"Ran it.\"}]",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv api {\"op\":\"session.handoff\",\"sessionId\":\"{{sid_echo}}\",\"engine\":\"claude\",\"model\":\"claude-haiku-5-5\",\"effort\":\"low\"} --wait {\"op\":\"created\"}",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv drive session:{{sid_echo}} --steps [{\"expect\":\"role:button:Model Fake Fast\"},{\"expect\":\"role:button:Effort Low\"}]",
+        "exit": 0,
+        "problems": []
+      },
+      {
+        "cmd": "yv iso down",
+        "exit": 0,
+        "problems": []
+      }
+    ]
+  },
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 397 pass
+ 0 fail
+ 984 expect() calls
+Ran 397 tests across 29 files. [142.00ms]
