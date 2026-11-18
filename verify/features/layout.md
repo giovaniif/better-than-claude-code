@@ -120,11 +120,11 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"expect":"role:but
 ### workspace-tabs-fit-minimum-width
 Viewports: desktop
 At the minimum 300 px pane width, the header stays one row tall, its labels
-stay on one line, and every control stays inside the pane. A compact view
-selector keeps all four views available.
+stay on one line, and every control stays inside the pane. All four views
+are directly selectable.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"label:Workspace view"},{"expect":"role:button:Refresh changes","inViewport":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"role:button:Changes","inViewport":true},{"expect":"role:button:Terminal","inViewport":true},{"expect":"role:button:Pull request","inViewport":true},{"expect":"role:button:Processes","inViewport":true},{"expect":"role:button:Refresh changes","inViewport":true}]'
 ```
 
 ## Gotchas
