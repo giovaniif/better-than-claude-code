@@ -201,7 +201,10 @@ async function goRoute(page: Page, iso: Iso, route: string, w: Watch) {
       await page.getByRole("button", { name: "Manage hosts" }).click();
     }
   } else if (route === "subscriptions" || route === "sessions") {
-    await page.getByRole("button", { name: route === "subscriptions" ? "Subscriptions" : "Sessions", exact: true }).first().click();
+    await page.getByRole("button", { name: "Go to session or page" }).click();
+    const search = page.getByRole("combobox", { name: "Search sessions and pages" });
+    await search.fill(route);
+    await search.press("Enter");
   } else if (route === "settings") {
     await page.getByRole("button", { name: "Settings", exact: true }).first().click();
   } else if (route === "switchy") {
