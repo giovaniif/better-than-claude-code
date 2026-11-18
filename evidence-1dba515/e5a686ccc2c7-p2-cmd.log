@@ -1,0 +1,40 @@
+$ verify/yv map run processes --recipe stop-with-children-fits-the-pane
+# exit 1 after 8876 ms at 6f33b27898ce27558020b3e8ac19cf04cd55f090
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-18T10:46:20.695Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-with-children-fits-the-pane",
+          "status": "fail",
+          "ms": 8017,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 6 {\"expect\":\"role:button:with its children\",\"text\":\"Stop with children\",\"inViewport\":true}: expected \"role:button:with its children\" inside the 1440x900 viewport, box {\"x\":1355,\"y\":157.359375,\"width\":114,\"height\":20}",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-2db1/.verify/drives/2026-11-18T10-46-12-891Z/fail-desktop-step6.png and the aria snapshot"
+            }
+          ],
+          "tail": "Pull request\\\"\\n    - option \\\"Processes\\\" [selected]\\n  - button \\\"Refresh processes\\\"\\n  - text: 3 processes · 0% CPU · 10 MB\\n  - table:\\n    - rowgroup:\\n      - row \\\"PID Command CPU Memory Running Stop\\\":\\n        - cell \\\"PID\\\"\\n        - cell \\\"Command\\\"\\n        - cell \\\"CPU\\\"\\n        - cell \\\"Memory\\\"\\n        - cell \\\"Running\\\"\\n        - cell \\\"Stop\\\"\\n    - rowgroup:\\n      - row \\\"2789420 terminal/bin/bash -l 0% 5 MB 5s Stop process 2789420 /bin/bash -l\\\":\\n        - cell \\\"2789420\\\"\\n        - cell \\\"terminal/bin/bash -l\\\":\\n          - text: terminal\\n          - code: /bin/bash -l\\n        - cell \\\"0%\\\"\\n        - cell \\\"5 MB\\\"\\n        - cell \\\"5s\\\"\\n        - cell \\\"Stop process 2789420 /bin/bash -l\\\":\\n          - button \\\"Stop process 2789420 /bin/bash -l\\\"\\n      - row \\\"2789584 sh -c sleep 304 & wait 0% 2 MB 4s Confirm stop process 2789584 sh -c sleep 304 & wait Stop process 2789584 sh -c sleep 304 & wait with its children\\\":\\n        - cell \\\"2789584\\\"\\n        - cell \\\"sh -c sleep 304 & wait\\\":\\n          - code: sh -c sleep 304 & wait\\n        - cell \\\"0%\\\"\\n        - cell \\\"2 MB\\\"\\n        - cell \\\"4s\\\"\\n        - cell \\\"Confirm stop process 2789584 sh -c sleep 304 & wait Stop process 2789584 sh -c sleep 304 & wait with its children\\\":\\n          - button \\\"Confirm stop process 2789584 sh -c sleep 304 & wait\\\": Stop\\n          - button \\\"Stop process 2789584 sh -c sleep 304 & wait with its children\\\": Stop with children\\n      - row \\\"2789585 sleep 304 0% 2 MB 4s Stop process 2789585 sleep 304\\\":\\n        - cell \\\"2789585\\\"\\n        - cell \\\"sleep 304\\\":\\n          - code: sleep 304\\n        - cell \\\"0%\\\"\\n        - cell \\\"2 MB\\\"\\n        - cell \\\"4s\\\"\\n        - cell \\\"Stop process 2789585 sleep 304\\\":\\n          - button \\\"Stop process 2789585 sleep 304\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 6 {\\\"expect\\\":\\\"role:button:with its children\\\",\\\"text\\\":\\\"Stop with children\\\",\\\"inViewport\\\":true}: expected \\\"role:button:with its children\\\" inside the 1440x900 viewport, box {\\\"x\\\":1355,\\\"y\\\":157.359375,\\\"width\\\":114,\\\"height\\\":20}\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-18-2db1/.verify/drives/2026-11-18T10-46-12-891Z/fail-desktop-step6.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "processes/stop-with-children-fits-the-pane",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

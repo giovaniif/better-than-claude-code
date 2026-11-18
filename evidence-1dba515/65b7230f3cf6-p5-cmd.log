@@ -1,0 +1,26 @@
+$ verify/yv map run processes --recipe stop-with-children-fits-the-pane
+# exit 0 after 10286 ms at 1dba5158cbf84eb5c1d064ac9193380a1280136e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-18T10:46:47.387Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "stop-with-children-fits-the-pane",
+          "status": "pass",
+          "ms": 9422
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1ee3e6ef44",
+  "build": {
+    "sha": "1dba5158cbf84eb5c1d064ac9193380a1280136e",
+    "short": "1dba515",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T10:46:25.246Z"
+  },
+  "dir": ".verify/evidence/proc-choices-head",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8251,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/proc-choices-head/list-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/proc-choices-head/armed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 7,
+          "eval": "(() => { const p = document.querySelector(\".proc-table\").parentElement; return JSON.stringify({pane: p.clientWidth, scroll: p.scrollWidth}); })()",
+          "value": "{\"pane\":419,\"scroll\":419}"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
