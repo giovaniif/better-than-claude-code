@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-18T02:02:44.992Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "add-account-stays-at-the-right",
+          "status": "pass",
+          "ms": 5065
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

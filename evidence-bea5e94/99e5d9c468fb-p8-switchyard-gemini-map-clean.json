@@ -1,0 +1,52 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-18T02:04:01.089Z",
+      "counts": {
+        "pass": 7
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "picker-lists-opencode-and-grok",
+          "status": "pass",
+          "ms": 4145
+        },
+        {
+          "label": "opencode-session-streams-a-reply",
+          "status": "pass",
+          "ms": 6645
+        },
+        {
+          "label": "grok-command-asks-first",
+          "status": "pass",
+          "ms": 8109
+        },
+        {
+          "label": "opencode-hands-off-from-its-picker",
+          "status": "pass",
+          "ms": 2847
+        },
+        {
+          "label": "queued-message-waits-for-next-turn",
+          "status": "pass",
+          "ms": 9358
+        },
+        {
+          "label": "gemini-picker-session-and-approval",
+          "status": "pass",
+          "ms": 8887
+        },
+        {
+          "label": "gemini-separate-account-terminal-login",
+          "status": "pass",
+          "ms": 8118
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

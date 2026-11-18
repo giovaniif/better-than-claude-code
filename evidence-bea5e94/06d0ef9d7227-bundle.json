@@ -1,0 +1,299 @@
+{
+  "v": 1,
+  "claim": "Gemini CLI is available in the model picker, with streaming sessions, approvals, resume and account-specific login guidance",
+  "repo": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31",
+  "base": "f850d917a60498de4d4b0e6432ed3f44f32f8367",
+  "head": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+  "changed": [
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/accounts.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/engines.rs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/src/gemini.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/login.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/main.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/acp.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/acp-agent.mjs"
+    },
+    {
+      "status": "A",
+      "path": "crates/yardd/tests/fake-codex/gemini"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "scripts/remote-install.sh"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usage.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/iso.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-18T01:58:56.826Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "6a517876cca584b43311d9c6d20a74d6fb813a59",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "7ac2ea71a453d4bb2e21d572124041aeec26f9a44654857a4113b18b3738047f"
+        },
+        {
+          "path": "p1-before-gemini-mobile.png",
+          "sha256": "a1d502d73deb821908ff24910641850a01033da19c19fe3e9909e5be64b3dc96"
+        },
+        {
+          "path": "p1-before-gemini-desktop.png",
+          "sha256": "d4975dfc14f69e2e876c1377c26f54bda5a88d82dd151f76d7079142cb6a7f53"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:56.865Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "6a517876cca584b43311d9c6d20a74d6fb813a59",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "918f9991ef06245bf5057e639b942c9fb9e35625e10a2bd96432a48fcd6977c6"
+        }
+      ],
+      "addedAt": "2026-11-18T01:58:56.939Z",
+      "cmd": "cd ui && bun test src/engines.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "a1d82a30b2854bd0278a314b1c3b9d1bb4dc9c8661d6f5bafed37f7b23d092f1"
+        }
+      ],
+      "addedAt": "2026-11-18T02:00:50.413Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "8c1c2866aeb34b2e7ae79349334932c1aa4f98a86fd88fcee3e320e62b98ca74"
+        }
+      ],
+      "addedAt": "2026-11-18T02:02:39.009Z",
+      "cmd": "verify/yv design-check --base f850d917a604",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "32aded63eb8b8103e8d5e797652ca1ef0473d281e831462f2cc31e1fd57f487f"
+        },
+        {
+          "path": "p5-gemini-approval-mobile.png",
+          "sha256": "74b3f267ea3afb38d8b821887c36e35ed71282835ad66eb5eb5e1af0f975f488"
+        },
+        {
+          "path": "p5-gemini-reply-mobile.png",
+          "sha256": "8a7303d229a307f277fcca1e3f852bd744e4ce87eab8b5504a0ead59652edf17"
+        },
+        {
+          "path": "p5-gemini-approval-desktop.png",
+          "sha256": "5e07fbfbe5d814d48cb0afee4a9917dc7ecdb3d4e503fd520f446d9fcc4e1726"
+        },
+        {
+          "path": "p5-gemini-reply-desktop.png",
+          "sha256": "b8849f115c5ed3f4f4d6542d575011849e9c11d9f6e63eb8a78a50be87f5a5fb"
+        }
+      ],
+      "addedAt": "2026-11-18T02:03:12.043Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "a22a6d2b223c55e5148ea43d3db6eb77b09ab136dee9caa37754df4112ed5d3e"
+        },
+        {
+          "path": "p6-gemini-login-mobile.png",
+          "sha256": "b356bfb420c943e78a8fa28f13bb984d46514b2753c5b8965b1fe56fd8449bf1"
+        },
+        {
+          "path": "p6-gemini-login-desktop.png",
+          "sha256": "f4deb5a0045af9b0a396d00b633b50c5db177d1339b66bdaeb583bfdc2d70d6d"
+        }
+      ],
+      "addedAt": "2026-11-18T02:03:12.087Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-switchyard-gemini-accounts-map.json",
+          "sha256": "c9d022d48f1ede28b5cf115d7418a719c013efd206774561a64fa0eceaa99390"
+        }
+      ],
+      "addedAt": "2026-11-18T02:03:12.130Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account-stays-at-the-right"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-switchyard-gemini-map-clean.json",
+          "sha256": "99e5d9c468fb71a4f686632c5ec5e61add72c34f3d58bc9680d961f979e9fb92"
+        }
+      ],
+      "addedAt": "2026-11-18T02:04:09.257Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn",
+        "acp-engines/gemini-picker-session-and-approval",
+        "acp-engines/gemini-separate-account-terminal-login"
+      ]
+    }
+  ]
+}

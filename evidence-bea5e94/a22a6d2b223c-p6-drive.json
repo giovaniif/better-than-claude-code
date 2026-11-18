@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "bea5e941d70794730bb376bca1e6035b4c8debd3",
+    "short": "bea5e94",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-18T02:00:56.886Z"
+  },
+  "dir": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31/.verify/drives/2026-11-18T02-02-38-796Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4176,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31/.verify/drives/2026-11-18T02-02-38-796Z/gemini-login-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3940,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/better-than-claude-code/yard-i-have-gemini-access-now-fc31/.verify/drives/2026-11-18T02-02-38-796Z/gemini-login-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
