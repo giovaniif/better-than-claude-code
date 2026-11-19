@@ -1415,17 +1415,23 @@ export function Composer(props: {
 }) {
   const toolbar = useRef<HTMLDivElement>(null);
   const setup = useRef<HTMLButtonElement>(null);
+  const settingsSlot = useRef<HTMLDivElement>(null);
+  const settingsOptions = useRef<HTMLDivElement>(null);
   const [compact, setCompact] = useState(false);
   const [setupOpen, setSetupOpen] = useState(false);
   useLayoutEffect(() => {
     const row = toolbar.current;
-    if (!row || !props.settings) return;
-    const measure = () => setCompact(row.clientWidth < 500);
+    const slot = settingsSlot.current;
+    const options = settingsOptions.current;
+    if (!row || !slot || !options) return;
+    const measure = () => setCompact(row.clientWidth < 500 || options.getBoundingClientRect().width > slot.clientWidth);
     measure();
     const resize = new ResizeObserver(measure);
     resize.observe(row);
+    resize.observe(slot);
+    resize.observe(options);
     return () => resize.disconnect();
-  }, [!!props.settings]);
+  }, [compact, setupOpen, !!props.settings]);
   const draftKey = props.draft ?? props.appendFor;
   const [kept] = useState(() => draftOf<ComposerDraft>(draftKey));
   const [text, setText] = useState(kept?.text ?? "");
@@ -1745,29 +1751,36 @@ export function Composer(props: {
               e.currentTarget.value = "";
             }}
           />
-          {compact && props.settings ? (
-            <>
-              <button
-                ref={setup}
-                className={`btn-quiet composer-setup ${props.settings.full ? "permission-full" : ""}`}
-                aria-label={`Session setup: ${props.settings.label}`}
-                aria-haspopup="dialog"
-                aria-expanded={setupOpen}
-                title={props.settings.label}
-                onClick={() => setSetupOpen(!setupOpen)}
-              >
-                <span className="setup-model">{props.settings.model}</span>
-                {!props.settings.full && props.settings.effort && <span className="setup-effort">· {capitalize(props.settings.effort)}</span>}
-                {props.settings.full && <Icon d="M12 22s7-3 7-10V5l-7-3-7 3v7c0 7 7 10 7 10Z" size={14} />}
-                <Icon d={CHEVRON_DOWN} size={12} />
-              </button>
-              {setupOpen && (
+          {props.settings ? (
+            <div ref={settingsSlot} className={`composer-settings-slot ${compact ? "compact" : ""}`}>
+              {!setupOpen && (
+                <div key={compact ? "measure" : "options"} ref={settingsOptions} className="composer-settings-options" inert={compact || undefined}>
+                  {props.children}
+                </div>
+              )}
+              {compact && (
+                <button
+                  ref={setup}
+                  className={`btn-quiet composer-setup ${props.settings.full ? "permission-full" : ""}`}
+                  aria-label={`Session setup: ${props.settings.label}`}
+                  aria-haspopup="dialog"
+                  aria-expanded={setupOpen}
+                  title={props.settings.label}
+                  onClick={() => setSetupOpen(!setupOpen)}
+                >
+                  <span className="setup-model">{props.settings.model}</span>
+                  {!props.settings.full && props.settings.effort && <span className="setup-effort">· {capitalize(props.settings.effort)}</span>}
+                  {props.settings.full && <Icon d="M12 22s7-3 7-10V5l-7-3-7 3v7c0 7 7 10 7 10Z" size={14} />}
+                  <Icon d={CHEVRON_DOWN} size={12} />
+                </button>
+              )}
+              {compact && setupOpen && (
                 <AnchoredPopover anchor={setup} label="Session setup" variant="session-setup-popover" onClose={() => setSetupOpen(false)}>
                   <div className="popover-heading"><strong>Session setup</strong></div>
                   <div className="setup-options">{props.children}</div>
                 </AnchoredPopover>
               )}
-            </>
+            </div>
           ) : props.children}
         </div>
         {!props.settings && <span className="spacer" />}

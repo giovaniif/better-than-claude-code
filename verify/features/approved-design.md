@@ -72,3 +72,12 @@ Its settings sheet and nested permission menu stay on screen.
 ```sh
 yv drive new --viewport mobile --steps '[{"resize":{"width":320,"height":568}},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup","inViewport":true},{"click":{"role":"button","name":"Ask first","exact":true,"within":"role:dialog:Session setup"}},{"expect":"role:dialog:Permissions","inViewport":true},{"click":"role:menuitemradio:Full access"},{"press":"Escape"},{"expect":"css:.composer-setup.permission-full"},{"eval":"(() => {const row=document.querySelector(\".composer-row\"); const a=row.querySelector(\".attach-btn\").getBoundingClientRect(); const s=row.querySelector(\".send\").getBoundingClientRect(); return document.documentElement.scrollWidth <= innerWidth && (Math.abs(a.top+a.bottom-s.top-s.bottom) < 3) && s.right <= innerWidth;})()","equals":true},{"resize":{"width":390,"height":844}},{"shot":"narrow-full-access"}]'
 ```
+
+### toolbar-groups-before-labels-compress
+Viewports: desktop
+A composer wide enough for its usual selectors can still need Setup when
+model names are longer.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":"css:.composer-row .model-trigger"},{"eval":"(() => { const style = document.createElement(\"style\"); style.textContent = \".session-toolbar .picker > button { font-size: 32px; }\"; document.head.append(style); return true; })()","equals":true},{"expect":"css:.composer-row .composer-setup"},{"expect":"css:.composer-row .model-trigger","count":0},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup"},{"shot":"uncompressed-selectors"}]'
+```
