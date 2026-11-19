@@ -2,6 +2,15 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.14.0 (2026-11-19)
+
+- **Steer queued messages.** Send one queued message into the current Claude or Codex turn while the other messages stay queued.
+- **See subagents in Workspace.** Open Subagents beside Terminal to see status, steps, and reports from Claude and Codex when available.
+- **Rename sessions.** Use Rename in the session menu to change the title across clients. Conversation history and the worktree stay with the session.
+- **Clearer Usage and navigation.** Usage opens above its sidebar row on desktop and as a bottom sheet on phones. It shows reset times and warns on individual limits. Open Hosts from a host status row or page search.
+- **Cleaner terminal scrollback.** Reloading a terminal no longer feeds replies to historical terminal queries back into the live shell.
+- **Readable composer controls.** Narrow composers group settings before model, account, effort, or access labels get squeezed.
+
 ## 0.13.0 (2026-11-18)
 
 - **Simpler Workspace.** Terminal opens first, and Processes sits beside it. The conversation header links to the branch’s pull request on GitHub.
