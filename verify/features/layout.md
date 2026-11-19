@@ -39,6 +39,78 @@ Below 1100 px the workspace pane is hidden and the composer stays on screen.
 yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"expect":"role:region:Workspace","visible":false},{"expect":"label:Message","inViewport":true}]'
 ```
 
+### desktop-sidebars-collapse-independently
+Viewports: desktop
+Each sidebar can give its space to the conversation independently. The open
+Workspace tab and panel widths survive a toggle. The collapse preferences
+survive reloads and do not prevent opening a panel on a narrower screen.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[
+  {"eval":"localStorage.setItem(\"yard.sidebarWidth\", \"296\"); localStorage.setItem(\"yard.paneWidth\", \"360\"); true"},
+  {"reload":true},
+  {"click":"role:button:Processes"},
+  {"click":"role:button:Collapse sessions sidebar"},
+  {"expect":"role:navigation:Sessions","visible":false},
+  {"expect":"role:separator:Resize the sessions sidebar","visible":false},
+  {"expect":"role:region:Workspace","inViewport":true},
+  {"click":"role:button:Collapse workspace"},
+  {"expect":"role:region:Workspace","visible":false},
+  {"expect":"role:button:Expand sessions sidebar","inViewport":true},
+  {"expect":"role:button:Expand workspace","inViewport":true},
+  {"eval":"document.querySelector(\".thread\").clientWidth >= innerWidth - 48","equals":true},
+  {"shot":"sidebars-collapsed"},
+  {"click":"role:button:Expand workspace"},
+  {"expect":"css:.workspace-tabs .tab[aria-pressed=true]","text":"Processes"},
+  {"expect":"role:navigation:Sessions","visible":false},
+  {"eval":"document.querySelector(\".pane\").getBoundingClientRect().width","equals":360},
+  {"click":"role:button:Collapse workspace"},
+  {"reload":true},
+  {"expect":"role:navigation:Sessions","visible":false},
+  {"expect":"role:region:Workspace","visible":false},
+  {"resize":{"width":390,"height":844}},
+  {"click":"role:button:Open sessions"},
+  {"click":"role:button:Close sessions"},
+  {"click":{"role":"button","name":"Workspace","exact":true}},
+  {"expect":"role:region:Workspace","inViewport":true},
+  {"resize":{"width":1440,"height":900}},
+  {"expect":"role:region:Workspace","visible":false},
+  {"expect":"role:navigation:Sessions","visible":false},
+  {"click":"role:button:Expand sessions sidebar"},
+  {"expect":"role:region:Workspace","visible":false},
+  {"eval":"document.activeElement.getAttribute(\"aria-label\")","equals":"Collapse sessions sidebar"},
+  {"eval":"document.querySelector(\".sidebar\").getBoundingClientRect().width","equals":296},
+  {"click":"role:button:Expand workspace"},
+  {"expect":"role:region:Workspace","inViewport":true},
+  {"shot":"sidebars-expanded"}
+]'
+```
+
+### mobile-panels-have-close-controls
+Viewports: mobile
+Close buttons return to the conversation, with focus back on the panel's opener.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[
+  {"click":"role:button:Open sessions"},
+  {"wait":240},
+  {"expect":"role:button:Close sessions","inViewport":true},
+  {"shot":"sessions-drawer-close"},
+  {"click":"role:button:Close sessions"},
+  {"expect":"role:navigation:Sessions","visible":false},
+  {"eval":"document.activeElement.getAttribute(\"aria-label\")","equals":"Open sessions"},
+  {"click":{"role":"button","name":"Workspace","exact":true}},
+  {"click":"role:button:Processes"},
+  {"expect":"role:button:Back to conversation","inViewport":true},
+  {"shot":"workspace-close"},
+  {"click":"role:button:Back to conversation"},
+  {"expect":"role:region:Workspace","visible":false},
+  {"eval":"document.activeElement.textContent","equals":"Workspace"},
+  {"click":{"role":"button","name":"Workspace","exact":true}},
+  {"expect":"css:.workspace-tabs .tab[aria-pressed=true]","text":"Processes"}
+]'
+```
+
 ### mobile-main-column-usable
 Viewports: mobile
 At 390 px the session column must be at least 300 px wide, so prompts and
