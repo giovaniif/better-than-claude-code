@@ -757,7 +757,9 @@ export function useYard(): { state: State; actions: Actions } {
         }
         if (replies.current.take(msg)) return;
         notifier.current!(msg);
-        if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
+        if (msg.op === "error" && msg.sessionId && (msg.for === "term.open" || msg.for === "term.new")) {
+          termListeners.current.forEach((listener) => listener({ ...msg, op: "term.error" }));
+        } else if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
           termListeners.current.forEach((listener) => listener(msg));
         } else if (msg.op === "queue.returned") {
           // Stop or Edit gave queued text back: it goes to the reply box.

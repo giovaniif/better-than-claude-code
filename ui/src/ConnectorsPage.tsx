@@ -4,6 +4,7 @@
 // for Claude that starts Claude Code with no prompt, so it spends no usage.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnchoredPopover } from "./AnchoredPopover";
+import { SelectPicker } from "./SelectPicker";
 import { accountChoices, DEFAULT_ACCOUNT } from "./accounts";
 import { actionFor, CONNECTOR_PAGE_SIZE, filterServers, type ConnectorFilter, displayName, missingFromCatalog, newServerProblem, removable, shortError, sortServers, STATUS_LABEL, summary } from "./connectors";
 import type { Engine, McpServer } from "./protocol";
@@ -69,12 +70,10 @@ export function ConnectorsPage({ state, actions, usage }: { state: State; action
               ))}
             </div>
             {hosts.length > 1 && (
-              <label className="connector-host-select">
+              <div className="connector-host-select">
                 <span className="small muted">Host</span>
-                <select className="field" aria-label="Connector host" value={host} onChange={(event) => setHost(event.target.value)}>
-                  {hosts.map((id) => <option key={id} value={id}>{hostName(state, id)}</option>)}
-                </select>
-              </label>
+                <SelectPicker label="Connector host" value={host} onChange={setHost} options={hosts.map((id) => ({ value: id, label: hostName(state, id) }))} />
+              </div>
             )}
           </div>
           <div className="connector-accounts">

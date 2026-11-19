@@ -144,7 +144,7 @@ edge and focusing its search box scrolled the whole page left: "at should we
 work on?".)
 
 ```sh
-yv drive new --steps '[{"click":{"role":"button","name":"work","exact":true}},{"expect":"placeholder:Search folders, or type a path"},{"wait":300},{"shot":"folder-menu"},{"eval":"(() => { const pop = document.querySelector(\".new-chips .popover\").getBoundingClientRect(); const chip = document.querySelector(\".new-chips .chip[aria-expanded=true]\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\"*\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()","equals":true}]'
+yv drive new --steps '[{"click":{"role":"button","name":"work","exact":true}},{"expect":"placeholder:Search folders, or type a path"},{"wait":300},{"shot":"folder-menu"},{"eval":"(() => { const pop = document.querySelector(\".chip-popover-wide\").getBoundingClientRect(); const chip = document.querySelector(\".new-chips .chip[aria-expanded=true]\").getBoundingClientRect(); const scrolled = [...document.querySelectorAll(\"*\")].filter((e) => e.scrollLeft > 0).length; const underChip = innerWidth <= 700 || Math.abs(pop.left - chip.left) < 1; return pop.left >= 0 && pop.right <= innerWidth && scrolled === 0 && underChip; })()","equals":true}]'
 ```
 
 ### refused-send-names-the-session-in-the-way

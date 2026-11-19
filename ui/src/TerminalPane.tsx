@@ -6,6 +6,7 @@ import type { TermInfo } from "./protocol";
 import type { Actions } from "./store";
 import { SELECTION_CAP, snippetInComposer } from "./compose";
 import { joinRows, pickRows, type RowPick } from "./termRows";
+import { AnchoredPopover } from "./AnchoredPopover";
 
 // ANSI colors that stay readable on a white ground.
 const THEME = {
@@ -58,6 +59,7 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
   const [tabs, setTabs] = useState<TermInfo[] | null>(null);
   const [active, setActive] = useState<string | null>(null);
   const [selection, setSelection] = useState("");
+  const [openError, setOpenError] = useState("");
   // Terminal 1 starts by itself once; after that an empty list stays empty.
   const started = useRef(false);
   const dims = useRef({ cols: 80, rows: 24 });
@@ -68,25 +70,17 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
   const awaiting = useRef<Set<string> | null>(null);
   const readers = useRef(new Map<string, RowReader>());
   const [menu, setMenu] = useState(false);
-  const menuBox = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    if (!menu) return;
-    const outside = (e: PointerEvent) => menuBox.current?.contains(e.target as Node) || setMenu(false);
-    const escape = (e: KeyboardEvent) => e.key === "Escape" && setMenu(false);
-    document.addEventListener("pointerdown", outside);
-    document.addEventListener("keydown", escape);
-    return () => {
-      document.removeEventListener("pointerdown", outside);
-      document.removeEventListener("keydown", escape);
-    };
-  }, [menu]);
+  const menuAnchor = useRef<HTMLButtonElement>(null);
   const expectNew = () => (awaiting.current = new Set(shown.current.map((t) => t.termId)));
 
   useEffect(() => {
     if (!connected) return;
     const stop = actions.onTerm((msg) => {
       if (msg.sessionId !== sessionId) return;
-      if (msg.op === "term.list") {
+      if (msg.op === "term.error") {
+        awaiting.current = null;
+        setOpenError(msg.message || "Unable to open a terminal.");
+      } else if (msg.op === "term.list") {
         const list: TermInfo[] = msg.terms ?? [];
         setTabs(list);
         if (list.length === 0 && !started.current) {
@@ -117,6 +111,7 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
   }, [tabs, active]);
 
   const newTerminal = () => {
+    setOpenError("");
     expectNew();
     actions.post({ op: "term.new", sessionId, ...dims.current });
   };
@@ -163,13 +158,14 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
         </button>
         <span className="spacer" />
         {active && (
-          <span className="term-attach" ref={menuBox}>
-            <button className="btn-text" aria-haspopup="menu" aria-expanded={menu} title="Attach terminal output to your reply" onClick={() => setMenu(!menu)}>
+          <span className="term-attach">
+            <button ref={menuAnchor} className="btn-text" aria-haspopup="dialog" aria-expanded={menu} title="Attach terminal output to your reply" onClick={() => setMenu(!menu)}>
               Attach
               <Glyph d={CHEVRON} size={11} />
             </button>
             {menu && (
-              <div className="row-menu term-attach-menu" role="menu">
+              <AnchoredPopover anchor={menuAnchor} label="Attach terminal output" variant="select-panel" onClose={() => setMenu(false)}>
+              <div role="menu">
                 {selection.trim() && (
                   <button
                     className="picker-item menu-item"
@@ -190,6 +186,7 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
                   Last 500 lines
                 </button>
               </div>
+              </AnchoredPopover>
             )}
           </span>
         )}
@@ -197,7 +194,14 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
       {/* Closing the last tab leaves no terminal; a blank pane with only the
           small `+` read as broken. Not while one is on its way (the first
           list of a new session is empty too). */}
-      {tabs?.length === 0 && !awaiting.current && (
+      {openError && (
+        <div className="pane-body terminal-error" role="status">
+          <strong>Terminal unavailable</strong>
+          <p className="muted">{openError}</p>
+          <div><button className="btn" disabled={!connected} onClick={newTerminal}>Try again</button></div>
+        </div>
+      )}
+      {tabs?.length === 0 && !awaiting.current && !openError && (
         <div className="pane-body">
           <div className="muted">No terminal is open.</div>
           <div>
