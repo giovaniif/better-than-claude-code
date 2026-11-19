@@ -1243,9 +1243,9 @@ function SpeedPicker({ tiers, value, onChange, nextTurn }: {
             {options.map((tier) => (
               <button
                 key={tier.id}
+                className={`picker-item ${tier.id === selected.id ? "active" : ""}`}
                 role="menuitemradio"
                 aria-checked={tier.id === selected.id}
-                className={`picker-item ${tier.id === selected.id ? "active" : ""}`}
                 onClick={() => { onChange(tier.id); setOpen(false); }}
               >
                 <span>{tier.name}</span>
