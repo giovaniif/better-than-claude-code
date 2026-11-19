@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-19T15:20:03.581Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "workspace-tabs-fit-minimum-width",
+          "status": "pass",
+          "ms": 5507
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

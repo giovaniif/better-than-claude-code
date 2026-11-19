@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-19T15:19:47.549Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "steer-a-selected-queued-message",
+          "status": "pass",
+          "ms": 12374
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

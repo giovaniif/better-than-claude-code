@@ -1,0 +1,304 @@
+{
+  "v": 1,
+  "claim": "Steer sends the selected queued message to the active turn and Workspace lists session subagents",
+  "repo": "/tmp/switchyard-session-tools",
+  "base": "4c7f11c5072e25ef99addcfc60e23cfa67c109f5",
+  "head": "538e71bd7089b0e0711857164236badb8062a9a1",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/sessions.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approved-design.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T15:20:29.144Z",
+  "proofs": [
+    {
+      "id": 8,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b822294b8d74f080a19fa11bca2e28fed6e180b4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "6065600823217e2377b859409e84d93f01764bbb39e96b52b352dba0a1700294"
+        },
+        {
+          "path": "p8-steer-ready-desktop.png",
+          "sha256": "ad1838682938a3da1f4790d176bcefdc842ac9146a291f1ce22e6d94ad6b2857"
+        },
+        {
+          "path": "p8-fail-desktop-step7.png",
+          "sha256": "cb5b67fe1a8f16c7cf760833aeb9545ae74f3aaadb2e1f4be9725798cdd2d2dc"
+        }
+      ],
+      "addedAt": "2026-11-19T15:21:50.241Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b822294b8d74f080a19fa11bca2e28fed6e180b4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "b2efafdc00c9d0fbd3214a2e11bae2ddd6b1ee569d4dd8c66eddce64a63e734f"
+        },
+        {
+          "path": "p9-fail-desktop-step2.png",
+          "sha256": "91b16a6e9eb3448b0045da40124bbeebde6fa6618b3dafef638c1b97d900f7ab"
+        }
+      ],
+      "addedAt": "2026-11-19T15:21:50.288Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "base",
+      "kind": "test",
+      "at": "b822294b8d74f080a19fa11bca2e28fed6e180b4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-cmd.log",
+          "sha256": "ce39185dac2eb3a357bedf6e5320b92b44caf9314b00f9e51472d3087ffae73f"
+        }
+      ],
+      "addedAt": "2026-11-19T15:21:50.330Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon codex_subagent_activity_keeps_one_agent_and_its_report",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "design",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-design.json",
+          "sha256": "b144a14c0475bba5e916c48db2dba6a83b94c6b8e22d67082b5c894852705b14"
+        }
+      ],
+      "addedAt": "2026-11-19T15:25:40.214Z",
+      "cmd": "verify/yv design-check --base 4c7f11c5072e",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "73169f88d36ea67a95bdc86d99bd1fda3e9916f7aec363eab3f5e35faada7843"
+        }
+      ],
+      "addedAt": "2026-11-19T15:26:56.507Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "2e37107f6d86d88efa1930bb1034679d59b6ead0b8bacbbc6154d4a635797d8a"
+        },
+        {
+          "path": "p7-steer-ready-desktop.png",
+          "sha256": "95ffdb12525eb374e97bc17d7c29fb93f70c1626437319c7b6932b64be52e376"
+        },
+        {
+          "path": "p7-steered-one-desktop.png",
+          "sha256": "2d0b199d4750e275e97432056509babc79395d7232649e16a4fd47857f30f126"
+        }
+      ],
+      "addedAt": "2026-11-19T15:28:29.192Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-2-drive.json",
+          "sha256": "9740a917a56acd7864a29f4338b62cd859abc430a5710d2f6c7c80a80781fd11"
+        },
+        {
+          "path": "p8-steer-ready-mobile.png",
+          "sha256": "4b27652e45d79400575af7dbd8dd21999608686acc0cd2792d25472c2dc5ae5a"
+        },
+        {
+          "path": "p8-steered-one-mobile.png",
+          "sha256": "4a29a519d6f9a57e382b7fae51d758f34cc242fd9a58a94e0051f4140079ff59"
+        }
+      ],
+      "addedAt": "2026-11-19T15:28:29.232Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-2-drive.json",
+          "sha256": "2282bdaacf9d8cc6c1764cbdd6e17ad1bd67d8f0d570bc713f8b9a4165dcd36a"
+        },
+        {
+          "path": "p9-subagents-desktop.png",
+          "sha256": "c9a512b6d8b78c2d75cc441b5083885f8b4f97c51eaf8363a9309a56f1a2150a"
+        }
+      ],
+      "addedAt": "2026-11-19T15:28:29.274Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "fix",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p10-drive.json",
+          "sha256": "54927ba4d08199176598c9afaa505d302799d3762c9310654b2abd40d4345804"
+        },
+        {
+          "path": "p10-subagents-mobile.png",
+          "sha256": "1744104a3cf86acd3dfb0989d50c8557c6c205ed87307564a143ed71d922084e"
+        }
+      ],
+      "addedAt": "2026-11-19T15:28:29.313Z",
+      "failedApi": []
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "538e71bd7089b0e0711857164236badb8062a9a1",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-switchyard-steer-final.json",
+          "sha256": "18f96d0dc80ce6f8791f28b1a3acb8ff0114e1b2d6ffc7e8180682a071cb8b2b"
+        },
+        {
+          "path": "p11-switchyard-agents-final.json",
+          "sha256": "61d4745ee3b9dce4c015fa3631c1e4959b1608612d804498c59684654948aa5c"
+        },
+        {
+          "path": "p11-switchyard-session-tools-approved-final.json",
+          "sha256": "4fdd81c74e6777c42ed7498bd59c816d0725cbbd1dafb8c182ee660f206eb1c2"
+        }
+      ],
+      "addedAt": "2026-11-19T15:28:29.351Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/terminal-first-and-external-pr",
+        "approved-design/one-row-composers",
+        "approved-design/account-card-separation",
+        "approved-design/compact-usage",
+        "approved-design/phone-usage-opens-from-header",
+        "approved-design/usage-popover-follows-prototype",
+        "approved-design/hosts-stays-in-host-status-and-page-search",
+        "approved-design/toolbar-at-320-with-full-access",
+        "approved-design/toolbar-groups-before-labels-compress"
+      ]
+    }
+  ]
+}

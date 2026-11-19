@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon codex_subagent_activity_keeps_one_agent_and_its_report
+# exit 101 after 4700 ms at b822294b8d74f080a19fa11bca2e28fed6e180b4
+
+
+running 1 test
+test codex_subagent_activity_keeps_one_agent_and_its_report ... FAILED
+
+failures:
+
+---- codex_subagent_activity_keeps_one_agent_and_its_report stdout ----
+
+thread 'codex_subagent_activity_keeps_one_agent_and_its_report' (214196) panicked at crates/yardd/tests/daemon.rs:373:5:
+assertion `left == right` failed: [Object {"text": String("[subagent] TEST-codex delegation"), "type": String("user_message")}, Object {"at": Number(1795101714939), "type": String("turn_started")}, Object {"at": Number(1795101714942), "status": String("completed"), "type": String("turn_completed")}]
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-214195-codex-subagent-0 for inspection
+
+
+failures:
+    codex_subagent_activity_keeps_one_agent_and_its_report
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 80 filtered out; finished in 0.13s
+
+
+   Compiling yardd v0.13.0 (/tmp/switchyard-session-tools-base/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 4.52s
+     Running tests/daemon.rs (target/debug/build/yardd/0eaa0f78cd26615b/out/daemon-0eaa0f78cd26615b)
+error: test failed, to rerun pass `-p yardd --test daemon`
