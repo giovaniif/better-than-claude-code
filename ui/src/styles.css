@@ -1143,7 +1143,7 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .composer-settings-slot.compact { overflow: clip; overflow-clip-margin: 4px; }
 .composer-settings-slot.compact .composer-settings-options { position: absolute; visibility: hidden; }
 .session-toolbar .picker { flex: none; }
-.session-toolbar .picker > button { display: flex; gap: 5px; padding-inline: 6px; white-space: nowrap; }
+.session-toolbar .picker > button { display: flex; gap: 5px; padding-inline: 6px; margin-left: 0; white-space: nowrap; }
 .session-toolbar .account-trigger-name { display: none; }
 .session-toolbar .account-trigger { min-width: 38px; }
 .session-toolbar .account-avatar, .model-provider { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-size: 10px; font-weight: 600; }
