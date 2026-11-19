@@ -302,12 +302,20 @@ function TermView(props: {
     };
     refit();
 
-    let early: any[] = [];
-    const write = (msg: { offset: number; data: string }) => {
+    let early: { offset: number; data: string }[] = [];
+    const write = (msg: { offset: number; data: string }, replay = false) => {
       const bytes = decode(msg.data);
       const end = msg.offset + bytes.length;
       if (end <= written.current) return;
-      term.write(msg.offset < written.current ? bytes.subarray(written.current - msg.offset) : bytes);
+      const unread = msg.offset < written.current ? bytes.subarray(written.current - msg.offset) : bytes;
+      if (replay) {
+        // xterm can answer queries while parsing history. Keep those replies
+        // out of the shell without suppressing adjacent live output.
+        term.write("", () => { term.options.disableStdin = true; });
+        term.write(unread, () => { term.options.disableStdin = false; });
+      } else {
+        term.write(unread);
+      }
       written.current = end;
     };
     const markExited = () => {
@@ -320,8 +328,8 @@ function TermView(props: {
       if (msg.termId !== termId) return;
       if (msg.op === "term.opened") {
         if (written.current < 0) written.current = msg.offset;
-        write(msg);
-        early.forEach(write);
+        write(msg, true);
+        early.forEach((chunk) => write(chunk));
         early = [];
         if (msg.exited) markExited();
         else live.current.actions.post({ op: "term.resize", termId, cols: term.cols, rows: term.rows });
