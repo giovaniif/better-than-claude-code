@@ -2,6 +2,11 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.16.0 (2026-11-19)
+
+- **Collapse Sessions and Workspace.** Hide either desktop sidebar and reopen it from its panel button. Switchyard remembers each panel’s width and collapsed state. Reopening Workspace keeps its tab and terminal output. The Sessions drawer also has a close button on phones.
+- **Scroll the Model picker.** Long catalogs scroll in their own list with a visible scrollbar. The Model heading and Speed control stay in place, and reopening brings the selected model into view.
+
 ## 0.15.0 (2026-11-19)
 
 - **Hand over a session.** Choose Handover in the session’s sidebar menu to continue with another agent, account, or model. The new subsession uses the same folder, receives a summary of the conversation, and appears beneath the original in the sidebar.
