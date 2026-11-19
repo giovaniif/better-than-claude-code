@@ -450,7 +450,7 @@ export type AgentEvent =
   /** Thinking: Claude's summarized thinking, Codex's reasoning summary. */
   | { type: "reasoning_delta"; itemId: string; text: string }
   | { type: "reasoning"; itemId: string; text: string }
-  /** `agent` names the subagent an Agent call starts (Claude). `parent` is the
+  /** `agent` identifies a subagent. `parent` is the
    *  itemId of the Agent call a subagent's own step runs under. */
   | { type: "tool_started"; itemId: string; kind: string; title: string; detail: string; agent?: string; parent?: string }
   /** `ms`: how long a subagent ran. An Agent call ends with its task, which
@@ -650,6 +650,16 @@ export function applyEvent(items: Item[], ev: AgentEvent, seq: number): Item[] {
       const tool: ToolItem = { kind: "tool", key, itemId: ev.itemId, toolKind: ev.kind, title: ev.title, detail: ev.detail, state: "running" };
       if (ev.agent) tool.agent = ev.agent;
       if (ev.parent) tool.parent = ev.parent;
+      // A provider can resume the same subagent in a later turn.
+      if (ev.agent) {
+        const i = items.findIndex((it) => it.kind === "tool" && it.agent && it.itemId === ev.itemId);
+        if (i >= 0) {
+          const old = items[i] as ToolItem;
+          const next = items.slice();
+          next[i] = { ...tool, key: old.key, detail: tool.detail || old.detail };
+          return next;
+        }
+      }
       // Some engines ask before they announce the call.
       const from = turnStart(items);
       for (let i = items.length - 1; i >= from; i--) {

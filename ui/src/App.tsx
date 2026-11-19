@@ -28,8 +28,8 @@ import { ConnectorsPage } from "./ConnectorsPage";
 import { WidgetFrame } from "./WidgetFrame";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
-import { addsProviders, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
-import { didNotRun, duration, handoffLinks, layout, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
+import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
+import { didNotRun, duration, handoffLinks, layout, sessionSubagents, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
 import { MobileSetup, MobileSetupButton } from "./MobileSetup";
@@ -2579,7 +2579,14 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             <LoginDialog state={state} actions={actions} host={host} engine={meta.engine} account={accountOf(meta)} onClose={() => setLoggingIn(false)} />
           )}
           {online && (
-            <PendingList pending={meta.pending ?? []} busy={busy} hint={queuedHint(meta.engine)} onEdit={(id) => actions.unqueue(meta.id, id)} onRemove={(id) => actions.unqueue(meta.id, id, true)} />
+            <PendingList
+              pending={meta.pending ?? []}
+              busy={busy}
+              hint={queuedHint(meta.engine)}
+              onSteer={meta.status === "running" && canSteer(meta.engine) ? (id) => actions.steerQueued(meta.id, id) : undefined}
+              onEdit={(id) => actions.unqueue(meta.id, id)}
+              onRemove={(id) => actions.unqueue(meta.id, id, true)}
+            />
           )}
           <Composer
             placeholder={!online ? "Offline" : busy ? "Queue a message for the agent" : "Reply"}
@@ -2612,7 +2619,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane key={meta.id} mobileOpen={workspace} connected={online} actions={actions} meta={meta} state={state} onClose={() => setWorkspace(false)} />
+      <WorkPane key={meta.id} mobileOpen={workspace} connected={online} actions={actions} meta={meta} state={state} items={items} onClose={() => setWorkspace(false)} />
     </div>
   );
 }
@@ -2703,7 +2710,14 @@ function QuoteReply({ sessionId }: { sessionId: string }) {
  * its next step, in the same turn (OpenCode and Grok: in the next turn). Edit takes one back into the reply box;
  * Stop gives them all back. After a failed turn they go with the next message.
  */
-function PendingList({ pending, busy, hint, onEdit, onRemove }: { pending: PendingMessage[]; busy: boolean; hint: string; onEdit(id: string): void; onRemove(id: string): void }) {
+function PendingList({ pending, busy, hint, onSteer, onEdit, onRemove }: {
+  pending: PendingMessage[];
+  busy: boolean;
+  hint: string;
+  onSteer?(id: string): void;
+  onEdit(id: string): void;
+  onRemove(id: string): void;
+}) {
   if (pending.length === 0) return null;
   return (
     <section className="pending" aria-label="Waiting to send">
@@ -2715,7 +2729,8 @@ function PendingList({ pending, busy, hint, onEdit, onRemove }: { pending: Pendi
             <span className="pending-text">{text || quotes.join(" ") || p.attachments?.map((a) => a.name).join(", ")}</span>
             {quotes.length > 0 && <span className="muted small">{quotes.length === 1 ? "1 quote" : `${quotes.length} quotes`}</span>}
             {!!p.attachments?.length && <span className="muted small">{p.attachments.length === 1 ? "1 file" : `${p.attachments.length} files`}</span>}
-            <button className="btn-text pending-edit" aria-label="Edit" title="Back to the reply box (↑)" onClick={() => onEdit(p.id)}>
+            {onSteer && <button className="btn-text pending-action pending-steer" title="Send to the current turn" onClick={() => onSteer(p.id)}>Steer</button>}
+            <button className="btn-text pending-action" aria-label="Edit" title="Back to the reply box (↑)" onClick={() => onEdit(p.id)}>
               Edit
             </button>
             <button className="btn-icon" aria-label="Remove from queue" title="Remove" onClick={() => onRemove(p.id)}>
@@ -3113,12 +3128,21 @@ function FileDiff({ file }: { file: ChangedFile }) {
   );
 }
 
-function WorkPane({ mobileOpen, connected, actions, meta, state, onClose }: { mobileOpen: boolean; connected: boolean; actions: Actions; meta: SessionMeta; state: State; onClose(): void }) {
+function WorkPane({ mobileOpen, connected, actions, meta, state, items, onClose }: {
+  mobileOpen: boolean;
+  connected: boolean;
+  actions: Actions;
+  meta: SessionMeta;
+  state: State;
+  items: Item[];
+  onClose(): void;
+}) {
   const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
-  const [tab, setTab] = useState<"terminal" | "procs">("terminal");
+  const [tab, setTab] = useState<"terminal" | "agents" | "procs">("terminal");
   const wide = !useMedia("(max-width: 1100px)");
   const shown = wide || mobileOpen;
   const [terminalUsed, setTerminalUsed] = useState(shown);
+  const agents = useMemo(() => tab === "agents" ? sessionSubagents(items) : [], [tab, items]);
   useEffect(() => {
     if (shown && tab === "terminal") setTerminalUsed(true);
   }, [shown, tab]);
@@ -3128,11 +3152,17 @@ function WorkPane({ mobileOpen, connected, actions, meta, state, onClose }: { mo
       <header className="bar tabs workspace-tabs">
         <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={onClose}><Icon d={CLOSE} /></button>
         <button className={`tab ${tab === "terminal" ? "active" : ""}`} aria-pressed={tab === "terminal"} onClick={() => setTab("terminal")}>Terminal</button>
+        <button className={`tab ${tab === "agents" ? "active" : ""}`} aria-pressed={tab === "agents"} onClick={() => setTab("agents")}>Subagents</button>
         <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>Processes</button>
         <span className="spacer" />
         {tab === "procs" && <button className="btn-icon" aria-label="Refresh processes" onClick={() => actions.loadProcs(meta.id)}><Icon d={REFRESH} /></button>}
       </header>
       {terminalUsed && <TerminalPane sessionId={meta.id} connected={connected} visible={shown && tab === "terminal"} actions={actions} />}
+      {shown && tab === "agents" && (
+        <section aria-label="Session subagents" className="pane-body subagents-pane">
+          {agents.length ? agents.map((agent) => <AgentEntry key={agent.key} entry={agent} />) : <p className="muted">No subagents in this session.</p>}
+        </section>
+      )}
       {shown && tab === "procs" && <ProcPane meta={meta} state={state} actions={actions} visible />}
     </section>
   );

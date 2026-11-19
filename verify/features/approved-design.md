@@ -1,6 +1,6 @@
 # Approved Switchyard design
 
-The conversation workspace contains Terminal and Processes. Any pull request
+The conversation workspace contains Terminal, Subagents and Processes. Any pull request
 opens on GitHub from the conversation header. The composer has one toolbar row.
 Connectors are grouped by account, and Usage starts with one compact summary.
 
@@ -21,7 +21,7 @@ yv iso down
 
 ### terminal-first-and-external-pr
 Viewports: desktop
-The Workspace contains exactly two tabs and opens on Terminal. The branch's PR
+The Workspace contains exactly three tabs and opens on Terminal. The branch's PR
 opens externally from the conversation header.
 
 ```sh

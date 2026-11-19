@@ -732,7 +732,12 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .pending-row { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--side); }
 .pending-text { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pending-row .btn-icon { height: 26px; }
-.pending-row .pending-edit { height: 26px; padding: 0 8px; }
+.pending-row .pending-action { flex: none; height: 26px; padding: 0 8px; }
+.pending-row .pending-steer { color: var(--ink); font-weight: 600; }
+.subagents-pane { min-height: 0; overflow: auto; gap: 8px; }
+.subagents-pane > .agent { flex: none; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; }
+.subagents-pane .agent > .tool-row { width: 100%; flex-wrap: wrap; gap: 4px 8px; padding-block: 5px; }
+.subagents-pane .agent-what { white-space: normal; overflow-wrap: anywhere; }
 
 /* import from Claude Code */
 .import-modal { width: min(560px, 100%); }

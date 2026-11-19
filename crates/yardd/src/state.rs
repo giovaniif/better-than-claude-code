@@ -132,12 +132,13 @@ pub struct Session {
 }
 
 /// When queued messages reach the agent.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug)]
 pub enum Delivery {
     /// A step of the running turn ended: give them to the agent now, in this
     /// turn (Codex `turn/steer`; Claude Code folds a message that arrives
     /// mid-turn into it).
     Steer,
+    SteerOne(String),
     /// The turn completed with no step left to join: they are the next turn.
     NextTurn,
 }
@@ -237,14 +238,21 @@ impl App {
     }
 
     /// Take one queued message back, if it has not reached the agent yet.
-    pub fn take_queued(&self, sid: &str, id: &str) -> Option<Value> {
+    pub fn take_queued(&self, sid: &str, id: &str, only_running: bool) -> Option<Value> {
         let mut taken = None;
         self.update_meta(sid, |m| {
+            if only_running && m.status != "running" {
+                return;
+            }
             if let Some(i) = m.pending.iter().position(|p| p["id"] == id) {
                 taken = Some(m.pending.remove(i));
             }
         });
         taken
+    }
+
+    pub fn steer_queued(&self, sid: &str, id: &str) {
+        let _ = self.next_turns.send((sid.to_string(), Delivery::SteerOne(id.to_string())));
     }
 
     /// Take every queued message, when the session's status passes `ok`.
