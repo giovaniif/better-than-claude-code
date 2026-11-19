@@ -163,6 +163,13 @@ fn str_field<'a>(msg: &'a Value, key: &str) -> Result<&'a str> {
     msg[key].as_str().with_context(|| format!("missing `{key}`"))
 }
 
+fn check_service_tier(app: &App, engine: &str, model: &str, tier: &str) -> Result<()> {
+    if engine != "codex" || !codex::supports_service_tier(app, model, tier) {
+        bail!("This model does not offer that speed.");
+    }
+    Ok(())
+}
+
 /// A notification is a line or two of text: cut what an agent sends too long.
 fn clip(text: &str, max: usize) -> String {
     if text.chars().count() <= max {
@@ -221,6 +228,10 @@ pub async fn create_session(
     let model = str_field(msg, "model")?;
     let effort = str_field(msg, "effort")?;
     let cwd = str_field(msg, "cwd")?;
+    let service_tier = msg["serviceTier"].as_str();
+    if let Some(tier) = service_tier {
+        check_service_tier(app, engine, model, tier)?;
+    }
     let text = msg["text"].as_str().unwrap_or("").trim();
     let files = attachments::resolve(&msg["attachments"])?;
     if text.is_empty() && files.is_empty() {
@@ -269,6 +280,7 @@ pub async fn create_session(
     }
     app.update_meta(&sid, |m| {
         m.permission = permission.to_string();
+        m.service_tier = service_tier.map(str::to_string);
     });
     if let Some(direct) = direct {
         let _ = direct.send(json!({ "op": "created", "sessionId": sid }).to_string());
@@ -467,6 +479,7 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             let model = str_field(msg, "model")?;
             let effort = str_field(msg, "effort")?;
             let meta = app.meta(sid).context("no such session")?;
+            let clear_tier = meta.service_tier.as_deref().is_some_and(|tier| !codex::supports_service_tier(app, model, tier));
             // A queued Claude session has no sidecar yet; it starts on the new model.
             if meta.engine == "claude" && meta.model != model && meta.status != "queued" {
                 claude::set_model(app, sid, model)?;
@@ -474,6 +487,20 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             app.update_meta(sid, |m| {
                 m.model = model.to_string();
                 m.effort = effort.to_string();
+                if clear_tier {
+                    m.service_tier = None;
+                }
+            });
+        }
+        "session.setServiceTier" => {
+            let sid = str_field(msg, "sessionId")?;
+            let tier = str_field(msg, "serviceTier")?;
+            let meta = app.meta(sid).context("no such session")?;
+            check_service_tier(app, &meta.engine, &meta.model, tier)?;
+            app.update_meta(sid, |m| {
+                if m.model == meta.model {
+                    m.service_tier = Some(tier.to_string());
+                }
             });
         }
         "session.setPermission" => {

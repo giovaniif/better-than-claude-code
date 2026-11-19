@@ -596,6 +596,7 @@ export interface Actions {
     engine: Engine;
     model: string;
     effort: string;
+    serviceTier?: string;
     cwd: string;
     text: string;
     permission?: Permission;
@@ -622,6 +623,7 @@ export interface Actions {
   /** An object URL for an attachment of a session, for a thumbnail. */
   attachmentUrl(sessionId: string, attachment: Attachment): Promise<string>;
   setModel(sessionId: string, model: string, effort: string): void;
+  setServiceTier(sessionId: string, serviceTier: string): void;
   /** Change what the engine may do unasked; Claude switches at once, Codex from its next turn. */
   setPermission(sessionId: string, permission: Permission): void;
   /** New session on the other engine, same folder, seeded with a brief. */
@@ -913,6 +915,7 @@ export function useYard(): { state: State; actions: Actions } {
         if (session) rememberSession({ ...session, model, effort });
         post({ op: "session.setModel", sessionId, model, effort });
       },
+      setServiceTier: (sessionId, serviceTier) => post({ op: "session.setServiceTier", sessionId, serviceTier }),
       setPermission: (sessionId, permission) => post({ op: "session.setPermission", sessionId, permission }),
       handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),

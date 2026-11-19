@@ -15,6 +15,7 @@ export interface SessionMeta {
   engine: Engine;
   model: string;
   effort: string;
+  serviceTier?: string;
   cwd: string;
   status: Status;
   /** `local`, or the id of the remote host it runs on. */
@@ -54,12 +55,15 @@ export interface PendingMessage {
   at: number;
 }
 
+export type ModelServiceTier = { id: string; name: string; description: string };
+
 export interface ModelInfo {
   id: string;
   name: string;
   efforts: string[];
   defaultEffort?: string;
   isDefault?: boolean;
+  serviceTiers?: ModelServiceTier[];
 }
 
 /** Per engine; an engine that is not installed on the host may be missing. */

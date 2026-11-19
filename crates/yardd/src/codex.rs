@@ -528,13 +528,17 @@ pub async fn load_models(app: &Arc<App>, account: &str) -> Result<()> {
                         .as_array()
                         .map(|e| e.iter().map(|x| x["reasoningEffort"].clone()).collect())
                         .unwrap_or_default();
-                    json!({
+                    let mut model = json!({
                         "id": m["id"],
                         "name": m["displayName"].as_str().or_else(|| m["id"].as_str()),
                         "efforts": efforts,
                         "defaultEffort": m["defaultReasoningEffort"],
                         "isDefault": m["isDefault"],
-                    })
+                    });
+                    if let Some(tiers) = m["serviceTiers"].as_array().filter(|tiers| !tiers.is_empty()) {
+                        model["serviceTiers"] = json!(tiers);
+                    }
+                    model
                 })
                 .collect()
         })
@@ -550,6 +554,14 @@ pub async fn load_models(app: &Arc<App>, account: &str) -> Result<()> {
         app.set_usage("codex", account, limits["rateLimits"].clone());
     }
     Ok(())
+}
+
+pub fn supports_service_tier(app: &App, model: &str, tier: &str) -> bool {
+    tier == "default" || app.models.lock().unwrap()["codex"].as_array().is_some_and(|models| {
+        models.iter().any(|m| m["id"] == model && m["serviceTiers"].as_array().is_some_and(|tiers| {
+            tiers.iter().any(|entry| entry["id"] == tier)
+        }))
+    })
 }
 
 /// Codex's sandbox for new and resumed threads: `workspace-write` unless
@@ -765,20 +777,19 @@ pub async fn send(app: &Arc<App>, sid: &str, text: &str, attachments: &[Value]) 
     // Model, effort and permission mode ride on every turn, so switching
     // needs no extra call.
     let (approval, sandbox) = if crate::switchy::restricted(app, sid) { (json!("never"), json!({"type":"readOnly", "networkAccess":false})) } else { turn_policy(&meta.permission) };
-    let res = c
-        .request(
-            "turn/start",
-            json!({
-                "threadId": thread_id,
-                "input": input,
-                "model": meta.model,
-                "effort": meta.effort,
-                "approvalPolicy": approval,
-                "sandboxPolicy": sandbox,
-                "summary": "auto",
-            }),
-        )
-        .await?;
+    let mut params = json!({
+        "threadId": thread_id,
+        "input": input,
+        "model": meta.model,
+        "effort": meta.effort,
+        "approvalPolicy": approval,
+        "sandboxPolicy": sandbox,
+        "summary": "auto",
+    });
+    if let Some(tier) = meta.service_tier {
+        params["serviceTierForTurn"] = json!(tier);
+    }
+    let res = c.request("turn/start", params).await?;
     set_turn(app, sid, res["turn"]["id"].as_str());
     Ok(())
 }
