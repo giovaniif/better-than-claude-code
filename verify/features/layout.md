@@ -93,8 +93,8 @@ Close buttons return to the conversation, with focus back on the panel's opener.
 ```sh
 yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[
   {"click":"role:button:Open sessions"},
-  {"expect":"role:button:Close sessions","inViewport":true},
   {"wait":240},
+  {"expect":"role:button:Close sessions","inViewport":true},
   {"shot":"sessions-drawer-close"},
   {"click":"role:button:Close sessions"},
   {"expect":"role:navigation:Sessions","visible":false},

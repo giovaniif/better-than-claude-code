@@ -2614,11 +2614,15 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   const wide = !useMedia(WORKSPACE_NARROW);
   const workspaceShown = wide ? !workspaceCollapsed : workspace;
   const workspaceLabel = workspaceCollapsed ? "Expand workspace" : "Collapse workspace";
-  const workspaceToggle = useRef<HTMLButtonElement>(null);
-  const workspaceClose = useRef<HTMLButtonElement>(null);
+  const workspaceOpenButton = useRef<HTMLButtonElement>(null);
+  const workspaceCloseButton = useRef<HTMLButtonElement>(null);
+  const openWorkspace = () => {
+    setWorkspace(true);
+    requestAnimationFrame(() => workspaceCloseButton.current?.focus({ preventScroll: true }));
+  };
   const closeWorkspace = () => {
     setWorkspace(false);
-    requestAnimationFrame(() => workspaceToggle.current?.focus({ preventScroll: true }));
+    requestAnimationFrame(() => workspaceOpenButton.current?.focus({ preventScroll: true }));
   };
   useEffect(() => setWorkspace(false), [wide]);
   const thread = state.threads[meta.id];
@@ -2741,24 +2745,13 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           )}
           <span className="spacer" />
           <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
-          <button
-            ref={workspaceToggle}
-            className={wide ? "btn-icon workspace-toggle-desktop" : "btn-text workspace-toggle"}
-            aria-label={wide ? workspaceLabel : undefined}
-            title={wide ? workspaceLabel : undefined}
-            aria-controls="session-workspace"
-            aria-expanded={workspaceShown}
-            onClick={() => {
-              if (wide) {
-                setWorkspaceCollapsed(!workspaceCollapsed);
-              } else {
-                setWorkspace(true);
-                requestAnimationFrame(() => workspaceClose.current?.focus({ preventScroll: true }));
-              }
-            }}
-          >
-            {wide ? <Icon d={RIGHT_PANEL} size={18} /> : "Workspace"}
-          </button>
+          {wide ? (
+            <button className="btn-icon workspace-toggle-desktop" aria-label={workspaceLabel} title={workspaceLabel} aria-controls="session-workspace" aria-expanded={workspaceShown} onClick={() => setWorkspaceCollapsed(!workspaceCollapsed)}>
+              <Icon d={RIGHT_PANEL} size={18} />
+            </button>
+          ) : (
+            <button className="btn-text workspace-toggle" ref={workspaceOpenButton} aria-controls="session-workspace" aria-expanded={workspaceShown} onClick={openWorkspace}>Workspace</button>
+          )}
           {busy && online && (
             <button className="btn-text" onClick={() => actions.interrupt(meta.id)}>
               Stop
@@ -2836,7 +2829,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane key={meta.id} shown={workspaceShown} connected={online} actions={actions} meta={meta} state={state} items={items} closeButton={workspaceClose} onClose={closeWorkspace} />
+      <WorkPane key={meta.id} shown={workspaceShown} connected={online} actions={actions} meta={meta} state={state} items={items} closeButton={workspaceCloseButton} onClose={closeWorkspace} />
     </div>
   );
 }
