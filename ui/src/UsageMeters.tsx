@@ -4,10 +4,34 @@ import type { Engine, EngineStates } from "./protocol";
 import { formatReset, metersFor, noLimitsNote, percentText, reportsLimits, stripGroups, type Meter, type UsageSource } from "./usage";
 import { Icon } from "./App";
 import { DEFAULT_ACCOUNT } from "./accounts";
-import { ENGINES, ENGINE_NAME } from "./engines";
+import { ENGINES, ENGINE_LABEL, ENGINE_NAME } from "./engines";
 
-const REFRESH = "M21 12a9 9 0 1 1-3-6.7M21 4v5h-5";
+const REFRESH = "M19.8 12a7.8 7.8 0 1 1-2.4-5.7M19.8 3.9v4.8H15";
+const CLOSE = "m6 6 12 12M18 6 6 18";
+const DOWN = "m6 9 6 6 6-6";
+const RIGHT = "m9 6 6 6-6 6";
+const CLOCK = "M12 8v4l2 2m6-2a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z";
+const ALERT = "M12 7v6m0 3v.1m9-4.1a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z";
 const LIMIT_ENGINES = ENGINES.filter(reportsLimits);
+const timeOfDay = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
+const dateAndTime = new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+
+function usageReset(resetsAt: number | null, now: number) {
+  if (resetsAt === null) return "Reset time not reported";
+  return `Resets ${(new Date(resetsAt).toDateString() === new Date(now).toDateString() ? timeOfDay : dateAndTime).format(resetsAt)} · ${formatReset(resetsAt, now).replace(/^resets /, "")}`;
+}
+
+function usageWindow(label: string) {
+  if (label === "Week") return "Weekly · all models";
+  if (label.startsWith("Week ·")) return `Weekly${label.slice(4)}`;
+  return `${label} window`;
+}
+
+function UsageAvatar({ engine, small }: { engine: Engine; small?: boolean }) {
+  return <span className={`usage-avatar usage-avatar-${engine}${small ? " usage-avatar-small" : ""}`} aria-hidden="true">
+    {engine === "codex" ? "CX" : engine === "claude" ? "CC" : ENGINE_NAME[engine].slice(0, 2).toUpperCase()}
+  </span>;
+}
 
 function useNow() {
   const [now, setNow] = useState(Date.now);
@@ -64,11 +88,11 @@ function subscriptionRows(sources: SubscriptionSource[], now: number) {
   });
 }
 
-export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, compact = false }: {
+export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRefresh, compact = false }: {
   sources: SubscriptionSource[];
   selected?: UsageAccount;
   compact?: boolean;
-  onViewAll(): void;
+  onManageAccounts(): void;
   onManage(host: string): void;
   onRefresh(host: string, engine: Engine, account: string): Promise<{ error?: string }>;
 }) {
@@ -83,6 +107,8 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
   const active = chosen ?? (selectedHost ? undefined : rows[0]);
   const others = rows.filter((row) => row !== active);
   const activeLabel = selectedHost && selected ? `${ENGINE_NAME[selected.engine]} · ${selectedName}` : active?.name;
+  const activeName = active?.account ?? (selectedHost ? selectedName : "Default");
+  const accountKind = active?.account != null || selectedEntry ? "Named account" : "Default account";
   const activeHost = active ? sources.find((source) => source.host === active.host && source.online !== false) ?? active.hosts.find((source) => source.online !== false) : undefined;
   const activeEngine = active?.engine ?? selected?.engine;
   const accountId = active?.account == null ? DEFAULT_ACCOUNT : activeHost?.accounts.find((account) => account.engine === active.engine && account.name.toLowerCase() === active.account!.toLowerCase())?.id;
@@ -91,6 +117,7 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
   const [showOthers, setShowOthers] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [failure, setFailure] = useState("");
+  const [lastRefresh, setLastRefresh] = useState<{ host: string; engine: Engine; account: string; at: number }>();
   const anchor = useRef<HTMLButtonElement>(null);
   const highest = rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
   const close = () => { setOpen(false); setShowOthers(false); setFailure(""); };
@@ -100,10 +127,13 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
     setFailure("");
     const result = await onRefresh(activeHost.host, activeEngine, accountId);
     setFailure(result.error ?? "");
+    if (!result.error) setLastRefresh({ host: activeHost.host, engine: activeEngine, account: accountId, at: Date.now() });
     setRefreshing(false);
   };
   const manage = (host: string) => { close(); onManage(host); };
   const signIns = others.filter((row) => row.loggedIn === false).length;
+  const refreshTime = lastRefresh && lastRefresh.host === activeHost?.host && lastRefresh.engine === activeEngine && lastRefresh.account === accountId
+    ? lastRefresh.at : undefined;
   return (
     <div className={compact ? "mobile-usage" : "usage-dock"}>
       <button
@@ -118,72 +148,91 @@ export function UsageStrip({ sources, selected, onViewAll, onManage, onRefresh, 
           <><span className="usage-chip-track" aria-hidden="true"><span style={{ width: `${highest.percent}%` }} /></span><span>{percentText(highest.percent)}</span></>
         ) : (
           <>
-            <span aria-hidden="true">◷</span><span>Usage</span>
-            {!compact && <><span className="spacer" /><span className={highest?.level === "high" ? "bad" : highest?.level === "warn" ? "warn" : "muted"}>{highest ? `${percentText(highest.percent)} used` : "View limits"}</span><span aria-hidden="true">›</span></>}
+            <Icon d={CLOCK} size={14} /><span>Usage</span>
+            {!compact && <><span className="spacer" /><span className={highest?.level === "high" ? "bad" : highest?.level === "warn" ? "warn" : "muted"}>{highest ? `${percentText(highest.percent)} used` : "View limits"}</span><Icon d={RIGHT} size={12} /></>}
           </>
         )}
       </button>
       {open && (
-        <AnchoredPopover anchor={anchor} label="Subscription usage" side="right" variant="usage-popover" onClose={close}>
+        <AnchoredPopover anchor={anchor} label="Subscription usage" variant="usage-popover" onClose={close}>
           <div className="popover-heading">
+            <span className="usage-sheet-handle" aria-hidden="true" />
             <strong>Usage</strong>
             <span className="spacer" />
-            {canRefresh && (
-              <button className="btn-icon" aria-label="Refresh usage" title="Refresh usage" disabled={refreshing} onClick={refresh}>
-                <Icon d={REFRESH} size={16} />
-              </button>
-            )}
-            <button className="btn-icon" aria-label="Close usage popover" onClick={close}>×</button>
+            <button className="btn-icon" aria-label="Refresh usage" title="Refresh usage" disabled={!canRefresh || refreshing} onClick={refresh}>
+              <span className={refreshing ? "usage-refreshing" : undefined}><Icon d={REFRESH} size={15} width={2.4} /></span>
+            </button>
+            <button className="btn-icon usage-close" aria-label="Close usage popover" onClick={close}><Icon d={CLOSE} size={16} width={2.4} /></button>
           </div>
-          {activeLabel ? (
-            <section className="compact-subscription usage-active" aria-label={activeLabel}>
-              <div className="usage-account-line">
-                <span className="account-avatar" aria-hidden="true">{activeEngine === "claude" ? "CC" : activeEngine === "codex" ? "CX" : activeEngine?.slice(0, 2).toUpperCase()}</span>
-                <strong>{activeLabel}</strong>
-                {active?.meters.some((meter) => meter.level !== "ok") && <span className="usage-near-limit">Near limit</span>}
+          <div className="usage-popover-body">
+            {failure && (
+              <div className="usage-error" role="alert">
+                <Icon d={ALERT} size={16} />
+                <span><strong>Couldn’t refresh usage.</strong> {failure}</span>
+                <button className="btn-text usage-link" onClick={refresh}>Try again</button>
               </div>
-              {selectedHost?.online === false && <p className="muted small">The selected host is offline.</p>}
-              {active?.loggedIn === false ? (
-                <p className="muted small">
-                  Needs sign-in.
-                  <button className="btn-text" onClick={() => manage(active.host)}>Sign in</button>
-                </p>
-              ) : active?.meters.length ? active.meters.map((m) => (
-                <div key={m.key} className={`compact-meter level-${m.level}`}>
-                  <span>{m.label}</span><span className="usage-percent">{percentText(m.percent)}</span>
-                  <Bar meter={m} />
-                  <span className="muted usage-reset">{formatReset(m.resetsAt, now) || "Reset time not reported"}</span>
+            )}
+            {activeLabel && activeEngine ? (
+              <section className="compact-subscription usage-active" aria-label={activeLabel}>
+                <div className="usage-account-line">
+                  <UsageAvatar engine={activeEngine} />
+                  <div className="usage-account-title">
+                    <strong>{activeName}</strong>
+                    <span className="muted">{ENGINE_LABEL[activeEngine]} · {accountKind}</span>
+                  </div>
+                  {active?.loggedIn === false && <span className="usage-near-limit">Needs sign-in</span>}
                 </div>
-              )) : <p className="muted small">{activeEngine && !reportsLimits(activeEngine) ? "This engine does not report subscription limits." : "No limits reported yet."}</p>}
-            </section>
-          ) : <p className="muted small">No subscription limits reported yet.</p>}
-          {refreshing && <p className="muted small" role="status">Refreshing usage…</p>}
-          {failure && (
-            <p className="bad small" role="alert">
-              {failure}
-              <button className="btn-text" onClick={refresh}>Try again</button>
-            </p>
-          )}
-          {others.length > 0 && (
-            <>
-              <button className="btn-quiet usage-other-toggle" aria-expanded={showOthers} onClick={() => setShowOthers(!showOthers)}>
-                <span>Other accounts</span><span className="spacer" />
-                <span className="muted">{signIns ? `${signIns} need sign-in` : others.length}</span>
-                <span aria-hidden="true">{showOthers ? "⌃" : "⌄"}</span>
-              </button>
-              {showOthers && others.map((row) => (
-                <section key={row.key} className="compact-subscription usage-other-account" aria-label={row.name}>
-                  <strong>{row.name}</strong>
-                  {row.loggedIn === false
-                    ? <button className="btn-text" onClick={() => manage(row.host)}>Sign in</button>
-                    : <span className="muted small">{row.meters[0] ? `${percentText(row.meters[0].percent)} of ${row.meters[0].label}` : "No limits reported yet"}</span>}
-                </section>
-              ))}
-            </>
-          )}
+                {selectedHost?.online === false && <div className="usage-explanation">The selected host is offline.</div>}
+                {active?.loggedIn === false ? (
+                  <div className="usage-explanation">
+                    <strong>Sign in to see usage</strong>
+                    <p>Switchyard needs a working sign-in to read this account’s limits.</p>
+                    <button className="btn-primary" onClick={() => manage(active.host)}>Sign in</button>
+                  </div>
+                ) : active?.meters.length ? (
+                  <div className="usage-limits" aria-busy={refreshing}>
+                    {active.meters.map((m) => {
+                      const label = usageWindow(m.label);
+                      return <div key={m.key} className={`compact-meter${m.percent >= 80 ? " usage-meter-near" : ""}`}>
+                        <span className="usage-window">{label}</span><strong className="usage-percent">{percentText(m.percent)} used</strong>
+                        <Bar meter={{ ...m, label }} />
+                        <div className="usage-meter-meta">
+                          <span className="muted usage-reset">{usageReset(m.resetsAt, now)}</span>
+                          {m.percent >= 80 && <span className="usage-near-limit">Near limit</span>}
+                        </div>
+                      </div>;
+                    })}
+                  </div>
+                ) : (
+                  <div className="usage-explanation">
+                    <strong>No limits reported yet</strong>
+                    <p>{reportsLimits(activeEngine) ? "Usage appears when the provider reports this account’s limits." : "This engine does not report subscription limits."}</p>
+                  </div>
+                )}
+              </section>
+            ) : <p className="usage-explanation">No subscription limits reported yet.</p>}
+            {others.length > 0 && (
+              <div className="usage-others">
+                <button className="btn-quiet usage-other-toggle" aria-expanded={showOthers} onClick={() => setShowOthers(!showOthers)}>
+                  <span>Other accounts</span><span className="spacer" />
+                  <span className="muted">{signIns ? `${signIns} need sign-in` : others.length}</span>
+                  <Icon d={DOWN} size={14} />
+                </button>
+                {showOthers && others.map((row) => (
+                  <section key={row.key} className="usage-other-account" aria-label={row.name}>
+                    <UsageAvatar engine={row.engine} small />
+                    <strong>{row.name}</strong>
+                    {row.loggedIn === false
+                      ? <button className="btn-text usage-link" aria-label={`Sign in — ${row.name}`} onClick={() => manage(row.host)}>Sign in</button>
+                      : <span className="muted">{row.meters[0] ? `${percentText(row.meters[0].percent)} of ${row.meters[0].label}` : "Not reported"}</span>}
+                  </section>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="popover-footer">
-            <span className="muted small">Shared across hosts</span>
-            <button className="btn-text" onClick={() => { close(); onViewAll(); }}>View all →</button>
+            <span role="status">{refreshing ? "Refreshing…" : refreshTime ? `Updated at ${timeOfDay.format(refreshTime)}` : "Shared across hosts"}</span>
+            <button className="btn-text usage-link" onClick={() => { close(); onManageAccounts(); }}>Manage accounts</button>
           </div>
         </AnchoredPopover>
       )}

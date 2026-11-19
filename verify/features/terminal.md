@@ -75,6 +75,15 @@ attach at xterm's default 80 columns made the shell redraw into the scrollback.
 yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"echo TEST-first\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-first"},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-first"},{"wait":1500},{"type":"for i in 1 2 3; do echo TEST-row-$i-$(printf ab%.0s $(seq 1 40)); done; echo TEST-done-$((5*5))\n","target":"label:Terminal input"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":1000},{"eval":"(() => { const t = document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd(); localStorage.setItem(\"yv-term\", t); return t.length > 0; })()","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true},{"reload":true},{"goto":"session:{{sid_edit}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"TEST-done-25"},{"wait":2000},{"eval":"document.querySelector(\".xterm-rows\").innerText.split(\"\\n\").map((l) => l.trimEnd()).join(\"\\n\").trimEnd() === localStorage.getItem(\"yv-term\")","equals":true}]'
 ```
 
+### scrollback-does-not-reply-to-old-probes
+Viewports: desktop
+The emulator answers a live device query once. Reloading retains the output
+and the next byte to reach the waiting shell comes from the keyboard.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Terminal"},{"expect":"css:.xterm","text":"$"},{"type":"saved=$(stty -g); stty -icanon -echo; printf '"'"'\\033[c'"'"'; IFS= read -r -t 3 -d c reply; stty \"$saved\"; if [ \"$reply\" = \"$(printf '"'"'\\033[?1;2'"'"')\" ]; then label=OK; else label=FAILED; fi; printf '"'"'\\nTEST-device-reply-%s\\n'"'"' \"$label\"; IFS= read -r -s -n 1 -t 12 next; if [ \"$next\" = x ]; then label=OK; else label=UNEXPECTED; fi; printf '"'"'\\nTEST-next-input-%s\\n'"'"' \"$label\"\n","target":"label:Terminal input"},{"expect":"css:.xterm-rows","text":"TEST-device-reply-OK"},{"reload":true},{"goto":"session:{{sid_echo}}"},{"click":"role:button:Terminal"},{"expect":"css:.xterm-rows","text":"TEST-device-reply-OK"},{"wait":500},{"type":"x","target":"label:Terminal input"},{"expect":"css:.xterm-rows","text":"TEST-next-input-OK","timeout":3500},{"shot":"clean-scrollback"}]'
+```
+
 ### last-terminal-closed-offers-a-new-one
 Viewports: desktop
 Closing the only tab leaves an empty state that says so, with a button that
