@@ -151,7 +151,7 @@ export function App() {
   const usage = {
     sources: visibleHosts.map((host) => ({ host, name: hostName(state, host), usage: usageOn(state, host), accounts: accountsOn(state, host), engines: state.engines[host], online: hostOnline(state, host) })),
     selected: selectedUsageAccount,
-    onViewAll: () => actions.go({ page: "subscriptions" }),
+    onManageAccounts: () => actions.go({ page: "connectors" }),
     onManage: (host: string) => actions.go({ page: "hosts", host, tab: "engines" }),
     onRefresh: actions.refreshUsage,
   };
@@ -901,7 +901,6 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
           <Icon d={PLUS} />
           New session
         </button>
-        <button className={`nav-row ${route.page === "hosts" ? "active" : ""}`} onClick={() => actions.go({ page: "hosts" })}><Icon d={CLOUD} />Hosts</button>
         <button className={`nav-row ${route.page === "assistant" ? "active" : ""}`} onClick={() => actions.go({ page: "assistant" })}>
           <Icon d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
           Switchy

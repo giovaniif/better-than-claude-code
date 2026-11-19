@@ -64,6 +64,25 @@ yv drive new --viewport mobile --steps '[{"click":"css:.new-bar .mobile-usage-tr
 ```
 
 
+### usage-popover-follows-prototype
+Viewports: both
+Usage opens above the rail row on desktop and in a full-width bottom sheet
+on phones. The account name, engine and limit details have distinct rows.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Subscription usage"},{"shot":"usage-desktop"},{"eval":"(() => { const p = document.querySelector('"'"'.usage-popover'"'"').getBoundingClientRect(); const a = document.querySelector('"'"'.usage-trigger'"'"').getBoundingClientRect(); return [p.left - a.left, a.top - p.bottom, p.width].map(Math.round).join(); })()","equals":"0,6,320"},{"expect":"css:.usage-account-line","text":"Codex"},{"expect":"role:dialog:Subscription usage","text":"5-hour window"},{"expect":"role:dialog:Subscription usage","text":"12% used"},{"expect":"css:.usage-reset","text":"Resets"},{"expect":"css:.usage-other-account","count":0},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 Default","text":"47%"},{"click":"role:button:Refresh usage"},{"expect":"role:status","text":"Updated at"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Connectors"}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Subscription usage"},{"shot":"usage-phone"},{"eval":"(() => { const p = document.querySelector('"'"'.usage-popover'"'"').getBoundingClientRect(); return [p.left, p.right - innerWidth, p.bottom - innerHeight].map(Math.round).join(); })()","equals":"0,0,0"},{"expect":"role:dialog:Subscription usage","text":"5-hour window"},{"expect":"role:button:Close usage popover"},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 Default","text":"47%"},{"shot":"usage-phone-expanded"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0}]'
+```
+
+### hosts-stays-in-host-status-and-page-search
+Viewports: desktop
+The top menu has no duplicate Hosts entry. The host status rows and page
+search still open the Hosts page.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button","hasText":"Hosts","exact":true},"count":0},{"expect":{"css":".sidebar-top button","hasText":"Automations","exact":true}},{"click":"css:.host-row"},{"expect":"role:heading:Hosts"},{"click":"role:button:Go to session or page"},{"fill":"role:combobox","value":"hosts"},{"press":"Enter"},{"expect":"role:heading:Hosts"}]'
+```
+
 ### toolbar-at-320-with-full-access
 Viewports: mobile
 The narrowest phone keeps a single toolbar row and a visible warning state.
