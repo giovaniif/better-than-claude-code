@@ -16,6 +16,7 @@ import { accountsOn, branchKey, cleanGroupName, GROUP_NAME_MAX, sidebarLayout, h
 import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge, tooMany } from "./attach";
 import { TerminalPane } from "./TerminalPane";
 import { SessionPullRequest } from "./SessionPullRequest";
+import { SessionRename } from "./SessionRename";
 import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
@@ -447,6 +448,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
   const [confirm, setConfirm] = useState(false);
   // The menu's group pages: the list of groups, then the name field for a new one.
   const [groupPage, setGroupPage] = useState<"list" | "new" | null>(null);
+  const [renaming, setRenaming] = useState(false);
   const [newGroup, setNewGroup] = useState("");
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -541,6 +543,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
       <button ref={more} className="btn-icon row-more" aria-label={`Actions for ${s.title}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => (menu ? close() : setMenu(true))}>
         <Icon d={MORE} size={16} />
       </button>
+      {renaming && <SessionRename anchor={more} title={s.title} onSave={(title) => actions.rename(s.id, title)} onClose={() => setRenaming(false)} />}
       {menu &&
         createPortal(
           <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
@@ -581,6 +584,10 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
               </form>
             ) : !confirm ? (
               <>
+                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => { close(); setRenaming(true); }}>
+                  <Icon d={PENCIL} size={14} />
+                  Rename…
+                </button>
                 <button className="picker-item menu-item" role="menuitem" onClick={() => { unread || mark === "answered" ? onRead() : onUnread(); close(); }}>
                   <Icon d={unread || mark === "answered" ? CHECK : "M4 6h16v12H4ZM4 6l8 6 8-6"} size={14} />
                   {unread || mark === "answered" ? "Mark as read" : "Mark as unread"}

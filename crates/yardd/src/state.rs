@@ -394,15 +394,16 @@ impl App {
         self.sessions.lock().unwrap().get(sid).map(|s| s.meta.clone())
     }
 
-    /// Change session fields and tell every client.
-    pub fn update_meta(&self, sid: &str, f: impl FnOnce(&mut Meta)) {
+    /// Change session fields and tell every client. Returns false if it was removed.
+    pub fn update_meta(&self, sid: &str, f: impl FnOnce(&mut Meta)) -> bool {
         let mut map = self.sessions.lock().unwrap();
-        let Some(s) = map.get_mut(sid) else { return };
+        let Some(s) = map.get_mut(sid) else { return false };
         f(&mut s.meta);
         s.meta.updated_at = now_ms();
         self.store.meta(&s.meta);
         // Under the lock, like `emit`: clients see changes in the order they were made.
         self.broadcast(json!({ "op": "session", "session": s.meta }));
+        true
     }
 
     /// Append a normalized event to the session log and fan it out.
