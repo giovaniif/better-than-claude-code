@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+    "short": "b45f068",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T12:27:14.903Z"
+  },
+  "dir": "/tmp/switchyard-readable/.verify/drives/2026-11-19T12-27-20-357Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2061,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-readable/.verify/drives/2026-11-19T12-27-20-357Z/new-composer-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(() => { const row=document.querySelector(\".composer-row\"); const a=row.querySelector(\".attach-btn\").getBoundingClientRect(); const b=row.querySelector(\".send\").getBoundingClientRect(); return Math.abs((a.top+a.bottom)/2-(b.top+b.bottom)/2) < 2 && b.right<=innerWidth; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1402,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-readable/.verify/drives/2026-11-19T12-27-20-357Z/new-composer-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(() => { const row=document.querySelector(\".composer-row\"); const a=row.querySelector(\".attach-btn\").getBoundingClientRect(); const b=row.querySelector(\".send\").getBoundingClientRect(); return Math.abs((a.top+a.bottom)/2-(b.top+b.bottom)/2) < 2 && b.right<=innerWidth; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

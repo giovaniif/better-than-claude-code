@@ -1,0 +1,173 @@
+{
+  "v": 1,
+  "claim": "The composer uses a single Setup control before its independent selector labels would wrap or truncate.",
+  "repo": "/tmp/switchyard-readable",
+  "base": "704f2bd1c2d697123521d9b1495dc1ec8958a17b",
+  "head": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approved-design.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T12:25:39.179Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "226eb58b34ad3faed9146c3551b08cf263ffab18",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "b395c47a0a89a372f711cc4a4bf566fbf9b0f0280864b0073124c9c00e9afa64"
+        }
+      ],
+      "addedAt": "2026-11-19T12:25:39.262Z",
+      "cmd": "verify/yv map run approved-design --recipe toolbar-groups-before-labels-compress",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "451ea9d2f6260052a68ef86ce5a182bdc2eeee85",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "874c482b417e32473bb2afa78252905006ad529df9a3f11195e96666a5ff4946"
+        },
+        {
+          "path": "p2-fail-desktop-step2.png",
+          "sha256": "ac6531de8f66c76c6d446c6a2b2d1de521710069de9b5463f666100e2f3ea81c"
+        }
+      ],
+      "addedAt": "2026-11-19T12:27:43.435Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "f5e0bc26cb1b31ea6e58f8a66e2566386753aa7077b0639719219d0edfeb1655"
+        },
+        {
+          "path": "p3-new-composer-mobile.png",
+          "sha256": "9ae4b634853a1f13dd46e787f6d337eb12fc6f09058666c36fdc9692cf628ffa"
+        },
+        {
+          "path": "p3-new-composer-desktop.png",
+          "sha256": "2dcd22045c48f3f230f4022828146be00516310a289598ff528a46d4d80c5c17"
+        }
+      ],
+      "addedAt": "2026-11-19T12:27:43.483Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "008704aa701f672b0cf0a3ee3cc2900ae01c056b93e8315dc2eec39dda974456"
+        }
+      ],
+      "addedAt": "2026-11-19T12:27:43.526Z",
+      "cmd": "(cd ui && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "b83dc028e3e9a3c0f72b5a8c9a880ce57a23e939ac0b1a4c28e78c1299db9c85"
+        }
+      ],
+      "addedAt": "2026-11-19T12:27:44.088Z",
+      "cmd": "verify/yv design-check --base 704f2bd1c2d6",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "cf5ee2e52a1f37e933efb07a67aadfb5705a2620ab25d89582d4985db1c4dd25"
+        },
+        {
+          "path": "p6-uncompressed-selectors-desktop.png",
+          "sha256": "6b6e6181317d27c23bab9e6ba4264bdf308542519e6ce8a114b7ab5b8a85976e"
+        }
+      ],
+      "addedAt": "2026-11-19T12:28:11.658Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "b45f068068f1ea43c6eb4a1c361e9886e4a7af38",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-switchyard-readable-final.json",
+          "sha256": "bf7a1173fee508bff6fbb0e7bd7fc4b0624ff12553a36a9c4d5cf9b0422919b9"
+        }
+      ],
+      "addedAt": "2026-11-19T12:28:11.704Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/terminal-first-and-external-pr",
+        "approved-design/one-row-composers",
+        "approved-design/account-card-separation",
+        "approved-design/compact-usage",
+        "approved-design/phone-usage-opens-from-header",
+        "approved-design/toolbar-at-320-with-full-access",
+        "approved-design/toolbar-groups-before-labels-compress"
+      ]
+    }
+  ]
+}
