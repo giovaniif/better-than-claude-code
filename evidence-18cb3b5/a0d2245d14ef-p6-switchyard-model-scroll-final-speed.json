@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approved-design",
+      "at": "2026-11-19T21:18:10.875Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "codex-speed-in-model-menu",
+          "status": "pass",
+          "ms": 10466
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

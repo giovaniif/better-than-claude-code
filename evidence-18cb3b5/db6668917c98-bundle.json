@@ -1,0 +1,181 @@
+{
+  "v": 1,
+  "claim": "A long model catalog has a scrollable list with a visible scrollbar below the model and speed header.",
+  "repo": "/tmp/switchyard-model-scroll",
+  "base": "44d4511c3a7b99ae52f87ced1d00e81e2bbe5df2",
+  "head": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/browser.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/cli.ts"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T21:14:08.011Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "255174cff1d2b06f64f0edd61179af228bfabd5f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "f0f4fdaf2b07d617d715edb1f59433a54c0da846b7d74be08adaf5a196cf8b37"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "f2d4b15c338163c85caee57c0680926417de61f5c01698b8dd1441d817cb52ac"
+        }
+      ],
+      "addedAt": "2026-11-19T21:14:58.426Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "255174cff1d2b06f64f0edd61179af228bfabd5f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "2becc4eb7fc4a719bcbe9d1d3b344338cc21b83f582b75e676a954c741a1b2e1"
+        }
+      ],
+      "addedAt": "2026-11-19T21:14:58.482Z",
+      "cmd": "verify/yv map run models --recipe model-list-scrolls-under-the-header",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "bfaacc1a2d17fb5ebdd5f964a5ba3d964204bffe7b1fa489c50ca561aaf64034"
+        }
+      ],
+      "addedAt": "2026-11-19T21:17:03.622Z",
+      "cmd": "verify/yv design-check --base 44d4511c3a7b",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "0d3988e86ad8448e49a53ffdce16280528575f77a9920353e8aeb79b531b83fc"
+        }
+      ],
+      "addedAt": "2026-11-19T21:17:03.705Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+      "dirty": false,
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "32810191e6f7bb632f1e4c2103f910f83ee7a282cf52f88492da61cc52252903"
+        },
+        {
+          "path": "p5-model-list-top-desktop.png",
+          "sha256": "71b22038b44df029b4084f1f8ea049c1c1e012afc7e3a1bbcf519d3d5f5e94c5"
+        },
+        {
+          "path": "p5-model-list-bottom-desktop.png",
+          "sha256": "08971fbc7ef4d83313898bbeb9b3419ceb2281d7e40792d72aa3428512471996"
+        },
+        {
+          "path": "p5-2-drive.json",
+          "sha256": "bee9e002a346dd3e25ab68707273ed2375d628a57494c0272c844248e49f389c"
+        },
+        {
+          "path": "p5-model-list-top-mobile.png",
+          "sha256": "ab2d701f66729a9d6e3e099cb788d70a41baf5b03c1c1e83c0c4b21fe0898ba6"
+        },
+        {
+          "path": "p5-model-list-bottom-mobile.png",
+          "sha256": "75badd37e25be777770e9255ff84088d99a9de8d2f5521264f32b8169d1ae63d"
+        },
+        {
+          "path": "p5-model-scroll-desktop.png",
+          "sha256": "31d59a230101004b62986601d80176730f7ff44c51e0643faf8e9fec3c4d4566"
+        },
+        {
+          "path": "p5-model-scroll-mobile.png",
+          "sha256": "d07c10bdc6ce33ba71268656c6afcb6ffaaccae07929daabca55ebf733c7d590"
+        }
+      ],
+      "addedAt": "2026-11-19T21:18:36.762Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-switchyard-model-scroll-final-models.json",
+          "sha256": "e3157d7389eb85e23e534465268d98efdbb6ec8b2221cf5def6b90566eead52b"
+        },
+        {
+          "path": "p6-switchyard-model-scroll-final-speed.json",
+          "sha256": "a0d2245d14ef7c8366a5e6482fe79998706a1e64dd4d83f132ae3cba63134598"
+        }
+      ],
+      "addedAt": "2026-11-19T21:18:36.807Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/codex-speed-in-model-menu"
+      ]
+    }
+  ]
+}

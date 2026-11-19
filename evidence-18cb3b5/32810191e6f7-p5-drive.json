@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "session:s1a1f5ab67b76",
+  "build": {
+    "sha": "18cb3b5e9674ba257fad2e0f8ca22849e371e4f5",
+    "short": "18cb3b5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T21:16:53.190Z"
+  },
+  "dir": "/tmp/switchyard-model-scroll/.verify/drives/2026-11-19T21-16-54-184Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5818,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-model-scroll/.verify/drives/2026-11-19T21-16-54-184Z/model-list-top-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-model-scroll/.verify/drives/2026-11-19T21-16-54-184Z/model-list-bottom-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(() => { const list = document.querySelector(\".model-popover\"); return list.scrollHeight - list.clientHeight >= 36; })()",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const list = document.querySelector(\".model-popover\"); return list.offsetWidth - list.clientWidth >= 6; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "window.modelHeadingTop = document.querySelector(\".model-panel .popover-heading\").getBoundingClientRect().top",
+          "value": 473
+        },
+        {
+          "step": 7,
+          "eval": "(() => { const list = document.querySelector(\".model-popover\"); const panel = list.closest(\".model-panel\"); return list.scrollTop > 0 && panel.scrollTop === 0 && panel.querySelector(\".popover-heading\").getBoundingClientRect().top === window.modelHeadingTop; })()",
+          "value": true
+        },
+        {
+          "step": 12,
+          "eval": "(() => { const list = document.querySelector(\".model-popover\"); const row = list.querySelector(\"[aria-current=true]\").getBoundingClientRect(); const clip = list.getBoundingClientRect(); return list.scrollTop > 0 && row.top >= clip.top - 1 && row.bottom <= clip.bottom + 1; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
