@@ -326,6 +326,15 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             };
             let _ = direct.send(reply.to_string());
         }
+        "usage.refresh" => {
+            let account = account_field(msg);
+            match str_field(msg, "engine")? {
+                "claude" => claude::refresh_usage(app, account).await?,
+                "codex" => crate::codex::refresh_usage(app, account).await?,
+                _ => bail!("this engine does not report subscription limits"),
+            }
+            let _ = direct.send(json!({ "op": "usage.refreshed", "ref": msg["ref"] }).to_string());
+        }
         "engines.status" => {
             let app = app.clone();
             tokio::spawn(async move { app.broadcast(crate::login::status(&app).await) });

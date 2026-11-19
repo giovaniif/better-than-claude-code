@@ -440,6 +440,16 @@ async fn client_of(app: &Arc<App>, sid: &str) -> Result<Arc<Client>> {
     client(app, &account).await
 }
 
+pub async fn refresh_usage(app: &Arc<App>, account: &str) -> Result<()> {
+    let limits = client(app, account).await?.request("account/rateLimits/read", json!({})).await?;
+    let limits = limits
+        .get("rateLimits")
+        .filter(|limits| !limits.is_null())
+        .context("no subscription limits reported")?;
+    app.set_usage("codex", account, limits.clone());
+    Ok(())
+}
+
 /// Ask Codex which models and efforts the Default account has. Other
 /// accounts share the list; they differ in limits, which load per account.
 pub async fn load_models(app: &Arc<App>, account: &str) -> Result<()> {

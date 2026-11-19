@@ -143,16 +143,25 @@ yv drive 'hosts' --viewport mobile --steps '[{"click":"role:button:Select TEST-o
 
 ### workspace-widths-and-views
 Viewports: desktop
-Across eight pane widths the header stays one row and every control stays inside it. The native selector opens all four views without discarding the shell.
+Across eight pane widths the header stays one row and every control stays inside it. Terminal and Processes switch without discarding the shell.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () => { const pane=document.querySelector(\".pane\"); for (const width of [300,350,400,440,441,460,520,600]) { pane.style.setProperty(\"--pane-w\",width+\"px\"); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const bar=pane.querySelector(\".tabs\").getBoundingClientRect(); const controls=[...pane.querySelectorAll(\".tabs button,.tabs select\")].filter(b=>b.getClientRects().length); if (Math.round(bar.height)!==52 || controls.some(b=>{ const r=b.getBoundingClientRect(); return r.left<bar.left || r.right>bar.right+.5 || r.bottom>bar.bottom; })) return {badWidth:width}; } return true; })()","equals":true},{"eval":"document.querySelector(\".pane\").style.setProperty(\"--pane-w\",\"300px\"); true","equals":true},{"select":"label:Workspace view","value":"terminal"},{"expect":"label:Terminal input"},{"select":"label:Workspace view","value":"pr"},{"expect":"css:.pr-head"},{"select":"label:Workspace view","value":"procs"},{"expect":"css:.proc-table"},{"select":"label:Workspace view","value":"changes"},{"expect":"role:button:Refresh changes"},{"shot":"workspace-selector"}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () => { const pane=document.querySelector(\".pane\"); for (const width of [300,350,400,440,441,460,520,600]) { pane.style.setProperty(\"--pane-w\",width+\"px\"); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const bar=pane.querySelector(\".tabs\").getBoundingClientRect(); const controls=[...pane.querySelectorAll(\".tabs button,.tabs select\")].filter(b=>b.getClientRects().length); if (Math.round(bar.height)!==52 || controls.some(b=>{ const r=b.getBoundingClientRect(); return r.left<bar.left || r.right>bar.right+.5 || r.bottom>bar.bottom; })) return {badWidth:width}; } return true; })()","equals":true},{"eval":"document.querySelector(\".pane\").style.setProperty(\"--pane-w\",\"300px\"); true","equals":true},{"click":"role:button:Terminal"},{"expect":"label:Terminal input"},{"click":"role:button:Processes"},{"expect":"css:.proc-table"},{"click":"role:button:Terminal"},{"expect":"label:Terminal input"},{"shot":"workspace-tabs"}]'
 ```
 
 ### manage-accounts-opens-logins
 Viewports: both
-The account identity is visible below the composer. Manage accounts opens Engine logins on the selected host and keeps that destination after a reload.
+Manage accounts opens Engine logins on the selected host and keeps that destination after a reload. The composer has no standalone login email.
 
 ```sh
-yv drive new --steps '[{"expect":"css:.composer-identity","text":"me@example.com"},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+yv drive new --steps '[{"expect":"css:.composer-identity","count":0},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+```
+
+### sidebar-skips-duplicate-page-links
+Viewports: desktop
+Sessions and Subscriptions stay accessible from page navigation. The sidebar
+keeps its session list and Usage entry.
+
+```sh
+yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button","hasText":"Sessions","exact":true},"count":0},{"expect":{"css":".sidebar-top button","hasText":"Subscriptions","exact":true},"count":0},{"click":"role:button:Go to session or page"},{"fill":"role:combobox","value":"subscriptions"},{"press":"Enter"},{"expect":"role:heading:Subscriptions"}]'
 ```
