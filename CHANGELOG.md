@@ -4,6 +4,7 @@ Each version is a [GitHub release](https://github.com/giovaniif/better-than-clau
 
 ## 0.14.0 (2026-11-19)
 
+- **Codex speed.** Choose Standard, Fast, or Ultrafast in the model menu when the selected host reports those options. Speed changes apply to the next turn.
 - **Steer queued messages.** Send one queued message into the current Claude or Codex turn while the other messages stay queued.
 - **See subagents in Workspace.** Open Subagents beside Terminal to see status, steps, and reports from Claude and Codex when available.
 - **Rename sessions.** Use Rename in the session menu to change the title across clients. Conversation history and the worktree stay with the session.

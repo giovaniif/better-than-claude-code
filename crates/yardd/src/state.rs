@@ -27,6 +27,8 @@ pub struct Meta {
     pub engine: String,
     pub model: String,
     pub effort: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub service_tier: Option<String>,
     pub cwd: String,
     pub status: String,
     pub host: String,
@@ -344,6 +346,7 @@ impl App {
             engine: engine.to_string(),
             model: model.to_string(),
             effort: effort.to_string(),
+            service_tier: None,
             cwd: cwd.to_string(),
             status: "running".to_string(),
             host: "local".to_string(),

@@ -1216,11 +1216,55 @@ function AccountPicker({
   );
 }
 
+const STANDARD_SPEED = { id: "default", name: "Standard", description: "Default speed" };
+
+function SpeedPicker({ tiers, value, onChange, nextTurn }: {
+  tiers: NonNullable<ModelInfo["serviceTiers"]>;
+  value: string;
+  onChange(value: string): void;
+  nextTurn?: boolean;
+}) {
+  const anchor = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const options = [STANDARD_SPEED, ...tiers.filter((tier) => tier.id !== STANDARD_SPEED.id)];
+  const selected = options.find((tier) => tier.id === value) ?? STANDARD_SPEED;
+  return (
+    <>
+      <button ref={anchor} className="btn-quiet speed-trigger" aria-label={`Speed ${selected.name}`} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <Icon d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z" size={14} />
+        {selected.name}
+        <Icon d={CHEVRON_DOWN} size={12} />
+      </button>
+      {open && (
+        <AnchoredPopover anchor={anchor} label="Codex speed" onClose={() => setOpen(false)}>
+          <div className="popover-heading"><strong>Codex speed</strong></div>
+          {nextTurn && <p className="muted small speed-note">Applies to the next turn.</p>}
+          <div className="effort-menu" role="menu" aria-label="Codex speed">
+            {options.map((tier) => (
+              <button
+                key={tier.id}
+                className={`picker-item ${tier.id === selected.id ? "active" : ""}`}
+                role="menuitemradio"
+                aria-checked={tier.id === selected.id}
+                onClick={() => { onChange(tier.id); setOpen(false); }}
+              >
+                <span>{tier.name}</span>
+                {tier.description && <small className="muted">{tier.description}</small>}
+              </button>
+            ))}
+          </div>
+        </AnchoredPopover>
+      )}
+    </>
+  );
+}
+
 export function ModelPicker(props: {
   models: Models;
   value: Choice;
   engines: Engine[];
   onChange(next: Choice): void;
+  speed?: { value: string; onChange(value: string): void; nextTurn?: boolean };
   /** In a session, a model of another engine means a hand-off, never a silent switch. */
   handoff?: { blocked: boolean; onConfirm(next: Choice): void };
 }) {
@@ -1265,7 +1309,11 @@ export function ModelPicker(props: {
       </button>
       {open && (
         <AnchoredPopover anchor={anchor} label="Model" onClose={close}>
-          <div className="popover-heading"><strong>Model</strong></div>
+          <div className="popover-heading">
+            <strong>Model</strong>
+            {value.engine === "codex" && props.speed && !!current?.serviceTiers?.length &&
+              <SpeedPicker tiers={current.serviceTiers} {...props.speed} />}
+          </div>
           <div className="model-popover" ref={popover}>
             {confirm && handoff && (
               <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
@@ -1945,6 +1993,9 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
   const [choice, setChoice] = useState<Choice>(() => loadChoice(modelsOn(state, target), target, host));
   const choicePicked = useRef(false);
   const choose = (next: Choice) => { choicePicked.current = true; setChoice(next); };
+  const [speed, setSpeed] = useState(STANDARD_SPEED.id);
+  const tiers = choice.engine === "codex" ? models.codex?.find((model) => model.id === choice.model)?.serviceTiers : undefined;
+  const serviceTier = tiers?.length ? tiers.find((tier) => tier.id === speed)?.id ?? STANDARD_SPEED.id : undefined;
   // The account per engine on this host, remembered like the model. One that
   // was removed meanwhile falls back to Default.
   const accounts = accountsOn(state, target);
@@ -2034,6 +2085,7 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
     setPending(true);
     actions.create({
       ...choice,
+      serviceTier,
       permission,
       account: picks[choice.engine] === DEFAULT_ACCOUNT ? undefined : picks[choice.engine],
       cwd,
@@ -2063,7 +2115,7 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
           settings={{ model: modelName(models, choice.engine, choice.model), effort: choice.effort, label: `${modelName(models, choice.engine, choice.model)}, ${accountName(accounts, choice.engine, selectedAccount)}, ${capitalize(choice.effort)}, ${PERMISSIONS.find((p) => p.id === permission)?.label ?? ""}`, full: permission === "full" }}
           busy={pending || !online || !choice.model || !cwd || gone}
         >
-          <ModelPicker models={models} value={choice} engines={pickerEngines(models, choice.engine)} onChange={choose} />
+          <ModelPicker models={models} value={choice} engines={pickerEngines(models, choice.engine)} onChange={choose} speed={{ value: speed, onChange: setSpeed }} />
           <AccountPicker state={state} host={target} engine={choice.engine} account={picks[choice.engine]} onPick={pickAccount} onManage={() => actions.go({ page: "hosts", host: target, tab: "engines" })} />
           <EffortPicker models={models} value={choice} onChange={(effort) => choose({ ...choice, effort })} />
           <PermissionPicker engine={choice.engine} value={permission} onChange={setPermission} />
@@ -2611,6 +2663,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
               value={{ engine: meta.engine, model: meta.model, effort: meta.effort }}
               engines={pickerEngines(models, meta.engine)}
               onChange={(c) => actions.setModel(meta.id, c.model, c.effort)}
+              speed={{ value: meta.serviceTier ?? STANDARD_SPEED.id, onChange: (tier) => actions.setServiceTier(meta.id, tier), nextTurn: busy }}
               handoff={{ blocked: busy, onConfirm: (c) => actions.handoff(meta.id, c.engine, c.model, c.effort) }}
             />
             <AccountPicker state={state} host={host} engine={meta.engine} account={accountOf(meta)} onManage={() => actions.go({ page: "new" })} />
