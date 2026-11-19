@@ -306,8 +306,8 @@ async function snap(page: Page, dir: string, label: string, vp: ViewportName, pr
   return { viewport: vp, file, size };
 }
 
-async function withBrowser<T>(fn: (b: Browser) => Promise<T>): Promise<T> {
-  const browser = await chromium.launch();
+async function withBrowser<T>(fn: (b: Browser) => Promise<T>, showScrollbars = false): Promise<T> {
+  const browser = await chromium.launch({ ignoreDefaultArgs: showScrollbars ? ["--hide-scrollbars"] : undefined });
   try {
     return await fn(browser);
   } finally {
@@ -581,7 +581,7 @@ export async function drive(a: Args): Promise<Result> {
         runs.push({ viewport: vp, ms: Date.now() - t0, steps: steps.length, failed, captures: st.captures, notes: st.notes, video: videoFile, ...summary(w) });
       }
     }
-  });
+  }, !!a.flags["show-scrollbars"]);
   const result: Result = { ok: problems.length === 0, route, build: iso.build, dir, runs, problems };
   writeFileSync(join(dir, "drive.json"), JSON.stringify(result, null, 2));
   return result;

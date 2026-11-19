@@ -1387,17 +1387,19 @@ export function ModelPicker(props: {
   const [filter, setFilter] = useState("");
   const words = filter.toLowerCase().split(/\s+/).filter(Boolean);
   const ordered = [value.engine, ...engines.filter((e) => e !== value.engine)];
-  // The confirmation sits at the top of the list, which is usually scrolled
-  // down to the model that was just clicked. Bring it into view.
   const popover = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (confirm) popover.current?.scrollTo({ top: 0 });
-  }, [confirm]);
+  const selectedRow = useRef<HTMLButtonElement>(null);
   const current = models[value.engine]?.find((m) => m.id === value.model);
   const speedOptions = value.engine === "codex" && props.speed && current?.serviceTiers?.length
     ? [STANDARD_SPEED, ...current.serviceTiers.filter((tier) => tier.id !== STANDARD_SPEED.id)] : [];
   const selectedSpeed = speedOptions.find((tier) => tier.id === props.speed?.value) ?? STANDARD_SPEED;
   const speedOpen = showSpeed && speedOptions.length > 0;
+  useLayoutEffect(() => {
+    if (!open || speedOpen) return;
+    // The hand-off confirmation is at the top, above the model just selected.
+    if (confirm) popover.current?.scrollTo({ top: 0 });
+    else selectedRow.current?.scrollIntoView({ block: "nearest" });
+  }, [open, speedOpen, confirm]);
   const backToModel = () => {
     setShowSpeed(false);
     requestAnimationFrame(() => speedTrigger.current?.focus({ preventScroll: true }));
@@ -1515,6 +1517,7 @@ export function ModelPicker(props: {
                             return (
                               <button
                                 key={m.id}
+                                ref={isCurrent ? selectedRow : undefined}
                                 className={`picker-item picker-model ${isCurrent ? "active" : ""} ${
                                   confirm?.engine === engine && confirm.model === m.id ? "active" : ""
                                 }`}
