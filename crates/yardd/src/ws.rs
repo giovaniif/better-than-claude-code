@@ -485,7 +485,23 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
             }
             app.update_meta(sid, |m| m.permission = permission.to_string());
         }
-        // Sidebar housekeeping; neither changes what the session does.
+        "session.rename" => {
+            let sid = str_field(msg, "sessionId")?;
+            let title = str_field(msg, "title")?.trim();
+            if title.is_empty()
+                || title.chars().count() > SESSION_TITLE_LIMIT
+                || title.chars().any(|c| c.is_control() || matches!(c, '\u{2028}' | '\u{2029}'))
+            {
+                bail!("Enter a session name on one line with 1 to {SESSION_TITLE_LIMIT} characters.");
+            }
+            if !app.update_meta(sid, |m| m.title = title.to_string()) {
+                bail!("no such session");
+            }
+            if !msg["ref"].is_null() {
+                let _ = direct.send(json!({ "op": "session.renamed", "ref": msg["ref"] }).to_string());
+            }
+        }
+        // Sidebar housekeeping.
         "session.update" => {
             let sid = str_field(msg, "sessionId")?;
             app.meta(sid).context("no such session")?;
@@ -684,20 +700,21 @@ async fn delete_session(app: &Arc<App>, sid: &str, meta: &crate::state::Meta) {
     app.remove_session(sid);
 }
 
+const SESSION_TITLE_LIMIT: usize = 60;
+
 /// A session's title from its first line: at most 60 characters. A longer
 /// line is cut at a word and marked "…", so it does not read like a typo
 /// (the whole prompt is still the first message).
 fn title_from(first: &str) -> String {
-    const MAX: usize = 60;
     let first = first.trim();
-    if first.chars().count() <= MAX {
+    if first.chars().count() <= SESSION_TITLE_LIMIT {
         return first.to_string();
     }
-    let head: String = first.chars().take(MAX - 1).collect();
-    let next = first.chars().nth(MAX - 1);
+    let head: String = first.chars().take(SESSION_TITLE_LIMIT - 1).collect();
+    let next = first.chars().nth(SESSION_TITLE_LIMIT - 1);
     // A word that runs past the cut is dropped, unless that would leave less
     // than half the title: then a long word (a pasted URL) is cut through.
-    let at_word = head.rsplit_once(char::is_whitespace).map(|(h, _)| h).filter(|h| h.trim_end().chars().count() >= MAX / 2);
+    let at_word = head.rsplit_once(char::is_whitespace).map(|(h, _)| h).filter(|h| h.trim_end().chars().count() >= SESSION_TITLE_LIMIT / 2);
     let cut = if next.is_some_and(char::is_whitespace) { head.as_str() } else { at_word.unwrap_or(head.as_str()) };
     format!("{}…", cut.trim_end())
 }

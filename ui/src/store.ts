@@ -637,7 +637,8 @@ export interface Actions {
   loadBranches(cwd: string, host: string): void;
   /** Subfolders of an absolute path on a host, for the folder picker. */
   listDirs(path: string, host: string): void;
-  /** Sidebar housekeeping: neither changes what the session does. */
+  rename(sessionId: string, title: string): Promise<{ error?: string }>;
+  /** Sidebar housekeeping. */
   setPinned(sessionId: string, pinned: boolean): void;
   /** Take back a message queued during a turn: to the reply box, or dropped. */
   unqueue(sessionId: string, id: string, drop?: boolean): void;
@@ -941,6 +942,10 @@ export function useYard(): { state: State; actions: Actions } {
       saveAutomation,
       runAutomation,
       deleteAutomation: (host, id) => post(onHost(host, { op: "automation.delete", id })),
+      rename: async (sessionId, title) => {
+        const reply = await ask({ op: "session.rename", sessionId, title }, 10_000);
+        return reply.op === "session.renamed" ? {} : { error: reply.error ?? "Couldn’t rename the session." };
+      },
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),

@@ -7,6 +7,8 @@ export type Decision = "allow" | "allow_always" | "deny";
 /** Permission modes, like Claude Code's: ask first, accept edits, plan only, full access. */
 export type Permission = "ask" | "acceptEdits" | "plan" | "full";
 
+export const SESSION_TITLE_LIMIT = 60;
+
 export interface SessionMeta {
   id: string;
   title: string;
