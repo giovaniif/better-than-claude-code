@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-19T14:14:12.816Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rename-session",
+          "status": "pass",
+          "ms": 12354
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

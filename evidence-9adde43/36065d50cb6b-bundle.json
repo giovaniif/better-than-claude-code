@@ -1,0 +1,198 @@
+{
+  "v": 1,
+  "claim": "Users can rename a session on desktop or phone and keep the same history and worktree",
+  "repo": "/tmp/switchyard-session-rename",
+  "base": "f44362da4b16c4961669d8057fc7d1429a504aad",
+  "head": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SessionRename.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T14:10:54.788Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "c14dda4c0eb5da6f5d8c4047dfe20b61bb1395fb",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "70284aa0ddc135c5b5282137febe9016a3d1c694b621bb9dc0738dc16b68d2cc"
+        },
+        {
+          "path": "p1-fail-desktop-step1.png",
+          "sha256": "9c6d83c1d1c80c81dbf3cf2ee81468d031c112a33cd2f80eab1a90d9a783612a"
+        }
+      ],
+      "addedAt": "2026-11-19T14:10:54.836Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "c14dda4c0eb5da6f5d8c4047dfe20b61bb1395fb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9c4b214b197301a0b93c9e8ad9458d27a3e9e2a78c6d3898e968a9a852668ecf"
+        }
+      ],
+      "addedAt": "2026-11-19T14:10:54.900Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon renaming_a_session_updates_other_clients_and_survives_restart",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "b188141f496b6e421a30a9d017bd7663f7ca3b067402d59b62bfa85716fdbefe"
+        }
+      ],
+      "addedAt": "2026-11-19T14:13:02.265Z",
+      "cmd": "verify/yv design-check --base f44362da4b16",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "2f81c5191a214a9f8fbdfd4215068c7fdfc3cf10c26338ef7b582d487b164c0a"
+        }
+      ],
+      "addedAt": "2026-11-19T14:13:02.362Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "cf1d07125813707975ab14d0cfaf6e3bffacce78d1beef02e751f7a578415be2"
+        },
+        {
+          "path": "p5-rename-dialog-desktop.png",
+          "sha256": "cb8d49ca8fc5a48216425580de7e4e849ce1721d76521566e378f5e695b5b6c9"
+        },
+        {
+          "path": "p5-renamed-session-desktop.png",
+          "sha256": "b6f396470a7be7b7af84690bcb3c5016217c52206fcdb790ca90bc9d79133c37"
+        }
+      ],
+      "addedAt": "2026-11-19T14:14:23.369Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "c7eaddb9e8a2f894496d3834211ad18c2fdb66f5008019ffa239efdd0f44bd37"
+        },
+        {
+          "path": "p6-rename-dialog-mobile.png",
+          "sha256": "274eab8da420871c1feb1179625dc0d48b75ecf16da007eae83e2bf4c42899ee"
+        },
+        {
+          "path": "p6-renamed-session-mobile.png",
+          "sha256": "217a00abeb6426ae6f92c9e8e2dbdb79b9654f23d7380b80c1b5ae07d8ece819"
+        }
+      ],
+      "addedAt": "2026-11-19T14:14:23.414Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-switchyard-rename-final-map.json",
+          "sha256": "57f98e0533c630977ec5bf9f9cd4bbca3e861c9230b29f8b0853fafbdc93efe7"
+        }
+      ],
+      "addedAt": "2026-11-19T14:14:23.458Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rename-session"
+      ]
+    }
+  ]
+}

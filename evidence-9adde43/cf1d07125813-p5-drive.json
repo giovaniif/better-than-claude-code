@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1f4283c686",
+  "build": {
+    "sha": "9adde4317d68f76127c9b32480f9e3e530c46a3f",
+    "short": "9adde43",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T14:13:59.498Z"
+  },
+  "dir": "/tmp/switchyard-session-rename/.verify/drives/2026-11-19T14-14-00-848Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5268,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-session-rename/.verify/drives/2026-11-19T14-14-00-848Z/rename-dialog-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-session-rename/.verify/drives/2026-11-19T14-14-00-848Z/renamed-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "document.activeElement.value === document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon renaming_a_session_updates_other_clients_and_survives_restart
+# exit 101 after 5177 ms at c14dda4c0eb5da6f5d8c4047dfe20b61bb1395fb
+
+
+running 1 test
+test renaming_a_session_updates_other_clients_and_survives_restart ... FAILED
+
+failures:
+
+---- renaming_a_session_updates_other_clients_and_survives_restart stdout ----
+
+thread 'renaming_a_session_updates_other_clients_and_survives_restart' (2725005) panicked at crates/yardd/tests/daemon.rs:1454:5:
+assertion `left == right` failed: {"for":"session.rename","message":"unknown op `session.rename`","op":"error","ref":"rename"}
+  left: String("error")
+ right: "session.renamed"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2725004-rename-session-0 for inspection
+
+
+failures:
+    renaming_a_session_updates_other_clients_and_survives_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 79 filtered out; finished in 0.21s
+
+
+   Compiling yardd v0.13.0 (/tmp/switchyard-session-rename/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 4.90s
+     Running tests/daemon.rs (target/debug/build/yardd/0eaa0f78cd26615b/out/daemon-0eaa0f78cd26615b)
+error: test failed, to rerun pass `-p yardd --test daemon`
