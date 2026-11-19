@@ -1,5 +1,5 @@
 import { loadDefaults } from "./launchDefaults";
-import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import type { LoginProvider } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
@@ -114,6 +114,8 @@ const FOLDER_PLUS = "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a
 const PENCIL = "M4 20h4L19 9l-4-4L4 16ZM13.5 6.5l4 4";
 const TRASH = "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3";
 const MENU = "M4 6h16M4 12h16M4 18h16";
+const LEFT_PANEL = "M3 5h18v14H3ZM9 5v14";
+const RIGHT_PANEL = "M3 5h18v14H3ZM15 5v14";
 const MIC = "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v3";
 const STOP = "M7 7h10v10H7Z";
 const WAVES = "M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3";
@@ -138,9 +140,10 @@ const SIDEBAR_W = 248;
 const PANE_W = 420;
 /** Where the sidebar stops being a column and becomes a drawer (the same width as in styles.css). */
 const NARROW = "(max-width: 700px)";
+const WORKSPACE_NARROW = "(max-width: 1100px)";
 
 /** Whether the sessions drawer is open, and how to open it, for each page's menu button. */
-const DrawerContext = createContext<{ open: boolean; show(): void }>({ open: false, show: () => {} });
+const DrawerContext = createContext<{ open: boolean; show(trigger: HTMLButtonElement): void }>({ open: false, show: () => {} });
 
 export function App() {
   const { state, actions } = useYard();
@@ -168,10 +171,26 @@ export function App() {
   // Older shells and browsers still need the sidebar's entry points.
   const nativeMenu = (window as any).__SWITCHYARD_APP_MENU__ === true;
   const [sidebarW, setSidebarW] = useWidth("yard.sidebarWidth", SIDEBAR_W);
+  const [sidebarCollapsed, setSidebarCollapsed] = usePanelCollapsed("yard.sidebarCollapsed");
+  const narrow = useMedia(NARROW);
+  const sidebarHidden = !narrow && sidebarCollapsed;
+  const sidebarCollapseLabel = narrow ? "Close sessions" : "Collapse sessions sidebar";
+  const sidebarExpandButton = useRef<HTMLButtonElement>(null);
+  const sidebarCollapseButton = useRef<HTMLButtonElement>(null);
+  const drawerTrigger = useRef<HTMLButtonElement>(null);
   // Below NARROW the sidebar is a drawer over the page. Picking anything in
   // it, the backdrop or Escape closes it; so does crossing the breakpoint, so
   // it never comes back open by surprise.
   const [drawer, setDrawer] = useState(false);
+  const closeDrawer = () => {
+    setDrawer(false);
+    requestAnimationFrame(() => drawerTrigger.current?.focus({ preventScroll: true }));
+  };
+  const toggleSidebar = () => {
+    const nextButton = sidebarCollapsed ? sidebarCollapseButton : sidebarExpandButton;
+    setSidebarCollapsed(!sidebarCollapsed);
+    requestAnimationFrame(() => nextButton.current?.focus({ preventScroll: true }));
+  };
   const openNavigation = () => {
     if (!navigating) navigationOrigin.current = document.activeElement as HTMLElement | null;
     setDrawer(false);
@@ -215,7 +234,7 @@ export function App() {
       window.removeEventListener("switchyard:navigate", menu);
     };
   }, [actions, navigating]);
-  useEscape(drawer, () => setDrawer(false));
+  useEscape(drawer, closeDrawer);
   useEffect(() => {
     const mq = window.matchMedia(NARROW);
     const onChange = () => setDrawer(false);
@@ -225,7 +244,13 @@ export function App() {
   // Routes that change without a pick (an import's or a notification's session opening) close it too.
   const where = routeHash(route);
   useEffect(() => setDrawer(false), [where]);
-  const drawerCtx = useMemo(() => ({ open: drawer, show: () => setDrawer(true) }), [drawer]);
+  const drawerCtx = useMemo(() => ({
+    open: drawer,
+    show: (trigger: HTMLButtonElement) => {
+      drawerTrigger.current = trigger;
+      setDrawer(true);
+    },
+  }), [drawer]);
   const sidebarActions = useMemo<Actions>(
     () => ({
       ...actions,
@@ -252,18 +277,41 @@ export function App() {
   return (
     <DrawerContext.Provider value={drawerCtx}>
       <div className={`app ${drawer ? "drawer-open" : ""}`} inert={navigating || undefined} style={{ "--sidebar-w": `${sidebarW}px` } as CSSProperties}>
-        <Sidebar state={state} actions={sidebarActions} shown={visibleHosts} usage={<UsageStrip {...usage} />} open={drawer} nativeMenu={nativeMenu} onImport={openImport} onNavigate={openNavigation} />
-        {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={() => setDrawer(false)} />}
-        <Resizer
-          width={sidebarW}
-          min={180}
-          max={480}
-          initial={SIDEBAR_W}
-          dir={1}
-          cssVar="--sidebar-w"
-          label="Resize the sessions sidebar"
-          onWidth={setSidebarW}
+        <Sidebar
+          state={state}
+          actions={sidebarActions}
+          shown={visibleHosts}
+          usage={<UsageStrip {...usage} />}
+          open={drawer}
+          hidden={sidebarHidden}
+          nativeMenu={nativeMenu}
+          onImport={openImport}
+          onNavigate={openNavigation}
+          collapseControl={
+            <button ref={sidebarCollapseButton} className="btn-icon sidebar-collapse" aria-label={sidebarCollapseLabel} title={sidebarCollapseLabel} aria-controls="sidebar" aria-expanded={true} onClick={narrow ? closeDrawer : toggleSidebar}>
+              <Icon d={narrow ? CLOSE : LEFT_PANEL} size={18} />
+            </button>
+          }
         />
+        {drawer && <div className="drawer-backdrop" aria-hidden="true" onClick={closeDrawer} />}
+        {sidebarHidden ? (
+          <div className="sidebar-rail">
+            <button ref={sidebarExpandButton} className="btn-icon" aria-label="Expand sessions sidebar" title="Expand sessions sidebar" aria-controls="sidebar" aria-expanded={false} onClick={toggleSidebar}>
+              <Icon d={LEFT_PANEL} size={18} />
+            </button>
+          </div>
+        ) : (
+          <Resizer
+            width={sidebarW}
+            min={180}
+            max={480}
+            initial={SIDEBAR_W}
+            dir={1}
+            cssVar="--sidebar-w"
+            label="Resize the sessions sidebar"
+            onWidth={setSidebarW}
+          />
+        )}
         <div className="main" inert={drawer || undefined}>
           {!state.connected && <div className="banner">yardd is not reachable. Reconnecting.</div>}
           {state.error && (
@@ -329,10 +377,30 @@ export function App() {
 export function MenuButton() {
   const { open, show } = useContext(DrawerContext);
   return (
-    <button className="btn-icon menu-button" aria-label="Open sessions" aria-controls="sidebar" aria-expanded={open} onClick={show}>
+    <button className="btn-icon menu-button" aria-label="Open sessions" aria-controls="sidebar" aria-expanded={open} onClick={(event) => show(event.currentTarget)}>
       <Icon d={MENU} size={18} />
     </button>
   );
+}
+
+/** Whether a desktop panel is collapsed, kept per browser. */
+function usePanelCollapsed(key: string): [boolean, (collapsed: boolean) => void] {
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(key) === "true";
+    } catch {
+      return false;
+    }
+  });
+  const set = (value: boolean) => {
+    setCollapsed(value);
+    try {
+      localStorage.setItem(key, String(value));
+    } catch {
+      /* Storage can be unavailable in the webview. */
+    }
+  };
+  return [collapsed, set];
 }
 
 /** A width the user drags, kept per browser. */
@@ -806,7 +874,18 @@ function GroupHead({ name, count, open, onToggle, members, actions }: { name: st
   );
 }
 
-function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onNavigate }: { state: State; actions: Actions; shown: string[]; usage: ReactNode; open: boolean; nativeMenu: boolean; onImport(): void; onNavigate(): void }) {
+function Sidebar({ state, actions, shown, usage, open, hidden, nativeMenu, onImport, onNavigate, collapseControl }: {
+  state: State;
+  actions: Actions;
+  shown: string[];
+  usage: ReactNode;
+  open: boolean;
+  hidden: boolean;
+  nativeMenu: boolean;
+  onImport(): void;
+  onNavigate(): void;
+  collapseControl: ReactNode;
+}) {
   // Runs of automations live on the Automations page, not in this list.
   const everything = Object.values(state.sessions);
   const all = everything.filter((s) => !hiddenFromSidebar(s));
@@ -930,10 +1009,13 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
   // With no ungrouped rows there is nothing to drop on to leave a group, so a slot stands in.
   const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
-    <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions">
-      <button className="brand btn-text" onClick={onNavigate} aria-label="Go to session or page" aria-keyshortcuts={/Mac|iPhone|iPad/.test(navigator.platform) ? "Meta+K" : "Control+K"}>
-        Switchyard <kbd>{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"}</kbd>
-      </button>
+    <nav ref={nav} id="sidebar" className="sidebar" aria-label="Sessions" hidden={hidden}>
+      <div className="sidebar-heading">
+        <button className="brand btn-text" onClick={onNavigate} aria-label="Go to session or page" aria-keyshortcuts={/Mac|iPhone|iPad/.test(navigator.platform) ? "Meta+K" : "Control+K"}>
+          Switchyard <kbd>{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"}</kbd>
+        </button>
+        {collapseControl}
+      </div>
       <div className="sidebar-top">
         <button className={`nav-row ${route.page === "new" ? "active" : ""}`} onClick={() => actions.go({ page: "new" })}>
           <Icon d={PLUS} />
@@ -2528,6 +2610,17 @@ export function BranchPicker(props: { current: string; branches: string[]; value
 
 function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State; actions: Actions }) {
   const [workspace, setWorkspace] = useState(false);
+  const [workspaceCollapsed, setWorkspaceCollapsed] = usePanelCollapsed("yard.workspaceCollapsed");
+  const wide = !useMedia(WORKSPACE_NARROW);
+  const workspaceShown = wide ? !workspaceCollapsed : workspace;
+  const workspaceLabel = workspaceCollapsed ? "Expand workspace" : "Collapse workspace";
+  const workspaceToggle = useRef<HTMLButtonElement>(null);
+  const workspaceClose = useRef<HTMLButtonElement>(null);
+  const closeWorkspace = () => {
+    setWorkspace(false);
+    requestAnimationFrame(() => workspaceToggle.current?.focus({ preventScroll: true }));
+  };
+  useEffect(() => setWorkspace(false), [wide]);
   const thread = state.threads[meta.id];
   const items = thread?.items ?? [];
   const changes = state.changes[meta.id];
@@ -2627,7 +2720,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   );
 
   return (
-    <div className={`session ${workspace ? "workspace-open" : ""}`}>
+    <div className={`session ${!wide && workspace ? "workspace-open" : ""}`}>
       <main className="thread">
         <header className="bar">
           <MenuButton />
@@ -2648,7 +2741,24 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           )}
           <span className="spacer" />
           <MobileSetupButton mobile={state.mobile} open={() => actions.go({ page: "hosts" })} />
-          <button className="btn-text workspace-toggle" aria-expanded={workspace} onClick={() => setWorkspace(true)}>Workspace</button>
+          <button
+            ref={workspaceToggle}
+            className={wide ? "btn-icon workspace-toggle-desktop" : "btn-text workspace-toggle"}
+            aria-label={wide ? workspaceLabel : undefined}
+            title={wide ? workspaceLabel : undefined}
+            aria-controls="session-workspace"
+            aria-expanded={workspaceShown}
+            onClick={() => {
+              if (wide) {
+                setWorkspaceCollapsed(!workspaceCollapsed);
+              } else {
+                setWorkspace(true);
+                requestAnimationFrame(() => workspaceClose.current?.focus({ preventScroll: true }));
+              }
+            }}
+          >
+            {wide ? <Icon d={RIGHT_PANEL} size={18} /> : "Workspace"}
+          </button>
           {busy && online && (
             <button className="btn-text" onClick={() => actions.interrupt(meta.id)}>
               Stop
@@ -2726,7 +2836,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           </Composer>
         </div>
       </main>
-      <WorkPane key={meta.id} mobileOpen={workspace} connected={online} actions={actions} meta={meta} state={state} items={items} onClose={() => setWorkspace(false)} />
+      <WorkPane key={meta.id} shown={workspaceShown} connected={online} actions={actions} meta={meta} state={state} items={items} closeButton={workspaceClose} onClose={closeWorkspace} />
     </div>
   );
 }
@@ -3235,29 +3345,28 @@ function FileDiff({ file }: { file: ChangedFile }) {
   );
 }
 
-function WorkPane({ mobileOpen, connected, actions, meta, state, items, onClose }: {
-  mobileOpen: boolean;
+function WorkPane({ shown, connected, actions, meta, state, items, closeButton, onClose }: {
+  shown: boolean;
   connected: boolean;
   actions: Actions;
   meta: SessionMeta;
   state: State;
   items: Item[];
+  closeButton: RefObject<HTMLButtonElement | null>;
   onClose(): void;
 }) {
   const [paneW, setPaneW] = useWidth("yard.paneWidth", PANE_W);
   const [tab, setTab] = useState<"terminal" | "agents" | "procs">("terminal");
-  const wide = !useMedia("(max-width: 1100px)");
-  const shown = wide || mobileOpen;
   const [terminalUsed, setTerminalUsed] = useState(shown);
   const agents = useMemo(() => tab === "agents" ? sessionSubagents(items) : [], [tab, items]);
   useEffect(() => {
     if (shown && tab === "terminal") setTerminalUsed(true);
   }, [shown, tab]);
   return (
-    <section className="pane" aria-label="Workspace" style={{ "--pane-w": `${paneW}px` } as CSSProperties}>
+    <section id="session-workspace" className="pane" aria-label="Workspace" hidden={!shown} style={{ "--pane-w": `${paneW}px` } as CSSProperties}>
       <Resizer width={paneW} min={300} max={Math.max(300, window.innerWidth - 640)} initial={PANE_W} dir={-1} cssVar="--pane-w" label="Resize the workspace pane" onWidth={setPaneW} />
       <header className="bar tabs workspace-tabs">
-        <button className="btn-icon workspace-close" aria-label="Back to conversation" onClick={onClose}><Icon d={CLOSE} /></button>
+        <button ref={closeButton} className="btn-icon workspace-close" aria-label="Back to conversation" onClick={onClose}><Icon d={CLOSE} /></button>
         <button className={`tab ${tab === "terminal" ? "active" : ""}`} aria-pressed={tab === "terminal"} onClick={() => setTab("terminal")}>Terminal</button>
         <button className={`tab ${tab === "agents" ? "active" : ""}`} aria-pressed={tab === "agents"} onClick={() => setTab("agents")}>Subagents</button>
         <button className={`tab ${tab === "procs" ? "active" : ""}`} aria-pressed={tab === "procs"} onClick={() => setTab("procs")}>Processes</button>

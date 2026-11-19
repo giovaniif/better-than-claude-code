@@ -75,8 +75,13 @@ h1, h2, h3, p { margin: 0; }
   background: var(--side);
   border-right: 1px solid var(--line);
 }
+.sidebar[hidden], .pane[hidden] { display: none; }
+.sidebar-heading { display: flex; align-items: center; }
+.sidebar-collapse { flex: none; margin: 6px 6px 0 0; }
+.sidebar-rail { display: flex; flex: 0 0 44px; justify-content: center; align-items: flex-start; padding-top: 10px; background: var(--side); border-right: 1px solid var(--line); }
 .brand { padding: 18px 18px 10px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
 .brand.btn-text { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: auto; padding: 18px 18px 10px; border-radius: 0; color: var(--ink); text-align: left; }
+.sidebar-heading .brand { flex: 1 1 auto; min-width: 0; padding-right: 4px; }
 .brand kbd { color: var(--muted); font: 11px/1.5 var(--mono); font-weight: 400; }
 .sidebar-top { padding: 0 8px 8px; }
 .sidebar-bottom { padding: 8px; border-top: 1px solid var(--line); }
@@ -904,6 +909,8 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 
 /* The workspace remains available on a phone, one full-width view at a time. */
 .workspace-toggle, .workspace-close { display: none; }
+.workspace-toggle-desktop { flex: none; order: 1; }
+.workspace-toggle-desktop[aria-expanded="true"] { background: var(--fill); color: var(--ink); }
 .mobile-setup { display: flex; flex-direction: column; gap: 16px; padding: 16px; line-height: 1.55; }
 .mobile-setup h2 { font-size: 15px; font-weight: 600; }
 .mobile-setup .field { margin: 8px 0; font-family: inherit; }
