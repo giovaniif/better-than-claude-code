@@ -79,5 +79,5 @@ A composer wide enough for its usual selectors can still need Setup when
 model names are longer.
 
 ```sh
-yv drive new --viewport desktop --steps '[{"expect":"css:.composer-row .model-trigger"},{"eval":"(() => { const el = document.querySelector(\".composer-row .model-trigger span:nth-child(2)\"); el.textContent = \"GPT-6.2-Sol Long Context Research Preview Extended\"; return true; })()","equals":true},{"expect":"css:.composer-row .composer-setup"},{"expect":"css:.composer-row .model-trigger","count":0},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup"},{"shot":"uncompressed-selectors"}]'
+yv drive new --viewport desktop --steps '[{"expect":"css:.composer-row .model-trigger"},{"eval":"(() => { const style = document.createElement(\"style\"); style.textContent = \".session-toolbar .picker > button { font-size: 24px; }\"; document.head.append(style); return true; })()","equals":true},{"expect":"css:.composer-row .composer-setup"},{"expect":"css:.composer-row .model-trigger","count":0},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup"},{"shot":"uncompressed-selectors"}]'
 ```
