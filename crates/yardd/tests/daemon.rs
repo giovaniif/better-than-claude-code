@@ -1437,6 +1437,49 @@ async fn codex_reasoning_streams_as_thinking() {
 }
 
 #[tokio::test]
+async fn renaming_a_session_updates_other_clients_and_survives_restart() {
+    let sb = Sandbox::new("rename-session");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let cwd = make_repo(&sb, "proj");
+    let sid = c.create(&cwd, "original title", json!({ "worktree": true })).await;
+    c.wait_turn_done(&sid, 0).await;
+    c.wait_status(&sid, "idle").await;
+    let mut other = d.client().await;
+    let previous = other.log[0]["sessions"][0].clone();
+
+    let title = "Revisão do lançamento ⚽";
+    c.send(json!({ "op": "session.rename", "sessionId": sid, "title": format!("  {title}  "), "ref": "rename" })).await;
+    let ack = c.wait_for("rename reply", |m| m["ref"] == "rename").await;
+    assert_eq!(ack["op"], "session.renamed", "{ack}");
+    let renamed = other.wait_for("renamed session", |m| m["op"] == "session" && m["session"]["title"] == title).await;
+    for key in ["id", "cwd", "branch", "status"] {
+        assert_eq!(renamed["session"][key], previous[key], "{key}");
+    }
+
+    for (i, invalid) in [String::from(" "), String::from("two\nlines"), "🔧".repeat(61)].into_iter().enumerate() {
+        let reference = format!("invalid-{i}");
+        c.send(json!({ "op": "session.rename", "sessionId": sid, "title": invalid, "ref": reference })).await;
+        let reply = c.wait_for("rename rejected", |m| m["ref"] == reference && m["op"] == "error").await;
+        assert_eq!(reply["for"], "session.rename");
+    }
+
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &sid).map(|m| m["title"] == title) != Some(true) {
+        assert!(Instant::now() < deadline, "the new title never reached the database");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+
+    let d = sb.start();
+    let mut c = d.client().await;
+    assert_eq!(c.log[0]["sessions"][0]["title"], title);
+    c.send(json!({ "op": "session.open", "sessionId": sid })).await;
+    let history = c.wait_for("same history", |m| m["op"] == "history" && m["sessionId"] == sid).await;
+    assert_eq!(history["events"][0]["text"], "original title");
+}
+
+#[tokio::test]
 async fn sessions_are_pinned_and_archived_across_restarts() {
     let sb = Sandbox::new("pin");
     let d = sb.start();
