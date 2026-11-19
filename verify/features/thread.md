@@ -153,6 +153,17 @@ yv drive 'session:{{steps_sid}}' --steps '[{"expect":"css:.thread","text":"steer
 yv state --expect '{"sessions":[{"id":"{{steps_sid}}","status":"idle"}]}'
 ```
 
+### steer-a-selected-queued-message
+Viewports: both
+Steer sends one queued message into the active turn, ahead of the other queued message.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-steer desktop"}' --wait '{"op":"created"}' --save manual_steer_desktop=sessionId
+yv drive 'session:{{manual_steer_desktop}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-keep queued"},{"click":"role:button:Add to queue"},{"expect":"css:.pending","text":"TEST-keep queued"},{"fill":"label:Message","value":"TEST-send now"},{"click":"role:button:Add to queue"},{"expect":"css:.pending","text":"TEST-send now"},{"shot":"steer-ready"},{"click":{"role":"button","name":"Steer","within":{"css":".pending-row","hasText":"TEST-send now"}}},{"expect":"css:.thread","text":"TEST-send now"},{"expect":"css:.pending","text":"TEST-keep queued"},{"expect":{"css":".pending-row","hasText":"TEST-send now"},"count":0},{"shot":"steered-one"}]'
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"[slow] TEST-steer mobile"}' --wait '{"op":"created"}' --save manual_steer_mobile=sessionId
+yv drive 'session:{{manual_steer_mobile}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-keep queued"},{"click":"role:button:Add to queue"},{"expect":"css:.pending","text":"TEST-keep queued"},{"fill":"label:Message","value":"TEST-send now"},{"click":"role:button:Add to queue"},{"expect":"css:.pending","text":"TEST-send now"},{"shot":"steer-ready"},{"click":{"role":"button","name":"Steer","within":{"css":".pending-row","hasText":"TEST-send now"}}},{"expect":"css:.thread","text":"TEST-send now"},{"expect":"css:.pending","text":"TEST-keep queued"},{"expect":{"css":".pending-row","hasText":"TEST-send now"},"count":0},{"shot":"steered-one"}]'
+```
+
 ### stop-returns-the-queue
 Viewports: desktop
 Stop ends the turn and puts what was queued back in the reply box, unsent.
@@ -192,6 +203,17 @@ and a sent draft does not come back.
 printf 'TEST note\n' > "$(v work)/TEST-draft-note.txt"
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"fill":"label:Message","value":"TEST-half a reply"},{"upload":"input","files":["{{work}}/TEST-draft-note.txt"]},{"expect":"css:.composer .attachments","text":"TEST-draft-note.txt"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"expect":"label:Message","value":""},{"expect":{"css":".composer .attachments"},"visible":false},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":"TEST-half a reply"},{"expect":"css:.composer .attachments","text":"TEST-draft-note.txt"},{"shot":"draft-kept"},{"click":{"role":"button","name":"Send","exact":true}},{"expect":"css:.thread","text":"Echo: TEST-half a reply"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":""},{"expect":{"css":".composer .attachments"},"visible":false}]'
 yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"fill":"label:Message","value":"TEST-typed on the phone"},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-fix the greeting"}},{"expect":"label:Message","value":""},{"click":"role:button:Open sessions"},{"click":{"css":".session-row","hasText":"TEST-say hello"}},{"expect":"label:Message","value":"TEST-typed on the phone"},{"shot":"draft-kept-mobile"}]'
+```
+
+### workspace-subagents
+Viewports: both
+The workspace opens on Terminal. Subagents shows the session's agents and their expandable steps and reports.
+
+```sh
+yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","effort":"medium","cwd":"{{repo}}","worktree":true,"text":"[subagent] TEST-workspace desktop"}' --wait '{"op":"created"}' --save workspace_agents_desktop=sessionId
+yv drive 'session:{{workspace_agents_desktop}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-workspace"},{"expect":{"css":".workspace-tabs [aria-pressed=true]","hasText":"Terminal"}},{"click":"role:button:Subagents"},{"expect":"role:region:Session subagents","text":"TEST-survey the repo"},{"click":{"role":"button","name":"TEST-survey the repo","within":"role:region:Session subagents"}},{"expect":"role:region:Session subagents","text":"TEST-subagent report"},{"expect":"role:region:Session subagents","text":"README.md"},{"shot":"subagents"}]'
+yv api '{"op":"session.create","engine":"claude","model":"claude-haiku-5-5","effort":"medium","cwd":"{{repo}}","worktree":true,"text":"[subagent] TEST-workspace mobile"}' --wait '{"op":"created"}' --save workspace_agents_mobile=sessionId
+yv drive 'session:{{workspace_agents_mobile}}' --viewport mobile --steps '[{"expect":"css:.thread","text":"Echo: [subagent] TEST-workspace"},{"click":"role:button:Workspace"},{"expect":{"css":".workspace-tabs [aria-pressed=true]","hasText":"Terminal"}},{"click":"role:button:Subagents"},{"expect":"role:region:Session subagents","text":"TEST-survey the repo"},{"click":{"role":"button","name":"TEST-survey the repo","within":"role:region:Session subagents"}},{"expect":"role:region:Session subagents","text":"TEST-subagent report"},{"expect":"role:region:Session subagents","text":"README.md"},{"shot":"subagents"}]'
 ```
 
 ### subagent-nests-and-expands

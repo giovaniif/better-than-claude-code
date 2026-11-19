@@ -331,6 +331,23 @@ async function runTurn(threadId, cwd, turn, text) {
 
   notify("turn/started", { threadId, turn });
 
+  if (behaviorText.includes("[subagent]")) {
+    const child = newId("agent");
+    const activity = { type: "subAgentActivity", agentThreadId: child, agentPath: "reviewer", model: "fake-fast" };
+    const spawn = {
+      type: "collabAgentToolCall", id: newId("call"), tool: "spawnAgent", status: "completed",
+      prompt: "TEST-check the migration", receiverThreadIds: [child], agentsStates: { [child]: { status: "running" } },
+    };
+    item("item/completed", spawn);
+    item("item/completed", { ...activity, id: newId("activity"), kind: "started" });
+    item("item/completed", { ...activity, id: newId("activity"), kind: "completed" });
+    item("item/completed", {
+      ...spawn, id: newId("call"), tool: "wait", prompt: null,
+      agentsStates: { [child]: { status: "completed", message: "TEST-Codex subagent report" } },
+    });
+    return finish("completed");
+  }
+
   if (behaviorText.includes("[stuck]")) {
     notify("item/agentMessage/delta", { threadId, turnId, itemId: newId("msg"), delta: "Stuck" });
     return;

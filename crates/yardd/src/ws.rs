@@ -449,12 +449,18 @@ async fn handle(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &Va
         // had not reached the agent yet.
         "session.unqueue" => {
             let sid = str_field(msg, "sessionId")?;
-            let item = app.take_queued(sid, str_field(msg, "id")?);
+            let item = app.take_queued(sid, str_field(msg, "id")?, false);
             if let Some(item) = item.filter(|_| msg["drop"] != true) {
                 let _ = direct.send(
                     json!({ "op": "queue.returned", "sessionId": sid, "id": item["id"], "text": item["text"], "attachments": item["attachments"] }).to_string(),
                 );
             }
+        }
+        "session.steer" => {
+            let sid = str_field(msg, "sessionId")?;
+            let id = str_field(msg, "id")?;
+            app.meta(sid).context("no such session")?;
+            app.steer_queued(sid, id);
         }
         "session.setModel" => {
             let sid = str_field(msg, "sessionId")?;

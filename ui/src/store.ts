@@ -642,6 +642,7 @@ export interface Actions {
   setPinned(sessionId: string, pinned: boolean): void;
   /** Take back a message queued during a turn: to the reply box, or dropped. */
   unqueue(sessionId: string, id: string, drop?: boolean): void;
+  steerQueued(sessionId: string, id: string): void;
   setArchived(sessionId: string, archived: boolean): void;
   /** Put a session in a named group, or take it out with null. */
   setGroup(sessionId: string, group: string | null): void;
@@ -948,6 +949,7 @@ export function useYard(): { state: State; actions: Actions } {
       },
       setPinned: (sessionId, pinned) => post({ op: "session.update", sessionId, pinned }),
       unqueue: (sessionId, id, drop) => post(drop ? { op: "session.unqueue", sessionId, id, drop: true } : { op: "session.unqueue", sessionId, id }),
+      steerQueued: (sessionId, id) => post({ op: "session.steer", sessionId, id }),
       setArchived: (sessionId, archived) => post({ op: "session.update", sessionId, archived }),
       setGroup: (sessionId, group) => post({ op: "session.update", sessionId, group }),
       place: (sessionId, update) => post({ op: "session.update", sessionId, ...update }),

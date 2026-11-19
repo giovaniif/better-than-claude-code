@@ -362,6 +362,23 @@ async fn a_queued_message_can_be_taken_back_to_edit() {
 }
 
 #[tokio::test]
+async fn codex_subagent_activity_keeps_one_agent_and_its_report() {
+    let sb = Sandbox::new("codex-subagent");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("repo"), "[subagent] TEST-codex delegation", json!({})).await;
+    c.wait_turn_done(&sid, 0).await;
+    let events = c.events(&sid);
+    let started: Vec<_> = events.iter().filter(|ev| ev["type"] == "tool_started" && ev["agent"] == "Codex").collect();
+    assert_eq!(started.len(), 1, "{events:?}");
+    assert_eq!(started[0]["detail"], "TEST-check the migration");
+    assert!(events.iter().any(|ev| ev["type"] == "tool_completed"
+        && ev["itemId"] == started[0]["itemId"]
+        && ev["ok"] == true
+        && ev["output"] == "TEST-Codex subagent report"), "{events:?}");
+}
+
+#[tokio::test]
 async fn a_message_sent_mid_turn_is_steered_into_the_codex_turn() {
     let sb = Sandbox::new("steer");
     let d = sb.start();

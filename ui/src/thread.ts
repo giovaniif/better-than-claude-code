@@ -44,6 +44,10 @@ function nest(items: Item[]): Item[] {
   return top;
 }
 
+export function sessionSubagents(items: Item[]): ToolItem[] {
+  return nest(items).filter((it): it is ToolItem => it.kind === "tool" && !!it.agent);
+}
+
 const widgetRow = (t: ToolItem): Row => ({ type: "widget", key: `widget-${t.key}`, tool: t });
 
 /** Group runs of work items; `liveTail` marks the last run live. A widget

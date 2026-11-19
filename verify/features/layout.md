@@ -1,7 +1,7 @@
 # Layout
 
 Switchyard is laid out for a desktop window: sessions sidebar, the session in
-the middle, and the workspace pane (Terminal and Processes) on the
+the middle, and the workspace pane (Terminal, Subagents and Processes) on the
 right, hidden below 1100 px. The web version is also opened from phones over
 the tailnet, so the main column must stay usable at 390 px: below 700 px the
 sidebar is a drawer over the page, opened by the menu button ("Open sessions")
@@ -132,7 +132,7 @@ stay on one line, and every control stays inside the pane. Both views
 are directly selectable.
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"role:button:Terminal","inViewport":true},{"expect":"role:button:Processes","inViewport":true},{"click":"role:button:Processes"},{"expect":"role:button:Refresh processes","inViewport":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStorage.setItem(\"yard.paneWidth\",\"300\") ?? true"},{"reload":true},{"expect":"role:region:Workspace"},{"shot":"minimum-pane"},{"eval":"(() => { const bar=document.querySelector(\".pane .tabs\").getBoundingClientRect(); const buttons=[...document.querySelectorAll(\".pane .tabs button\")].filter(b=>b.getClientRects().length); return Math.round(bar.height)===52 && buttons.every(b=>{const box=b.getBoundingClientRect();const r=document.createRange();r.selectNodeContents(b);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size<=1 && box.left>=bar.left && box.right<=bar.right && box.bottom<=bar.bottom;}); })()","equals":true},{"expect":"role:button:Terminal","inViewport":true},{"expect":"role:button:Subagents","inViewport":true},{"expect":"role:button:Processes","inViewport":true},{"click":"role:button:Processes"},{"expect":"role:button:Refresh processes","inViewport":true}]'
 ```
 
 ## Gotchas

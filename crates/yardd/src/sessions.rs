@@ -92,13 +92,16 @@ pub async fn deliver(app: &Arc<App>, sid: &str, when: Delivery) {
             let (text, attachments) = combine(&items);
             send_turn(app, sid, &text, &attachments).await;
         }
-        Delivery::Steer => {
+        Delivery::Steer | Delivery::SteerOne(_) => {
             let engine = app.meta(sid).map(|m| m.engine).unwrap_or_default();
             // The engine cannot take input mid-turn: it waits for the next one.
             if !crate::engines::can_steer(&engine) {
                 return;
             }
-            let items = app.take_all_queued(sid, |s| s == "running");
+            let items = match when {
+                Delivery::SteerOne(id) => app.take_queued(sid, &id, true).into_iter().collect(),
+                _ => app.take_all_queued(sid, |s| s == "running"),
+            };
             if items.is_empty() {
                 return;
             }

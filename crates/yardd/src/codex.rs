@@ -302,6 +302,38 @@ fn set_turn(app: &Arc<App>, sid: &str, turn: Option<&str>) {
     }
 }
 
+fn subagent_status(app: &App, sid: &str, thread: &str, status: &str, detail: Option<&str>, output: Option<&str>) {
+    let ok = match status {
+        "pendingInit" | "running" => None,
+        "completed" | "shutdown" => Some(true),
+        "interrupted" | "errored" => Some(false),
+        _ => return,
+    };
+    let id = format!("codex-agent:{thread}");
+    let previous = app.sessions.lock().unwrap().get(sid).and_then(|s| {
+        s.events.iter().rev().find(|ev| ev["itemId"] == id).cloned()
+    });
+    let previously_running = previous.as_ref().is_some_and(|ev| ev["type"] == "tool_started");
+    let detail = detail.unwrap_or("");
+    if previous.is_none() || (ok.is_none() && !previously_running) {
+        app.emit(sid, json!({
+            "type": "tool_started", "itemId": id, "kind": "other", "title": "Agent", "agent": "Codex", "detail": detail,
+        }));
+    }
+    if let Some(ok) = ok {
+        // Both activity and collab items can report the same completion.
+        // Keep the outcome and accept a report that arrived separately.
+        if let Some(done) = previous.as_ref().filter(|ev| ev["type"] == "tool_completed") {
+            if output.is_none() || done["output"].as_str() == output {
+                return;
+            }
+            app.emit(sid, json!({ "type": "tool_completed", "itemId": id, "ok": done["ok"], "output": output }));
+        } else {
+            app.emit(sid, json!({ "type": "tool_completed", "itemId": id, "ok": ok, "output": output }));
+        }
+    }
+}
+
 fn on_item(app: &Arc<App>, sid: &str, started: bool, item: &Value) {
     let id = &item["id"];
     match item["type"].as_str().unwrap_or("") {
@@ -309,6 +341,32 @@ fn on_item(app: &Arc<App>, sid: &str, started: bool, item: &Value) {
             sid,
             json!({ "type": "assistant_message", "itemId": id, "text": item["text"] }),
         ),
+        "collabAgentToolCall" if !started => {
+            let tool = item["tool"].as_str().unwrap_or("");
+            let detail = if tool == "spawnAgent" { item["prompt"].as_str() } else { None };
+            if let Some(threads) = item["receiverThreadIds"].as_array() {
+                for thread in threads.iter().filter_map(Value::as_str) {
+                    let state = &item["agentsStates"][thread];
+                    let status = state["status"].as_str().or_else(|| {
+                        (item["status"] == "completed" && matches!(tool, "spawnAgent" | "resumeAgent")).then_some("running")
+                    });
+                    if let Some(status) = status {
+                        subagent_status(app, sid, thread, status, detail, state["message"].as_str());
+                    }
+                }
+            }
+        }
+        "subAgentActivity" if !started => {
+            if let Some(thread) = item["agentThreadId"].as_str() {
+                let status = match item["kind"].as_str() {
+                    Some("started") => "running",
+                    Some("completed") => "completed",
+                    Some("interrupted") => "interrupted",
+                    _ => return,
+                };
+                subagent_status(app, sid, thread, status, item["agentPath"].as_str(), None);
+            }
+        }
         "reasoning" if !started => {
             let parts = |key: &str| -> Vec<String> {
                 item[key]
