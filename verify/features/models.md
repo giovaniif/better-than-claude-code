@@ -10,7 +10,7 @@ edits, Plan only, Full access) changes the session at once.
 ## Setup
 
 ```sh
-yv iso up
+yv iso up --env YARD_TEST_CODEX_LONG_CATALOG=1
 yv iso seed
 ```
 
@@ -21,6 +21,33 @@ yv iso down
 ```
 
 ## Recipes
+
+### model-list-scrolls-under-the-header
+Viewports: both
+A ten-model Codex catalog scrolls inside the picker. The speed control stays in
+place while scrolling, and reopening the picker shows the selected model.
+
+```sh
+STEPS='[
+  {"click":"role:button:Model Fake Fast"},
+  {"expect":"role:button:Speed Standard","inViewport":true},
+  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); return list.scrollHeight - list.clientHeight >= 36; })()","equals":true},
+  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); return list.offsetWidth - list.clientWidth >= 6; })()","equals":true},
+  {"eval":"window.modelHeadingTop = document.querySelector(\".model-panel .popover-heading\").getBoundingClientRect().top"},
+  {"shot":"model-list-top"},
+  {"press":"End"},
+  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); const panel = list.closest(\".model-panel\"); return list.scrollTop > 0 && panel.scrollTop === 0 && panel.querySelector(\".popover-heading\").getBoundingClientRect().top === window.modelHeadingTop; })()","equals":true},
+  {"expect":"role:button:Speed Standard","inViewport":true},
+  {"shot":"model-list-bottom"},
+  {"click":{"role":"button","name":"Fake Option 8","exact":true}},
+  {"click":"role:button:Model Fake Option 8"},
+  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); const row = list.querySelector(\"[aria-current=true]\").getBoundingClientRect(); const clip = list.getBoundingClientRect(); return list.scrollTop > 0 && row.top >= clip.top && row.bottom <= clip.bottom; })()","equals":true},
+  {"press":"Home"},
+  {"click":{"role":"button","name":"Fake Fast","exact":true}}
+]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps "$STEPS"
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps "$(jq -nc --argjson steps "$STEPS" '[{"click":"role:button:Session setup"}] + $steps')"
+```
 
 ### switch-model-same-engine
 Choosing Fake Deep in a Codex session saves the new model.
