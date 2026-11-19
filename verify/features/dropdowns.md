@@ -44,6 +44,16 @@ yv drive 'new' --viewport desktop --steps '[{"click":"role:button:Automations"},
 yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:New automation"},{"expect":"css:select","count":0},{"click":"role:button:Schedule type"},{"click":"role:menuitemradio:Weekly"},{"click":"role:button:Day of the week"},{"expect":"role:menuitemradio:Friday","inViewport":true},{"eval":"[...document.querySelectorAll('"'"'[data-anchored-panel]'"'"')].every(p => { const r=p.getBoundingClientRect(); return r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight; })","equals":true},{"shot":"day-options"},{"click":"role:menuitemradio:Friday"},{"expect":"role:button:Day of the week","text":"Friday"}]'
 ```
 
+### connector-host-and-refresh
+Viewports: both
+The connector host list uses an app menu. The refresh label and icon align.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-edge host","kind":"direct","url":"ws://127.0.0.1:9/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-edge host"}]}'
+yv drive connectors --viewport desktop --steps '[{"expect":"role:heading:Connectors"},{"expect":"css:select","count":0},{"eval":"(() => { const b=document.querySelector('.connector-page-head .connector-refresh'); const i=b.querySelector('svg').getBoundingClientRect(), t=b.querySelector('span').getBoundingClientRect(); return Math.abs(i.top+i.height/2-t.top-t.height/2)<=1 && t.left-i.right>=4; })()","equals":true},{"click":"role:button:Connector host"},{"expect":"role:dialog:Connector host","inViewport":true},{"expect":"role:menuitemradio:TEST-edge host"},{"shot":"connector-host-menu"},{"click":"role:menuitemradio:TEST-edge host"},{"expect":"role:button:Connector host","text":"TEST-edge host"}]'
+yv drive connectors --viewport mobile --steps '[{"expect":"role:heading:Connectors"},{"expect":"css:select","count":0},{"click":"role:button:Connector host"},{"expect":"role:dialog:Connector host","inViewport":true},{"expect":"role:menuitemradio:TEST-edge host"},{"shot":"connector-host-menu"},{"click":"role:menuitemradio:TEST-edge host"},{"expect":"role:button:Connector host","text":"TEST-edge host"}]'
+```
+
 ### handover-nests-the-new-session
 Viewports: both
 Handover can use another account or model under the same agent. The new
@@ -51,6 +61,6 @@ session appears below its parent in the sidebar.
 
 ```sh
 yv api '{"op":"account.add","engine":"codex","name":"TEST-Handover"}' --wait '{"op":"accounts"}'
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Handover"},{"click":"role:button:Account"},{"click":"role:menuitemradio:TEST-Handover"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"expect":{"role":"group","name":"Handovers from TEST-say hello"},"text":"TEST-Handover"},{"shot":"subsession"}]'
-yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for [edit] TEST-fix the greeting"},{"click":"role:menuitem:Handover"},{"click":"role:button:Model"},{"click":"role:menuitemradio:Fake Deep"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"click":"role:button:Open sessions"},{"expect":{"role":"group","name":"Handovers from [edit] TEST-fix the greeting"},"text":"Fake Deep"},{"shot":"subsession"}]'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Handover"},{"click":{"role":"button","name":"Account","exact":true,"within":"role:dialog:Handover session"}},{"click":"role:menuitemradio:TEST-Handover"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"expect":{"role":"group","name":"Handovers from TEST-say hello"},"text":"TEST-Handover"},{"shot":"subsession"}]'
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for [edit] TEST-fix the greeting"},{"click":"role:menuitem:Handover"},{"click":{"role":"button","name":"Model","exact":true,"within":"role:dialog:Handover session"}},{"click":"role:menuitemradio:Fake Deep"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"click":"role:button:Open sessions"},{"expect":{"role":"group","name":"Handovers from [edit] TEST-fix the greeting"},"text":"Fake Deep"},{"shot":"subsession"}]'
 ```
