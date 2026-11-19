@@ -370,7 +370,7 @@ async fn codex_speed_is_used_for_new_turns_and_survives_restarts() {
     let sb = Sandbox::new("codex-speed");
     let d = sb.start();
     let mut c = d.client().await;
-    c.wait_for("Codex models", |m| m["models"]["codex"].is_array()).await;
+    c.wait_for("Codex models", |m| m["models"]["codex"].as_array().is_some_and(|models| !models.is_empty())).await;
     let sid = c.create(&sb.folder("proj"), "first", json!({ "serviceTier": "ultrafast" })).await;
     c.wait_turn_done(&sid, 0).await;
     let tier = || {
