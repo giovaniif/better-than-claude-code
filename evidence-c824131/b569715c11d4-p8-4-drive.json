@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "route": "session:s1a1f5604a3b6",
+  "build": {
+    "sha": "c824131c0d233b995dcf2420d6bd545d3330673a",
+    "short": "c824131",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:54:50.446Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-54-55-949Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3083,
+      "steps": 25,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-54-55-949Z/effort-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-54-55-949Z/speed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-54-55-949Z/model-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll('[data-anchored-panel]')].every(p => { const r=p.getBoundingClientRect(); return r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight; })",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "[...document.querySelectorAll('.effort-menu .picker-item')].every(b => { const r=b.getBoundingClientRect(); const d=b.querySelector('small')?.getBoundingClientRect(); return r.height>=44 && (!d || d.bottom<=r.bottom-4); })",
+          "value": true
+        },
+        {
+          "step": 9,
+          "eval": "document.activeElement.querySelector('span').textContent",
+          "value": "High"
+        },
+        {
+          "step": 14,
+          "eval": "[...document.querySelectorAll('[data-anchored-panel]')].every(p => { const r=p.getBoundingClientRect(); return r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight; })",
+          "value": true
+        },
+        {
+          "step": 15,
+          "eval": "[...document.querySelectorAll('.effort-menu .picker-item')].every(b => { const r=b.getBoundingClientRect(); const d=b.querySelector('small')?.getBoundingClientRect(); return r.height>=44 && (!d || d.bottom<=r.bottom-4); })",
+          "value": true
+        },
+        {
+          "step": 16,
+          "eval": "[...document.querySelectorAll('[data-anchored-panel]')].filter(p=>p.getAttribute('aria-label')==='Model').length",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

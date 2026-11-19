@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "c824131c0d233b995dcf2420d6bd545d3330673a",
+    "short": "c824131",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:54:50.446Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-55-17-338Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2483,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-55-17-338Z/connector-host-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(() => { const b=document.querySelector('.connector-page-head .connector-refresh'); const i=b.querySelector('svg').getBoundingClientRect(), t=b.querySelector('span').getBoundingClientRect(); return Math.abs(i.top+i.height/2-t.top-t.height/2)<=1 && t.left-i.right>=4; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

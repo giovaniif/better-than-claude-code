@@ -1,0 +1,42 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "dropdowns",
+      "at": "2026-11-19T19:55:33.035Z",
+      "counts": {
+        "pass": 5
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "composer-options-fit",
+          "status": "pass",
+          "ms": 8108
+        },
+        {
+          "label": "workspace-tab-spacing",
+          "status": "pass",
+          "ms": 10317
+        },
+        {
+          "label": "custom-schedule-options",
+          "status": "pass",
+          "ms": 7422
+        },
+        {
+          "label": "connector-host-and-refresh",
+          "status": "pass",
+          "ms": 6018
+        },
+        {
+          "label": "handover-nests-the-new-session",
+          "status": "pass",
+          "ms": 9940
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

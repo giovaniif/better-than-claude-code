@@ -1,0 +1,454 @@
+{
+  "v": 1,
+  "claim": "Fix clipping, row spacing and native dropdowns, keep missing worktree errors in Terminal and support nested handovers across agents, accounts and models.",
+  "repo": "/tmp/switchyard-dropdowns",
+  "base": "98e5525fb055e8af1eb2f416c84e16667b0d688d",
+  "head": "c824131c0d233b995dcf2420d6bd545d3330673a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SelectPicker.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SessionHandover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/dropdowns.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T19:48:34.348Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a29a629265e8d99120d3319784b1b16f7eb4589d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6597fa7b74f489e54baf256d0dbf87d2a7a477d2302b6e2f086395b1f88e8b2e"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "a2abbd340acd56ff92754fd8478a3fb0d01f5ccc02c4db0678306e2c37e0886b"
+        },
+        {
+          "path": "p1-2-drive.json",
+          "sha256": "1bbcee85f5adee296651206f3a562486e45011373ffff3c7f112bc5cd303c49a"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "78df2625bfb17add27dc137c8b317ba032b00e25b1f0a9ea44a79a30696cf6ac"
+        },
+        {
+          "path": "p1-3-drive.json",
+          "sha256": "32ff932c93c62c8e61455d90c135f8b4690e264d51a3210a8306ce09b97de341"
+        },
+        {
+          "path": "p1-2-fail-desktop-step2.png",
+          "sha256": "f1915e38302035422a29508ee057df0f417992036ab46aca2d20a82525e2b241"
+        }
+      ],
+      "addedAt": "2026-11-19T19:49:57.898Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e41e0f432b2e4623ef46db562c7e4b1b8e2fc9ee",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-2-drive.json",
+          "sha256": "0d4b7057f57428310a587c3ebaec5a38f06a75f56e2cfb4a8c92ede33866d994"
+        },
+        {
+          "path": "p2-2-fail-desktop-step1.png",
+          "sha256": "d26053321d97b53e942d7557d60577e681c620ce76d749a208c0b18bf114d9de"
+        }
+      ],
+      "addedAt": "2026-11-19T19:52:11.932Z",
+      "failedApi": [
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "79b79badb7af9842e3542835882d6eab30d8c46f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2da2aca9f44b64ca80d55819d52d97e6f40f94902dbc1ca2ae1f1b3f6ca05532"
+        }
+      ],
+      "addedAt": "2026-11-19T19:52:11.997Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon handoff_can_change_the_account_or_model_without_changing_engines",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "note",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-19T19:54:42.120Z",
+      "text": "expected-api: term.open: opening a shell in a missing worktree is refused, with the error displayed inside Terminal."
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-19T19:54:42.156Z",
+      "text": "expected-api: changes: the deleted folder has no Git status. The same response occurs on base and does not show a banner."
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "fe05b0569c752decd9200973edcb088ab94be5a271fd59b5a9bc99031b7c3f8d"
+        }
+      ],
+      "addedAt": "2026-11-19T19:54:42.195Z",
+      "cmd": "verify/yv design-check --base 98e5525fb055",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "cf12bd5c5d134522284b7599e5bad189504446e4046bb22f23130d353d49911c"
+        }
+      ],
+      "addedAt": "2026-11-19T19:54:42.281Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-3-drive.json",
+          "sha256": "a28f53fc225268bd0edcd6da186bf1583d2a6822f54f90d6682a851cb4cc37fa"
+        },
+        {
+          "path": "p8-effort-desktop.png",
+          "sha256": "eaacff55a18495db4d8877cad6b966f70ac25a86d7d8763808087fca6b32c07c"
+        },
+        {
+          "path": "p8-speed-desktop.png",
+          "sha256": "981c1f7befd8044f8c447981596e819aae997fe37ba4dd053de578af45193ec0"
+        },
+        {
+          "path": "p8-model-desktop.png",
+          "sha256": "d7582fef6dadf9aac36cb54f7a7a736d59ebaa8912d247b29dd92e386b9ebc93"
+        },
+        {
+          "path": "p8-4-drive.json",
+          "sha256": "b569715c11d4c93bb50fa17d28ac26fd6b930c26ad69ac21078ed7d20690f37d"
+        },
+        {
+          "path": "p8-effort-mobile.png",
+          "sha256": "ed92e5331d16977a9962406329e90e6fcaf7f1360d10813f7f464c0de371efd7"
+        },
+        {
+          "path": "p8-speed-mobile.png",
+          "sha256": "0f0e71ed272ada698cb7117b318ef5da8134bd5c0443923e3a25de8cb35e4f95"
+        },
+        {
+          "path": "p8-model-mobile.png",
+          "sha256": "7b360ed45f2c676e9280b5d1260837d0551046648db7efc26230e1d79bc93ce9"
+        },
+        {
+          "path": "p8-5-drive.json",
+          "sha256": "527a139eb7cb00d9c63bbd5c0d58579de07af7207a9fac8a254d0649ff90ff02"
+        },
+        {
+          "path": "p8-workspace-tabs-desktop.png",
+          "sha256": "72a5013b9132ecbcbcb86a70c31395509508b3c9a56b800b666cb744ba58eb6e"
+        },
+        {
+          "path": "p8-6-drive.json",
+          "sha256": "efbbdc876fdd83e8e2fbec63f2f91c64f0fd99f6adc1c0530506770636af7032"
+        },
+        {
+          "path": "p8-workspace-tabs-mobile.png",
+          "sha256": "9e455bf10820f7f915c46ddabfe90e1867e158184288726548eeee2ce3689267"
+        },
+        {
+          "path": "p8-7-drive.json",
+          "sha256": "8fdb92df5018ee518091a184b1fddd70acd82f97969d8fcb203a28bc237fb648"
+        },
+        {
+          "path": "p8-day-options-desktop.png",
+          "sha256": "683d7c3475dc5fe686291c02fdced303d713355f34bfe3622b4e4eca28c4f61e"
+        },
+        {
+          "path": "p8-8-drive.json",
+          "sha256": "4115dac75d003e9465c963b6caaec857685b91683781885606d8a819f6ef8151"
+        },
+        {
+          "path": "p8-day-options-mobile.png",
+          "sha256": "76ab5d3361a8357c3686c241632a22f1ae5047a0366136a83d2b5c4d2fdb371a"
+        },
+        {
+          "path": "p8-9-drive.json",
+          "sha256": "d8105825c15f9f53435c471d26f749e0ad85c0ed5c0f0a49a08fc6e3248a7caf"
+        },
+        {
+          "path": "p8-connector-host-menu-desktop.png",
+          "sha256": "6e3473847a2770015aa4008d564531d328531d6de9540212e05fea6ffd68de96"
+        },
+        {
+          "path": "p8-10-drive.json",
+          "sha256": "d47ff61ed93110026c8d5ad8b16c6aa1225b65477b0726a759e18c905671e640"
+        },
+        {
+          "path": "p8-handover-claude-desktop.png",
+          "sha256": "6fde41ee530e4e00dddddc8fb4ea4c62aebd62d5be384b1eed21ea9bc91929e7"
+        },
+        {
+          "path": "p8-11-drive.json",
+          "sha256": "715a6e09a8b82bbcbba70d6bec1c4235396dac77d79fa728f9e5b4861953ee02"
+        },
+        {
+          "path": "p8-connector-host-menu-mobile.png",
+          "sha256": "27739a62dd413b822528b1ae69c9e1884ecf0946e8c8c3d49652c867b1beea82"
+        },
+        {
+          "path": "p8-12-drive.json",
+          "sha256": "29c1894cf3875092add12925ade8fa38339d3a81476faf964a88d61d8d167fa6"
+        },
+        {
+          "path": "p8-handover-desktop.png",
+          "sha256": "4b0ad319b4ff867bbb6dbc01d7a0d1fe96681e54817828944731950b387746d2"
+        },
+        {
+          "path": "p8-subsession-desktop.png",
+          "sha256": "d3d764f64c229e80a10f5f67a848619e39cbc4c1f4e78cc27d6650de6bc5b789"
+        },
+        {
+          "path": "p8-13-drive.json",
+          "sha256": "ec254303c254fcc3037bd1ad312b89cd0a41c7c26a418ed8184e82a848e6caa6"
+        },
+        {
+          "path": "p8-handover-mobile.png",
+          "sha256": "a77a8fd6b5f25759147775c14d11b508e79744aaec01308ef86a758627415cdb"
+        },
+        {
+          "path": "p8-subsession-mobile.png",
+          "sha256": "b22b78c52b63ca92f147fadf986e0b68dca08846136eb49f2493828e10711296"
+        },
+        {
+          "path": "p8-14-drive.json",
+          "sha256": "4eec344f208b75f7ee97c2cfef213806fbe4795590c3c56f2d292c24a76087b5"
+        },
+        {
+          "path": "p8-2-missing-folder-desktop.png",
+          "sha256": "e5a2c3b0af9d73e4e1d886727d30442e2d4d8ca2f1131b96cc3391cb025952af"
+        },
+        {
+          "path": "p8-15-drive.json",
+          "sha256": "71eb506b95488805b43280a9342063e99768d4ecd0c5d467add225351b17e784"
+        },
+        {
+          "path": "p8-2-history-without-banner-mobile.png",
+          "sha256": "5fd4e19ecd78dba110e05ec4172eb94c8e7b4a3b311df8811fc0dba9f13dcace"
+        }
+      ],
+      "addedAt": "2026-11-19T19:56:34.628Z",
+      "failedApi": [
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1183069-mwnyzkad/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-1a8b",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1183069-mwnyzkad/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-1a8b",
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1183069-mwnyzkad/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-1a8b",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1183069-mwnyzkad/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-1a8b"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-switchyard-publish-dropdowns-final.json",
+          "sha256": "83cdd1814809165b6b8bc48f97cda0501e6b0250870aaa9959d57017bdc659ce"
+        }
+      ],
+      "addedAt": "2026-11-19T19:56:34.686Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "dropdowns/composer-options-fit",
+        "dropdowns/workspace-tab-spacing",
+        "dropdowns/custom-schedule-options",
+        "dropdowns/connector-host-and-refresh",
+        "dropdowns/handover-nests-the-new-session"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-switchyard-publish-terminal-final.json",
+          "sha256": "a93d2fe66fe3fd79378e566cb21f4b62947ae92c660cfc0d4d72ea090bbc086a"
+        }
+      ],
+      "addedAt": "2026-11-19T19:56:34.726Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/folder-gone"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c824131c0d233b995dcf2420d6bd545d3330673a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-switchyard-publish-models-final.json",
+          "sha256": "63ac2ca36edcea146bca0b5a0957ae08d9ba898cf60f41fa3f0c675e3a0cef8b"
+        }
+      ],
+      "addedAt": "2026-11-19T19:56:34.763Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/effort-is-its-own-chip",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling"
+      ]
+    }
+  ]
+}
