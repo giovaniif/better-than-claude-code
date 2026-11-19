@@ -700,7 +700,7 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .row-menu-form { padding: 2px; }
 .session-rename-form { display: grid; gap: 8px; }
 .session-rename-form label { display: grid; gap: 4px; font-weight: 500; }
-.session-rename-form .field { width: 100%; }
+.session-rename-form .field { font-family: inherit; }
 .session-rename-form .popover-footer { justify-content: flex-end; margin-top: 4px; }
 .group-zone { margin-top: 4px; }
 /* Drag a row onto a section to move it there: the section under the pointer lights up, the row being dragged dims. */
