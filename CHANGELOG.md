@@ -2,6 +2,12 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.15.0 (2026-11-19)
+
+- **Hand over a session.** Choose Handover in the session’s sidebar menu to continue with another agent, account, or model. The new subsession uses the same folder, receives a summary of the conversation, and appears beneath the original in the sidebar.
+- **Dropdowns fit the window.** Effort and Codex speed descriptions fit inside their rows, and speed opens within the Model picker. Connectors and Automations use Switchyard’s own menus. Workspace tabs have more space, and the Connectors refresh icon lines up with its label.
+- **Open old conversations without a missing-folder banner.** If a session’s folder was removed, the error appears in Terminal with a retry button, and the conversation remains accessible.
+
 ## 0.14.0 (2026-11-19)
 
 - **Codex speed.** Choose Standard, Fast, or Ultrafast in the model menu when the selected host reports those options. Speed changes apply to the next turn.
