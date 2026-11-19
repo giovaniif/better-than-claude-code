@@ -165,27 +165,27 @@ export function TerminalPane(props: { sessionId: string; connected: boolean; vis
             </button>
             {menu && (
               <AnchoredPopover anchor={menuAnchor} label="Attach terminal output" variant="select-panel" onClose={() => setMenu(false)}>
-              <div role="menu">
-                {selection.trim() && (
-                  <button
-                    className="picker-item menu-item"
-                    role="menuitem"
-                    title={cut ? `The selection is ${selection.length.toLocaleString()} characters; only the first ${SELECTION_CAP.toLocaleString()} are attached.` : undefined}
-                    onClick={() => attach(selection)}
-                  >
-                    Selection
+                <div role="menu">
+                  {selection.trim() && (
+                    <button
+                      className="picker-item menu-item"
+                      role="menuitem"
+                      title={cut ? `The selection is ${selection.length.toLocaleString()} characters; only the first ${SELECTION_CAP.toLocaleString()} are attached.` : undefined}
+                      onClick={() => attach(selection)}
+                    >
+                      Selection
+                    </button>
+                  )}
+                  <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "screen" })}>
+                    Rows on screen
                   </button>
-                )}
-                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "screen" })}>
-                  Rows on screen
-                </button>
-                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 100 })}>
-                  Last 100 lines
-                </button>
-                <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 500 })}>
-                  Last 500 lines
-                </button>
-              </div>
+                  <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 100 })}>
+                    Last 100 lines
+                  </button>
+                  <button className="picker-item menu-item" role="menuitem" onClick={() => attachRows({ kind: "last", n: 500 })}>
+                    Last 500 lines
+                  </button>
+                </div>
               </AnchoredPopover>
             )}
           </span>

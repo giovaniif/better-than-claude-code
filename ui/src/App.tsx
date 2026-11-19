@@ -1400,7 +1400,7 @@ export function ModelPicker(props: {
                   return (
                     <div key={engine} className="picker-group">
                       {folded ? (
-                        <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
+                        <button className="btn-text picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
                           <span>
                             {`${ENGINE_NAME[engine]} · ${list.length} ${list.length === 1 ? "model" : "models"}`}
                             {handoff ? " · switching hands off" : ""}
@@ -1433,11 +1433,11 @@ export function ModelPicker(props: {
                             return (
                               <button
                                 key={m.id}
-                                disabled={disabled}
-                                aria-current={isCurrent ? "true" : undefined}
                                 className={`picker-item picker-model ${isCurrent ? "active" : ""} ${
                                   confirm?.engine === engine && confirm.model === m.id ? "active" : ""
                                 }`}
+                                disabled={disabled}
+                                aria-current={isCurrent ? "true" : undefined}
                                 onClick={() => {
                                   const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
                                   if (isHandoff) {

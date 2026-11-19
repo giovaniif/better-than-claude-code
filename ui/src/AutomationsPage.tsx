@@ -1,8 +1,8 @@
-import { SelectPicker } from "./SelectPicker";
 // The Automations page and its form. Each host keeps its own automations;
 // this page lists them all as a grid of small cards, with the runs of each
 // (ordinary sessions whose metadata names the automation, kept out of the
 // sidebar) as a strip of marks.
+import { SelectPicker } from "./SelectPicker";
 import { useEffect, useMemo, useState } from "react";
 import type { Automation, AutomationWindow, Engine, Permission, Schedule, SessionMeta } from "./protocol";
 import { branchKey, homeOn, hostName, hostOf, hostOnline, modelsOn, usageOn, type Actions, type State } from "./store";
