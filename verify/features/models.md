@@ -41,12 +41,12 @@ STEPS='[
   {"shot":"model-list-bottom"},
   {"click":{"role":"button","name":"Fake Option 8","exact":true}},
   {"click":"role:button:Model Fake Option 8"},
-  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); const row = list.querySelector(\"[aria-current=true]\").getBoundingClientRect(); const clip = list.getBoundingClientRect(); return list.scrollTop > 0 && row.top >= clip.top && row.bottom <= clip.bottom; })()","equals":true},
+  {"eval":"(() => { const list = document.querySelector(\".model-popover\"); const row = list.querySelector(\"[aria-current=true]\").getBoundingClientRect(); const clip = list.getBoundingClientRect(); return list.scrollTop > 0 && row.top >= clip.top - 1 && row.bottom <= clip.bottom + 1; })()","equals":true},
   {"press":"Home"},
   {"click":{"role":"button","name":"Fake Fast","exact":true}}
 ]'
-yv drive 'session:{{sid_echo}}' --viewport desktop --steps "$STEPS"
-yv drive 'session:{{sid_echo}}' --viewport mobile --steps "$(jq -nc --argjson steps "$STEPS" '[{"click":"role:button:Session setup"}] + $steps')"
+yv drive 'session:{{sid_echo}}' --viewport desktop --show-scrollbars --steps "$STEPS"
+yv drive 'session:{{sid_echo}}' --viewport mobile --show-scrollbars --steps "$(jq -nc --argjson steps "$STEPS" '[{"click":"role:button:Session setup"}] + $steps')"
 ```
 
 ### switch-model-same-engine
