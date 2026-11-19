@@ -104,6 +104,10 @@ const MODELS = [
     hidden: false,
     isDefault: true,
     defaultReasoningEffort: "low",
+    serviceTiers: [
+      { id: "priority", name: "Fast", description: "Higher speed, increased usage" },
+      { id: "ultrafast", name: "Ultrafast", description: "Fastest available responses" },
+    ],
     supportedReasoningEfforts: [
       { reasoningEffort: "low", description: "Quick" },
       { reasoningEffort: "high", description: "Careful" },
@@ -205,7 +209,7 @@ async function handle(msg) {
       const thread = threads.get(p.threadId);
       if (!thread) return fail(`no such thread: ${p.threadId}`);
       // Every input item, so tests can check what reached the engine.
-      if (dir) appendFileSync(`${dir}/turn-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, input: p.input, home })}\n`);
+      if (dir) appendFileSync(`${dir}/turn-inputs.jsonl`, `${JSON.stringify({ threadId: p.threadId, input: p.input, home, serviceTierForTurn: p.serviceTierForTurn })}\n`);
       const text = (p.input ?? []).filter((i) => i.type === "text").map((i) => i.text).join("\n");
       const turn = { id: newId("turn"), items: [], status: "inProgress", error: null };
       // Registered before the reply, so an interrupt that arrives before the

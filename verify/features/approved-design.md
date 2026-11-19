@@ -100,3 +100,12 @@ model names are longer.
 ```sh
 yv drive new --viewport desktop --steps '[{"expect":"css:.composer-row .model-trigger"},{"eval":"(() => { const style = document.createElement(\"style\"); style.textContent = \".session-toolbar .picker > button { font-size: 32px; }\"; document.head.append(style); return true; })()","equals":true},{"expect":"css:.composer-row .composer-setup"},{"expect":"css:.composer-row .model-trigger","count":0},{"click":"role:button:Session setup"},{"expect":"role:dialog:Session setup"},{"shot":"uncompressed-selectors"}]'
 ```
+
+### codex-speed-in-model-menu
+Viewports: both
+The Codex model menu offers reported speed tiers. An existing session keeps its selection.
+
+```sh
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Model Fake Fast"},{"click":"role:button:Speed Standard"},{"expect":"role:menuitemradio:Standard"},{"expect":"role:menuitemradio:Fast"},{"expect":"role:menuitemradio:Ultrafast"},{"shot":"codex-speeds"},{"click":"role:menuitemradio:Ultrafast"},{"expect":"role:button:Speed Ultrafast"},{"reload":true}]'
+yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"click":"role:button:Session setup"},{"click":"role:button:Model Fake Fast"},{"click":"role:button:Speed Standard"},{"expect":"role:menuitemradio:Standard"},{"expect":"role:menuitemradio:Fast"},{"expect":"role:menuitemradio:Ultrafast"},{"shot":"codex-speeds"},{"click":"role:menuitemradio:Ultrafast"},{"expect":"role:button:Speed Ultrafast"}]'
+```

@@ -40,7 +40,11 @@ async fn snapshot_has_its_shape_and_the_fake_models() {
     assert_eq!(
         codex,
         json!([
-            { "id": "fake-fast", "name": "Fake Fast", "efforts": ["low", "high"], "defaultEffort": "low", "isDefault": true },
+            { "id": "fake-fast", "name": "Fake Fast", "efforts": ["low", "high"], "defaultEffort": "low", "isDefault": true,
+                "serviceTiers": [
+                    { "id": "priority", "name": "Fast", "description": "Higher speed, increased usage" },
+                    { "id": "ultrafast", "name": "Ultrafast", "description": "Fastest available responses" },
+                ] },
             { "id": "fake-deep", "name": "Fake Deep", "efforts": ["medium", "xhigh"], "defaultEffort": "medium", "isDefault": false },
         ])
     );
@@ -359,6 +363,34 @@ async fn a_queued_message_can_be_taken_back_to_edit() {
     assert_eq!(back["id"], id);
     c.wait_after(from, "the empty queue", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["pending"].as_array().map_or(true, |p| p.is_empty())).await;
     c.send(json!({ "op": "session.interrupt", "sessionId": sid })).await;
+}
+
+#[tokio::test]
+async fn codex_speed_is_used_for_new_turns_and_survives_restarts() {
+    let sb = Sandbox::new("codex-speed");
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.wait_for("Codex models", |m| m["models"]["codex"].is_array()).await;
+    let sid = c.create(&sb.folder("proj"), "first", json!({ "serviceTier": "ultrafast" })).await;
+    c.wait_turn_done(&sid, 0).await;
+    let tier = || {
+        fs::read_to_string(sb.fake_state().join("turn-inputs.jsonl")).unwrap()
+            .lines().last().map(|line| serde_json::from_str::<Value>(line).unwrap()["serviceTierForTurn"].clone()).unwrap()
+    };
+    assert_eq!(tier(), "ultrafast");
+    c.send(json!({ "op": "session.setServiceTier", "sessionId": sid, "serviceTier": "default" })).await;
+    c.wait_for("standard speed", |m| m["op"] == "session" && m["session"]["id"] == sid && m["session"]["serviceTier"] == "default").await;
+    let deadline = Instant::now() + WAIT;
+    while saved_meta(&sb, &sid).map(|m| m["serviceTier"] == "default") != Some(true) {
+        assert!(Instant::now() < deadline);
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    d.kill();
+    let d = sb.start();
+    let mut c = d.client().await;
+    c.send(json!({ "op": "session.send", "sessionId": sid, "text": "second" })).await;
+    c.wait_for("second reply", |m| is_event(m, &sid) && m["event"]["text"] == "Echo: second").await;
+    assert_eq!(tier(), "default");
 }
 
 #[tokio::test]
