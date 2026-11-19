@@ -1,0 +1,174 @@
+{
+  "v": 1,
+  "claim": "Codex model menu selects the service tier used for the next turn",
+  "repo": "/tmp/switchyard-codex-speed",
+  "base": "d3a576a41f5d34089e799578e49f8a98f4adafae",
+  "head": "016f834e761bba1a43bc43835acffec127ed8148",
+  "changed": [
+    {
+      "status": "M",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/codex.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/state.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/fake-codex/codex"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approved-design.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T19:20:11.351Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "head",
+      "kind": "fix",
+      "at": "016f834e761bba1a43bc43835acffec127ed8148",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c4ad71c5029be9385db115843d09039e8350cf9e469374089accae33eca9b0f7"
+        },
+        {
+          "path": "p1-codex-speeds-desktop.png",
+          "sha256": "27ba5cfc06a189d8e65d78b82eee830e8d3428cf8d8be53fbb7d6134788e2f20"
+        }
+      ],
+      "addedAt": "2026-11-19T19:20:25.014Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "fix",
+      "at": "016f834e761bba1a43bc43835acffec127ed8148",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "c4430b901f86c95a20d495cda29d15ab943ef0bd3df8931aeb5c2d42b68249e7"
+        },
+        {
+          "path": "p2-codex-speeds-mobile.png",
+          "sha256": "8f877212d619f90622cc0300d8025f21f9201afa1f3e19874c9aa1613f5ea1de"
+        }
+      ],
+      "addedAt": "2026-11-19T19:20:25.055Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "016f834e761bba1a43bc43835acffec127ed8148",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "c98db3b4051b5c5ffffe834454488d47f4d728c4e90b131c3dff4f30c605c7bd"
+        }
+      ],
+      "addedAt": "2026-11-19T19:20:25.095Z",
+      "cmd": "verify/yv design-check --base d3a576a41f5d",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "016f834e761bba1a43bc43835acffec127ed8148",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "ab2db5371a6c389813d76bbda6842e03fd301163f7346d71719b993ae2f72b87"
+        }
+      ],
+      "addedAt": "2026-11-19T19:20:25.176Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e47693fd520e227884c7c3577cf04487e3890402",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "52c294e7145a252581cfa5f93702b1573dc72611c89297da7d4491e838508ef3"
+        },
+        {
+          "path": "p5-fail-desktop-step1.png",
+          "sha256": "16a038b7ffcde0e012e9ff8dbc96d6a62d1417e2bf501c06ded1092c3b94d625"
+        }
+      ],
+      "addedAt": "2026-11-19T19:21:51.169Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "base",
+      "kind": "test",
+      "at": "e47693fd520e227884c7c3577cf04487e3890402",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "4f44d03b72aeae6be1d1956f728e1425031fbba95c7f72a397cb833054459d5c"
+        }
+      ],
+      "addedAt": "2026-11-19T19:21:51.214Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon codex_speed_is_used_for_new_turns_and_survives_restarts",
+      "exit": 101
+    }
+  ]
+}

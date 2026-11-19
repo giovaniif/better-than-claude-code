@@ -1,0 +1,42 @@
+{
+  "ok": false,
+  "route": "session:s1a1f541dda46",
+  "build": {
+    "sha": "e47693fd520e227884c7c3577cf04487e3890402",
+    "short": "e47693f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:21:36.562Z"
+  },
+  "dir": "/tmp/switchyard-codex-speed-base/.verify/drives/2026-11-19T19-21-37-531Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 13256,
+      "steps": 9,
+      "failed": {
+        "step": 1,
+        "action": {
+          "click": "role:button:Speed Standard"
+        },
+        "reason": "click: Timeout 10000ms exceeded.",
+        "screenshot": "/tmp/switchyard-codex-speed-base/.verify/drives/2026-11-19T19-21-37-531Z/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 3% · 26%\"\n- separator \"Resize the sessions sidebar\"\n- main:\n  - heading \"TEST-say hello\" [level=1]\n  - code: yard/test-say-hello-d8c5\n  - button \"Set up iPhone app\"\n  - button \"Delete\"\n  - text: TEST-say hello\n  - paragraph: \"Echo: TEST-say hello\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\" [expanded]: Fake Fast\n  - 'button \"Account: Codex, Default\"'\n  - button \"Effort Low\": Low\n  - button \"Ask first\"\n  - button \"Send\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Terminal\" [pressed]\n  - button \"Subagents\"\n  - button \"Processes\"\n  - tablist \"Terminals\":\n    - tab \"1\" [selected]\n    - button \"Close terminal\"\n    - button \"New terminal\"\n    - button \"Attach\"\n  - textbox \"Terminal input\"\n- dialog \"Model\":\n  - strong: Model\n  - text: Codex\n  - button \"Fake Fast\"\n  - button \"Fake Deep\"\n  - button \"Claude · 3 models · switching hands off\"\n  - button \"OpenCode · 1 model · switching hands off\"\n  - button \"Grok · 2 models · switching hands off\"\n  - button \"Gemini · 2 models · switching hands off\""
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"click\":\"role:button:Speed Standard\"}: click: Timeout 10000ms exceeded.",
+      "hint": "see /tmp/switchyard-codex-speed-base/.verify/drives/2026-11-19T19-21-37-531Z/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

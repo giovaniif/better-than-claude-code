@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon codex_speed_is_used_for_new_turns_and_survives_restarts
+# exit 101 after 4827 ms at e47693fd520e227884c7c3577cf04487e3890402
+
+
+running 1 test
+test codex_speed_is_used_for_new_turns_and_survives_restarts ... FAILED
+
+failures:
+
+---- codex_speed_is_used_for_new_turns_and_survives_restarts stdout ----
+
+thread 'codex_speed_is_used_for_new_turns_and_survives_restarts' (979213) panicked at crates/yardd/tests/daemon.rs:380:5:
+assertion `left == right` failed
+  left: Null
+ right: "ultrafast"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-979212-codex-speed-0 for inspection
+
+
+failures:
+    codex_speed_is_used_for_new_turns_and_survives_restarts
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 81 filtered out; finished in 0.13s
+
+
+   Compiling yardd v0.14.0 (/tmp/switchyard-codex-speed-base/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 4.64s
+     Running tests/daemon.rs (target/debug/build/yardd/6420060787ed89e4/out/daemon-6420060787ed89e4)
+error: test failed, to rerun pass `-p yardd --test daemon`
