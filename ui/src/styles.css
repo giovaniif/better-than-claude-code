@@ -1138,16 +1138,18 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .session-toolbar .composer-controls { display: flex; flex: 1; align-items: center; gap: 2px; min-width: 0; }
 .session-toolbar .send { flex: none; }
 .session-toolbar .attach-btn { flex: none; margin-left: 0; padding: 0; }
-.session-toolbar .picker { flex: 0 1 auto; min-width: 0; }
-.session-toolbar .picker > button { display: flex; gap: 5px; max-width: 100%; padding-inline: 6px; }
-.session-toolbar .picker > button > span:not(.muted):not(.account-avatar):not(.model-provider) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.composer-settings-slot { position: relative; flex: 1; min-width: 0; }
+.composer-settings-options { display: flex; width: max-content; align-items: center; gap: 2px; }
+.composer-settings-slot.compact { overflow: clip; overflow-clip-margin: 4px; }
+.composer-settings-slot.compact .composer-settings-options { position: absolute; visibility: hidden; }
+.session-toolbar .picker { flex: none; }
+.session-toolbar .picker > button { display: flex; gap: 5px; padding-inline: 6px; white-space: nowrap; }
 .session-toolbar .account-trigger-name { display: none; }
 .session-toolbar .account-trigger { min-width: 38px; }
-.session-toolbar .permission { white-space: nowrap; }
 .session-toolbar .account-avatar, .model-provider { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-size: 10px; font-weight: 600; }
 .model-provider { background: var(--ink); color: var(--bg); }
 .session-toolbar .model-trigger::before { content: ""; width: 1px; height: 18px; background: var(--line); margin-inline-end: 4px; flex: none; }
-.composer-setup { display: inline-flex; min-width: 0; max-width: 100%; height: 36px; gap: 5px; margin-left: 3px; padding-inline: 8px; border: 1px solid var(--line); border-radius: 18px; }
+.composer-setup { display: inline-flex; min-width: 0; max-width: calc(100% - 3px); height: 36px; gap: 5px; margin-left: 3px; padding-inline: 8px; border: 1px solid var(--line); border-radius: 18px; }
 .composer-setup.permission-full { border-color: var(--warn-border); background: var(--warn-fill); }
 .composer-setup > svg { flex: none; }
 .setup-model { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
