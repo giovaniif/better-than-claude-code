@@ -703,6 +703,8 @@ body:has(.resizer.dragging) iframe, body:has(.resizer.dragging) .xterm { pointer
 .session-rename-form label { display: grid; gap: 4px; font-weight: 500; }
 .session-rename-form .field { font-family: inherit; }
 .session-rename-form .popover-footer { justify-content: flex-end; margin-top: 4px; }
+.handover-fields { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 12px; margin: 12px 0; }
+.session-children { margin-inline-start: 10px; padding-inline-start: 6px; border-left: 1px solid var(--line-strong); }
 .group-zone { margin-top: 4px; }
 /* Drag a row onto a section to move it there: the section under the pointer lights up, the row being dragged dims. */
 .drop-zone { display: flex; flex-direction: column; gap: 2px; border-radius: 8px; }

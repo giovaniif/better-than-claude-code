@@ -1,4 +1,4 @@
-//! Engine hand-off: move a piece of work to another engine.
+//! Hand-off: continue work with a different engine, account or model.
 //!
 //! Engines cannot share a thread, so a hand-off is a new session on the
 //! engine the message names, in the same folder, seeded with a brief of the old one.
@@ -47,11 +47,12 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
         bail!("unknown engine {engine}");
     }
     let source = app.meta(sid).context("no such session")?;
-    if source.engine == engine {
-        bail!("this session already runs on {}; pick a model in the picker instead", engine_name(engine));
+    let account = msg["account"].as_str().filter(|s| !s.is_empty()).unwrap_or(crate::accounts::DEFAULT);
+    if source.engine == engine && source.model == model && source.account == account {
+        bail!("this session already runs on {} with that account and model", engine_name(engine));
     }
     // Two agents must not write to one folder at the same time.
-    if source.status == "running" || source.status == "needs_approval" {
+    if matches!(source.status.as_str(), "running" | "needs_approval" | "queued") {
         bail!("stop the running turn before handing off");
     }
     if !std::path::Path::new(&source.cwd).is_dir() {
@@ -70,7 +71,7 @@ async fn handoff(app: &Arc<App>, direct: &mpsc::UnboundedSender<String>, msg: &V
     // the target engine's Default unless the message names one of its accounts.
     let account = msg["account"].as_str().filter(|a| !a.is_empty()).unwrap_or(crate::accounts::DEFAULT);
     app.accounts.check(engine, account)?;
-    let new_sid = app.new_session(engine, model, effort, &source.cwd, &source.title, worktree, account);
+    let new_sid = app.insert_session(engine, model, effort, &source.cwd, &source.title, worktree, true, account, None)?;
     app.update_meta(&new_sid, |m| {
         m.parent = Some(sid.to_string());
         m.permission = source.permission.clone();

@@ -17,6 +17,7 @@ import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge, tooMany 
 import { TerminalPane } from "./TerminalPane";
 import { SessionPullRequest } from "./SessionPullRequest";
 import { SessionRename } from "./SessionRename";
+import { SessionHandover } from "./SessionHandover";
 import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
@@ -449,6 +450,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
   // The menu's group pages: the list of groups, then the name field for a new one.
   const [groupPage, setGroupPage] = useState<"list" | "new" | null>(null);
   const [renaming, setRenaming] = useState(false);
+  const [handingOver, setHandingOver] = useState(false);
   const [newGroup, setNewGroup] = useState("");
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -544,6 +546,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
         <Icon d={MORE} size={16} />
       </button>
       {renaming && <SessionRename anchor={more} title={s.title} onSave={(title) => actions.rename(s.id, title)} onClose={() => setRenaming(false)} />}
+      {handingOver && <SessionHandover anchor={more} session={s} state={state} actions={actions} onClose={() => setHandingOver(false)} />}
       {menu &&
         createPortal(
           <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
@@ -587,6 +590,10 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
                 <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => { close(); setRenaming(true); }}>
                   <Icon d={PENCIL} size={14} />
                   Rename…
+                </button>
+                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => { close(); setHandingOver(true); }}>
+                  <Icon d="M5 5v8a3 3 0 0 0 3 3h11m-5-5 5 5-5 5" />
+                  Handover…
                 </button>
                 <button className="picker-item menu-item" role="menuitem" onClick={() => { unread || mark === "answered" ? onRead() : onUnread(); close(); }}>
                   <Icon d={unread || mark === "answered" ? CHECK : "M4 6h16v12H4ZM4 6l8 6 8-6"} size={14} />
@@ -896,6 +903,30 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
       drag={narrow ? undefined : rowDrag(s.id)}
     />
   );
+  const shownById = new Map(all.map((session) => [session.id, session]));
+  const children = new Map<string, SessionMeta[]>();
+  const nestedIds = new Set<string>();
+  for (const session of [...active, ...groups.flatMap((group) => group.sessions), ...archived]) {
+    const parent = session.parent ? shownById.get(session.parent) : undefined;
+    if (!parent || parent.id === session.id || parent.createdAt > session.createdAt ||
+        !!parent.archived !== !!session.archived || (parent.group ?? "") !== (session.group ?? "")) continue;
+    const siblings = children.get(parent.id) ?? [];
+    siblings.push(session);
+    children.set(parent.id, siblings);
+    nestedIds.add(session.id);
+  }
+  const tree = (session: SessionMeta): ReactNode => {
+    const subsessions = children.get(session.id);
+    return subsessions?.length ? (
+      <Fragment key={session.id}>
+        {row(session)}
+        <div className="session-children" role="group" aria-label={`Handovers from ${session.title}`}>
+          {subsessions.map(tree)}
+        </div>
+      </Fragment>
+    ) : row(session);
+  };
+  const roots = (sessions: SessionMeta[]) => sessions.filter((session) => !nestedIds.has(session.id));
   // With no ungrouped rows there is nothing to drop on to leave a group, so a slot stands in.
   const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
@@ -938,13 +969,13 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
         {pinned.length > 0 && (
           <div {...dropZone("pinned", { kind: "pinned" })}>
             <div className="list-head">Pinned</div>
-            {pinned.map(row)}
+            {pinned.map(tree)}
           </div>
         )}
         {(active.length > 0 || ungroupSlot) && (
           <div {...dropZone("ungrouped", { kind: "ungrouped" })}>
             {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
-            {active.map(row)}
+            {roots(active).map(tree)}
             {ungroupSlot && <div className="drop-slot">{dragged?.group ? "Drop here to remove from group" : "Drop here to unpin"}</div>}
           </div>
         )}
@@ -961,7 +992,7 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
                 members={all.filter((s) => s.group === g.name)}
                 actions={actions}
               />
-              {!collapsed.has(g.name) && g.sessions.map(row)}
+              {!collapsed.has(g.name) && roots(g.sessions).map(tree)}
             </div>
           );
         })}
@@ -975,7 +1006,7 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
               <Icon d={CHEVRON_RIGHT} size={11} />
             </span>
           </button>
-          {showArchived && <div className="archived-list">{archived.map(row)}</div>}
+          {showArchived && <div className="archived-list">{roots(archived).map(tree)}</div>}
         </div>
       )}
       {usage}
