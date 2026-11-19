@@ -17,6 +17,7 @@ import { dragHasFiles, humanSize, isInlineImage, pastedFiles, tooLarge, tooMany 
 import { TerminalPane } from "./TerminalPane";
 import { SessionPullRequest } from "./SessionPullRequest";
 import { SessionRename } from "./SessionRename";
+import { SessionHandover } from "./SessionHandover";
 import { PeekScope, PrLink } from "./PrHoverCard";
 import { PR_URL_SOURCE, prLink, shortLabel } from "./prPeek";
 import { ProcPane } from "./ProcPane";
@@ -449,6 +450,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
   // The menu's group pages: the list of groups, then the name field for a new one.
   const [groupPage, setGroupPage] = useState<"list" | "new" | null>(null);
   const [renaming, setRenaming] = useState(false);
+  const [handingOver, setHandingOver] = useState(false);
   const [newGroup, setNewGroup] = useState("");
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -544,6 +546,7 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
         <Icon d={MORE} size={16} />
       </button>
       {renaming && <SessionRename anchor={more} title={s.title} onSave={(title) => actions.rename(s.id, title)} onClose={() => setRenaming(false)} />}
+      {handingOver && <SessionHandover anchor={more} session={s} state={state} actions={actions} onClose={() => setHandingOver(false)} />}
       {menu &&
         createPortal(
           <div ref={pop} className="row-menu" role="menu" style={pos ?? { left: 0, top: 0, visibility: "hidden" }}>
@@ -587,6 +590,10 @@ function SessionRow({ state, actions, session: s, active, groups, seenAt, unread
                 <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => { close(); setRenaming(true); }}>
                   <Icon d={PENCIL} size={14} />
                   Rename…
+                </button>
+                <button className="picker-item menu-item" role="menuitem" disabled={!online} onClick={() => { close(); setHandingOver(true); }}>
+                  <Icon d="M5 5v8a3 3 0 0 0 3 3h11m-5-5 5 5-5 5" />
+                  Handover…
                 </button>
                 <button className="picker-item menu-item" role="menuitem" onClick={() => { unread || mark === "answered" ? onRead() : onUnread(); close(); }}>
                   <Icon d={unread || mark === "answered" ? CHECK : "M4 6h16v12H4ZM4 6l8 6 8-6"} size={14} />
@@ -896,6 +903,30 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
       drag={narrow ? undefined : rowDrag(s.id)}
     />
   );
+  const shownById = new Map(all.map((session) => [session.id, session]));
+  const children = new Map<string, SessionMeta[]>();
+  const nestedIds = new Set<string>();
+  for (const session of [...active, ...groups.flatMap((group) => group.sessions), ...archived]) {
+    const parent = session.parent ? shownById.get(session.parent) : undefined;
+    if (!parent || parent.id === session.id || parent.createdAt > session.createdAt ||
+        !!parent.archived !== !!session.archived || (parent.group ?? "") !== (session.group ?? "")) continue;
+    const siblings = children.get(parent.id) ?? [];
+    siblings.push(session);
+    children.set(parent.id, siblings);
+    nestedIds.add(session.id);
+  }
+  const tree = (session: SessionMeta): ReactNode => {
+    const subsessions = children.get(session.id);
+    return subsessions?.length ? (
+      <Fragment key={session.id}>
+        {row(session)}
+        <div className="session-children" role="group" aria-label={`Handovers from ${session.title}`}>
+          {subsessions.map(tree)}
+        </div>
+      </Fragment>
+    ) : row(session);
+  };
+  const roots = (sessions: SessionMeta[]) => sessions.filter((session) => !nestedIds.has(session.id));
   // With no ungrouped rows there is nothing to drop on to leave a group, so a slot stands in.
   const ungroupSlot = active.length === 0 && !!dragged && !!dropUpdate(dragged, { kind: "ungrouped" });
   return (
@@ -938,13 +969,13 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
         {pinned.length > 0 && (
           <div {...dropZone("pinned", { kind: "pinned" })}>
             <div className="list-head">Pinned</div>
-            {pinned.map(row)}
+            {pinned.map(tree)}
           </div>
         )}
         {(active.length > 0 || ungroupSlot) && (
           <div {...dropZone("ungrouped", { kind: "ungrouped" })}>
             {pinned.length > 0 && active.length > 0 && <div className="list-head">Sessions</div>}
-            {active.map(row)}
+            {roots(active).map(tree)}
             {ungroupSlot && <div className="drop-slot">{dragged?.group ? "Drop here to remove from group" : "Drop here to unpin"}</div>}
           </div>
         )}
@@ -961,7 +992,7 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
                 members={all.filter((s) => s.group === g.name)}
                 actions={actions}
               />
-              {!collapsed.has(g.name) && g.sessions.map(row)}
+              {!collapsed.has(g.name) && roots(g.sessions).map(tree)}
             </div>
           );
         })}
@@ -975,7 +1006,7 @@ function Sidebar({ state, actions, shown, usage, open, nativeMenu, onImport, onN
               <Icon d={CHEVRON_RIGHT} size={11} />
             </span>
           </button>
-          {showArchived && <div className="archived-list">{archived.map(row)}</div>}
+          {showArchived && <div className="archived-list">{roots(archived).map(tree)}</div>}
         </div>
       )}
       {usage}
@@ -1040,7 +1071,7 @@ export function PermissionPicker({ engine, value, onChange }: { engine: Engine; 
       {open && (
         <AnchoredPopover anchor={anchor} label="Permissions" onClose={() => setOpen(false)}>
           <div className="popover-heading"><strong>Permissions</strong></div>
-          <div className="permission-menu" role="menu">
+          <div className="permission-menu choice-menu" role="menu">
             {PERMISSIONS.map((p) => (
               <button
                 key={p.id}
@@ -1091,7 +1122,7 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
       {open && (
         <AnchoredPopover anchor={anchor} label="Effort" onClose={() => setOpen(false)}>
           <div className="popover-heading"><strong>Effort</strong></div>
-          <div className="effort-menu" role="menu" aria-label="Effort">
+          <div className="effort-menu choice-menu" role="menu" aria-label="Effort">
             {efforts.map((e) => (
               <button
                 key={e}
@@ -1105,6 +1136,7 @@ export function EffortPicker({ models, value, onChange }: { models: Models; valu
               >
                 <span>{capitalize(e)}</span>
                 {EFFORT_DESCRIPTIONS[e] && <small className="muted">{EFFORT_DESCRIPTIONS[e]}</small>}
+                {e === value.effort && <Icon d={CHECK} size={13} />}
               </button>
             ))}
           </div>
@@ -1218,43 +1250,36 @@ function AccountPicker({
 
 const STANDARD_SPEED = { id: "default", name: "Standard", description: "Default speed" };
 
-function SpeedPicker({ tiers, value, onChange, nextTurn }: {
-  tiers: NonNullable<ModelInfo["serviceTiers"]>;
-  value: string;
+function SpeedOptions({ options, selected, onChange, onBack, nextTurn }: {
+  options: NonNullable<ModelInfo["serviceTiers"]>;
+  selected: string;
   onChange(value: string): void;
+  onBack(): void;
   nextTurn?: boolean;
 }) {
-  const anchor = useRef<HTMLButtonElement>(null);
-  const [open, setOpen] = useState(false);
-  const options = [STANDARD_SPEED, ...tiers.filter((tier) => tier.id !== STANDARD_SPEED.id)];
-  const selected = options.find((tier) => tier.id === value) ?? STANDARD_SPEED;
   return (
     <>
-      <button ref={anchor} className="btn-quiet speed-trigger" aria-label={`Speed ${selected.name}`} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <Icon d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z" size={14} />
-        {selected.name}
-        <Icon d={CHEVRON_DOWN} size={12} />
-      </button>
-      {open && (
-        <AnchoredPopover anchor={anchor} label="Codex speed" onClose={() => setOpen(false)}>
-          <div className="popover-heading"><strong>Codex speed</strong></div>
-          {nextTurn && <p className="muted small speed-note">Applies to the next turn.</p>}
-          <div className="effort-menu" role="menu" aria-label="Codex speed">
-            {options.map((tier) => (
-              <button
-                key={tier.id}
-                className={`picker-item ${tier.id === selected.id ? "active" : ""}`}
-                role="menuitemradio"
-                aria-checked={tier.id === selected.id}
-                onClick={() => { onChange(tier.id); setOpen(false); }}
-              >
-                <span>{tier.name}</span>
-                {tier.description && <small className="muted">{tier.description}</small>}
-              </button>
-            ))}
-          </div>
-        </AnchoredPopover>
-      )}
+      <div className="popover-heading speed-heading">
+        <button className="btn-icon" aria-label="Back to models" onClick={onBack}><Icon d="M15 18l-6-6 6-6" /></button>
+        <strong>Codex speed</strong>
+      </div>
+      {nextTurn && <p className="muted small speed-note">Applies to the next turn.</p>}
+      <div className="effort-menu choice-menu" role="menu" aria-label="Codex speed">
+        {options.map((tier) => (
+          <button
+            key={tier.id}
+            className="picker-item"
+            role="menuitemradio"
+            autoFocus={tier.id === selected}
+            aria-checked={tier.id === selected}
+            onClick={() => onChange(tier.id)}
+          >
+            <span>{tier.name}</span>
+            {tier.description && <small className="muted">{tier.description}</small>}
+            {tier.id === selected && <Icon d={CHECK} size={13} />}
+          </button>
+        ))}
+      </div>
     </>
   );
 }
@@ -1271,6 +1296,8 @@ export function ModelPicker(props: {
   const { models, value, engines, onChange, handoff } = props;
   const [open, setOpen] = useState(false);
   const anchor = useRef<HTMLButtonElement>(null);
+  const speedTrigger = useRef<HTMLButtonElement>(null);
+  const [showSpeed, setShowSpeed] = useState(false);
   const [confirm, setConfirm] = useState<Choice | null>(null);
   // Engines not in use start folded, each opened on its own.
   const [expanded, setExpanded] = useState<Engine[]>([]);
@@ -1282,10 +1309,19 @@ export function ModelPicker(props: {
   // down to the model that was just clicked. Bring it into view.
   const popover = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (confirm) popover.current?.closest("[data-anchored-panel]")?.scrollTo({ top: 0 });
+    if (confirm) popover.current?.scrollTo({ top: 0 });
   }, [confirm]);
   const current = models[value.engine]?.find((m) => m.id === value.model);
+  const speedOptions = value.engine === "codex" && props.speed && current?.serviceTiers?.length
+    ? [STANDARD_SPEED, ...current.serviceTiers.filter((tier) => tier.id !== STANDARD_SPEED.id)] : [];
+  const selectedSpeed = speedOptions.find((tier) => tier.id === props.speed?.value) ?? STANDARD_SPEED;
+  const speedOpen = showSpeed && speedOptions.length > 0;
+  const backToModel = () => {
+    setShowSpeed(false);
+    requestAnimationFrame(() => speedTrigger.current?.focus({ preventScroll: true }));
+  };
   const close = () => {
+    setShowSpeed(false);
     setOpen(false);
     setConfirm(null);
     setExpanded([]);
@@ -1308,106 +1344,123 @@ export function ModelPicker(props: {
         </span>
       </button>
       {open && (
-        <AnchoredPopover anchor={anchor} label="Model" onClose={close}>
-          <div className="popover-heading">
-            <strong>Model</strong>
-            {value.engine === "codex" && props.speed && !!current?.serviceTiers?.length &&
-              <SpeedPicker tiers={current.serviceTiers} {...props.speed} />}
-          </div>
-          <div className="model-popover" ref={popover}>
-            {confirm && handoff && (
-              <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
-                <div>
-                  <strong>Hand off to {ENGINE_NAME[confirm.engine]}</strong>: starts a new session in this folder with a summary of this one.
-                </div>
-                <div className="muted small">
-                  {modelName(models, confirm.engine, confirm.model)} · {capitalize(confirm.effort)}
-                </div>
-                <div className="row">
-                  <button
-                    className="btn-primary"
-                    disabled={handoff.blocked}
-                    onClick={() => {
-                      handoff.onConfirm(confirm);
-                      close();
-                    }}
-                  >
-                    Hand off
+        <AnchoredPopover anchor={anchor} label={speedOpen ? "Codex speed" : "Model"} variant={speedOpen ? "speed-panel" : "model-panel"} onClose={close} onEscape={speedOpen ? backToModel : undefined}>
+          {speedOpen ? (
+            <SpeedOptions
+              options={speedOptions}
+              selected={selectedSpeed.id}
+              nextTurn={props.speed?.nextTurn}
+              onBack={backToModel}
+              onChange={(tier) => { props.speed?.onChange(tier); backToModel(); }}
+            />
+          ) : (
+            <>
+              <div className="popover-heading">
+                <strong>Model</strong>
+                {speedOptions.length > 0 && (
+                  <button ref={speedTrigger} className="btn-quiet speed-trigger" aria-label={`Speed ${selectedSpeed.name}`} onClick={() => setShowSpeed(true)}>
+                    <Icon d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z" size={14} />
+                    {selectedSpeed.name}
+                    <Icon d={CHEVRON_RIGHT} size={12} />
                   </button>
-                  <button className="btn-text" onClick={() => setConfirm(null)}>
-                    Cancel
-                  </button>
-                </div>
+                )}
               </div>
-            )}
-            {ordered.map((engine) => {
-              const isHandoff = !!handoff && engine !== value.engine;
-              const disabled = isHandoff && handoff.blocked;
-              const list = models[engine] ?? [];
-              // The engine in use is open; each other one is a row until asked for.
-              const folded = engine !== value.engine && !expanded.includes(engine);
-              return (
-                <div key={engine} className="picker-group">
-                  {folded ? (
-                    <button className="picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
-                      <span>
-                        {`${ENGINE_NAME[engine]} · ${list.length} ${list.length === 1 ? "model" : "models"}`}
-                        {handoff ? " · switching hands off" : ""}
-                      </span>
-                      <span className="muted">
-                        <Icon d={CHEVRON_RIGHT} size={12} />
-                      </span>
-                    </button>
-                  ) : (
-                    <>
-                      <div className="picker-head">
-                        <span>{ENGINE_NAME[engine]}</span>
-                      </div>
-                      {isHandoff && (
-                        <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
+              <div className="model-popover" ref={popover}>
+                {confirm && handoff && (
+                  <div className="handoff-confirm" role="group" aria-label="Confirm hand-off">
+                    <div>
+                      <strong>Hand off to {ENGINE_NAME[confirm.engine]}</strong>: starts a new session in this folder with a summary of this one.
+                    </div>
+                    <div className="muted small">
+                      {modelName(models, confirm.engine, confirm.model)} · {capitalize(confirm.effort)}
+                    </div>
+                    <div className="row">
+                      <button
+                        className="btn-primary"
+                        disabled={handoff.blocked}
+                        onClick={() => {
+                          handoff.onConfirm(confirm);
+                          close();
+                        }}
+                      >
+                        Hand off
+                      </button>
+                      <button className="btn-text" onClick={() => setConfirm(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {ordered.map((engine) => {
+                  const isHandoff = !!handoff && engine !== value.engine;
+                  const disabled = isHandoff && handoff.blocked;
+                  const list = models[engine] ?? [];
+                  // The engine in use is open; each other one is a row until asked for.
+                  const folded = engine !== value.engine && !expanded.includes(engine);
+                  return (
+                    <div key={engine} className="picker-group">
+                      {folded ? (
+                        <button className="btn-text picker-fold" aria-expanded={false} onClick={() => setExpanded([...expanded, engine])}>
+                          <span>
+                            {`${ENGINE_NAME[engine]} · ${list.length} ${list.length === 1 ? "model" : "models"}`}
+                            {handoff ? " · switching hands off" : ""}
+                          </span>
+                          <span className="muted">
+                            <Icon d={CHEVRON_RIGHT} size={12} />
+                          </span>
+                        </button>
+                      ) : (
+                        <>
+                          <div className="picker-head">
+                            <span>{ENGINE_NAME[engine]}</span>
+                          </div>
+                          {isHandoff && (
+                            <div className="picker-note">{disabled ? "Stop the running turn to hand off." : "Picking one hands off to a new session."}</div>
+                          )}
+                          {list.length === 0 && <div className="picker-empty">Not available</div>}
+                          {list.length > 12 && (
+                            <input
+                              className="picker-filter"
+                              value={filter}
+                              onChange={(e) => setFilter(e.target.value)}
+                              placeholder={`Filter ${ENGINE_NAME[engine]} models`}
+                              aria-label={`Filter ${ENGINE_NAME[engine]} models`}
+                              spellCheck={false}
+                            />
+                          )}
+                          {(list.length > 12 ? list.filter((m) => words.every((w) => `${m.name} ${m.id}`.toLowerCase().includes(w))) : list).map((m) => {
+                            const isCurrent = engine === value.engine && m.id === value.model;
+                            return (
+                              <button
+                                key={m.id}
+                                className={`picker-item picker-model ${isCurrent ? "active" : ""} ${
+                                  confirm?.engine === engine && confirm.model === m.id ? "active" : ""
+                                }`}
+                                disabled={disabled}
+                                aria-current={isCurrent ? "true" : undefined}
+                                onClick={() => {
+                                  const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
+                                  if (isHandoff) {
+                                    setConfirm(next);
+                                    return;
+                                  }
+                                  onChange(next);
+                                  close();
+                                }}
+                              >
+                                <span>{m.name}</span>
+                                {isCurrent && <Icon d={CHECK} size={13} />}
+                              </button>
+                            );
+                          })}
+                        </>
                       )}
-                      {list.length === 0 && <div className="picker-empty">Not available</div>}
-                      {list.length > 12 && (
-                        <input
-                          className="picker-filter"
-                          value={filter}
-                          onChange={(e) => setFilter(e.target.value)}
-                          placeholder={`Filter ${ENGINE_NAME[engine]} models`}
-                          aria-label={`Filter ${ENGINE_NAME[engine]} models`}
-                          spellCheck={false}
-                        />
-                      )}
-                      {(list.length > 12 ? list.filter((m) => words.every((w) => `${m.name} ${m.id}`.toLowerCase().includes(w))) : list).map((m) => {
-                        const isCurrent = engine === value.engine && m.id === value.model;
-                        return (
-                          <button
-                            key={m.id}
-                            disabled={disabled}
-                            aria-current={isCurrent ? "true" : undefined}
-                            className={`picker-item picker-model ${isCurrent ? "active" : ""} ${
-                              confirm?.engine === engine && confirm.model === m.id ? "active" : ""
-                            }`}
-                            onClick={() => {
-                              const next = { engine, model: m.id, effort: effortFor(m, value.effort) };
-                              if (isHandoff) {
-                                setConfirm(next);
-                                return;
-                              }
-                              onChange(next);
-                              close();
-                            }}
-                          >
-                            <span>{m.name}</span>
-                            {isCurrent && <Icon d={CHECK} size={13} />}
-                          </button>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </AnchoredPopover>
       )}
     </div>
@@ -2170,6 +2223,7 @@ export function useEscape(open: boolean, close: () => void) {
 function ChipMenu(props: {
   icon: ReactNode;
   label: ReactNode;
+  menuLabel: string;
   title?: string;
   open: boolean;
   setOpen(open: boolean): void;
@@ -2177,21 +2231,20 @@ function ChipMenu(props: {
   children: ReactNode;
 }) {
   const { open, setOpen } = props;
-  useEscape(open, () => setOpen(false));
+  const anchor = useRef<HTMLButtonElement>(null);
   return (
     <div className={`picker${props.wide ? " picker-wide" : ""}`}>
-      <button className="chip" aria-haspopup="true" aria-expanded={open} title={props.title} onClick={() => setOpen(!open)}>
+      <button ref={anchor} className="chip" aria-haspopup="dialog" aria-expanded={open} title={props.title} onClick={() => setOpen(!open)}>
         {props.icon}
         <span className="chip-label">{props.label}</span>
         <Icon d={CHEVRON_DOWN} size={12} />
       </button>
       {open && (
-        <>
-          <div className="scrim" onClick={() => setOpen(false)} />
-          <div className={`popover menu ${props.wide ? "menu-wide" : ""}`}>
+        <AnchoredPopover anchor={anchor} label={props.menuLabel} variant={`chip-popover${props.wide ? " chip-popover-wide" : ""}`} onClose={() => setOpen(false)}>
+          <div className="chip-menu-content">
             {props.children}
           </div>
-        </>
+        </AnchoredPopover>
       )}
     </div>
   );
@@ -2207,6 +2260,7 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
   const remote = state.hosts.find((h) => h.id === value);
   return (
     <ChipMenu
+      menuLabel={props.contextScope ? "Context hosts" : "Hosts"}
       icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
       label={props.contextScope && value === "all" ? "All hosts" : remote ? remote.name : hostName(state, "local")}
       title={props.contextScope ? "Hosts used for context" : "Where the session runs"}
@@ -2352,7 +2406,7 @@ export function FolderPicker(props: {
   };
 
   return (
-    <ChipMenu icon={<Icon d={FOLDER} />} label={value ? baseName(value) : "Choose a folder"} title={value} open={open} setOpen={setOpen} wide>
+    <ChipMenu icon={<Icon d={FOLDER} />} label={value ? baseName(value) : "Choose a folder"} menuLabel="Folders" title={value} open={open} setOpen={setOpen} wide>
       <input
         className="menu-search"
         autoFocus
@@ -2446,7 +2500,7 @@ export function BranchPicker(props: { current: string; branches: string[]; value
   };
   const shown = value || current;
   return (
-    <ChipMenu icon={<Icon d={BRANCH} />} label={shown} title="Branch the worktree starts from" open={open} setOpen={setOpen}>
+    <ChipMenu icon={<Icon d={BRANCH} />} label={shown} menuLabel="Branches" title="Branch the worktree starts from" open={open} setOpen={setOpen}>
       <input
         className="menu-search"
         autoFocus

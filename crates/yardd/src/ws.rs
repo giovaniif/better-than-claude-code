@@ -153,6 +153,9 @@ async fn client(socket: WebSocket, app: Arc<App>) {
 /// waiting on that one request (an upload) can tell it failed.
 fn error_reply(msg: &Value, e: &anyhow::Error) -> String {
     let mut reply = json!({ "op": "error", "message": format!("{e:#}"), "for": msg["op"] });
+    if matches!(msg["op"].as_str(), Some("term.open" | "term.new")) {
+        reply["sessionId"] = msg["sessionId"].clone();
+    }
     if !msg["ref"].is_null() {
         reply["ref"] = msg["ref"].clone();
     }

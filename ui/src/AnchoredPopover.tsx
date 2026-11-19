@@ -4,11 +4,12 @@ import { createPortal } from "react-dom";
 const Depth = createContext(0);
 const FOCUSABLE = "button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href], [tabindex='0']";
 
-export function AnchoredPopover({ anchor, label, children, onClose, variant = "" }: {
+export function AnchoredPopover({ anchor, label, children, onClose, onEscape, variant = "" }: {
   anchor: RefObject<HTMLElement | null>;
   label: string;
   children: ReactNode;
   onClose(): void;
+  onEscape?(): void;
   variant?: string;
 }) {
   const depth = useContext(Depth);
@@ -16,6 +17,8 @@ export function AnchoredPopover({ anchor, label, children, onClose, variant = ""
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
+  const escape = useRef(onEscape);
+  escape.current = onEscape;
   const usage = variant === "usage-popover";
   useLayoutEffect(() => {
     const el = panel.current;
@@ -31,8 +34,10 @@ export function AnchoredPopover({ anchor, label, children, onClose, variant = ""
       const r = trigger.getBoundingClientRect();
       const above = r.top - topEdge - 14;
       const below = topEdge + height - r.bottom - 14;
-      const down = below >= 400 || below >= above;
-      el.style.maxHeight = `${phone ? height * .88 : usage ? Math.min(480, Math.max(0, down ? below : above)) : height - 16}px`;
+      const usageBelow = below >= 400 || below >= above;
+      const room = Math.max(above, below);
+      el.style.maxHeight = `${phone ? Math.max(0, Math.min(height - 16, height * .88)) : usage ? Math.min(480, Math.max(0, usageBelow ? below : above)) : room >= 96 ? room : height - 16}px`;
+      el.style.maxWidth = `${Math.max(0, width - (phone && usage ? 0 : 16))}px`;
       el.style.width = phone && usage ? `${width}px` : "";
       const box = el.getBoundingClientRect();
       if (phone) {
@@ -42,8 +47,9 @@ export function AnchoredPopover({ anchor, label, children, onClose, variant = ""
         return;
       }
       const left = usage && (r.left + r.right) / 2 > leftEdge + width / 2 ? r.right - box.width : r.left;
-      const top = usage ? (down ? r.bottom + 6 : r.top - box.height - 6)
-        : r.top - topEdge >= box.height + 16 ? r.top - box.height - 8 : r.bottom + 8;
+      const opensAbove = above >= box.height + 2 || above > below;
+      const top = usage ? (usageBelow ? r.bottom + 6 : r.top - box.height - 6)
+        : opensAbove ? r.top - box.height - 8 : r.bottom + 8;
       el.style.left = `${Math.max(leftEdge + 8, Math.min(left, leftEdge + width - box.width - 8))}px`;
       el.style.top = `${Math.max(topEdge + 8, Math.min(top, topEdge + height - box.height - 8))}px`;
     };
@@ -61,7 +67,7 @@ export function AnchoredPopover({ anchor, label, children, onClose, variant = ""
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
-        close.current();
+        (escape.current ?? close.current)();
         return;
       }
       const active = document.activeElement;
@@ -75,7 +81,7 @@ export function AnchoredPopover({ anchor, label, children, onClose, variant = ""
         return;
       }
       if (active instanceof HTMLInputElement || !["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-      const options = focusable.filter((item) => item.matches("[role=menuitemradio], .picker-item, .picker-fold, .setup-options button"));
+      const options = focusable.filter((item) => item.matches("[role=menuitem], [role=menuitemradio], .picker-item, .picker-fold, .setup-options button"));
       if (!options.length) return;
       const index = options.findIndex((item) => item === active);
       const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1

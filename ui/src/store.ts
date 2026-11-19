@@ -626,8 +626,8 @@ export interface Actions {
   setServiceTier(sessionId: string, serviceTier: string): void;
   /** Change what the engine may do unasked; Claude switches at once, Codex from its next turn. */
   setPermission(sessionId: string, permission: Permission): void;
-  /** New session on the other engine, same folder, seeded with a brief. */
-  handoff(sessionId: string, engine: Engine, model: string, effort: string): void;
+  /** Child session in the same folder, seeded with a brief. */
+  handoff(sessionId: string, engine: Engine, model: string, effort: string, account?: string): void;
   interrupt(sessionId: string): void;
   approve(sessionId: string, requestId: string, decision: Decision): void;
   loadChanges(sessionId: string): void;
@@ -757,7 +757,9 @@ export function useYard(): { state: State; actions: Actions } {
         }
         if (replies.current.take(msg)) return;
         notifier.current!(msg);
-        if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
+        if (msg.op === "error" && msg.sessionId && (msg.for === "term.open" || msg.for === "term.new")) {
+          termListeners.current.forEach((listener) => listener({ ...msg, op: "term.error" }));
+        } else if (typeof msg.op === "string" && msg.op.startsWith("term.")) {
           termListeners.current.forEach((listener) => listener(msg));
         } else if (msg.op === "queue.returned") {
           // Stop or Edit gave queued text back: it goes to the reply box.
@@ -917,7 +919,7 @@ export function useYard(): { state: State; actions: Actions } {
       },
       setServiceTier: (sessionId, serviceTier) => post({ op: "session.setServiceTier", sessionId, serviceTier }),
       setPermission: (sessionId, permission) => post({ op: "session.setPermission", sessionId, permission }),
-      handoff: (sessionId, engine, model, effort) => post({ op: "session.handoff", sessionId, engine, model, effort }),
+      handoff: (sessionId, engine, model, effort, account) => post({ op: "session.handoff", sessionId, engine, model, effort, account }),
       interrupt: (sessionId) => post({ op: "session.interrupt", sessionId }),
       approve: (sessionId, requestId, decision) => {
         // Until yardd resolves it, a second click (a double click) would send a second decision.

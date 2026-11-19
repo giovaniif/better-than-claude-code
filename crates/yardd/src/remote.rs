@@ -756,7 +756,10 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             msg["hostId"] = json!(host);
         }
         "models" | "usage" | "accounts" | "error" | "git.branches" | "fs.dirs" | "attach.stored" | "engines" | "login" | "claude.sessions" | "automations" | "mcp" | "mcp.auth" | "mcp.change" => {
-            msg["hostId"] = json!(host)
+            msg["hostId"] = json!(host);
+            if op == "error" {
+                prefix(host, &mut msg, "sessionId");
+            }
         }
         "term.list" => {
             prefix(host, &mut msg, "sessionId");
