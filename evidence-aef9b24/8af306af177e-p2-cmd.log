@@ -1,0 +1,45 @@
+$ verify/yv map run thread --recipe links-inside-bold-text
+# exit 1 after 30821 ms at 9ea4f14967d8b57f4341b5a67c9b3da2192903e8
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-19T22:12:15.653Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "links-inside-bold-text",
+          "status": "fail",
+          "ms": 25901,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 0 {\"expect\":{\"css\":\".prose strong a.pr-link\",\"hasText\":\"TEST change #4242\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-11-50-049Z/fail-mobile-step0.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 0 {\"expect\":{\"css\":\".prose strong a.pr-link\",\"hasText\":\"TEST change #4242\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-11-50-049Z/fail-desktop-step0.png and the aria snapshot"
+            }
+          ],
+          "tail": "n:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-1b85\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Collapse workspace\\\" [expanded]\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - text: \\\"TEST-bold links **Merge [TEST change #4242](https://github.com/test-owner/test-demo-app/pull/4242) now.** **Read [the review guide](https://example.com/guide), or run `check --links`.** **Keep [Local notes](/tmp/notes.txt), [Script](javascript:alert%281%29), and `[literal](https://example.com/literal)` inert.**\\\"\\n  - paragraph: \\\"Echo: TEST-bold links\\\"\\n  - paragraph:\\n    - strong: \\\"Merge [TEST change #4242](https://github.com/test-owner/test-demo-app/pull/4242) now.\\\"\\n  - paragraph:\\n    - strong: \\\"Read [the review guide](https://example.com/guide), or run `check --links`.\\\"\\n  - paragraph:\\n    - strong: \\\"Keep [Local notes](/tmp/notes.txt), [Script](javascript:alert%281%29), and `[literal](https://example.com/literal)` inert.\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, Default\\\"'\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Subagents\\\"\\n  - button \\\"Processes\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n    - button \\\"Attach\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose strong a.pr-link\\\",\\\"hasText\\\":\\\"TEST change #4242\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-11-50-049Z/fail-mobile-step0.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 0 {\\\"expect\\\":{\\\"css\\\":\\\".prose strong a.pr-link\\\",\\\"hasText\\\":\\\"TEST change #4242\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-11-50-049Z/fail-desktop-step0.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/links-inside-bold-text",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

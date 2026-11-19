@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-19T22:12:51.983Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "markdown-table-renders",
+          "status": "pass",
+          "ms": 6693
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

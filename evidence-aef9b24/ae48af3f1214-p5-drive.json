@@ -1,0 +1,111 @@
+{
+  "ok": true,
+  "route": "session:s1a1f5de2a086",
+  "build": {
+    "sha": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+    "short": "aef9b24",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T22:12:19.732Z"
+  },
+  "dir": "/tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-12-20-784Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3037,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-12-20-784Z/bold-links-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".prose strong a\")].map(a => [a.textContent, a.getAttribute(\"href\"), a.target])",
+          "value": [
+            [
+              "TEST change #4242",
+              "https://github.com/test-owner/test-demo-app/pull/4242",
+              "_blank"
+            ],
+            [
+              "the review guide",
+              "https://example.com/guide",
+              "_blank"
+            ]
+          ]
+        },
+        {
+          "step": 8,
+          "eval": "document.addEventListener(\"click\", (event) => { const link = event.target.closest(\"a\"); if (link) { event.preventDefault(); window.followedLink = link.href; } }, true)"
+        },
+        {
+          "step": 10,
+          "eval": "window.followedLink",
+          "value": "https://example.com/guide"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3110,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-bold-links/.verify/drives/2026-11-19T22-12-20-784Z/bold-links-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "[...document.querySelectorAll(\".prose strong a\")].map(a => [a.textContent, a.getAttribute(\"href\"), a.target])",
+          "value": [
+            [
+              "TEST change #4242",
+              "https://github.com/test-owner/test-demo-app/pull/4242",
+              "_blank"
+            ],
+            [
+              "the review guide",
+              "https://example.com/guide",
+              "_blank"
+            ]
+          ]
+        },
+        {
+          "step": 8,
+          "eval": "document.addEventListener(\"click\", (event) => { const link = event.target.closest(\"a\"); if (link) { event.preventDefault(); window.followedLink = link.href; } }, true)"
+        },
+        {
+          "step": 10,
+          "eval": "window.followedLink",
+          "value": "https://example.com/guide"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

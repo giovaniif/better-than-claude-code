@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-19T22:12:34.831Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "web-links-open-outside-the-thread",
+          "status": "pass",
+          "ms": 6699
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

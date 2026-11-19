@@ -1,0 +1,162 @@
+{
+  "v": 1,
+  "claim": "Links inside bold agent recommendations render as clickable links with their original labels.",
+  "repo": "/tmp/switchyard-bold-links",
+  "base": "895b9c67e4a17a26abfdd7bd515b4a897e43b9ac",
+  "head": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T22:11:44.743Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "9ea4f14967d8b57f4341b5a67c9b3da2192903e8",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "322d9980305a3c98455059c30e3975d43f689251b8e04d6cd7a32379fe124786"
+        },
+        {
+          "path": "p1-fail-mobile-step0.png",
+          "sha256": "bbcbd7a4701cb047deeb5ad731d0da1bd17502e1acc619f83eb5e491ed493b7c"
+        },
+        {
+          "path": "p1-fail-desktop-step0.png",
+          "sha256": "d305b664a3307b3eb1d279b8fdb11c171f05778a04622c1b5c3ebe38209405cf"
+        }
+      ],
+      "addedAt": "2026-11-19T22:11:44.781Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "9ea4f14967d8b57f4341b5a67c9b3da2192903e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8af306af177eb285c25d8d88501d005d9c72fe074437a7f452e52b4620b01b0a"
+        }
+      ],
+      "addedAt": "2026-11-19T22:11:44.836Z",
+      "cmd": "verify/yv map run thread --recipe links-inside-bold-text",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "8129d3695cfe94f55aa0f8c6d7ab7d9aa558bc15c15c1527dced7b8fcf527fda"
+        }
+      ],
+      "addedAt": "2026-11-19T22:12:20.400Z",
+      "cmd": "verify/yv design-check --base 895b9c67e4a1",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "11579ddbdafd3c72248c708859bd62bb4c3f97354d8b280e27b415e2c5cd46f0"
+        }
+      ],
+      "addedAt": "2026-11-19T22:12:20.479Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "ae48af3f1214bea4bf9d330b6b33d998a84ba62329e800ad442e4b5467eb5c1a"
+        },
+        {
+          "path": "p5-bold-links-mobile.png",
+          "sha256": "90fc8c48aa571fbbbd52bdda86511f230fd5e9cd2063b6a34c022ec0a73ae980"
+        },
+        {
+          "path": "p5-bold-links-desktop.png",
+          "sha256": "e73e53ade2e534ca6f092af6bf4a3af3eb5e77c09a843e00ee8625de13452daf"
+        },
+        {
+          "path": "p5-rendered-bold-links-desktop.png",
+          "sha256": "27bebe2bee8f231b98733a8d958aa155688cef93274a835475e13780e5e1eb49"
+        },
+        {
+          "path": "p5-rendered-bold-links-mobile.png",
+          "sha256": "3174eac1c8c091c83a97d3898176dc3fe9ca465de0ad68d36151cb2cb8f03600"
+        }
+      ],
+      "addedAt": "2026-11-19T22:13:38.152Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "aef9b24db56c1352a6b271e49b0dc4259e2e2c33",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-switchyard-bold-links-web.json",
+          "sha256": "e2b3a287a9a357d59bb30694adf07be75cc165c13a23bf1c9d4cd4047c747fde"
+        },
+        {
+          "path": "p6-switchyard-bold-links-prhover.json",
+          "sha256": "e36c277f958fdee2096b24e4402ff503b46c7235024b44e7ea76b758a8f8c95c"
+        },
+        {
+          "path": "p6-switchyard-bold-links-table.json",
+          "sha256": "0de224e9901de208059e0b9a4267fddd22fe400d699cc262d1a1712acb615174"
+        }
+      ],
+      "addedAt": "2026-11-19T22:13:38.196Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/markdown-table-renders"
+      ]
+    }
+  ]
+}
