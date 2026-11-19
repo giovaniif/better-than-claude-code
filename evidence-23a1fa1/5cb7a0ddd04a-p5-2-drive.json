@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "route": "session:s1a1f5b5e7156",
+  "build": {
+    "sha": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+    "short": "23a1fa1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T21:28:21.152Z"
+  },
+  "dir": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-37-977Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5153,
+      "steps": 16,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-37-977Z/sessions-drawer-close-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-37-977Z/workspace-close-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Open sessions"
+        },
+        {
+          "step": 13,
+          "eval": "document.activeElement.textContent",
+          "value": "Workspace"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

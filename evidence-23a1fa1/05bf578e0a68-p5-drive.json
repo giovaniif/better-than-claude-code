@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "session:s1a1f5b5e7156",
+  "build": {
+    "sha": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+    "short": "23a1fa1",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T21:28:21.152Z"
+  },
+  "dir": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-28-685Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 8771,
+      "steps": 36,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-28-685Z/sidebars-collapsed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-28-28-685Z/sidebars-expanded-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem(\"yard.sidebarWidth\", \"296\"); localStorage.setItem(\"yard.paneWidth\", \"360\"); true",
+          "value": true
+        },
+        {
+          "step": 11,
+          "eval": "document.querySelector(\".thread\").clientWidth >= innerWidth - 48",
+          "value": true
+        },
+        {
+          "step": 16,
+          "eval": "document.querySelector(\".pane\").getBoundingClientRect().width",
+          "value": 360
+        },
+        {
+          "step": 31,
+          "eval": "document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Collapse sessions sidebar"
+        },
+        {
+          "step": 32,
+          "eval": "document.querySelector(\".sidebar\").getBoundingClientRect().width",
+          "value": 296
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

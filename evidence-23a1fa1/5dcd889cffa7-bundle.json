@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "claim": "Collapse the Sessions sidebar and Workspace independently, preserve each panel width, and keep a visible opener.",
+  "repo": "/tmp/switchyard-sidebar-collapse",
+  "base": "44d4511c3a7b99ae52f87ced1d00e81e2bbe5df2",
+  "head": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T21:26:23.548Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a687772150951a0ba2c1720bf2215a11c60dc963",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "916fbdfa98c694469e2f38837e662c9953b057b87a3cb6cc325ce756316c3033"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "cf9d9ec2fcc2ab223749a72747f2be11394817c26e78af9f681b4e1f2288602c"
+        }
+      ],
+      "addedAt": "2026-11-19T21:26:23.589Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "a687772150951a0ba2c1720bf2215a11c60dc963",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "da674f643a94ffaed6fefa2ae86a2ffde08baa05351db36e73acc763c5d60ce1"
+        }
+      ],
+      "addedAt": "2026-11-19T21:26:23.648Z",
+      "cmd": "verify/yv map run layout --recipe desktop-sidebars-collapse-independently",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "design",
+      "at": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-design.json",
+          "sha256": "bfaacc1a2d17fb5ebdd5f964a5ba3d964204bffe7b1fa489c50ca561aaf64034"
+        }
+      ],
+      "addedAt": "2026-11-19T21:28:37.243Z",
+      "cmd": "verify/yv design-check --base 44d4511c3a7b",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "29eeb8d92adfd67b21d9e2ef16a312d530abab630b23748ff6960cd32f5fdbe0"
+        }
+      ],
+      "addedAt": "2026-11-19T21:28:37.331Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+      "dirty": false,
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "05bf578e0a6872bbd56793ab4afc0b6f6c45d1a5473da12eb72157f6984911f5"
+        },
+        {
+          "path": "p5-sidebars-collapsed-desktop.png",
+          "sha256": "905930f9a3eac89636e2a6c2490640facff1f04cfe3a0884448d0ee8d291d959"
+        },
+        {
+          "path": "p5-sidebars-expanded-desktop.png",
+          "sha256": "caefbe988b1f7ac08e547b27c5167599b41f9c1892702c8f3271f4213d4d2521"
+        },
+        {
+          "path": "p5-2-drive.json",
+          "sha256": "5cb7a0ddd04adbc490ee0cc822bd3dca9cbb2d7d42247b9737cf94c3a2caa2a2"
+        },
+        {
+          "path": "p5-sessions-drawer-close-mobile.png",
+          "sha256": "b7a190406fa2fb0cee184135210c4860a3e488964151b17c2b18d72a269a2129"
+        },
+        {
+          "path": "p5-workspace-close-mobile.png",
+          "sha256": "0066174488e72b6987bef8bb1fa5911c8fe13b4f61d654a3e444cd04efb0d7d1"
+        },
+        {
+          "path": "p5-switchyard-sidebar-collapse-terminal-session.json",
+          "sha256": "f35136ba3e1585d25e5102c379db3358985ee4397078cb57396d73f35513938f"
+        }
+      ],
+      "addedAt": "2026-11-19T21:30:16.879Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "23a1fa1f0da5daa359bb4c05f44088144009587c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-switchyard-sidebar-collapse-final-layout.json",
+          "sha256": "83de239054bfa0309286dd1509c0af5c81699561b5e0506ed2114f984617130a"
+        },
+        {
+          "path": "p6-switchyard-sidebar-collapse-final-terminal.json",
+          "sha256": "4386a395a3571e2000f8664668eb995514f78f91d97bc1dcf11d904a61f61298"
+        }
+      ],
+      "addedAt": "2026-11-19T21:30:16.921Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/folder-gone"
+      ]
+    }
+  ]
+}

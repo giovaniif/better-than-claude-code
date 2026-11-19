@@ -1,0 +1,40 @@
+$ verify/yv map run layout --recipe desktop-sidebars-collapse-independently
+# exit 1 after 19931 ms at a687772150951a0ba2c1720bf2215a11c60dc963
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-19T21:26:43.575Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "fail",
+          "ms": 14676,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"click\":\"role:button:Collapse sessions sidebar\"}: click: Timeout 10000ms exceeded.",
+              "hint": "see /tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-26-29-096Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "r TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 4% · 46%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-d645\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, Default\\\"'\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Terminal\\\"\\n  - button \\\"Subagents\\\"\\n  - button \\\"Processes\\\" [pressed]\\n  - button \\\"Refresh processes\\\"\\n  - text: 1 process · 0% CPU · 5 MB\\n  - table:\\n    - rowgroup:\\n      - row \\\"PID Command CPU Memory Running Stop\\\":\\n        - cell \\\"PID\\\"\\n        - cell \\\"Command\\\"\\n        - cell \\\"CPU\\\"\\n        - cell \\\"Memory\\\"\\n        - cell \\\"Running\\\"\\n        - cell \\\"Stop\\\"\\n    - rowgroup:\\n      - row \\\"1544072 terminal/bin/bash -l 0% 5 MB 12s Stop process 1544072 /bin/bash -l\\\":\\n        - cell \\\"1544072\\\"\\n        - cell \\\"terminal/bin/bash -l\\\":\\n          - text: terminal\\n          - code: /bin/bash -l\\n        - cell \\\"0%\\\"\\n        - cell \\\"5 MB\\\"\\n        - cell \\\"12s\\\"\\n        - cell \\\"Stop process 1544072 /bin/bash -l\\\":\\n          - button \\\"Stop process 1544072 /bin/bash -l\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 0,\n          \"eval\": \"localStorage.setItem(\\\"yard.sidebarWidth\\\", \\\"296\\\"); localStorage.setItem(\\\"yard.paneWidth\\\", \\\"360\\\"); true\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"click\\\":\\\"role:button:Collapse sessions sidebar\\\"}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /tmp/switchyard-sidebar-collapse/.verify/drives/2026-11-19T21-26-29-096Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/desktop-sidebars-collapse-independently",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
