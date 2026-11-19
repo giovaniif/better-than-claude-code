@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-19T15:19:57.208Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "workspace-subagents",
+          "status": "pass",
+          "ms": 8802
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
