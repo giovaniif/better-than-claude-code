@@ -2,6 +2,13 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.13.0 (2026-11-18)
+
+- **Simpler Workspace.** Terminal opens first, and Processes sits beside it. The conversation header links to the branch’s pull request on GitHub.
+- **One composer toolbar.** Attach, dictate, use voice, and send from one row. In narrow windows, Setup holds the model, account, effort, and permissions. Full access is marked in amber.
+- **Clearer account controls.** Usage shows the current account’s limits and reset times first. Connectors are grouped by account, with status, filters, and an Add connector action.
+- **Quieter session setup.** A remembered offline host stays selected without an error banner. Web links in agent replies open in the browser.
+
 ## 0.12.0 (2026-11-18)
 
 - **Active hours for automations.** Limit an interval to a local time window, including overnight hours and selected start days. Hourly 21:00–09:00 runs from 21:00 through 08:00; daytime hours create no sessions, even after a restart. The form and cards show the hours and real next slot; Run now remains available anytime. Loop patrol now uses this overnight window once the server is updated and loop automations are applied.
