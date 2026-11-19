@@ -71,7 +71,7 @@ Viewports: both
 An account on another engine switches both together. Sending uses that account, which stays read-only in the resulting session.
 
 ```sh
-yv drive 'new' --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-Codex"}},{"expect":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"label:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-focused account"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-focused account"},{"click":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:dialog:Engine account identity","text":"This session runs as"},{"expect":"css:.anchored-popover [role=menuitemradio]","count":0},{"shot":"fixed-account"},{"press":"Escape"}]'
+yv drive 'new' --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-Codex"}},{"expect":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"work","exact":true}},{"fill":"role:textbox:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-focused account"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-focused account"},{"click":"role:button:Account: Codex, TEST-Codex"},{"expect":"role:dialog:Engine account identity","text":"This session runs as"},{"expect":"css:.anchored-popover [role=menuitemradio]","count":0},{"shot":"fixed-account"},{"press":"Escape"}]'
 ```
 
 ### sessions-search-and-archive
