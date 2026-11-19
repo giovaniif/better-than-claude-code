@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "approved-design",
+      "at": "2026-11-19T14:04:24.985Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "terminal-first-and-external-pr",
+          "status": "pass",
+          "ms": 4521
+        },
+        {
+          "label": "one-row-composers",
+          "status": "pass",
+          "ms": 6833
+        },
+        {
+          "label": "account-card-separation",
+          "status": "pass",
+          "ms": 5315
+        },
+        {
+          "label": "compact-usage",
+          "status": "pass",
+          "ms": 3209
+        },
+        {
+          "label": "phone-usage-opens-from-header",
+          "status": "pass",
+          "ms": 2278
+        },
+        {
+          "label": "usage-popover-follows-prototype",
+          "status": "pass",
+          "ms": 10116
+        },
+        {
+          "label": "hosts-stays-in-host-status-and-page-search",
+          "status": "pass",
+          "ms": 2047
+        },
+        {
+          "label": "toolbar-at-320-with-full-access",
+          "status": "pass",
+          "ms": 3170
+        },
+        {
+          "label": "toolbar-groups-before-labels-compress",
+          "status": "pass",
+          "ms": 2547
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

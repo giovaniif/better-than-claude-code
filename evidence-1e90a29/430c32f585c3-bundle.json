@@ -1,0 +1,264 @@
+{
+  "v": 1,
+  "claim": "Terminal scrollback keeps old queries out of shell input, Usage matches the Claude Design layout, and the sidebar top menu omits Hosts",
+  "repo": "/tmp/switchyard-terminal-usage",
+  "base": "f44362da4b16c4961669d8057fc7d1429a504aad",
+  "head": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/approved-design.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T14:02:52.635Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "56d3b0acb6232bafc3bd77f06e0b5a75bf9f181c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d7ae6f038f88fb5d61a3febbbb839ce09d041d1227a25767925be1b00ab3a914"
+        },
+        {
+          "path": "p1-fail-desktop-step10.png",
+          "sha256": "fcda48a0d5065d7a7b54a79dbbd8f220836c7d7ffaccf511b63bdf41cf284b7e"
+        }
+      ],
+      "addedAt": "2026-11-19T14:02:52.676Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "56d3b0acb6232bafc3bd77f06e0b5a75bf9f181c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "2c9f1c0df6a08bcd72e0b5dcc8af50b2c56f670c328f6110c54de81f19e12079"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "af325f00bdf24ef05c95c826789f2a5b8727b60140848db372447f02677785dc"
+        }
+      ],
+      "addedAt": "2026-11-19T14:02:52.723Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "56d3b0acb6232bafc3bd77f06e0b5a75bf9f181c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "85ea961e96651af3408363fd810bbbc6682257b5c7b22252360e5fce439653e9"
+        },
+        {
+          "path": "p3-usage-desktop-desktop.png",
+          "sha256": "6bd761e453b95d55c596015f42d791880d9dfdb9090b52e13a911187fdc0db59"
+        },
+        {
+          "path": "p3-fail-desktop-step2.png",
+          "sha256": "b118d5c7e864c18df65f72e52e21edf64ecc1f792d24de765682eeb2555946da"
+        }
+      ],
+      "addedAt": "2026-11-19T14:02:52.770Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "56d3b0acb6232bafc3bd77f06e0b5a75bf9f181c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "29e6cd46e6cc50cb8164bc0c3a26fe38f4d5c1fdafce81155a1c10508ea7dc11"
+        }
+      ],
+      "addedAt": "2026-11-19T14:02:52.831Z",
+      "cmd": "verify/yv map run terminal --recipe scrollback-does-not-reply-to-old-probes",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "5630ffbe6daa440ae095a5f313794cbcada9eeecf59481fb73b506a6595e4605"
+        }
+      ],
+      "addedAt": "2026-11-19T14:03:39.263Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "f5023d204aefb4a96a4b738ca2c2ee1af58a4f4948956668c438de9db1f14d95"
+        }
+      ],
+      "addedAt": "2026-11-19T14:04:30.899Z",
+      "cmd": "verify/yv design-check --base f44362da4b16",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p7-drive.json",
+          "sha256": "08020122ddd503b8745c1db4f8abc3d3434975aa70b11de42b34d1a829af4885"
+        },
+        {
+          "path": "p7-usage-desktop-desktop.png",
+          "sha256": "c9bb8f7ab7b330c035ea32f5bddecdbc9f08a7e2e9af340c8f875c2e5408a1f8"
+        }
+      ],
+      "addedAt": "2026-11-19T14:07:33.184Z",
+      "failedApi": []
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-drive.json",
+          "sha256": "3df2121070e6552a054cda22b2dc492180555ab9fe4d93eb4394882c3bcb5cb1"
+        },
+        {
+          "path": "p8-usage-phone-mobile.png",
+          "sha256": "9e5663e7d92b751864900537ca37122646cf537c68f1fe4a304463a50b90cbe4"
+        },
+        {
+          "path": "p8-usage-phone-expanded-mobile.png",
+          "sha256": "1a5944407d39a5fa5466777efd03d46e6729c98afbd9481ab11c20c962fd961c"
+        }
+      ],
+      "addedAt": "2026-11-19T14:07:33.228Z",
+      "failedApi": []
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p9-drive.json",
+          "sha256": "50fbaaf59b3e1ba20867ed08dfdbc5b2198a8427815ea22c94eb88b2a06e4d12"
+        },
+        {
+          "path": "p9-clean-scrollback-desktop.png",
+          "sha256": "d68fca7bcc76ead7bfb8eaf52a6771b6815a473130008a63c85d8290cc0a1f6f"
+        }
+      ],
+      "addedAt": "2026-11-19T14:07:33.270Z",
+      "failedApi": []
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-switchyard-terminal-usage-approved-final.json",
+          "sha256": "61646c8aec503d02473684995a7f207ebbecc60292e29313ac6a7dc0687b5c01"
+        }
+      ],
+      "addedAt": "2026-11-19T14:07:33.325Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/terminal-first-and-external-pr",
+        "approved-design/one-row-composers",
+        "approved-design/account-card-separation",
+        "approved-design/compact-usage",
+        "approved-design/phone-usage-opens-from-header",
+        "approved-design/usage-popover-follows-prototype",
+        "approved-design/hosts-stays-in-host-status-and-page-search",
+        "approved-design/toolbar-at-320-with-full-access",
+        "approved-design/toolbar-groups-before-labels-compress"
+      ]
+    }
+  ]
+}

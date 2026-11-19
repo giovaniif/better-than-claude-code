@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1f41f77d56",
+  "build": {
+    "sha": "1e90a29cf60cb899cee5c79c6e510404bbcf3a4c",
+    "short": "1e90a29",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T14:03:44.003Z"
+  },
+  "dir": "/tmp/switchyard-terminal-usage/.verify/drives/2026-11-19T14-05-03-786Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 9818,
+      "steps": 12,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-terminal-usage/.verify/drives/2026-11-19T14-05-03-786Z/clean-scrollback-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
