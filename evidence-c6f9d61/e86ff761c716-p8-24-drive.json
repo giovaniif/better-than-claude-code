@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1f56468d66",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-52-664Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5177,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-52-664Z/handover-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-52-664Z/subsession-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "terminal",
+      "at": "2026-11-19T20:00:11.649Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "folder-gone",
+          "status": "pass",
+          "ms": 7617
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,43 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "a29a629265e8d99120d3319784b1b16f7eb4589d",
+    "short": "a29a629",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:36:55.927Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-37-04-022Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 13170,
+      "steps": 11,
+      "failed": {
+        "step": 2,
+        "action": {
+          "expect": "css:select",
+          "count": 0
+        },
+        "reason": "expected \"css:select\" to be absent or hidden",
+        "screenshot": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-37-04-022Z/fail-desktop-step2.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 3% · 29%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"New automation\" [level=1]\n- text: Name\n- textbox \"Automation name\":\n  - /placeholder: Patrol\n- text: Prompt\n- textbox \"Prompt\":\n  - /placeholder: What each run should do\n- text: Where and how\n- button \"iso-host\"\n- button \"work\"\n- button \"Model Opus 5.5\": Opus 5.5\n- button \"Effort High\": High\n- button \"Ask first\"\n- text: \"Not a git repository: runs work in the folder itself, one at a time. Schedule\"\n- combobox \"Schedule type\":\n  - option \"Every few minutes or hours\"\n  - option \"Daily\" [selected]\n  - option \"Weekly\"\n  - 'option \"Manual: only when started\"'\n- textbox \"Time\": 09:00\n- text: Daily at 09:00, in iso-host's local time zone. A run missed while Switchyard was off starts once when it is back. Skip a run\n- checkbox \"While the previous run is still going\" [checked]\n- text: While the previous run is still going When 5-hour usage is above\n- spinbutton \"5-hour usage limit percent\"\n- text: \"% When weekly usage is above\"\n- spinbutton \"Weekly usage limit percent\"\n- text: \"% Applies to scheduled runs; Run now always starts one. The limits read the Claude plan usage.\"\n- alert: Give it a name.\n- button \"Save automation\" [disabled]\n- button \"Cancel\""
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 2 {\"expect\":\"css:select\",\"count\":0}: expected \"css:select\" to be absent or hidden",
+      "hint": "see /tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-37-04-022Z/fail-desktop-step2.png and the aria snapshot"
+    }
+  ]
+}

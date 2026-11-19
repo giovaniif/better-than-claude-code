@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-49-462Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2561,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-49-462Z/connector-host-menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

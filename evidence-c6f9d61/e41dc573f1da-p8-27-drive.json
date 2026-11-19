@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "route": "session:s1a1f56510fcc",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T20-00-07-947Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3300,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T20-00-07-947Z/history-without-banner-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "changes",
+          "message": "this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b"
+        },
+        {
+          "op": "error",
+          "for": "term.open",
+          "message": "this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

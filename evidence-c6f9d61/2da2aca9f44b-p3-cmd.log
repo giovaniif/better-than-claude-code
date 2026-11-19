@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon handoff_can_change_the_account_or_model_without_changing_engines
+# exit 101 after 6046 ms at 79b79badb7af9842e3542835882d6eab30d8c46f
+
+
+running 1 test
+test handoff_can_change_the_account_or_model_without_changing_engines ... FAILED
+
+failures:
+
+---- handoff_can_change_the_account_or_model_without_changing_engines stdout ----
+
+thread 'handoff_can_change_the_account_or_model_without_changing_engines' (1120569) panicked at crates/yardd/tests/daemon.rs:876:9:
+assertion `left == right` failed: {"for":"session.handoff","message":"this session already runs on Codex; pick a model in the picker instead","op":"error"}
+  left: String("error")
+ right: "created"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-1120568-handoff-target-0 for inspection
+
+
+failures:
+    handoff_can_change_the_account_or_model_without_changing_engines
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 82 filtered out; finished in 0.13s
+
+
+   Compiling yardd v0.14.0 (/tmp/switchyard-dropdown-base/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 5.86s
+     Running tests/daemon.rs (target/debug/build/yardd/6420060787ed89e4/out/daemon-6420060787ed89e4)
+error: test failed, to rerun pass `-p yardd --test daemon`

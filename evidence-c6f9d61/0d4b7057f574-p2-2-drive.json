@@ -1,0 +1,56 @@
+{
+  "ok": false,
+  "route": "session:s1a1f55d49c6c",
+  "build": {
+    "sha": "e41e0f432b2e4623ef46db562c7e4b1b8e2fc9ee",
+    "short": "e41e0f4",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:51:33.487Z"
+  },
+  "dir": "/tmp/switchyard-dropdown-base/.verify/drives/2026-11-19T19-51-34-872Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 12788,
+      "steps": 5,
+      "failed": {
+        "step": 1,
+        "action": {
+          "expect": {
+            "role": "region",
+            "name": "Workspace"
+          },
+          "text": "no longer exists"
+        },
+        "reason": "expected {\"role\":\"region\",\"name\":\"Workspace\"} to contain \"no longer exists\", got \"Terminal",
+        "screenshot": "/tmp/switchyard-dropdown-base/.verify/drives/2026-11-19T19-51-34-872Z/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Needs approval\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 8% · 30%\"\n- separator \"Resize the sessions sidebar\"\n- text: \"this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb\"\n- button \"Dismiss\"\n- main:\n  - heading \"[cmd] TEST-run the migration\" [level=1]\n  - code: yard/cmd-test-run-the-migration-9afb\n  - button \"Set up iPhone app\"\n  - button \"Stop\"\n  - button \"Delete\"\n  - text: \"[cmd] TEST-run the migration\"\n  - button \"Waiting to run echo approved\" [disabled]:\n    - text: Waiting to run\n    - code: echo approved\n  - text: Allow this command?\n  - code: echo approved\n  - text: needs to run a command\n  - button \"Allow once\"\n  - button \"Always allow\"\n  - button \"Deny\"\n  - textbox \"Message\":\n    - /placeholder: Queue a message for the agent\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - button \"Model Fake Fast\": Fake Fast\n  - 'button \"Account: Codex, Default\"'\n  - button \"Effort Low\": Low\n  - button \"Ask first\"\n  - button \"Add to queue\" [disabled]\n- region \"Workspace\":\n  - separator \"Resize the workspace pane\"\n  - button \"Terminal\" [pressed]\n  - button \"Subagents\"\n  - button \"Processes\"\n  - tablist \"Terminals\":\n    - button \"New terminal\""
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "changes",
+          "message": "this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb"
+        },
+        {
+          "op": "error",
+          "for": "term.open",
+          "message": "this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"expect\":{\"role\":\"region\",\"name\":\"Workspace\"},\"text\":\"no longer exists\"}: expected {\"role\":\"region\",\"name\":\"Workspace\"} to contain \"no longer exists\", got \"Terminal",
+      "hint": "see /tmp/switchyard-dropdown-base/.verify/drives/2026-11-19T19-51-34-872Z/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

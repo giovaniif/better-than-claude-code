@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "route": "session:s1a1f564691f8",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-29-408Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 4028,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-29-408Z/workspace-tabs-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "localStorage.setItem('yard.paneWidth','300') ?? true",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const h=document.querySelector('.workspace-tabs'); const r=h.getBoundingClientRect(); const tabs=[...h.querySelectorAll('.tab')].map(b=>b.getBoundingClientRect()); return tabs.every((b,i)=>b.left>=r.left && b.right<=r.right && b.top===tabs[0].top && (!i || b.left-tabs[i-1].right>=4)); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

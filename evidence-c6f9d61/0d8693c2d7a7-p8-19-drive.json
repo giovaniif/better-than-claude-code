@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1f564691f8",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-33-883Z",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4231,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-33-883Z/workspace-tabs-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "(() => { const h=document.querySelector('.workspace-tabs'); const r=h.getBoundingClientRect(); const tabs=[...h.querySelectorAll('.tab')].map(b=>b.getBoundingClientRect()); return tabs.every((b,i)=>b.left>=r.left && b.right<=r.right && b.top===tabs[0].top && (!i || b.left-tabs[i-1].right>=4)); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,514 @@
+{
+  "v": 1,
+  "claim": "Fix clipping, row spacing and native dropdowns, keep missing worktree errors in Terminal and support nested handovers across agents, accounts and models.",
+  "repo": "/tmp/switchyard-dropdowns",
+  "base": "98e5525fb055e8af1eb2f416c84e16667b0d688d",
+  "head": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/handoff.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/src/ws.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AnchoredPopover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/AutomationsPage.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/ConnectorsPage.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SelectPicker.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/SessionHandover.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/TerminalPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/store.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/automations.md"
+    },
+    {
+      "status": "A",
+      "path": "verify/features/dropdowns.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/terminal.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-19T19:48:34.348Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a29a629265e8d99120d3319784b1b16f7eb4589d",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "6597fa7b74f489e54baf256d0dbf87d2a7a477d2302b6e2f086395b1f88e8b2e"
+        },
+        {
+          "path": "p1-fail-desktop-step2.png",
+          "sha256": "a2abbd340acd56ff92754fd8478a3fb0d01f5ccc02c4db0678306e2c37e0886b"
+        },
+        {
+          "path": "p1-2-drive.json",
+          "sha256": "1bbcee85f5adee296651206f3a562486e45011373ffff3c7f112bc5cd303c49a"
+        },
+        {
+          "path": "p1-fail-desktop-step3.png",
+          "sha256": "78df2625bfb17add27dc137c8b317ba032b00e25b1f0a9ea44a79a30696cf6ac"
+        },
+        {
+          "path": "p1-3-drive.json",
+          "sha256": "32ff932c93c62c8e61455d90c135f8b4690e264d51a3210a8306ce09b97de341"
+        },
+        {
+          "path": "p1-2-fail-desktop-step2.png",
+          "sha256": "f1915e38302035422a29508ee057df0f417992036ab46aca2d20a82525e2b241"
+        }
+      ],
+      "addedAt": "2026-11-19T19:49:57.898Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e41e0f432b2e4623ef46db562c7e4b1b8e2fc9ee",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-2-drive.json",
+          "sha256": "0d4b7057f57428310a587c3ebaec5a38f06a75f56e2cfb4a8c92ede33866d994"
+        },
+        {
+          "path": "p2-2-fail-desktop-step1.png",
+          "sha256": "d26053321d97b53e942d7557d60577e681c620ce76d749a208c0b18bf114d9de"
+        }
+      ],
+      "addedAt": "2026-11-19T19:52:11.932Z",
+      "failedApi": [
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1092617-mwnyufe8/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-9afb"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "79b79badb7af9842e3542835882d6eab30d8c46f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2da2aca9f44b64ca80d55819d52d97e6f40f94902dbc1ca2ae1f1b3f6ca05532"
+        }
+      ],
+      "addedAt": "2026-11-19T19:52:11.997Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd --test daemon handoff_can_change_the_account_or_model_without_changing_engines",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "note",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-19T19:59:00.713Z",
+      "text": "expected-api: term.open: opening a shell in a missing worktree is refused, with the error displayed inside Terminal."
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "note",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-19T19:59:00.751Z",
+      "text": "expected-api: changes: the deleted folder has no Git status. The same response occurs on base and does not show a banner."
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "fe05b0569c752decd9200973edcb088ab94be5a271fd59b5a9bc99031b7c3f8d"
+        }
+      ],
+      "addedAt": "2026-11-19T19:59:00.790Z",
+      "cmd": "verify/yv design-check --base 98e5525fb055",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "2c72189154244e15ab61c8fe47561411c43253b3d404572cd38601a068fde881"
+        }
+      ],
+      "addedAt": "2026-11-19T19:59:00.875Z",
+      "cmd": "CARGO_BUILD_JOBS=2 cargo test -p yardd -- --test-threads=4 && (cd ui && bun test) && (cd sidecar/yard-claude && bun test) && verify/yv selftest",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p8-16-drive.json",
+          "sha256": "59bbf4f2485e80242006529c48d1d20de6019b6ebacf0a83f6175a20ae89204a"
+        },
+        {
+          "path": "p8-2-effort-desktop.png",
+          "sha256": "3538d40c43f0d37f9e6de7369e79c0f68aaaf30a1a9bc576d59ec873bc11b6d5"
+        },
+        {
+          "path": "p8-2-speed-desktop.png",
+          "sha256": "2a23223de9dd5c21ba4b21b0ef08922603523273d5cb1fb4313dc18b206ce408"
+        },
+        {
+          "path": "p8-2-model-desktop.png",
+          "sha256": "6130b445939b1010a01e974e6d63a593a222a59fea5e925c75c64127cdf05218"
+        },
+        {
+          "path": "p8-17-drive.json",
+          "sha256": "95fb05c558145983ffc5c66066069c5ef3445ce5a1c8626379310cac4a425854"
+        },
+        {
+          "path": "p8-2-effort-mobile.png",
+          "sha256": "ed92e5331d16977a9962406329e90e6fcaf7f1360d10813f7f464c0de371efd7"
+        },
+        {
+          "path": "p8-2-speed-mobile.png",
+          "sha256": "0f0e71ed272ada698cb7117b318ef5da8134bd5c0443923e3a25de8cb35e4f95"
+        },
+        {
+          "path": "p8-2-model-mobile.png",
+          "sha256": "7b360ed45f2c676e9280b5d1260837d0551046648db7efc26230e1d79bc93ce9"
+        },
+        {
+          "path": "p8-18-drive.json",
+          "sha256": "4f47f54bb2af37f45583f28da28a4cd21f14d2aebe0e1e6dedca3fc068e1a319"
+        },
+        {
+          "path": "p8-2-workspace-tabs-desktop.png",
+          "sha256": "ae23f441046441316b02d8fecca72d634908da2d928731c2c359763902093b2b"
+        },
+        {
+          "path": "p8-19-drive.json",
+          "sha256": "0d8693c2d7a7da256d79c53a31d281b2df45dc55c0ad06c92f7ed315592d5e6c"
+        },
+        {
+          "path": "p8-2-workspace-tabs-mobile.png",
+          "sha256": "cb7a5e958bef2dbaa75d6e1e2fcc52061d48e8e99a1c0702170f734db7e4bedd"
+        },
+        {
+          "path": "p8-20-drive.json",
+          "sha256": "d93600e87dea61e4cc5a23f6b2e919c548c73c9fbddedcb922a38831f41275c4"
+        },
+        {
+          "path": "p8-2-day-options-desktop.png",
+          "sha256": "feb4d5ee75d7d87dc20dfe23d952b8b926cf96f46ea3296a19c43892247155c4"
+        },
+        {
+          "path": "p8-21-drive.json",
+          "sha256": "a96f3a649baf3b8441f0d4bbb10e4034bcddf7e33a199855e42793f82952330b"
+        },
+        {
+          "path": "p8-2-day-options-mobile.png",
+          "sha256": "76ab5d3361a8357c3686c241632a22f1ae5047a0366136a83d2b5c4d2fdb371a"
+        },
+        {
+          "path": "p8-22-drive.json",
+          "sha256": "38dcb643659a36718ab0e91a58019f0e24d22abca14bdf8ed0822ba1a5879501"
+        },
+        {
+          "path": "p8-2-connector-host-menu-desktop.png",
+          "sha256": "b409ffc8894694107b64fb13c4ef880fd8cceca3d2de4f5dd2ec264174f4a2dc"
+        },
+        {
+          "path": "p8-23-drive.json",
+          "sha256": "e484a3593f03290c72e5af776b282b6bd1790269fa00b46db57feef86fccb621"
+        },
+        {
+          "path": "p8-2-connector-host-menu-mobile.png",
+          "sha256": "27739a62dd413b822528b1ae69c9e1884ecf0946e8c8c3d49652c867b1beea82"
+        },
+        {
+          "path": "p8-24-drive.json",
+          "sha256": "e86ff761c716b26401666511b190e2e301dfd3f5263cc98903c9717a6d32c2d1"
+        },
+        {
+          "path": "p8-2-handover-desktop.png",
+          "sha256": "2a17e04dd3e51b40c596d89ea4a6a298fe057ccdc669a959545f8c09d861ad36"
+        },
+        {
+          "path": "p8-2-subsession-desktop.png",
+          "sha256": "1a6f8bca69e472ee0501bb462aee6ae9d2af1aae24571a27de25f270c177cde9"
+        },
+        {
+          "path": "p8-25-drive.json",
+          "sha256": "08d41be5d4d7e6c0dbfd292ea8fe52005020894e833d5e84c5e5464b7a159296"
+        },
+        {
+          "path": "p8-2-handover-mobile.png",
+          "sha256": "c994e0ed4dfd2ca1e88f99b60bb370ca5f9ced54a76629e2537558f922fdae33"
+        },
+        {
+          "path": "p8-2-subsession-mobile.png",
+          "sha256": "44fc55a837e4f7f759c357e001dc5312b524c7efb6828dcf5d8e706159d04fd7"
+        },
+        {
+          "path": "p8-26-drive.json",
+          "sha256": "d696faf342e9812e9546a38312038e9d74c8d25b760beba0996c6ab243cd8d69"
+        },
+        {
+          "path": "p8-3-missing-folder-desktop.png",
+          "sha256": "61aa3c0b40b90943d90e3b3d30fbfa0277f8093ca8383d863e6c5f0a80923eb0"
+        },
+        {
+          "path": "p8-27-drive.json",
+          "sha256": "e41dc573f1dafc6ffb8c0b718b95bc83828481ed55e38650f56576ad4f6a3581"
+        },
+        {
+          "path": "p8-3-history-without-banner-mobile.png",
+          "sha256": "5fd4e19ecd78dba110e05ec4172eb94c8e7b4a3b311df8811fc0dba9f13dcace"
+        },
+        {
+          "path": "p8-28-drive.json",
+          "sha256": "a845bbf1d6f717386a7ed785363058c2cdf926baf162f2403387dcbb657347a5"
+        },
+        {
+          "path": "p8-2-handover-claude-desktop.png",
+          "sha256": "6052288320d4d5e083e857f1fbb729d9435e521e4a3152d039cdb15d10b599b4"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.529Z",
+      "failedApi": [
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b",
+        "changes: this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b",
+        "term.open: this session's folder no longer exists: /tmp/yv-map-terminal-1229448-mwnz5cqf/data/wt/TEST-demo-app/yard-cmd-test-run-the-migration-0e6b"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-2-switchyard-publish-dropdowns-final.json",
+          "sha256": "a84c65a8326aadf538ad0701e670414e3883abce1d9773dd44bc7a5c1f2bc525"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.589Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "dropdowns/composer-options-fit",
+        "dropdowns/workspace-tab-spacing",
+        "dropdowns/custom-schedule-options",
+        "dropdowns/connector-host-and-refresh",
+        "dropdowns/handover-nests-the-new-session"
+      ]
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-2-switchyard-publish-terminal-final.json",
+          "sha256": "35a7f162ae6ac66c55da7e2d041b66460c587e524fb717e5da3ce8dff5386a75"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.628Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "terminal/folder-gone"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-2-switchyard-publish-models-final.json",
+          "sha256": "63ac2ca36edcea146bca0b5a0957ae08d9ba898cf60f41fa3f0c675e3a0cef8b"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.667Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/switch-model-same-engine",
+        "models/effort-is-its-own-chip",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-switchyard-compact-account.json",
+          "sha256": "00449bbcc290096075d5bdaa917fac38437e79228f875425b376fd31af6972a5"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.703Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/pick-other-engine-account-switches-engine"
+      ]
+    },
+    {
+      "id": 13,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p13-switchyard-compact-focused-separate.json",
+          "sha256": "381819e1b4603cacb13a0bae6240ee8ece4174710fe9f5ef953a84586fd42c56"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.741Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/account-picker-separate-from-model"
+      ]
+    },
+    {
+      "id": 14,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p14-switchyard-compact-focused-fixed.json",
+          "sha256": "1adce9543fa31ed63914c997f8a69147dd55a2430d4b8bd45c71f4a0c038cf04"
+        }
+      ],
+      "addedAt": "2026-11-19T20:00:39.780Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/other-engine-account-and-fixed-session"
+      ]
+    }
+  ]
+}

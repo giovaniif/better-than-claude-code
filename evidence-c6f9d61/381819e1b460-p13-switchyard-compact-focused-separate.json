@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-19T19:59:11.829Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 4834
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

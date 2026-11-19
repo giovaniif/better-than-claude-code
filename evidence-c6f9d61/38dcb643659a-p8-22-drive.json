@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "c6f9d61d054d3d6ad723df0b5a5ced8ab2c99351",
+    "short": "c6f9d61",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-19T19:58:53.708Z"
+  },
+  "dir": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-46-212Z",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2734,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/tmp/switchyard-dropdowns/.verify/drives/2026-11-19T19-59-46-212Z/connector-host-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "(() => { const b=document.querySelector('.connector-page-head .connector-refresh'); const i=b.querySelector('svg').getBoundingClientRect(), t=b.querySelector('span').getBoundingClientRect(); return Math.abs(i.top+i.height/2-t.top-t.height/2)<=1 && t.left-i.right>=4; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

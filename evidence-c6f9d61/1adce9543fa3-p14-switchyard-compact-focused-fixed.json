@@ -1,0 +1,22 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-19T19:59:25.331Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 12467
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,65 @@
+{
+  "command": "design-check",
+  "ok": true,
+  "base": "98e5525fb055e8af1eb2f416c84e16667b0d688d",
+  "ui": true,
+  "touched": [
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/AnchoredPopover.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/App.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/AutomationsPage.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/ConnectorsPage.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/SelectPicker.tsx"
+      ]
+    },
+    {
+      "status": "A",
+      "paths": [
+        "ui/src/SessionHandover.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/TerminalPane.tsx"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/store.ts"
+      ]
+    },
+    {
+      "status": "M",
+      "paths": [
+        "ui/src/styles.css"
+      ]
+    }
+  ],
+  "findings": [],
+  "problems": [],
+  "hint": "screenshot the reference screen next to your after-shots, and cover empty, loading, error and long-text states at both viewports"
+}
