@@ -44,3 +44,13 @@ yv drive 'new' --viewport desktop --steps '[{"click":"role:button:Automations"},
 yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Automations"},{"click":"role:button:New automation"},{"expect":"css:select","count":0},{"click":"role:button:Schedule type"},{"click":"role:menuitemradio:Weekly"},{"click":"role:button:Day of the week"},{"expect":"role:menuitemradio:Friday","inViewport":true},{"eval":"[...document.querySelectorAll('"'"'[data-anchored-panel]'"'"')].every(p => { const r=p.getBoundingClientRect(); return r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight; })","equals":true},{"shot":"day-options"},{"click":"role:menuitemradio:Friday"},{"expect":"role:button:Day of the week","text":"Friday"}]'
 ```
 
+### handover-nests-the-new-session
+Viewports: both
+Handover can use another account or model under the same agent. The new
+session appears below its parent in the sidebar.
+
+```sh
+yv api '{"op":"account.add","engine":"codex","name":"TEST-Handover"}' --wait '{"op":"accounts"}'
+yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Handover"},{"click":"role:button:Account"},{"click":"role:menuitemradio:TEST-Handover"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"expect":{"role":"group","name":"Handovers from TEST-say hello"},"text":"TEST-Handover"},{"shot":"subsession"}]'
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for [edit] TEST-fix the greeting"},{"click":"role:menuitem:Handover"},{"click":"role:button:Model"},{"click":"role:menuitemradio:Fake Deep"},{"expect":"role:dialog:Handover session","inViewport":true},{"shot":"handover"},{"click":{"role":"button","name":"Handover","exact":true}},{"expect":"css:.thread","text":"Handed off from Codex"},{"click":"role:button:Open sessions"},{"expect":{"role":"group","name":"Handovers from [edit] TEST-fix the greeting"},"text":"Fake Deep"},{"shot":"subsession"}]'
+```

@@ -837,7 +837,7 @@ async fn removing_a_dirty_worktree_is_refused() {
 }
 
 #[tokio::test]
-async fn handoff_to_the_same_engine_or_mid_turn_is_refused() {
+async fn handoff_to_the_same_target_or_mid_turn_is_refused() {
     let sb = Sandbox::new("handoff");
     let d = sb.start();
     let mut c = d.client().await;
@@ -855,10 +855,32 @@ async fn handoff_to_the_same_engine_or_mid_turn_is_refused() {
     c.wait_status(&sid, "idle").await;
 
     let from = c.mark();
-    c.send(json!({ "op": "session.handoff", "sessionId": sid, "engine": "codex", "model": "fake-deep", "effort": "medium" }))
+    c.send(json!({ "op": "session.handoff", "sessionId": sid, "engine": "codex", "model": "fake-fast", "effort": "low" }))
         .await;
     assert!(c.wait_error(from, "session.handoff").await.contains("already runs on Codex"));
     assert!(!c.log.iter().any(|m| m["op"] == "created" && m["sessionId"] != sid));
+}
+
+#[tokio::test]
+async fn handoff_can_change_the_account_or_model_without_changing_engines() {
+    let sb = Sandbox::new("handoff-target");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "original work", json!({})).await;
+    c.wait_status(&sid, "idle").await;
+    let account = add_account(&mut c, "codex", "TEST-Other").await;
+    for (model, target_account) in [("fake-fast", account.as_str()), ("fake-deep", "default")] {
+        let from = c.mark();
+        c.send(json!({ "op": "session.handoff", "sessionId": sid, "engine": "codex", "model": model, "effort": "low", "account": target_account })).await;
+        let created = c.wait_after(from, "handover created", |m| m["op"] == "created" || m["op"] == "error").await;
+        assert_eq!(created["op"], "created", "{created}");
+        let id = created["sessionId"].as_str().unwrap();
+        let child = c.wait_for("handover parent and target", |m| m["op"] == "session" && m["session"]["id"] == id && m["session"]["parent"] == sid).await;
+        assert_eq!(child["session"]["model"], model);
+        assert_eq!(child["session"]["account"], target_account);
+        c.wait_turn_done(id, 0).await;
+        c.wait_status(id, "idle").await;
+    }
 }
 
 #[tokio::test]
