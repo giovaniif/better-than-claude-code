@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run acp-engines --recipe opencode-setup-chip-has-no-effort
+# exit 0 after 4571 ms at fd6549be8b8623bdbbec14001dd1db9dcdba2613
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-20T09:10:34.773Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "opencode-setup-chip-has-no-effort",
+          "status": "pass",
+          "ms": 3592
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [113.00ms]

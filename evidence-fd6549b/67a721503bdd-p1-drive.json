@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "4c29d0df77613eb11b0108cee1a96340be7d8206",
+    "short": "4c29d0d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T09:09:34.081Z"
+  },
+  "dir": ".verify/acp-effort-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3799,
+      "steps": 13,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/acp-effort-base/new-chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/acp-effort-base/session-chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "(document.querySelector(\".composer-setup\")?.getAttribute(\"aria-label\") ?? \"no chip\") + \" | effort chip: \" + document.querySelectorAll(\".composer-setup .setup-effort\").length + \" | effort picker: \" + document.querySelectorAll(\"button[aria-label^=\\\"Effort \\\"]\").length",
+          "value": "Session setup: Fake Free (opencode), Default, High, Ask first | effort chip: 1 | effort picker: 0"
+        },
+        {
+          "step": 11,
+          "eval": "(document.querySelector(\".composer-setup\")?.getAttribute(\"aria-label\") ?? \"no chip\") + \" | effort chip: \" + document.querySelectorAll(\".composer-setup .setup-effort\").length + \" | effort picker: \" + document.querySelectorAll(\"button[aria-label^=\\\"Effort \\\"]\").length",
+          "value": "Session setup: Fake Free (opencode), Default, High, Ask first | effort chip: 1 | effort picker: 0"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

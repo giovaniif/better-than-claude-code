@@ -1,0 +1,214 @@
+{
+  "v": 1,
+  "claim": "On a phone, the Session setup chip under the message box shows the previous model's effort ('· High', broken over two lines, and 'High' in its label) for an OpenCode model that takes no effort; the setup sheet itself has no Effort row.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35",
+  "base": "87dd16575560b7cf66335e87165c5702155f7cfa",
+  "head": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/engines.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/acp-engines.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T09:09:30.219Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "4c29d0df77613eb11b0108cee1a96340be7d8206",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "67a721503bdd396dd3217ecc0f1b16b766cebd7b3c286012608429825cee7df6"
+        },
+        {
+          "path": "p1-new-chip-mobile.png",
+          "sha256": "eca19dc9872b6aac28084c9c7aad544ac1f84656eeb35fbd007bd9429a808922"
+        },
+        {
+          "path": "p1-session-chip-mobile.png",
+          "sha256": "059210549e4a894f1f9704502b968c8055b1e2a5ee7510c7ff63e42795d55279"
+        }
+      ],
+      "addedAt": "2026-11-20T09:09:48.226Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "4c29d0df77613eb11b0108cee1a96340be7d8206",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "70a2f50e643de442abc2cec8f43a5eb40ca75b0f42347609b6334a66ed0fa2b9"
+        }
+      ],
+      "addedAt": "2026-11-20T09:09:48.275Z",
+      "cmd": "verify/yv map run acp-engines --recipe opencode-setup-chip-has-no-effort",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "6006ce846f84ef08eedde967a684ad7bf8f1089193b8900fb5b2f22a7dcd269b"
+        },
+        {
+          "path": "p3-new-chip-mobile.png",
+          "sha256": "1bcb4ea4b740fe3324d68046d4bebf8d979de5067b0b39c32dfd477273371d25"
+        },
+        {
+          "path": "p3-session-chip-mobile.png",
+          "sha256": "940d6d5f27ccc4071fcf45913e5cfe77b80acdf8e51927bc41f16dbde69b2768"
+        }
+      ],
+      "addedAt": "2026-11-20T09:10:30.104Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "10c1d7e0c0ee659c0854731add10d1ae9a81242db501843a4437e29c4528cd19"
+        },
+        {
+          "path": "p4-new-chip-desktop.png",
+          "sha256": "a2fcb1918499fdff05ab546cb3aace0b777f84f2335b94e2a3de2de216d45efa"
+        },
+        {
+          "path": "p4-session-chip-desktop.png",
+          "sha256": "457e06a4535c87d809b7674c472c70cad4ff4d84ac7d03bd5c95a905c7c0b1dd"
+        }
+      ],
+      "addedAt": "2026-11-20T09:10:30.150Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "a33818b6a50fcf59d59ac41af29b8fadb5ab4dd9a5fb02dfe44a2ac56b6be9cd"
+        }
+      ],
+      "addedAt": "2026-11-20T09:10:30.206Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run acp-engines --recipe opencode-setup-chip-has-no-effort",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "a1f3b5c004426698e1a55064dd31bd72df54c595e22db1dc0a22fa804da0c4af"
+        }
+      ],
+      "addedAt": "2026-11-20T09:10:34.828Z",
+      "cmd": "verify/yv design-check --base 87dd16575560",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-acp-engines.json",
+          "sha256": "36427062f89a27693b3523c0e9affcbd79b28f09dc308596d243a5d6deb23f8c"
+        }
+      ],
+      "addedAt": "2026-11-20T09:10:40.859Z",
+      "cmd": "verify/yv map run acp-engines",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "acp-engines/picker-lists-opencode-and-grok",
+        "acp-engines/opencode-session-streams-a-reply",
+        "acp-engines/grok-command-asks-first",
+        "acp-engines/opencode-hands-off-from-its-picker",
+        "acp-engines/queued-message-waits-for-next-turn",
+        "acp-engines/gemini-picker-session-and-approval",
+        "acp-engines/opencode-setup-chip-has-no-effort",
+        "acp-engines/gemini-separate-account-terminal-login"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-models.json",
+          "sha256": "0e92be9bffea241701c5b7b74adc4547a8af52ea0b0600aee5c6090a991cdc71"
+        }
+      ],
+      "addedAt": "2026-11-20T09:11:36.896Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/model-list-scrolls-under-the-header",
+        "models/switch-model-same-engine",
+        "models/effort-is-its-own-chip",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling",
+        "models/codex-speed-reaches-the-turn"
+      ]
+    }
+  ]
+}

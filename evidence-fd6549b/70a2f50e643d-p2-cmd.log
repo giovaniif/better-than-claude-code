@@ -1,0 +1,40 @@
+$ verify/yv map run acp-engines --recipe opencode-setup-chip-has-no-effort
+# exit 1 after 13564 ms at 4c29d0df77613eb11b0108cee1a96340be7d8206
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "acp-engines",
+      "at": "2026-11-20T09:10:01.835Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "opencode-setup-chip-has-no-effort",
+          "status": "fail",
+          "ms": 12709,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 6 {\"expect\":\"role:button:Session setup: Fake Free (opencode), Default, Ask first\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35/.verify/drives/2026-11-20T09-09-49-322Z/fail-mobile-step6.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"new\",\n  \"build\": {\n    \"sha\": \"4c29d0df77613eb11b0108cee1a96340be7d8206\",\n    \"short\": \"4c29d0d\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-20T09:09:34.081Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35/.verify/drives/2026-11-20T09-09-49-322Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"mobile\",\n      \"ms\": 12204,\n      \"steps\": 15,\n      \"failed\": {\n        \"step\": 6,\n        \"action\": {\n          \"expect\": \"role:button:Session setup: Fake Free (opencode), Default, Ask first\"\n        },\n        \"reason\": \"for: Timeout 10000ms exceeded.\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35/.verify/drives/2026-11-20T09-09-49-322Z/fail-mobile-step6.png\",\n        \"aria\": \"- banner:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"New session\\\" [level=2]\\n  - button \\\"Subscription usage\\\": 47%\\n  - button \\\"Connectors\\\"\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- 'button \\\"Session setup: Fake Free (opencode), Default, High, Ask first\\\"': Fake Free (opencode) · High\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 6 {\\\"expect\\\":\\\"role:button:Session setup: Fake Free (opencode), Default, Ask first\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35/.verify/drives/2026-11-20T09-09-49-322Z/fail-mobile-step6.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "acp-engines/opencode-setup-chip-has-no-effort",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

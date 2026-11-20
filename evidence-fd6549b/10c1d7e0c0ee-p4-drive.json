@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "fd6549be8b8623bdbbec14001dd1db9dcdba2613",
+    "short": "fd6549b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T09:10:14.966Z"
+  },
+  "dir": ".verify/acp-effort-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2750,
+      "steps": 11,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/acp-effort-head-desktop/new-chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/acp-effort-head-desktop/session-chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(document.querySelector(\".composer-setup\")?.getAttribute(\"aria-label\") ?? \"no chip\") + \" | effort chip: \" + document.querySelectorAll(\".composer-setup .setup-effort\").length + \" | effort picker: \" + document.querySelectorAll(\"button[aria-label^=\\\"Effort \\\"]\").length",
+          "value": "no chip | effort chip: 0 | effort picker: 0"
+        },
+        {
+          "step": 9,
+          "eval": "(document.querySelector(\".composer-setup\")?.getAttribute(\"aria-label\") ?? \"no chip\") + \" | effort chip: \" + document.querySelectorAll(\".composer-setup .setup-effort\").length + \" | effort picker: \" + document.querySelectorAll(\"button[aria-label^=\\\"Effort \\\"]\").length",
+          "value": "no chip | effort chip: 0 | effort picker: 0"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
