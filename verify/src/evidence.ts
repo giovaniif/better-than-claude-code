@@ -359,7 +359,10 @@ function publish(dir: string, a: Args): Result {
 /** Downloads a published bundle (bundle.json URL) with its artifacts into dir. */
 /** The published file for one artifact under `prefix`: `<hash>-<name>`. */
 export function pickArtifact<T extends { path: string }>(tree: T[], prefix: string, art: { path: string; sha256: string }): T | undefined {
-  return tree.find((t) => t.path.startsWith(prefix) && t.path.endsWith(`-${art.path}`));
+  const named = tree.filter((t) => t.path.startsWith(prefix) && t.path.endsWith(`-${art.path}`));
+  // A bundle published twice leaves two files with the same name under the
+  // prefix; the recorded hash picks the one this proof made.
+  return named.find((t) => t.path === `${prefix}${art.sha256.slice(0, 12)}-${art.path}`) ?? named[0];
 }
 
 async function fetchBundle(url: string, dir: string): Promise<Result> {
