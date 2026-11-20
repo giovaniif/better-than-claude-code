@@ -1,0 +1,46 @@
+$ verify/yv map run navigation
+# exit 0 after 42860 ms at c562139f1ddf9a4a3db4b7b22e3ef99aab40be27
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "navigation",
+      "at": "2026-11-20T07:30:01.776Z",
+      "counts": {
+        "pass": 5
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "command-k-navigation",
+          "status": "pass",
+          "ms": 11259
+        },
+        {
+          "label": "command-k-finds-switchy",
+          "status": "pass",
+          "ms": 5957
+        },
+        {
+          "label": "command-k-rows-name-repo-and-branch",
+          "status": "pass",
+          "ms": 4710
+        },
+        {
+          "label": "recent-list-skips-automation-runs",
+          "status": "pass",
+          "ms": 6512
+        },
+        {
+          "label": "native-app-menu",
+          "status": "pass",
+          "ms": 9466
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

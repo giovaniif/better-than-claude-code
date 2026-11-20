@@ -1,0 +1,80 @@
+{
+  "v": 1,
+  "claim": "Feature map drift: navigation/native-app-menu expects Hosts, Sessions and Subscriptions sidebar rows that #290 removed on purpose, so map run navigation is 4/5 on main",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119",
+  "base": "75d630ddc88f3d5df7da7bd3ec098da309b64ab9",
+  "head": "c562139f1ddf9a4a3db4b7b22e3ef99aab40be27",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/navigation.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T07:29:18.769Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "c562139f1ddf9a4a3db4b7b22e3ef99aab40be27",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T07:29:18.807Z",
+      "text": "no-repro: map-only change; on main 75d630d (07:27 UTC), map run navigation failed native-app-menu at step 3: the sidebar rows were [New session, Switchy, Automations, Connectors], and the recipe expected Hosts, Sessions and Subscriptions too. #290 (704f2bd, 'simplify sidebar', 'navigate to focused pages through the page picker') removed them."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "c562139f1ddf9a4a3db4b7b22e3ef99aab40be27",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T07:29:18.844Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c562139f1ddf9a4a3db4b7b22e3ef99aab40be27",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-patrol-a119-map-nav2.json",
+          "sha256": "1ce3913188877f8fdad05d2718d8f10206f7adb03f6ffc0c9d8b30e20e6c52f0"
+        }
+      ],
+      "addedAt": "2026-11-20T07:29:18.881Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "navigation/command-k-navigation",
+        "navigation/command-k-finds-switchy",
+        "navigation/command-k-rows-name-repo-and-branch",
+        "navigation/recent-list-skips-automation-runs",
+        "navigation/native-app-menu"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "c562139f1ddf9a4a3db4b7b22e3ef99aab40be27",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e8acf4e3e62cc10da873743d6f5bd5aa26e280c7b9492959d818cac800eec0ea"
+        }
+      ],
+      "addedAt": "2026-11-20T07:29:18.920Z",
+      "cmd": "verify/yv map run navigation",
+      "exit": 0
+    }
+  ]
+}
