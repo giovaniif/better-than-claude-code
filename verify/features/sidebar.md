@@ -210,5 +210,19 @@ yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-hello from Claud
 yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-handoff"},"text":"2"}]'
 ```
 
+### hand-off-from-a-pinned-session-stays-in-its-group
+Viewports: both
+A hand-off from a pinned, grouped session is not pinned. Its row is listed in
+the group it belongs to, not nested under the pinned parent, so the group's
+count matches the rows under it.
+
+```sh
+yv api '{"op":"session.update","sessionId":"{{sid_echo}}","pinned":true,"group":"TEST-pinned"}' --wait '{"op":"session","session":{"id":"{{sid_echo}}","pinned":true,"group":"TEST-pinned"}}'
+yv api '{"op":"session.handoff","sessionId":"{{sid_echo}}","engine":"codex","model":"fake-deep","effort":"low"}' --wait '{"op":"created"}'
+yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-say hello","model":"fake-deep","group":"TEST-pinned","pinned":false}]}'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-pinned"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"Fake Deep"}},{"eval":"[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")","equals":false},{"shot":"pinned-handover"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".group-head","hasText":"TEST-pinned"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"Fake Deep"}},{"eval":"[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")","equals":false},{"shot":"pinned-handover"}]'
+```
+
 ## Gotchas
 - Row menus render on document.body (a portal), so find menu items by role, not inside the row.
