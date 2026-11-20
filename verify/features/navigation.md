@@ -63,10 +63,11 @@ yv drive new --steps '[{"press":"Meta+k"},{"expect":"role:dialog:Go to session o
 ### native-app-menu
 Viewports: both
 Model the Mac shell capability and its DOM events. The Settings and Import
-sidebar rows disappear (Switchy, a page since #184, and the Hosts, Sessions
-and Subscriptions pages from #228 stay), while Settings,
-Import and Go to remain accessible through the menu bridge.
+sidebar rows disappear (Switchy, a page since #184, Automations and
+Connectors stay; Hosts, Sessions and Subscriptions left the sidebar in #290 and
+open from Go to), while Settings, Import and Go to remain accessible through
+the menu bridge.
 
 ```sh
-yv drive new --steps '[{"eval":"window.__SWITCHYARD_APP_MENU__ = true; true","equals":true},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"settings\"})); true","equals":true},{"expect":"role:heading:Settings"},{"eval":"[...document.querySelectorAll(\".sidebar-top button\")].map(e => e.textContent.trim())","equals":["New session","Hosts","Sessions","Subscriptions","Switchy","Automations","Connectors"]},{"shot":"mac-sidebar"},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"import\"})); true","equals":true},{"expect":"role:dialog:Import from Claude Code"},{"shot":"menu-import"},{"press":"Escape"},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"navigation\"})); true","equals":true},{"expect":"role:dialog:Go to session or page"},{"fill":"role:combobox:Search sessions and pages","value":"import"},{"press":"Enter"},{"expect":"role:dialog:Import from Claude Code"}]'
+yv drive new --steps '[{"eval":"window.__SWITCHYARD_APP_MENU__ = true; true","equals":true},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"settings\"})); true","equals":true},{"expect":"role:heading:Settings"},{"eval":"[...document.querySelectorAll(\".sidebar-top button\")].map(e => e.textContent.trim())","equals":["New session","Switchy","Automations","Connectors"]},{"shot":"mac-sidebar"},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"import\"})); true","equals":true},{"expect":"role:dialog:Import from Claude Code"},{"shot":"menu-import"},{"press":"Escape"},{"eval":"window.dispatchEvent(new CustomEvent(\"switchyard:navigate\", {detail: \"navigation\"})); true","equals":true},{"expect":"role:dialog:Go to session or page"},{"fill":"role:combobox:Search sessions and pages","value":"import"},{"press":"Enter"},{"expect":"role:dialog:Import from Claude Code"}]'
 ```
