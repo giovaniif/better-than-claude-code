@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "afc23d7c0d3851575da870f60a733b1c9fc3d7e8",
+    "short": "afc23d7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T05:16:09.861Z"
+  },
+  "dir": ".verify/evidence/pinned-handover-2-2-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1909,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pinned-handover-2-2-base-desktop/pinned-handover-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".group-zone .session-row\")].length",
+          "value": 0
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

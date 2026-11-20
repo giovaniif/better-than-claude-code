@@ -1,0 +1,40 @@
+$ verify/yv map run sidebar --recipe hand-off-from-a-pinned-session-stays-in-its-group
+# exit 1 after 13520 ms at afc23d7c0d3851575da870f60a733b1c9fc3d7e8
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-20T05:16:29.762Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hand-off-from-a-pinned-session-stays-in-its-group",
+          "status": "fail",
+          "ms": 12668,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":{\"css\":\".group-zone .session-row\",\"hasText\":\"Fake Deep\"}}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-25cb/.verify/drives/2026-11-20T05-16-17-887Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "l-2026-11-20-25cb/.verify/drives/2026-11-20T05-16-17-887Z/fail-desktop-step1.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - button \\\"Go to session or page\\\": Switchyard Ctrl K\\n  - button \\\"Collapse sessions sidebar\\\" [expanded]\\n  - button \\\"New session\\\"\\n  - button \\\"Switchy\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Connectors\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - text: Pinned\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - group \\\"Handovers from TEST-say hello\\\":\\n    - button \\\"TEST-say hello Fake Deep · Idle\\\"\\n    - button \\\"Actions for TEST-say hello\\\"\\n  - text: Sessions\\n  - button \\\"[cmd] TEST-run the migration Fake Fast · Needs approval\\\"\\n  - button \\\"Actions for [cmd] TEST-run the migration\\\"\\n  - button \\\"TEST-hello from Claude Haiku 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"TEST-pinned 1\\\" [expanded]\\n  - button \\\"Actions for group TEST-pinned\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 3% · 50%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- 'button \\\"Account: Claude, Default\\\"'\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":{\\\"css\\\":\\\".group-zone .session-row\\\",\\\"hasText\\\":\\\"Fake Deep\\\"}}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-25cb/.verify/drives/2026-11-20T05-16-17-887Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "sidebar/hand-off-from-a-pinned-session-stays-in-its-group",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,32 @@
+$ verify/yv map run sidebar --recipe hand-off-from-a-pinned-session-stays-in-its-group && (cd ui && bun test)
+# exit 0 after 6194 ms at cb8302db618f9e18f40540813702238b7d3b741c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-20T05:16:45.709Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hand-off-from-a-pinned-session-stays-in-its-group",
+          "status": "pass",
+          "ms": 5217
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 401 pass
+ 0 fail
+ 993 expect() calls
+Ran 401 tests across 28 files. [119.00ms]

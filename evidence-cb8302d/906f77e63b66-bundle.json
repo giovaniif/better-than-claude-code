@@ -1,0 +1,225 @@
+{
+  "v": 1,
+  "claim": "A hand-off from a pinned, grouped session nests under its pinned parent in Pinned, though it is not pinned; its group then shows a count of 1 over no rows",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-25cb",
+  "base": "895b9c67e4a17a26abfdd7bd515b4a897e43b9ac",
+  "head": "cb8302db618f9e18f40540813702238b7d3b741c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T05:16:05.782Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "afc23d7c0d3851575da870f60a733b1c9fc3d7e8",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "4957ad194a6879792544cb373d3147d3a2dfcfd41a53404e3703b75c054d064e"
+        },
+        {
+          "path": "p1-pinned-handover-desktop.png",
+          "sha256": "132d06e27c38f67ea21aa389bf6a1b9e0fcdfe5394f2d8806e83cde87eb1fba6"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:13.205Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "afc23d7c0d3851575da870f60a733b1c9fc3d7e8",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "d71cf8544c1310b7b79702161f7da19b3a288e46fd111d50a173e3560ceee755"
+        },
+        {
+          "path": "p2-pinned-handover-mobile.png",
+          "sha256": "c6ec3060023b0f0e81ad6342a0dafcf539c453c1609754dae7f25077823386fc"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:16.201Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "afc23d7c0d3851575da870f60a733b1c9fc3d7e8",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "a28751f6b78ceb7a0318aae8d15776215df03c461197eb45ec03aa9a67e17984"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:16.246Z",
+      "cmd": "verify/yv map run sidebar --recipe hand-off-from-a-pinned-session-stays-in-its-group",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "dea044a952a13a7c7219621df11a268321487830d200dcbb99306b49c989cc43"
+        },
+        {
+          "path": "p4-pinned-handover-desktop.png",
+          "sha256": "a1358ee2e7ce4a603f11d4146fccaca9db2d85870e0c49b78ebcb25075e60f86"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:36.498Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "4292b3ecfb200eb973a4a203960a0d91f08979e0fbe8dd6ddc6837a5e627304f"
+        },
+        {
+          "path": "p5-pinned-handover-mobile.png",
+          "sha256": "493245621e4d9a8de1c0260ce15f6c0e27d47a9cb407eb4f78b7bdaaca1ab23f"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:39.604Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "f053c199274152eca971875f2f32c9d801285ca3f33e4e4c6ca7141da85b953a"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:39.644Z",
+      "cmd": "verify/yv map run sidebar --recipe hand-off-from-a-pinned-session-stays-in-its-group && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "8129d3695cfe94f55aa0f8c6d7ab7d9aa558bc15c15c1527dced7b8fcf527fda"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:45.879Z",
+      "cmd": "verify/yv design-check --base 895b9c67e4a1",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-sidebar.json",
+          "sha256": "b139dedceb4f8bd736e945947e2ecd830640bd28dc905b4e59b443f356135594"
+        }
+      ],
+      "addedAt": "2026-11-20T05:16:48.861Z",
+      "cmd": "verify/yv map run sidebar",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/mark-chat-unread",
+        "sidebar/rename-session",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/archiving-the-open-session-keeps-the-list-closed",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group",
+        "sidebar/hand-off-from-a-pinned-session-stays-in-its-group"
+      ]
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "regression",
+      "at": "cb8302db618f9e18f40540813702238b7d3b741c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-map-dropdowns.json",
+          "sha256": "f59db25a31624b9470f2bcaeb2e582a0eed0175f4028044bc1bb47d8ce233693"
+        }
+      ],
+      "addedAt": "2026-11-20T05:18:45.428Z",
+      "cmd": "verify/yv map run dropdowns",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "dropdowns/composer-options-fit",
+        "dropdowns/workspace-tab-spacing",
+        "dropdowns/custom-schedule-options",
+        "dropdowns/connector-host-and-refresh",
+        "dropdowns/handover-nests-the-new-session"
+      ]
+    }
+  ]
+}

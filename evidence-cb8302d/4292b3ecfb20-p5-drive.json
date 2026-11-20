@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "cb8302db618f9e18f40540813702238b7d3b741c",
+    "short": "cb8302d",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T05:16:33.955Z"
+  },
+  "dir": ".verify/evidence/pinned-handover-2-2-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2551,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/pinned-handover-2-2-head-mobile/pinned-handover-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 3,
+          "eval": "[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
