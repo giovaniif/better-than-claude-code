@@ -1,0 +1,45 @@
+$ verify/yv map run focused-pages --recipe session-rows-have-straight-dividers
+# exit 1 after 4895 ms at e4043082b123e7ce2c5f920591c44a00166c885a
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-20T11:18:49.664Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "session-rows-have-straight-dividers",
+          "status": "fail",
+          "ms": 3859,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"[...document.querySelectorAll(\\\".focused-session-row\\\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \\\"0px\\\" && cs.borderBottomRightRadius === \\\"0px\\\"; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449/.verify/drives/2026-11-20T11-18-45-990Z/fail-mobile-step1.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"eval\":\"[...document.querySelectorAll(\\\".focused-session-row\\\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \\\"0px\\\" && cs.borderBottomRightRadius === \\\"0px\\\"; })\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449/.verify/drives/2026-11-20T11-18-45-990Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "odex · Default · iso-host Needs approval —\\\":\\n  - strong: \\\"[cmd] TEST-run the migration\\\"\\n  - text: Codex · Default · iso-host Needs approval —\\n- button \\\"TEST-hello from Claude Claude · Default · iso-host Idle 25 MB 0.0 cores\\\":\\n  - strong: TEST-hello from Claude\\n  - text: Claude · Default · iso-host Idle 25 MB 0.0 cores\\n- button \\\"[edit] TEST-fix the greeting Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[edit] TEST-fix the greeting\\\"\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"TEST-say hello Codex · Default · iso-host Idle —\\\":\\n  - strong: TEST-say hello\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"[think] TEST-plan the refactor Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[think] TEST-plan the refactor\\\"\\n  - text: Codex · Default · iso-host Idle —\\n- button \\\"[fail] TEST-failing turn Codex · Default · iso-host Idle —\\\":\\n  - strong: \\\"[fail] TEST-failing turn\\\"\\n  - text: Codex · Default · iso-host Idle —\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"[...document.querySelectorAll(\\\".focused-session-row\\\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \\\"0px\\\" && cs.borderBottomRightRadius === \\\"0px\\\"; })\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"[...document.querySelectorAll(\\\\\\\".focused-session-row\\\\\\\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \\\\\\\"0px\\\\\\\" && cs.borderBottomRightRadius === \\\\\\\"0px\\\\\\\"; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449/.verify/drives/2026-11-20T11-18-45-990Z/fail-mobile-step1.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"eval\\\":\\\"[...document.querySelectorAll(\\\\\\\".focused-session-row\\\\\\\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \\\\\\\"0px\\\\\\\" && cs.borderBottomRightRadius === \\\\\\\"0px\\\\\\\"; })\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449/.verify/drives/2026-11-20T11-18-45-990Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "focused-pages/session-rows-have-straight-dividers",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

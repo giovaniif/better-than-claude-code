@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "sessions",
+  "build": {
+    "sha": "e4043082b123e7ce2c5f920591c44a00166c885a",
+    "short": "e404308",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T11:18:40.252Z"
+  },
+  "dir": ".verify/evidence/sessions-row-dividers-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1920,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/sessions-row-dividers-base/sessions-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "getComputedStyle(document.querySelector(\".focused-session-row\")).borderBottomLeftRadius",
+          "value": "8px"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1803,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/sessions-row-dividers-base/sessions-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "getComputedStyle(document.querySelector(\".focused-session-row\")).borderBottomLeftRadius",
+          "value": "8px"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,200 @@
+{
+  "v": 1,
+  "claim": "Sessions page: the divider under each session row curves up at both ends (the rows kept .btn-quiet's 8 px corners), at both viewports.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449",
+  "base": "445d6bcd2b70fd0c1c2046f935332d78355d1169",
+  "head": "1f2cecf35e011ebf72288ed71534c1301df28ece",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T11:18:35.930Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e4043082b123e7ce2c5f920591c44a00166c885a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "3387ae8053f27c21e4bd27b4e1348cbcbb0a863323c58ce5b152c2833fd628ab"
+        },
+        {
+          "path": "p1-sessions-mobile.png",
+          "sha256": "33dfbc2593db73e86b26a7479c2c24abf12480bb5f74c70d96a5890ed060ace1"
+        },
+        {
+          "path": "p1-sessions-desktop.png",
+          "sha256": "8bbf18232a24587f97dfdcfae11262891e9263d71c6122509d62f97f84d72e1b"
+        }
+      ],
+      "addedAt": "2026-11-20T11:18:44.722Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e4043082b123e7ce2c5f920591c44a00166c885a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "c8f018b475de4cdc233492c72474cf1cf7029497c74e20e92ce0d01a7a416116"
+        }
+      ],
+      "addedAt": "2026-11-20T11:18:44.773Z",
+      "cmd": "verify/yv map run focused-pages --recipe session-rows-have-straight-dividers",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1f2cecf35e011ebf72288ed71534c1301df28ece",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "9bf24f6420acfcc746ba65030424e458730ef6567b59e06d0ac606ef2236fc79"
+        },
+        {
+          "path": "p3-sessions-mobile.png",
+          "sha256": "aa0fd0869477fc1733cda83a437a0fa6031ea89f7437bd0e5c4647c03013c4c7"
+        },
+        {
+          "path": "p3-sessions-desktop.png",
+          "sha256": "d8beb99488906881cda5bc84bb29ea1d8175994643da3d1871485732814b6ce7"
+        }
+      ],
+      "addedAt": "2026-11-20T11:18:58.391Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "1f2cecf35e011ebf72288ed71534c1301df28ece",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "8e1b5b422912c260d642603382a0d6ab358de8ea3a121656e6fd7c15d9280e74"
+        }
+      ],
+      "addedAt": "2026-11-20T11:18:58.436Z",
+      "cmd": "verify/yv map run focused-pages --recipe session-rows-have-straight-dividers && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "1f2cecf35e011ebf72288ed71534c1301df28ece",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "c4ae7376beaa08997dbd9616f95551bf1c3a18578978059ea2c139bd2120f3b1"
+        }
+      ],
+      "addedAt": "2026-11-20T11:19:03.540Z",
+      "cmd": "verify/yv design-check --base 445d6bcd2b70",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "1f2cecf35e011ebf72288ed71534c1301df28ece",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-focused-pages.json",
+          "sha256": "160cf1e878441ae16eac7dbf30fb2b55fadb917d9043f91d19616184e948f8aa"
+        }
+      ],
+      "addedAt": "2026-11-20T11:19:03.627Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 1,
+      "failingRecipes": [
+        "focused-pages/compact-usage-popover",
+        "focused-pages/manage-accounts-opens-logins"
+      ],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-visibility-tabs",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/session-rows-have-straight-dividers",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/sidebar-skips-duplicate-page-links"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "regression",
+      "at": "e4043082b123e7ce2c5f920591c44a00166c885a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-focused-pages.json",
+          "sha256": "7c0e9ba9b43e8daf09cf92b3cf575ad5fbf2a204e71ee0847db2d4215ff6441e"
+        }
+      ],
+      "addedAt": "2026-11-20T11:21:09.907Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 1,
+      "failingRecipes": [
+        "focused-pages/compact-usage-popover",
+        "focused-pages/session-rows-have-straight-dividers",
+        "focused-pages/manage-accounts-opens-logins"
+      ],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-visibility-tabs",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/sidebar-skips-duplicate-page-links"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+$ verify/yv map run focused-pages --recipe session-rows-have-straight-dividers && (cd ui && bun test)
+# exit 0 after 5058 ms at 1f2cecf35e011ebf72288ed71534c1301df28ece
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-20T11:19:03.369Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "session-rows-have-straight-dividers",
+          "status": "pass",
+          "ms": 3911
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [116.00ms]
