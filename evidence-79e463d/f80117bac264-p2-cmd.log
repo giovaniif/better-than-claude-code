@@ -1,0 +1,26 @@
+$ cd verify && bun test src/evidence.test.ts
+# exit 1 after 24 ms at 8a5264e38bf081ca4ef120d99412605d94af7d0f
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/evidence.test.ts:
+ 6 |   const tree = [
+ 7 |     { path: "evidence-b7774df/9a0b1c2d3e4f-p4-cmd.log" },
+ 8 |     { path: "evidence-b7774df/61111ebca8ff-p4-cmd.log" },
+ 9 |     { path: "evidence-other/61111ebca8ff-p4-cmd.log" },
+10 |   ];
+11 |   expect(pickArtifact(tree, "evidence-b7774df/", art)?.path).toBe("evidence-b7774df/61111ebca8ff-p4-cmd.log");
+                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "evidence-b7774df/61111ebca8ff-p4-cmd.log"
+Received: "evidence-b7774df/9a0b1c2d3e4f-p4-cmd.log"
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119/verify/src/evidence.test.ts:11:62)
+(fail) a bundle published twice fetches the artifact its proof recorded [0.46ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [20.00ms]
