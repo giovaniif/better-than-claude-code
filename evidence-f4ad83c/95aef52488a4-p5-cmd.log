@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run voice --recipe voice-mode-from-new-session
+# exit 0 after 12056 ms at f4ad83cf04524c094af31662e1e6308dbfa0a7b1
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "voice",
+      "at": "2026-11-20T09:19:21.114Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "voice-mode-from-new-session",
+          "status": "pass",
+          "ms": 11079
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 401 pass
+ 0 fail
+ 993 expect() calls
+Ran 401 tests across 28 files. [116.00ms]
