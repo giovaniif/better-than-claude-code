@@ -1,0 +1,45 @@
+$ verify/yv map run connectors --recipe disabled-button-looks-disabled
+# exit 1 after 7664 ms at c056c18f18be3ee03c48d08fad290c03c3c928ff
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-20T08:19:33.333Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "disabled-button-looks-disabled",
+          "status": "fail",
+          "ms": 6569,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"eval\":\"(() => { const all = [...document.querySelectorAll(\\\"button.btn\\\")]; const c = all.find((b) => b.textContent.trim() === \\\"Continue\\\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()\",\"equals\":\"true\"}: eval returned \"false\", expected \"true\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-19-26-928Z/fail-mobile-step3.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"eval\":\"(() => { const all = [...document.querySelectorAll(\\\"button.btn\\\")]; const c = all.find((b) => b.textContent.trim() === \\\"Continue\\\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()\",\"equals\":\"true\"}: eval returned \"false\", expected \"true\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-19-26-928Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "xt: chart config.toml widgets 3 tools Connected\\n      - button \\\"Remove chart\\\": Remove\\n  - text: 1 connected · 2 need sign-in\\n  - button \\\"Filter tools\\\"\\n  - button \\\"Add connector\\\"\\n- dialog \\\"Add connector\\\":\\n  - strong: Add a connector\\n  - searchbox \\\"Search available connectors\\\"\\n  - button \\\"Linear\\\"\\n  - button \\\"PostHog\\\"\\n  - button \\\"Notion\\\"\\n  - button \\\"Atlassian\\\"\\n  - button \\\"Vercel\\\"\\n  - button \\\"Other address…\\\" [expanded]\\n  - textbox \\\"Connector name\\\":\\n    - /placeholder: Name\\n  - textbox \\\"Connector address\\\":\\n    - /placeholder: HTTPS address\\n  - button \\\"Continue\\\" [disabled]\\n  - button \\\"Cancel\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 3,\n          \"eval\": \"(() => { const all = [...document.querySelectorAll(\\\"button.btn\\\")]; const c = all.find((b) => b.textContent.trim() === \\\"Continue\\\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()\",\n          \"value\": \"false\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"eval\\\":\\\"(() => { const all = [...document.querySelectorAll(\\\\\\\"button.btn\\\\\\\")]; const c = all.find((b) => b.textContent.trim() === \\\\\\\"Continue\\\\\\\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()\\\",\\\"equals\\\":\\\"true\\\"}: eval returned \\\"false\\\", expected \\\"true\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-19-26-928Z/fail-mobile-step3.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"eval\\\":\\\"(() => { const all = [...document.querySelectorAll(\\\\\\\"button.btn\\\\\\\")]; const c = all.find((b) => b.textContent.trim() === \\\\\\\"Continue\\\\\\\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()\\\",\\\"equals\\\":\\\"true\\\"}: eval returned \\\"false\\\", expected \\\"true\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-19-26-928Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "connectors/disabled-button-looks-disabled",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
