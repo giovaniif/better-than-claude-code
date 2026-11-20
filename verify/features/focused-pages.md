@@ -164,10 +164,11 @@ yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"(async () 
 
 ### manage-accounts-opens-logins
 Viewports: both
-Manage accounts opens Engine logins on the selected host and keeps that destination after a reload. The composer has no standalone login email.
+Manage accounts opens Engine logins on the selected host and keeps that destination after a reload. The composer has no standalone login email. On a phone the account picker sits in the Session setup chip.
 
 ```sh
-yv drive new --steps '[{"expect":"css:.composer-identity","count":0},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+yv drive new --viewport desktop --steps '[{"expect":"css:.composer-identity","count":0},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
+yv drive new --viewport mobile --steps '[{"expect":"css:.composer-identity","count":0},{"click":"role:button:Session setup"},{"click":"css:.account-trigger"},{"click":"role:button:Manage accounts"},{"expect":"role:heading:Hosts"},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"expect":"css:.engine-row","text":"Claude Code"},{"reload":true},{"expect":"css:[role=tab][aria-selected=true]","text":"Engine logins"},{"shot":"manage-logins"}]'
 ```
 
 ### sidebar-skips-duplicate-page-links
@@ -178,3 +179,14 @@ keeps its session list and Usage entry.
 ```sh
 yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button","hasText":"Sessions","exact":true},"count":0},{"expect":{"css":".sidebar-top button","hasText":"Subscriptions","exact":true},"count":0},{"click":"role:button:Go to session or page"},{"fill":"role:combobox","value":"subscriptions"},{"press":"Enter"},{"expect":"role:heading:Subscriptions"}]'
 ```
+
+## Gotchas
+- `compact-usage-popover` fails on a known product bug, #323: the Usage
+  trigger reads 91% (TEST-Work) but the popover leads with the Default
+  account and folds TEST-Work under "Other accounts". Keep the recipe as it
+  is until #323 is fixed.
+- Below 700 px the new-session composer folds the account, model, effort and
+  permission pickers into one `Session setup` chip (#290), so a recipe that
+  opens the account picker on a phone clicks `role:button:Session setup`
+  first. `manage-accounts-opens-logins` ran one step list at both viewports
+  and timed out on `.account-trigger` at mobile until 2026-11-20.
