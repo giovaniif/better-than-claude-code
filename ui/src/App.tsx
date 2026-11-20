@@ -1612,7 +1612,7 @@ export function Composer(props: {
   /** False leaves the draft in place when the endpoint rejects a submission. */
   onSubmit(text: string, attachments: Attachment[]): void | boolean | Promise<void | boolean>;
   /** Hands-free voice mode for a session: what it has to say, numbered. */
-  voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
+  voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean; carry?: boolean };
   settings?: { label: string; model: string; effort: string; full: boolean };
   children: ReactNode;
 }) {
@@ -1809,6 +1809,7 @@ export function Composer(props: {
     submit: () => void submit(),
     cue: props.voice?.cue,
     scope: props.voice?.scope,
+    carry: props.voice?.carry,
   });
   const voiceOn = voice.mode.phase !== "off";
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -2260,7 +2261,7 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false }}
+          voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false, carry: true }}
           settings={setupSettings(modelName(models, choice.engine, choice.model), accountName(accounts, choice.engine, selectedAccount), shownEffort(models, choice.engine, choice.model, choice.effort), permission)}
           busy={pending || !online || !choice.model || !cwd || gone}
         >

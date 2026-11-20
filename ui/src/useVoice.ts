@@ -45,7 +45,15 @@ export interface VoiceOptions {
   cue?: { n: number; cue: Cue } | null;
   /** Voice mode turns off when this changes (another session). */
   scope?: string;
+  /** The new-session page: a task voice mode sent goes on in its session. */
+  carry?: boolean;
 }
+
+// The new-session page unmounts as the session it started opens. Voice mode
+// waiting there for the answer goes on in the next reply box that mounts,
+// so the answer is read and it listens again, as in a session.
+const CARRY_MS = 30_000;
+let carriedAt = 0;
 
 export function useVoice(opts: VoiceOptions) {
   const o = useRef(opts);
@@ -267,7 +275,13 @@ export function useVoice(opts: VoiceOptions) {
 
   // Another session, or the composer going away, ends it all.
   useEffect(() => {
+    if (!o.current.carry && carriedAt && Date.now() - carriedAt < CARRY_MS) {
+      modeRef.current = { phase: "waiting", after: "listen" };
+      setMode(modeRef.current);
+    }
+    carriedAt = 0;
     return () => {
+      if (o.current.carry && modeRef.current.phase === "waiting") carriedAt = Date.now();
       stopAll();
       modeRef.current = VOICE_OFF;
       setMode(VOICE_OFF);
