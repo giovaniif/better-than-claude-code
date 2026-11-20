@@ -3426,7 +3426,7 @@ function inline(text: string): ReactNode[] {
     }
     if (link) return <code key={i}>{link[1]}</code>;
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2) return <code key={i}>{part.slice(1, -1)}</code>;
-    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i}>{part.slice(2, -2)}</strong>;
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i}>{inline(part.slice(2, -2))}</strong>;
     return part;
   });
 }

@@ -291,6 +291,28 @@ yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"press":"Tab","tar
 yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[{"eval":"document.addEventListener(\"click\", (e) => { const a = e.target.closest(\"a\"); if (a) { e.preventDefault(); window.__followed = a.href; } }, true); true","equals":true},{"tap":{"css":".prose a.pr-link","hasText":"test-owner/test-demo-app#4242"}},{"wait":800},{"expect":"role:tooltip","visible":false},{"eval":"window.__followed","equals":"https://github.com/test-owner/test-demo-app/pull/4242"}]'
 ```
 
+### links-inside-bold-text
+Viewports: both
+Bold recommendations keep their link labels, open the correct destinations, and
+keep literal code and non-web destinations inert.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-bold links\n\n**Merge [TEST change #4242](https://github.com/test-owner/test-demo-app/pull/4242) now.**\n\n**Read [the review guide](https://example.com/guide), or run `check --links`.**\n\n**Keep [Local notes](/tmp/notes.txt), [Script](javascript:alert%281%29), and `[literal](https://example.com/literal)` inert.**"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[
+  {"expect":{"css":".prose strong a.pr-link","hasText":"TEST change #4242"}},
+  {"expect":{"css":".prose strong a","hasText":"the review guide"}},
+  {"eval":"[...document.querySelectorAll(\".prose strong a\")].map(a => [a.textContent, a.getAttribute(\"href\"), a.target])","equals":[["TEST change #4242","https://github.com/test-owner/test-demo-app/pull/4242","_blank"],["the review guide","https://example.com/guide","_blank"]]},
+  {"expect":{"css":".prose strong code","hasText":"check --links"}},
+  {"expect":{"css":".prose strong code","hasText":"Local notes"}},
+  {"expect":{"css":".prose strong code","hasText":"Script"}},
+  {"expect":{"css":".prose strong code","hasText":"[literal](https://example.com/literal)"}},
+  {"shot":"bold-links"},
+  {"eval":"document.addEventListener(\"click\", (event) => { const link = event.target.closest(\"a\"); if (link) { event.preventDefault(); window.followedLink = link.href; } }, true)"},
+  {"click":"role:link:the review guide"},
+  {"eval":"window.followedLink","equals":"https://example.com/guide"}
+]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order, and several send to `sid_echo`: by `reply-to-part-of-answer` its first answer is scrolled out of view at 390 px, so that recipe scrolls the paragraph into view before selecting it (a user only selects what they see).
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.
