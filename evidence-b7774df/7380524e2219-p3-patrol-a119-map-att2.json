@@ -1,0 +1,53 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "attachments",
+      "at": "2026-11-20T07:22:39.184Z",
+      "counts": {
+        "pass": 6,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "upload-image-and-send",
+          "status": "pass",
+          "ms": 5228
+        },
+        {
+          "label": "size-cap",
+          "status": "pass",
+          "ms": 1758
+        },
+        {
+          "label": "upload-over-api",
+          "status": "pass",
+          "ms": 87
+        },
+        {
+          "label": "too-many-files-keeps-the-draft",
+          "status": "pass",
+          "ms": 7443
+        },
+        {
+          "label": "queued-files-come-back",
+          "status": "pass",
+          "ms": 19093
+        },
+        {
+          "label": "many-files-keep-send-on-screen",
+          "status": "pass",
+          "ms": 8227
+        },
+        {
+          "label": "paste-and-drop",
+          "status": "manual",
+          "why": "clipboard and OS drag events are not scripted"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

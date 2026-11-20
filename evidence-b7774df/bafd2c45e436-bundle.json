@@ -1,0 +1,81 @@
+{
+  "v": 1,
+  "claim": "Feature map drift: attachments/queued-files-come-back clicks css:.pending-edit, a class #294 removed, so it times out at mobile and leaves a turn running that fails many-files-keep-send-on-screen; map run attachments is 4/6 on main",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119",
+  "base": "75d630ddc88f3d5df7da7bd3ec098da309b64ab9",
+  "head": "b7774df8525be952e344ba7f134656f7565d891b",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/attachments.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T07:23:41.566Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "b7774df8525be952e344ba7f134656f7565d891b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T07:23:41.606Z",
+      "text": "no-repro: map-only change; on origin/main 75d630d, map run attachments failed queued-files-come-back (click css:.pending-edit timed out at mobile) and many-files-keep-send-on-screen (Send not in view: the session was still mid-turn from the first recipe)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "b7774df8525be952e344ba7f134656f7565d891b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T07:23:41.645Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "b7774df8525be952e344ba7f134656f7565d891b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-patrol-a119-map-att2.json",
+          "sha256": "7380524e221907709964f83b5e7458f17a225e8e33176115f79dad87655a2744"
+        }
+      ],
+      "addedAt": "2026-11-20T07:23:41.685Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "attachments/upload-image-and-send",
+        "attachments/size-cap",
+        "attachments/upload-over-api",
+        "attachments/too-many-files-keeps-the-draft",
+        "attachments/queued-files-come-back",
+        "attachments/many-files-keep-send-on-screen"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "b7774df8525be952e344ba7f134656f7565d891b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "5a35dd2ca7c811e2da68cb41aaf0dcd5c88cf99bfff2e8d04fbd49d634642b67"
+        }
+      ],
+      "addedAt": "2026-11-20T07:23:41.723Z",
+      "cmd": "verify/yv map run attachments",
+      "exit": 0
+    }
+  ]
+}
