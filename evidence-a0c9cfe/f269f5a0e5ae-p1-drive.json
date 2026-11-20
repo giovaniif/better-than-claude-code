@@ -1,0 +1,87 @@
+{
+  "ok": false,
+  "route": "hosts",
+  "build": {
+    "sha": "2e702dd0d6afc51ab7835da5c73ff31525d8157f",
+    "short": "2e702dd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:28:44.806Z"
+  },
+  "dir": ".verify/evidence/hosts-reveal-r3-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2809,
+      "steps": 6,
+      "failed": {
+        "step": 4,
+        "action": {
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": ".verify/evidence/hosts-reveal-r3-base/fail-mobile-step4.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iPhone app\":\n  - heading \"Switchyard for iPhone\" [level=2]\n  - text: TestFlight beta\n  - paragraph: Your sessions, editor, voice mode and workspace, together on your phone.\n  - list:\n    - listitem:\n      - strong: Install with TestFlight.\n      - text: The beta invitation will appear here when the first build is available.\n    - listitem: Connect your iPhone to the same private network as this host, such as Tailscale.\n    - listitem:\n      - text: Enter your host’s HTTPS address in the iPhone app.\n      - textbox \"Enter your host’s HTTPS address in the iPhone app.\":\n        - /placeholder: https://your-host.ts.net\n  - paragraph: The phone icon stays in new sessions until the app connects successfully.\n  - paragraph: Use your existing private HTTPS host. Desktop SSH tunnels are local to the desktop; the phone needs an address it can reach.\n- button \"Select iso-host\":\n  - strong: iso-host\n  - text: This machine Healthy CPU\n  - strong: 21%\n  - text: Memory\n  - strong: 11.8 GB\n  - text: Disk\n  - strong: 93.5 GB\n- button \"Select TEST-nowhere\":\n  - strong: TEST-nowhere\n  - text: test@TEST-nowhere Offline CPU\n  - strong: —\n  - text: Memory\n  - strong: —\n  - text: Disk\n  - strong: —\n- button \"Select TEST-reveal\" [pressed]:\n  - strong: TEST-reveal\n  - text: ws://127.0.0.1:37851/ws Healthy CPU\n  - strong: 19%\n  - text: Memory\n  - strong: 11.8 GB\n  - text: Disk\n  - strong: 93.5 GB\n- region \"TEST-reveal details\":\n  - heading \"TEST-reveal\" [level=2]\n  - text: Healthy\n  - tablist \"Host details\":\n    - tab \"Sessions\" [selected]\n    - tab \"Engine logins\"\n    - tab \"System\"\n  - tabpanel \"Sessions\":\n    - strong: Nothing running on TEST-reveal\n    - paragraph: Start a session whenever you're ready.\n    - button \"New session\"\n    - button \"View all sessions →\""
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2381,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-reveal-r3-base/after-tap-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 4 {\"eval\":\"(() => { const r = document.querySelector(\\\".host-inspector-heading\\\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\\\".hosts .scroll\\\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see .verify/evidence/hosts-reveal-r3-base/fail-mobile-step4.png and the aria snapshot"
+    }
+  ]
+}

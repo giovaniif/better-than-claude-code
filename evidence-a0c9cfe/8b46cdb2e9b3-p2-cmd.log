@@ -1,0 +1,40 @@
+$ verify/yv map run hosts --recipe selecting-a-host-shows-its-details
+# exit 1 after 8385 ms at 2e702dd0d6afc51ab7835da5c73ff31525d8157f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-20T10:28:59.382Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selecting-a-host-shows-its-details",
+          "status": "fail",
+          "ms": 7105,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 4 {\"eval\":\"(() => { const r = document.querySelector(\\\".host-inspector-heading\\\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\\\".hosts .scroll\\\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-28-52-469Z/fail-mobile-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "\\\\\\\"]\\\").click(); return true; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const r = document.querySelector(\\\".host-inspector-heading\\\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\\\".hosts .scroll\\\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 3832,\n      \"steps\": 6,\n      \"failed\": null,\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-28-52-469Z/selected-in-view-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const h = document.querySelector(\\\".host-inspector-heading\\\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\\\".hosts .scroll\\\").scrollTop; document.querySelector(\\\"[aria-label=\\\\\\\"Select TEST-reveal\\\\\\\"]\\\").click(); return true; })()\",\n          \"value\": true\n        },\n        {\n          \"step\": 4,\n          \"eval\": \"(() => { const r = document.querySelector(\\\".host-inspector-heading\\\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\\\".hosts .scroll\\\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 4 {\\\"eval\\\":\\\"(() => { const r = document.querySelector(\\\\\\\".host-inspector-heading\\\\\\\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\\\\\\\".hosts .scroll\\\\\\\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-28-52-469Z/fail-mobile-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "hosts/selecting-a-host-shows-its-details",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

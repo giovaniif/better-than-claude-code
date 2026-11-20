@@ -1,0 +1,177 @@
+{
+  "v": 1,
+  "claim": "On a phone, tapping a host on the Hosts page only moves the row's border: its details open below the fold and nothing scrolls to them",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b",
+  "base": "6164d399aaa7dacc75d6cd285bfcf2c3ffd81d0c",
+  "head": "a0c9cfed03c379a3c27e3e6f1caba31305e7c84f",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T10:28:40.530Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "2e702dd0d6afc51ab7835da5c73ff31525d8157f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "f269f5a0e5aeb17d3d4c6f04b1d980aa17bd854c48959e4a6c89f2cbdf3209c4"
+        },
+        {
+          "path": "p1-fail-mobile-step4.png",
+          "sha256": "fe34effdad663064b0e239d735216d3b71cd6e2b8d716838980817597844aee3"
+        },
+        {
+          "path": "p1-after-tap-desktop.png",
+          "sha256": "f0010cc1ac8cd639d2b8024cbf316d8ef6561e7ea6a88bf526350e357720583c"
+        },
+        {
+          "path": "p1-2-fail-mobile-step4.png",
+          "sha256": "fe34effdad663064b0e239d735216d3b71cd6e2b8d716838980817597844aee3"
+        },
+        {
+          "path": "p1-2-after-tap-desktop.png",
+          "sha256": "f0010cc1ac8cd639d2b8024cbf316d8ef6561e7ea6a88bf526350e357720583c"
+        }
+      ],
+      "addedAt": "2026-11-20T10:28:50.949Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "2e702dd0d6afc51ab7835da5c73ff31525d8157f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8b46cdb2e9b3477182a5d317f917d4ecf89dea8c902f078047f8e04604db61a0"
+        }
+      ],
+      "addedAt": "2026-11-20T10:28:51.001Z",
+      "cmd": "verify/yv map run hosts --recipe selecting-a-host-shows-its-details",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a0c9cfed03c379a3c27e3e6f1caba31305e7c84f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "3101c6bbfa1a7e8aef1916e12432d819c2165c8f775fbc37a19221d0bcdc1142"
+        },
+        {
+          "path": "p3-after-tap-mobile.png",
+          "sha256": "d037b0cecd773522c59ce16a918cdf52ac075d951054ec843c51c39594858ffd"
+        },
+        {
+          "path": "p3-after-tap-desktop.png",
+          "sha256": "d1e20daf1416c2ec3293eca98d825b58a2b2b7a4b54d99bcda183c3ae6eef4c7"
+        },
+        {
+          "path": "p3-2-after-tap-mobile.png",
+          "sha256": "d037b0cecd773522c59ce16a918cdf52ac075d951054ec843c51c39594858ffd"
+        },
+        {
+          "path": "p3-2-after-tap-desktop.png",
+          "sha256": "d1e20daf1416c2ec3293eca98d825b58a2b2b7a4b54d99bcda183c3ae6eef4c7"
+        }
+      ],
+      "addedAt": "2026-11-20T10:29:12.291Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "a0c9cfed03c379a3c27e3e6f1caba31305e7c84f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "2da3e888e199dc1c1a5bc9f452877911f0ac648e82806b2a53a23cda0c28cc73"
+        }
+      ],
+      "addedAt": "2026-11-20T10:29:12.339Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run hosts --recipe selecting-a-host-shows-its-details",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "a0c9cfed03c379a3c27e3e6f1caba31305e7c84f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "7d55307dcd4762c8aa31fff9f0710e79feef1c862b636c6912b08b944e6ff44e"
+        }
+      ],
+      "addedAt": "2026-11-20T10:29:21.926Z",
+      "cmd": "verify/yv design-check --base 6164d399aaa7",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "a0c9cfed03c379a3c27e3e6f1caba31305e7c84f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-hosts.json",
+          "sha256": "82f28abc487b7b08725995cd14bfe47d6f786d8f743ce45f5bcfb1924f60f236"
+        }
+      ],
+      "addedAt": "2026-11-20T10:29:22.008Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/selecting-a-host-shows-its-details",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline"
+      ]
+    }
+  ]
+}
