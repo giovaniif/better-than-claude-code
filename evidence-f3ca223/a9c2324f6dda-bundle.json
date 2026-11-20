@@ -1,0 +1,212 @@
+{
+  "v": 1,
+  "claim": "Voice mode started on the new-session page sends the spoken task and opens the session, then switches off: the answer is never read aloud and the mic stops, although the button promises it reads the answer aloud.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-ca35",
+  "base": "cd0021ebe6ef256f641858630d35d7314309994b",
+  "head": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/useVoice.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/voice.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T09:23:12.659Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e0d93efa3e7ce1348871b9ddd308ce7882825ec5",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c4d1d7ee37e81f120160996680f2fbf886c74c14cd424e917afba61d0b36b542"
+        },
+        {
+          "path": "p1-listening-on-new-mobile.png",
+          "sha256": "18cfcc200228f5f7fb89fa210cd1d92716bab1b5520ccbcaac2bdc1476562c17"
+        },
+        {
+          "path": "p1-in-session-mobile.png",
+          "sha256": "50de6c9bef0ce302545a01efa3a9c26c142a42d01c3939211ba99ae0cc525479"
+        }
+      ],
+      "addedAt": "2026-11-20T09:23:23.201Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "e0d93efa3e7ce1348871b9ddd308ce7882825ec5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9cab9a652bb9e48faa6e6da7482b69fd28dc98207135e51233cfca5f8adda703"
+        }
+      ],
+      "addedAt": "2026-11-20T09:23:23.252Z",
+      "cmd": "verify/yv map run voice --recipe voice-mode-from-new-session",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "dd43ef7e3f7aca16c42e998218f5a48397040ddea6f5fe0f3e1e5c6afc7236cd"
+        },
+        {
+          "path": "p3-listening-on-new-mobile.png",
+          "sha256": "ccaa38d92757cae679e516a74ba509798f4e5260e72f4ed8bb73e553c1396b27"
+        },
+        {
+          "path": "p3-in-session-mobile.png",
+          "sha256": "e61206626c2f714b9948553238cf06b60d9d1fa2a59cb5c8eaa3486f5fe93232"
+        }
+      ],
+      "addedAt": "2026-11-20T09:23:45.704Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "de80968e7b354bb582e911bb3620e86812abdd4cc9c1d20206df551651bacb6e"
+        },
+        {
+          "path": "p4-listening-on-new-desktop.png",
+          "sha256": "26b89abe75c30c414c07d47c822307154f3279587720ccf67ff50e8a622e785f"
+        },
+        {
+          "path": "p4-in-session-desktop.png",
+          "sha256": "7d8d2e86d57127be8e79f09fdc0a165e3bec10fdb54b2a48db8e238c2249f4e1"
+        }
+      ],
+      "addedAt": "2026-11-20T09:23:51.868Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "41c94b98f699997d089d426e2506f09ea3eda290543eea873c928dd100fdd2d3"
+        }
+      ],
+      "addedAt": "2026-11-20T09:23:51.917Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run voice --recipe voice-mode-from-new-session",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "51cae3560f850bf8300096c2229a4e15e884f0959747d084236ed3f30141ad22"
+        }
+      ],
+      "addedAt": "2026-11-20T09:24:03.983Z",
+      "cmd": "verify/yv design-check --base cd0021ebe6ef",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-voice.json",
+          "sha256": "f6ab2c9752feaff8fc47aad1da372a27cd8d90af4664a06b07ee98ad43f9925b"
+        }
+      ],
+      "addedAt": "2026-11-20T09:24:04.071Z",
+      "cmd": "verify/yv map run voice",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "voice/dictation",
+        "voice/dictation-new-session",
+        "voice/voice-mode-from-new-session",
+        "voice/voice-mode-hands-free",
+        "voice/voice-stop-word",
+        "voice/voice-with-quote",
+        "voice/voice-unavailable",
+        "voice/voice-mic-blocked"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-approved-design.json",
+          "sha256": "18ab40f85fd851e7b92bfeeb35d2ef2c9dee88431178d95f90ac5d9ea125a146"
+        }
+      ],
+      "addedAt": "2026-11-20T09:25:44.005Z",
+      "cmd": "verify/yv map run approved-design",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "approved-design/terminal-first-and-external-pr",
+        "approved-design/one-row-composers",
+        "approved-design/account-card-separation",
+        "approved-design/compact-usage",
+        "approved-design/phone-usage-opens-from-header",
+        "approved-design/usage-popover-follows-prototype",
+        "approved-design/hosts-stays-in-host-status-and-page-search",
+        "approved-design/toolbar-at-320-with-full-access",
+        "approved-design/toolbar-groups-before-labels-compress",
+        "approved-design/codex-speed-in-model-menu"
+      ]
+    }
+  ]
+}

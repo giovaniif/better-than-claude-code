@@ -1,0 +1,57 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "voice",
+      "at": "2026-11-20T09:25:43.921Z",
+      "counts": {
+        "pass": 8
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "dictation",
+          "status": "pass",
+          "ms": 8157
+        },
+        {
+          "label": "dictation-new-session",
+          "status": "pass",
+          "ms": 5813
+        },
+        {
+          "label": "voice-mode-from-new-session",
+          "status": "pass",
+          "ms": 11522
+        },
+        {
+          "label": "voice-mode-hands-free",
+          "status": "pass",
+          "ms": 41436
+        },
+        {
+          "label": "voice-stop-word",
+          "status": "pass",
+          "ms": 6904
+        },
+        {
+          "label": "voice-with-quote",
+          "status": "pass",
+          "ms": 13036
+        },
+        {
+          "label": "voice-unavailable",
+          "status": "pass",
+          "ms": 5969
+        },
+        {
+          "label": "voice-mic-blocked",
+          "status": "pass",
+          "ms": 6161
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

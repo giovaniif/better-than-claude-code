@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "f3ca22339aefe35a9cf9dc0dd919ea4f5200ba54",
+    "short": "f3ca223",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T09:23:39.425Z"
+  },
+  "dir": ".verify/voice2-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 5566,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/voice2-head-mobile/listening-on-new-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/voice2-head-mobile/in-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(()=>{window.__recs=[];window.__said=[];window.__hush=0;window.__speakMs=300;class R{constructor(){this.results=[];this.running=false;window.__recs.push(this)}start(){this.running=true;window.__live=this}stop(){this.running=false;setTimeout(()=>this.onend&&this.onend(),10)}abort(){this.running=false;setTimeout(()=>this.onend&&this.onend(),0)}}window.__say=(t,f)=>{const r=window.__live;if(!r||!r.running)return \"not listening\";const l=r.results[r.results.length-1];if(l&&!l.isFinal)r.results.pop();const x=[{transcript:t}];x.isFinal=!!f;r.results.push(x);r.onresult&&r.onresult({results:r.results});return \"ok\"};window.SpeechRecognition=R;window.webkitSpeechRecognition=R;window.SpeechSynthesisUtterance=class{constructor(t){this.text=t}};Object.defineProperty(window,\"speechSynthesis\",{configurable:true,value:{speak(u){window.__said.push(u.text);setTimeout(()=>u.onend&&u.onend(),window.__speakMs)},cancel(){window.__hush++}}});return 1})()",
+          "value": 1
+        },
+        {
+          "step": 4,
+          "eval": "window.__say(\"TEST-voice rebased mobile\",true)",
+          "value": "ok"
+        },
+        {
+          "step": 7,
+          "eval": "\"said=\" + window.__said.join(\"|\") + \" | voice mode pressed=\" + document.querySelector(\"button[aria-label=\\\"Voice mode\\\"]\")?.getAttribute(\"aria-pressed\") + \" | bar=\" + (document.querySelector(\".voice-bar\")?.textContent ?? \"none\") + \" | mic listening=\" + !!(window.__live && window.__live.running)",
+          "value": "said=Voice mode on.|Echo: TEST-voice rebased mobile | voice mode pressed=true | bar=Voice mode · ListeningTurn off | mic listening=true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
