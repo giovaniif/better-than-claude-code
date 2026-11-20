@@ -144,6 +144,18 @@ yv drive connectors --iso map-connectors-many --steps '[{"click":{"role":"button
 yv iso down --name map-connectors-many
 ```
 
+### disabled-button-looks-disabled
+Viewports: both
+An outlined button that cannot be used reads muted. In Add connector's "Other
+address…" form, Continue stays disabled until a name and an address are
+typed. Until then it is not the ink colour of a live outlined button, and
+once both are filled it matches them. (`.btn` had no disabled style, so it
+looked live and the click did nothing: #175.)
+
+```sh
+yv drive connectors --steps '[{"click":{"css":".connectors-card:has-text(\"Claude\") button","hasText":"Add connector"}},{"click":"role:button:Other address…"},{"expect":"role:button:Continue","enabled":false},{"eval":"(() => { const all = [...document.querySelectorAll(\"button.btn\")]; const c = all.find((b) => b.textContent.trim() === \"Continue\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color !== getComputedStyle(live).color); })()","equals":"true"},{"shot":"continue-disabled"},{"fill":"label:Connector name","value":"TEST-svc"},{"fill":"label:Connector address","value":"https://example.com/mcp"},{"expect":"role:button:Continue","enabled":true},{"eval":"(() => { const all = [...document.querySelectorAll(\"button.btn\")]; const c = all.find((b) => b.textContent.trim() === \"Continue\"); const live = all.find((b) => b !== c && !b.disabled && b.getClientRects().length); return String(getComputedStyle(c).color === getComputedStyle(live).color); })()","equals":"true"}]'
+```
+
 ## Gotchas
 - claude-sign-in passes `--allow-errors`: the refused address is an `mcp.auth`
   failure on purpose.
