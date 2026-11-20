@@ -151,7 +151,9 @@ A remote session's Processes tab, open when its host goes away, says the list
 comes back when the host reconnects. Once, it kept saying "Nothing is running
 for this session." (or kept a stale list, with Stop buttons that could only
 fail), and a tab first opened offline said "Loading…" forever. Uses its own
-remote so the area's TEST-remote stays up.
+remote so the area's TEST-remote stays up. While the host is up the tab lists
+the shell of the terminal the workspace opens by default (terminal-first,
+#290), so it is a live table, not "Nothing is running", that must go away.
 
 ```sh
 gone_port="$(yv iso up --name map-hosts-gone --host-name TEST-gone | jq -r .iso.port)"
@@ -159,7 +161,7 @@ gone_work="$(yv var get work --iso map-hosts-gone | jq -er .value)"
 yv api '{"op":"host.add","name":"TEST-gone","kind":"direct","url":"ws://127.0.0.1:'"$gone_port"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-gone","status":"connected"}]}' --save gone_id='hosts[name=TEST-gone].id'
 yv api '{"op":"session.create","host":"{{gone_id}}","engine":"codex","model":"fake-fast","effort":"low","cwd":"'"$gone_work"'","text":"TEST-procs on a host that goes"}' --wait '{"op":"created"}' --save gone_sid=sessionId
 (sleep 8; yv iso down --name map-hosts-gone >/dev/null) &
-yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"click":"role:button:Processes"},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session.","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
+yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"click":"role:button:Processes"},{"expect":"css:.proc-table","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
 wait
 ```
 
