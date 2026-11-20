@@ -97,7 +97,9 @@ async fn get(cwd: &str, link_only: bool) -> Result<Value> {
     crate::git::ensure_folder(cwd)?;
     let (is_repo, _) = git(cwd, &["rev-parse", "--is-inside-work-tree"]).await?;
     if !is_repo {
-        bail!("not a git repository");
+        // An answer, not a failure: the session header asks every minute, and
+        // a plain folder can still become a repository later (`git init`).
+        return Ok(json!({ "repo": false }));
     }
     // Past this point the folder is a repository, so the pane can still offer
     // a review (it reads `git diff`, not GitHub) when the PR cannot be read.

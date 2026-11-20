@@ -401,6 +401,8 @@ export interface KillReply {
 export type PrResult =
   | Pick<PullRequest, "number" | "title" | "url">
   | { none: true; branch: string; defaultBranch?: string | null }
+  /** The folder is not a git repository, so it has no PR. */
+  | { repo: false }
   /**
    * `repo`: the folder is a git repository, so a review is still possible,
    * against `defaultBranch` when yardd found one.
