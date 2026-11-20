@@ -1,0 +1,180 @@
+{
+  "v": 1,
+  "claim": "On a phone, arming Delete on a worktree session put \"Delete + worktree\" past the right edge of the session bar (x 342-475 of 390) and the page scrolled sideways; both choices now stay inside the bar",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119",
+  "base": "af992c9ebaa66cc5265cfd537b8c4521a128f39a",
+  "head": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T07:03:16.470Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "655b9ebb2f175d52cb9dc89d000540ab864f4e4b",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-phone-delete-choices-fit-base.json",
+          "sha256": "fa0398186e162dc4abe6bbeac30de76191c1299b0b1ca1d7ca8c1b6f3c1c5556"
+        },
+        {
+          "path": "p1-delete-armed-mobile.png",
+          "sha256": "c053da30cc2b7a08bc8fbfc1b5a8f5e66f7d36bb6fd0cabf3ddd632facc5f45a"
+        },
+        {
+          "path": "p1-fail-mobile-step4.png",
+          "sha256": "c053da30cc2b7a08bc8fbfc1b5a8f5e66f7d36bb6fd0cabf3ddd632facc5f45a"
+        }
+      ],
+      "addedAt": "2026-11-20T07:03:23.490Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "655b9ebb2f175d52cb9dc89d000540ab864f4e4b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8d7429065fea71ac8a8e553ddbd78ed3f4affa1651f9c09647fd245ec3396767"
+        }
+      ],
+      "addedAt": "2026-11-20T07:03:23.532Z",
+      "cmd": "verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-phone-delete-choices-fit-head-m.json",
+          "sha256": "10dde8d4cadbbde1d797dd0c89d160dc1f97a618fce696e670e1508ceef0c4ff"
+        },
+        {
+          "path": "p3-delete-armed-mobile.png",
+          "sha256": "d14d66b89bda4792b5f774f8fde693eedc5b97efca5a64057d06948770738027"
+        }
+      ],
+      "addedAt": "2026-11-20T07:03:35.055Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-phone-delete-choices-fit-head-d.json",
+          "sha256": "078559642e766e109fbd0d67eb76b5a5a1fe2cd3d5933a5b2e559959f0da34ed"
+        },
+        {
+          "path": "p4-delete-armed-desktop.png",
+          "sha256": "7c5c7e515a604ccfd666945707aaa31822f14ff601b96cec92e67c07316865a6"
+        }
+      ],
+      "addedAt": "2026-11-20T07:04:26.249Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "39e354da15739f83ecbb906fa077b9f00a8436748b0b9aa582585d2494068701"
+        }
+      ],
+      "addedAt": "2026-11-20T07:04:30.101Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run layout --recipe mobile-delete-confirm-fits-the-bar",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "f20ae7cf99a192a9935e6dbe59e6055d643ffd61562833955d30692ab0be68fe"
+        }
+      ],
+      "addedAt": "2026-11-20T07:04:40.148Z",
+      "cmd": "verify/yv design-check --base af992c9ebaa6",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-layout.json",
+          "sha256": "1cb8046fd6469049273af5dd24c90ddd6627744729f77a056ff064c4531d6df8"
+        }
+      ],
+      "addedAt": "2026-11-20T07:04:40.233Z",
+      "cmd": "verify/yv map run layout",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/desktop-sidebars-collapse-independently",
+        "layout/mobile-panels-have-close-controls",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/new-session-send-shares-controls-row",
+        "layout/desktop-sidebar-is-a-column",
+        "layout/workspace-tabs-fit-minimum-width"
+      ]
+    }
+  ]
+}

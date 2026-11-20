@@ -1,0 +1,44 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f7c2aa4a8",
+  "build": {
+    "sha": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+    "short": "f4e0d39",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T07:03:32.081Z"
+  },
+  "dir": ".verify/evidence/phone-delete-choices-fit-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2351,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/phone-delete-choices-fit-head-m/delete-armed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return document.documentElement.scrollWidth <= Math.round(bar.right) && [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => b.getBoundingClientRect().right <= bar.right); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

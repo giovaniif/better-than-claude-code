@@ -1,0 +1,44 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f7c2aa4a8",
+  "build": {
+    "sha": "f4e0d39cde2d9c2324c36f9d73291d87df06e709",
+    "short": "f4e0d39",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T07:03:32.081Z"
+  },
+  "dir": ".verify/evidence/phone-delete-choices-fit-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2459,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/phone-delete-choices-fit-head-d/delete-armed-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(() => { const bar = document.querySelector(\".thread > header.bar\").getBoundingClientRect(); return document.documentElement.scrollWidth <= window.innerWidth && [...document.querySelectorAll(\".thread > header.bar > *\")].filter((b) => b.getClientRects().length > 0).every((b) => b.getBoundingClientRect().right <= bar.right); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

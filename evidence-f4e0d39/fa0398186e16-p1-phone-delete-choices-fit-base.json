@@ -1,0 +1,59 @@
+{
+  "command": "drive",
+  "ok": false,
+  "route": "session:s1a1f7c2aa4a8",
+  "build": {
+    "sha": "655b9ebb2f175d52cb9dc89d000540ab864f4e4b",
+    "short": "655b9eb",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T07:03:20.360Z"
+  },
+  "dir": ".verify/evidence/phone-delete-choices-fit-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2466,
+      "steps": 5,
+      "failed": {
+        "step": 4,
+        "action": {
+          "eval": "(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return document.documentElement.scrollWidth <= Math.round(bar.right) && [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => b.getBoundingClientRect().right <= bar.right); })()",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": ".verify/evidence/phone-delete-choices-fit-base/fail-mobile-step4.png",
+        "aria": "- main:\n  - button \"Open sessions\"\n  - heading \"[edit] TEST-fix the greeting\" [level=1]\n  - code: yard/edit-test-fix-the-greeting-a317\n  - 'link \"Pull request #4242\"':\n    - /url: https://github.com/test-owner/test-demo-app/pull/4242\n    - text: \"PR #4242\"\n  - button \"Set up iPhone app\"\n  - button \"Workspace\"\n  - button \"Delete\"\n  - button \"Delete + worktree\"\n  - text: \"[edit] TEST-fix the greeting\"\n  - code: src/lib.rs\n  - text: \"@@ -1 +1,2 @@ fn kept() {} +fn added() {}\"\n  - paragraph: Edited src/lib.rs.\n  - text: \"[slow] TEST-keep going Stopped after 3s\"\n  - textbox \"Message\":\n    - /placeholder: Reply\n  - button \"Attach files\"\n  - button \"Dictate\"\n  - button \"Voice mode\"\n  - 'button \"Session setup: Fake Fast, Default, Low, Ask first\"': Fake Fast · Low\n  - button \"Send\" [disabled]"
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/phone-delete-choices-fit-base/delete-armed-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return document.documentElement.scrollWidth <= Math.round(bar.right) && [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => b.getBoundingClientRect().right <= bar.right); })()",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 4 {\"eval\":\"(() => { const bar = document.querySelector(\\\".main header.bar\\\").getBoundingClientRect(); return document.documentElement.scrollWidth <= Math.round(bar.right) && [...document.querySelectorAll(\\\".main header.bar button\\\")].filter((b) => b.getClientRects().length > 0).every((b) => b.getBoundingClientRect().right <= bar.right); })()\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see .verify/evidence/phone-delete-choices-fit-base/fail-mobile-step4.png and the aria snapshot"
+    }
+  ]
+}
