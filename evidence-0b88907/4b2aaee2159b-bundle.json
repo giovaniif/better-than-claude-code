@@ -1,0 +1,95 @@
+{
+  "v": 1,
+  "claim": "Map drift: hosts/processes-say-the-host-is-offline waited for 'Nothing is running for this session.' while the remote was up, but since #290 the workspace opens a terminal by default and the Processes tab lists its shell, so the recipe failed at step 2 every time. The app is right; the recipe now expects the live table first (which the later steps check is gone once the host is offline).",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b",
+  "base": "e36762a06b9aaed363bf8fa5c396d25059a15c4e",
+  "head": "0b889074e48f9e40449027a37ae7da571c8d78dc",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T08:25:28.528Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "0b889074e48f9e40449027a37ae7da571c8d78dc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T08:25:28.569Z",
+      "text": "no-failing-test: map-only; the recipe is the test (it fails on base, see the base repro)"
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "test",
+      "at": "0b889074e48f9e40449027a37ae7da571c8d78dc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "9893d192637d4d737ca64b732387b428f6fc5d50d4c53f6e0ea08f50d7f6e37b"
+        }
+      ],
+      "addedAt": "2026-11-20T08:25:28.609Z",
+      "cmd": "verify/yv map run hosts --recipe processes-say-the-host-is-offline",
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0b889074e48f9e40449027a37ae7da571c8d78dc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-hosts-offline-procs-head-map.json",
+          "sha256": "e49cbe0a9e7a3c42b960c4d6dc9a12d686695f2bcae0ae636daedabce097187c"
+        }
+      ],
+      "addedAt": "2026-11-20T08:27:05.301Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "repro",
+      "at": "e36762a06b9aaed363bf8fa5c396d25059a15c4e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e88dadb8cd4e14b72a517f2fe08afb56458d16f249d1fe739904609589254105"
+        }
+      ],
+      "addedAt": "2026-11-20T08:27:05.351Z",
+      "cmd": "verify/yv map run hosts --recipe processes-say-the-host-is-offline",
+      "exit": 1
+    }
+  ]
+}
