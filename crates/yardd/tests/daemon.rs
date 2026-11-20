@@ -1045,6 +1045,30 @@ async fn resizing_an_exited_terminal_is_not_an_error() {
     assert_eq!(again["exited"], true);
 }
 
+#[tokio::test]
+async fn deleting_a_session_does_not_ask_its_terminal_pane_to_reload() {
+    let sb = Sandbox::new("term-delete");
+    let d = sb.start();
+    let mut c = d.client().await;
+    let sid = c.create(&sb.folder("proj"), "hi", json!({})).await;
+
+    let from = c.mark();
+    c.send(json!({ "op": "term.open", "sessionId": sid, "cols": 80, "rows": 24 })).await;
+    c.wait_after(from, "term.opened", |m| m["op"] == "term.opened").await;
+    // Opening it changed the list too; that broadcast may trail the reply.
+    c.wait_after(from, "term.listChanged for the open", |m| m["op"] == "term.listChanged" && m["sessionId"] == sid).await;
+
+    // An open terminal pane answers `term.listChanged` with `term.list`. Sent
+    // for a session being deleted, that ask reached yardd after the session
+    // was gone, and the refusal ("no such session") showed as an error banner
+    // over the page the user landed on. `session.deleted` already closes the pane.
+    let from = c.mark();
+    c.send(json!({ "op": "session.delete", "sessionId": sid })).await;
+    c.wait_after(from, "session.deleted", |m| m["op"] == "session.deleted" && m["sessionId"] == sid).await;
+    let reloads: Vec<&Value> = c.log[from..].iter().filter(|m| m["op"] == "term.listChanged" && m["sessionId"] == sid).collect();
+    assert!(reloads.is_empty(), "a deleted session's terminal pane was told to reload its list: {reloads:?}");
+}
+
 fn b64(s: &str) -> Vec<u8> {
     base64::engine::general_purpose::STANDARD.decode(s).unwrap()
 }
