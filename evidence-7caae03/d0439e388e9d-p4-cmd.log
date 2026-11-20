@@ -1,0 +1,32 @@
+$ verify/yv map run connectors --recipe rows-meet-header-and-footer && (cd ui && bun test)
+# exit 0 after 8033 ms at 7caae03e92b61975a4b8f3edef1010951fd5fa58
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-20T11:13:23.858Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "rows-meet-header-and-footer",
+          "status": "pass",
+          "ms": 6799
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [120.00ms]

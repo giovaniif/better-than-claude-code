@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "0608663e0077e929ce0fde10528023a24baca374",
+    "short": "0608663",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T11:12:49.120Z"
+  },
+  "dir": ".verify/evidence/connectors-card-gap-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2427,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/connectors-card-gap-base/connectors-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "[...document.querySelectorAll(\".connectors-card\")].map((card) => { const head = card.querySelector(\".connectors-card-head\").getBoundingClientRect(); const listEl = card.querySelector(\".connector-list\"); const list = listEl.getBoundingClientRect(); const foot = card.querySelector(\".connector-card-footer\").getBoundingClientRect(); return [Math.round(list.top - head.bottom), Math.round(foot.top - list.bottom)].join(); }).join(\";\")",
+          "value": "10,10;10,10"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2381,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/connectors-card-gap-base/connectors-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "[...document.querySelectorAll(\".connectors-card\")].map((card) => { const head = card.querySelector(\".connectors-card-head\").getBoundingClientRect(); const listEl = card.querySelector(\".connector-list\"); const list = listEl.getBoundingClientRect(); const foot = card.querySelector(\".connector-card-footer\").getBoundingClientRect(); return [Math.round(list.top - head.bottom), Math.round(foot.top - list.bottom)].join(); }).join(\";\")",
+          "value": "10,10;10,10"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
