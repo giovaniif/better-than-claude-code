@@ -150,10 +150,12 @@ yv drive new --viewport mobile --steps '[{"expect":"role:button:Open sessions","
 Viewports: mobile
 At 390 px, Delete on a session with its own worktree arms two choices in the
 bar. Each stays on one line inside the bar (nothing spills over the thread or
-off the screen), and the first click still only arms them.
+off the screen), and the first click still only arms them. The bar is the
+measure, not `innerWidth`: in mobile emulation `innerWidth` grows with the
+overflow, so "Delete + worktree" at x 342-475 passed against it (#310).
 
 ```sh
-yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":{"role":"button","name":"Delete","exact":true}},{"expect":{"css":".main header.bar .btn-text"},"count":2},{"eval":"(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && box.right <= window.innerWidth; }); })()","equals":true},{"shot":"delete-armed"}]'
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":{"role":"button","name":"Delete","exact":true}},{"expect":"role:button:Delete + worktree"},{"expect":{"css":".main header.bar .bar-choice"},"count":2},{"eval":"(() => { const bar = document.querySelector(\".main header.bar\").getBoundingClientRect(); return document.documentElement.scrollWidth <= Math.round(bar.right) && [...document.querySelectorAll(\".main header.bar button\")].filter((b) => b.getClientRects().length > 0).every((b) => { const r = document.createRange(); r.selectNodeContents(b); const box = r.getBoundingClientRect(); const pill = b.getBoundingClientRect(); return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size === 1 && box.bottom <= bar.bottom && pill.right <= bar.right; }); })()","equals":true},{"shot":"delete-armed"}]'
 yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
 ```
 
