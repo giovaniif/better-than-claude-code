@@ -4542,6 +4542,16 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [selected, setSelected] = useState(route?.host ?? "local");
   const id = selected === "local" || state.hosts.some((h) => h.id === selected) ? selected : "local";
   const [login, setLogin] = useState<{ host: string; engine: Engine; account?: string } | null>(null);
+  const page = useRef<HTMLDivElement>(null);
+  // Bumped by a tap on a host row, so tapping the selected host again also reveals it.
+  const [reveal, setReveal] = useState(0);
+  useEffect(() => {
+    if (!reveal) return;
+    // On a phone the setup card and the host rows push the details below the
+    // fold, so a tap on a host only moved its border. Already in view: stay put.
+    const heading = page.current?.querySelector<HTMLElement>(".host-inspector-heading");
+    if (heading && heading.getBoundingClientRect().bottom > window.innerHeight) heading.scrollIntoView({ block: "start" });
+  }, [reveal]);
   const accountActions: AccountActions = {
     login: (engine, account) => setLogin({ host: id, engine, account }),
     add: (engine, name) => actions.addAccount(id, engine, name),
@@ -4561,7 +4571,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
         )}
       </header>
       <div className="scroll">
-        <div className="focused-page">
+        <div className="focused-page" ref={page}>
           {/* The session headers' phone shortcut leads here: keep setup first. */}
           <MobileSetup mobile={state.mobile} />
           {adding && (
@@ -4569,7 +4579,16 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
           )}
           <div className="focused-hosts" aria-label="Choose a host">
             {["local", ...state.hosts.map((h) => h.id)].map((h) => (
-              <HostSummary key={h} state={state} id={h} selected={h === id} onSelect={() => setSelected(h)} />
+              <HostSummary
+                key={h}
+                state={state}
+                id={h}
+                selected={h === id}
+                onSelect={() => {
+                  setSelected(h);
+                  setReveal((n) => n + 1);
+                }}
+              />
             ))}
           </div>
           <HostInspector
