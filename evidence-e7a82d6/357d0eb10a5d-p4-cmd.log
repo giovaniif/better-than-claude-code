@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run logins --recipe gemini-check-login-says-still-logged-out
+# exit 0 after 9603 ms at e7a82d67f3091ce9dac9f92b92db49a8535677b6
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-20T10:09:51.277Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "gemini-check-login-says-still-logged-out",
+          "status": "pass",
+          "ms": 9112
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [116.00ms]

@@ -1,0 +1,90 @@
+{
+  "ok": false,
+  "route": "hosts",
+  "build": {
+    "sha": "5af961fa7f4635ac2266f8d2449ac13758ebb547",
+    "short": "5af961f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:08:00.426Z"
+  },
+  "dir": ".verify/evidence/gemini-check-login-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 22070,
+      "steps": 7,
+      "failed": {
+        "step": 6,
+        "action": {
+          "expect": "role:dialog",
+          "text": "Still not logged in on iso-host",
+          "timeout": 15000
+        },
+        "reason": "expected \"role:dialog\" to contain \"Still not logged in on iso-host\", got \"Log in to Gemini on iso-host",
+        "screenshot": ".verify/evidence/gemini-check-login-base/fail-mobile-step6.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iPhone app\":\n  - heading \"Switchyard for iPhone\" [level=2]\n  - text: TestFlight beta\n  - paragraph: Your sessions, editor, voice mode and workspace, together on your phone.\n  - list:\n    - listitem:\n      - strong: Install with TestFlight.\n      - text: The beta invitation will appear here when the first build is available.\n    - listitem: Connect your iPhone to the same private network as this host, such as Tailscale.\n    - listitem:\n      - text: Enter your host’s HTTPS address in the iPhone app.\n      - textbox \"Enter your host’s HTTPS address in the iPhone app.\":\n        - /placeholder: https://your-host.ts.net\n  - paragraph: The phone icon stays in new sessions until the app connects successfully.\n  - paragraph: Use your existing private HTTPS host. Desktop SSH tunnels are local to the desktop; the phone needs an address it can reach.\n- button \"Select iso-host\" [pressed]:\n  - strong: iso-host\n  - text: This machine Healthy CPU\n  - strong: 5%\n  - text: Memory\n  - strong: 10.4 GB\n  - text: Disk\n  - strong: 92.0 GB\n- region \"iso-host details\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy\n  - tablist \"Host details\":\n    - tab \"Sessions\"\n    - tab \"Engine logins\" [selected]\n    - tab \"System\"\n  - tabpanel \"Engine logins\":\n    - text: Claude Code not logged in\n    - button \"Log in\"\n    - button \"Add Claude Code account\": Add account\n    - text: Codex not logged in\n    - button \"Log in\"\n    - button \"Add Codex account\": Add account\n    - text: \"OpenCode providers: opencode\"\n    - button \"Add provider\"\n    - button \"Add OpenCode account\": Add account\n    - text: Grok not logged in\n    - button \"Log in\"\n    - button \"Add Grok account\": Add account\n    - text: Gemini not logged in\n    - button \"Log in\"\n    - button \"Add Gemini account\": Add account\n    - button \"View subscription usage →\"\n- button \"Run sessions on another machine Add a server or desktop you reach over SSH.\":\n  - strong: Run sessions on another machine\n  - text: Add a server or desktop you reach over SSH.\n- dialog \"Log in to Gemini\":\n  - banner:\n    - heading \"Log in to Gemini on iso-host\" [level=2]\n    - button \"Close\"\n  - paragraph: \"Run this in a terminal on iso-host, then choose Log in with Google:\"\n  - code: gemini\n  - button \"Copy\"\n  - paragraph: Authentication required\n  - paragraph: Gemini CLI keeps the login on that machine. After signing in, check it here.\n  - button \"Check login\""
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/gemini-check-login-base/after-check-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 21248,
+      "steps": 7,
+      "failed": {
+        "step": 6,
+        "action": {
+          "expect": "role:dialog",
+          "text": "Still not logged in on iso-host",
+          "timeout": 15000
+        },
+        "reason": "expected \"role:dialog\" to contain \"Still not logged in on iso-host\", got \"Log in to Gemini on iso-host",
+        "screenshot": ".verify/evidence/gemini-check-login-base/fail-desktop-step6.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"Collapse sessions sidebar\" [expanded]\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - text: No sessions yet.\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 5% · 45%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Hosts\" [level=1]\n  - button \"Add host\"\n- region \"iPhone app\":\n  - heading \"Switchyard for iPhone\" [level=2]\n  - text: TestFlight beta\n  - paragraph: Your sessions, editor, voice mode and workspace, together on your phone.\n  - list:\n    - listitem:\n      - strong: Install with TestFlight.\n      - text: The beta invitation will appear here when the first build is available.\n    - listitem: Connect your iPhone to the same private network as this host, such as Tailscale.\n    - listitem:\n      - text: Enter your host’s HTTPS address in the iPhone app.\n      - textbox \"Enter your host’s HTTPS address in the iPhone app.\":\n        - /placeholder: https://your-host.ts.net\n  - paragraph: The phone icon stays in new sessions until the app connects successfully.\n  - paragraph: Use your existing private HTTPS host. Desktop SSH tunnels are local to the desktop; the phone needs an address it can reach.\n- button \"Select iso-host\" [pressed]:\n  - strong: iso-host\n  - text: This machine Healthy CPU\n  - strong: 5%\n  - text: Memory\n  - strong: 10.4 GB\n  - text: Disk\n  - strong: 92.0 GB\n- region \"iso-host details\":\n  - heading \"iso-host\" [level=2]\n  - text: Healthy\n  - tablist \"Host details\":\n    - tab \"Sessions\"\n    - tab \"Engine logins\" [selected]\n    - tab \"System\"\n  - tabpanel \"Engine logins\":\n    - text: Claude Code not logged in\n    - button \"Log in\"\n    - button \"Add Claude Code account\": Add account\n    - text: Codex not logged in\n    - button \"Log in\"\n    - button \"Add Codex account\": Add account\n    - text: \"OpenCode providers: opencode\"\n    - button \"Add provider\"\n    - button \"Add OpenCode account\": Add account\n    - text: Grok not logged in\n    - button \"Log in\"\n    - button \"Add Grok account\": Add account\n    - text: Gemini not logged in\n    - button \"Log in\"\n    - button \"Add Gemini account\": Add account\n    - button \"View subscription usage →\"\n- button \"Run sessions on another machine Add a server or desktop you reach over SSH.\":\n  - strong: Run sessions on another machine\n  - text: Add a server or desktop you reach over SSH.\n- dialog \"Log in to Gemini\":\n  - banner:\n    - heading \"Log in to Gemini on iso-host\" [level=2]\n    - button \"Close\"\n  - paragraph: \"Run this in a terminal on iso-host, then choose Log in with Google:\"\n  - code: gemini\n  - button \"Copy\"\n  - paragraph: Authentication required\n  - paragraph: Gemini CLI keeps the login on that machine. After signing in, check it here.\n  - button \"Check login\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/gemini-check-login-base/after-check-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 6 {\"expect\":\"role:dialog\",\"text\":\"Still not logged in on iso-host\",\"timeout\":15000}: expected \"role:dialog\" to contain \"Still not logged in on iso-host\", got \"Log in to Gemini on iso-host",
+      "hint": "see .verify/evidence/gemini-check-login-base/fail-mobile-step6.png and the aria snapshot"
+    },
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 6 {\"expect\":\"role:dialog\",\"text\":\"Still not logged in on iso-host\",\"timeout\":15000}: expected \"role:dialog\" to contain \"Still not logged in on iso-host\", got \"Log in to Gemini on iso-host",
+      "hint": "see .verify/evidence/gemini-check-login-base/fail-desktop-step6.png and the aria snapshot"
+    }
+  ]
+}
