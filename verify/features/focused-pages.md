@@ -132,6 +132,17 @@ end 8 px short), from the quiet button's negative margin (#246).
 yv drive sessions --steps '[{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"eval":"const col = document.querySelector(\".focused-session-list\").getBoundingClientRect(); const rows = [...document.querySelectorAll(\".focused-session-row\")]; rows.length > 0 && rows.every((e) => { const r = e.getBoundingClientRect(); return Math.abs(r.left - col.left) <= 1 && Math.abs(r.right - col.right) <= 1; })","equals":true},{"shot":"session-rows"}]'
 ```
 
+### session-rows-have-straight-dividers
+Viewports: both
+The line under each session row on the Sessions page is straight end to end,
+like the dividers on Subscriptions and Import. The rows are quiet buttons,
+and they kept the button's 8 px corners, so each divider curved up at both
+ends.
+
+```sh
+yv drive sessions --steps '[{"expect":{"css":".focused-session-row","hasText":"TEST-say hello"}},{"eval":"[...document.querySelectorAll(\".focused-session-row\")].every((e) => { const cs = getComputedStyle(e); return cs.borderBottomLeftRadius === \"0px\" && cs.borderBottomRightRadius === \"0px\"; })","equals":true},{"shot":"session-row-dividers"}]'
+```
+
 ### offline-host-and-selection-fallback
 Viewports: both
 An unreachable host shows its problem, retains System actions, and removing it returns selection to the local host.
