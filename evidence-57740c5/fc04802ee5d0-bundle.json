@@ -1,0 +1,178 @@
+{
+  "v": 1,
+  "claim": "Gemini's login dialog: pressing Check login while Gemini is still logged out leaves the dialog exactly as it was, so the check looks like a dead button",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b",
+  "base": "4303cb15c5cbf2799f008918ffd98a020d48feaf",
+  "head": "57740c5decea80fb3e5f281d985fcf4d18b8a67e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T10:20:14.746Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "f94a3e8331b16ad66f5b3481da5c35665f51207a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0988c4da9e9deef7dc57d9d11597583a0b30ccb3e7e797e38db24548de3b12a4"
+        },
+        {
+          "path": "p1-after-check-mobile.png",
+          "sha256": "89d80b36a03bb838d4d0e69c4f4b6d4eefc4b301bff8c932fbb759c764b7ad25"
+        },
+        {
+          "path": "p1-fail-mobile-step6.png",
+          "sha256": "89d80b36a03bb838d4d0e69c4f4b6d4eefc4b301bff8c932fbb759c764b7ad25"
+        },
+        {
+          "path": "p1-after-check-desktop.png",
+          "sha256": "9a9a609a07751a6c89040ac803d141d322451da89d549d3e962b44025b04a704"
+        },
+        {
+          "path": "p1-fail-desktop-step6.png",
+          "sha256": "76f9bc581bd5d46f57a1b03a952d75bc4c6c9e469e90a5e676ba941456466c18"
+        },
+        {
+          "path": "p1-2-after-check-mobile.png",
+          "sha256": "89d80b36a03bb838d4d0e69c4f4b6d4eefc4b301bff8c932fbb759c764b7ad25"
+        },
+        {
+          "path": "p1-2-after-check-desktop.png",
+          "sha256": "9a9a609a07751a6c89040ac803d141d322451da89d549d3e962b44025b04a704"
+        }
+      ],
+      "addedAt": "2026-11-20T10:21:03.071Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "f94a3e8331b16ad66f5b3481da5c35665f51207a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e1849b02592063eb7735782ee95f7f9aef12c8b4384fd598dde32f9d12b411fb"
+        }
+      ],
+      "addedAt": "2026-11-20T10:21:03.119Z",
+      "cmd": "verify/yv map run logins --recipe gemini-check-login-says-still-logged-out",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "57740c5decea80fb3e5f281d985fcf4d18b8a67e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "0db82a51265703a4c97940874e8fd8109d8504f7bd3b38b6e74e746b6e8b1c3a"
+        },
+        {
+          "path": "p3-after-check-mobile.png",
+          "sha256": "5716aa8aa293f8b3c839f8e7747a922f0d5d918740b0afcae7714cb0ac37d7ec"
+        },
+        {
+          "path": "p3-after-check-desktop.png",
+          "sha256": "6496e1db74c074a8b29085bb116f3c6767c726b02dcb4405c988b80d8a71cb6a"
+        },
+        {
+          "path": "p3-2-after-check-mobile.png",
+          "sha256": "5716aa8aa293f8b3c839f8e7747a922f0d5d918740b0afcae7714cb0ac37d7ec"
+        },
+        {
+          "path": "p3-2-after-check-desktop.png",
+          "sha256": "6496e1db74c074a8b29085bb116f3c6767c726b02dcb4405c988b80d8a71cb6a"
+        }
+      ],
+      "addedAt": "2026-11-20T10:22:00.861Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "57740c5decea80fb3e5f281d985fcf4d18b8a67e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e1b04461866e1bc31bb6945cd28bfab3faa12ad5ef09ec93169d2858d8e73fc9"
+        }
+      ],
+      "addedAt": "2026-11-20T10:22:00.904Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run logins --recipe gemini-check-login-says-still-logged-out",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "57740c5decea80fb3e5f281d985fcf4d18b8a67e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "86323a62ea3474582c66bbc402d8281b9fdce000068cbeaba4cd0def95835583"
+        }
+      ],
+      "addedAt": "2026-11-20T10:22:10.345Z",
+      "cmd": "verify/yv design-check --base 4303cb15c5cb",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "57740c5decea80fb3e5f281d985fcf4d18b8a67e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-logins.json",
+          "sha256": "8569837d32826c72581c09ea0d58d9a827a3911dd973351bf9729d367bf5da15"
+        }
+      ],
+      "addedAt": "2026-11-20T10:22:10.425Z",
+      "cmd": "verify/yv map run logins",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "logins/hosts-page-shows-logged-out",
+        "logins/new-session-log-in-fits",
+        "logins/codex-device-login",
+        "logins/claude-code-login",
+        "logins/grok-device-login",
+        "logins/gemini-check-login-says-still-logged-out",
+        "logins/opencode-api-key",
+        "logins/opencode-device-sign-in"
+      ]
+    }
+  ]
+}
