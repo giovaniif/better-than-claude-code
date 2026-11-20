@@ -1,0 +1,26 @@
+$ verify/yv map run import --recipe import-from-a-remote-host
+# exit 0 after 6025 ms at bc2dbb89fa79a487255dda18137c986b6a02f026
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-20T08:04:14.073Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "import-from-a-remote-host",
+          "status": "pass",
+          "ms": 5629
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

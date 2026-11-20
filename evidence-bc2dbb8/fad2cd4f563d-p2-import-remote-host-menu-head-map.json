@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-20T08:04:07.928Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "dialog-lists-sessions",
+          "status": "pass",
+          "ms": 6984
+        },
+        {
+          "label": "filter-narrows-the-list",
+          "status": "pass",
+          "ms": 2856
+        },
+        {
+          "label": "recently-active-warns",
+          "status": "pass",
+          "ms": 3057
+        },
+        {
+          "label": "age-stays-visible",
+          "status": "pass",
+          "ms": 7231
+        },
+        {
+          "label": "import-opens-the-session",
+          "status": "pass",
+          "ms": 5253
+        },
+        {
+          "label": "import-on-mobile",
+          "status": "pass",
+          "ms": 4826
+        },
+        {
+          "label": "next-message-resumes",
+          "status": "pass",
+          "ms": 511
+        },
+        {
+          "label": "missing-folder-is-refused",
+          "status": "pass",
+          "ms": 3352
+        },
+        {
+          "label": "import-from-a-remote-host",
+          "status": "pass",
+          "ms": 5656
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,90 @@
+{
+  "v": 1,
+  "claim": "Map drift: import/import-from-a-remote-host clicked TEST-remote inside the Import dialog, but since #297 the host chip's menu is its own Hosts popover, so the recipe timed out and import ran 8/9 on main. The app is right; the recipe was wrong.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b",
+  "base": "1c7a6296da37ac393c177a472646cba3a493f174",
+  "head": "bc2dbb89fa79a487255dda18137c986b6a02f026",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/import.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T08:03:23.877Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "bc2dbb89fa79a487255dda18137c986b6a02f026",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T08:03:23.960Z",
+      "text": "no-failing-test: map-only; the recipe is the test (it fails on base for the drift, see the base repro)"
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bc2dbb89fa79a487255dda18137c986b6a02f026",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-import-remote-host-menu-head-map.json",
+          "sha256": "fad2cd4f563db8d1e85e1cb31533c8405cb38907218553d9cf8f2342a0ae55ef"
+        }
+      ],
+      "addedAt": "2026-11-20T08:04:08.012Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "import/dialog-lists-sessions",
+        "import/filter-narrows-the-list",
+        "import/recently-active-warns",
+        "import/age-stays-visible",
+        "import/import-opens-the-session",
+        "import/import-on-mobile",
+        "import/next-message-resumes",
+        "import/missing-folder-is-refused",
+        "import/import-from-a-remote-host"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "bc2dbb89fa79a487255dda18137c986b6a02f026",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4d701d106ea0f70f836cefe82bbb88c4656175aacc005a5eab91fc3d5538abab"
+        }
+      ],
+      "addedAt": "2026-11-20T08:04:08.052Z",
+      "cmd": "verify/yv map run import --recipe import-from-a-remote-host",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1c7a6296da37ac393c177a472646cba3a493f174",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "cb3d44638636558d9178fb47da929b99bb3e6a998b2abe3111a88e204517fd9b"
+        }
+      ],
+      "addedAt": "2026-11-20T08:04:19.295Z",
+      "cmd": "verify/yv map run import --recipe import-from-a-remote-host",
+      "exit": 1
+    }
+  ]
+}

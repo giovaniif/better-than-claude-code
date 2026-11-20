@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "import",
+      "at": "2026-11-20T08:02:27.800Z",
+      "counts": {
+        "pass": 8,
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "dialog-lists-sessions",
+          "status": "pass",
+          "ms": 7112
+        },
+        {
+          "label": "filter-narrows-the-list",
+          "status": "pass",
+          "ms": 2766
+        },
+        {
+          "label": "recently-active-warns",
+          "status": "pass",
+          "ms": 3000
+        },
+        {
+          "label": "age-stays-visible",
+          "status": "pass",
+          "ms": 7303
+        },
+        {
+          "label": "import-opens-the-session",
+          "status": "pass",
+          "ms": 5183
+        },
+        {
+          "label": "import-on-mobile",
+          "status": "pass",
+          "ms": 4780
+        },
+        {
+          "label": "next-message-resumes",
+          "status": "pass",
+          "ms": 515
+        },
+        {
+          "label": "missing-folder-is-refused",
+          "status": "pass",
+          "ms": 3345
+        },
+        {
+          "label": "import-from-a-remote-host",
+          "status": "fail",
+          "ms": 13444,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"click\":{\"within\":\"role:dialog\",\"role\":\"button\",\"name\":\"TEST-remote\"}}: click: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-02-14-828Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "gs\\\"\\n  - button \\\"TEST-old refactor of the parser Opus 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-old refactor of the parser\\\"\\n  - button \\\"TEST-fix the login redirect Opus 5.5 · Idle\\\"\\n  - button \\\"Actions for TEST-fix the login redirect\\\"\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 4% · 44%\\\"\\n  - button \\\"TEST-remote 4% · 44%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- 'button \\\"Account: Claude, Default\\\"'\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- dialog \\\"Import from Claude Code\\\":\\n  - banner:\\n    - heading \\\"Import from Claude Code\\\" [level=2]\\n    - button \\\"Close\\\"\\n  - paragraph: Sessions you ran with Claude Code on iso-host. An imported session opens in its own folder and its next message continues that conversation.\\n  - button \\\"iso-host\\\" [expanded]\\n  - textbox \\\"Filter sessions\\\":\\n    - /placeholder: Filter by title, folder or branch\\n  - list:\\n    - listitem:\\n      - text: TEST-fix the login redirect /tmp/yv-map-import-216182-mwooxcng/work · main · 5 min ago\\n      - button \\\"Open TEST-fix the login redirect\\\": Open\\n    - listitem:\\n      - text: TEST-write the release notes /nonexistent/TEST-gone · 5 h ago\\n      - button \\\"Import TEST-write the release notes\\\": Import\\n    - listitem:\\n      - text: TEST-old refactor of the parser /tmp/yv-map-import-216182-mwooxcng/work · parser · 3 d ago\\n      - button \\\"Open TEST-old refactor of the parser\\\": Open\\n- dialog \\\"Hosts\\\":\\n  - button \\\"iso-host\\\"\\n  - button \\\"TEST-remote\\\"\\n  - button \\\"Add a host…\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"click\\\":{\\\"within\\\":\\\"role:dialog\\\",\\\"role\\\":\\\"button\\\",\\\"name\\\":\\\"TEST-remote\\\"}}: click: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b/.verify/drives/2026-11-20T08-02-14-828Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "import/import-from-a-remote-host",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
