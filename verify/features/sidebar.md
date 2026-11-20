@@ -63,11 +63,14 @@ yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{
 Viewports: both
 The session menu starts with the current name selected. Save updates the row
 and conversation, and keeps the renamed session after reload. Cancel keeps
-the old name.
+the old name. The seeded names come back at the end: later
+recipes find these sessions by them.
 
 ```sh
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Rename"},{"expect":"label:Session name","value":"TEST-say hello"},{"eval":"document.activeElement.value === document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)","equals":true},{"fill":"label:Session name","value":"   "},{"expect":"role:button:Save name","enabled":false},{"fill":"label:Session name","value":"  TEST-Release notes  "},{"shot":"rename-dialog"},{"press":"Enter"},{"expect":"role:button:Actions for TEST-Release notes"},{"expect":"role:heading:TEST-Release notes"},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"role:heading:TEST-Release notes"},{"shot":"renamed-session"}]'
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for [think] TEST-plan"},{"click":"role:menuitem:Rename"},{"expect":"role:dialog:Rename session","inViewport":true},{"fill":"label:Session name","value":"TEST-Canceled"},{"click":"role:button:Cancel"},{"expect":"role:button:Actions for [think] TEST-plan"},{"click":"role:button:Actions for [think] TEST-plan"},{"click":"role:menuitem:Rename"},{"fill":"label:Session name","value":"TEST-Plan for release"},{"shot":"rename-dialog"},{"click":"role:button:Save name"},{"expect":"role:button:Actions for TEST-Plan for release"},{"click":{"css":".session-row","hasText":"TEST-Plan for release"}},{"expect":"role:heading:TEST-Plan for release"},{"shot":"renamed-session"}]'
+yv api '{"op":"session.rename","sessionId":"{{sid_echo}}","title":"TEST-say hello"}' --wait '{"op":"session","session":{"id":"{{sid_echo}}","title":"TEST-say hello"}}'
+yv api '{"op":"session.rename","sessionId":"{{sid_think}}","title":"[think] TEST-plan the refactor"}' --wait '{"op":"session","session":{"id":"{{sid_think}}","title":"[think] TEST-plan the refactor"}}'
 ```
 
 ### pin-and-unpin
