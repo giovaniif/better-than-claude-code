@@ -29,7 +29,7 @@ import { ConnectorsPage } from "./ConnectorsPage";
 import { WidgetFrame } from "./WidgetFrame";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
-import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
+import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint, shownEffort } from "./engines";
 import { didNotRun, duration, handoffLinks, layout, sessionSubagents, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
@@ -85,6 +85,14 @@ const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed(bytes > 100 * 1024 ** 
 const pct = (n: number) => `${Math.round(n)}%`;
 export const tilde = (path: string, home: string) => (home && path.startsWith(home) ? "~" + path.slice(home.length) : path);
 const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+/** What the phone's Session setup chip shows and says. */
+const setupSettings = (model: string, account: string, effort: string, permission: Permission | undefined) => ({
+  model,
+  effort,
+  label: [model, account, capitalize(effort), (PERMISSIONS.find((p) => p.id === permission) ?? PERMISSIONS[0]).label].filter(Boolean).join(", "),
+  full: permission === "full",
+});
 
 /* ---------- icons ---------- */
 
@@ -2253,7 +2261,7 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
           upload={actions.upload}
           onSubmit={start}
           voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false }}
-          settings={{ model: modelName(models, choice.engine, choice.model), effort: choice.effort, label: `${modelName(models, choice.engine, choice.model)}, ${accountName(accounts, choice.engine, selectedAccount)}, ${capitalize(choice.effort)}, ${PERMISSIONS.find((p) => p.id === permission)?.label ?? ""}`, full: permission === "full" }}
+          settings={setupSettings(modelName(models, choice.engine, choice.model), accountName(accounts, choice.engine, selectedAccount), shownEffort(models, choice.engine, choice.model, choice.effort), permission)}
           busy={pending || !online || !choice.model || !cwd || gone}
         >
           <ModelPicker models={models} value={choice} engines={pickerEngines(models, choice.engine)} onChange={choose} speed={{ value: speed, onChange: setSpeed }} />
@@ -2819,7 +2827,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             upload={actions.upload}
             onSubmit={submit}
             voice={voice}
-            settings={{ model: modelName(models, meta.engine, meta.model), effort: meta.effort, label: `${modelName(models, meta.engine, meta.model)}, ${accountName(accounts, meta.engine, accountOf(meta))}, ${capitalize(meta.effort)}, ${PERMISSIONS.find((p) => p.id === meta.permission)?.label ?? "Ask first"}`, full: meta.permission === "full" }}
+            settings={setupSettings(modelName(models, meta.engine, meta.model), accountName(accounts, meta.engine, accountOf(meta)), shownEffort(models, meta.engine, meta.model, meta.effort), meta.permission)}
           >
             <ModelPicker
               models={models}
