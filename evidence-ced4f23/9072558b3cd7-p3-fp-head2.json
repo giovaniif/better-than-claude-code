@@ -1,0 +1,15 @@
+{
+  "area": "focused-pages",
+  "at": "2026-11-20T11:41:14.528Z",
+  "counts": {
+    "pass": 1
+  },
+  "setupFailed": null,
+  "results": [
+    {
+      "label": "manage-accounts-opens-logins",
+      "status": "pass",
+      "ms": 8104
+    }
+  ]
+}
