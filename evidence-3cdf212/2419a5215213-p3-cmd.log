@@ -1,0 +1,26 @@
+$ verify/yv map run settings --recipe strip-from-shown-hosts
+# exit 0 after 9245 ms at 3cdf21204b7418024968e4fa49a16e5c1221da9c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "settings",
+      "at": "2026-11-20T08:11:49.225Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "strip-from-shown-hosts",
+          "status": "pass",
+          "ms": 7480
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

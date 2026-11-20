@@ -1,0 +1,85 @@
+{
+  "v": 1,
+  "claim": "Map drift: settings/strip-from-shown-hosts failed on main (3/4): it expected TEST-Work's 91% in the usage popover without opening Other accounts, a View all button that #292 removed, and a logged-in TEST-Work that the fake reads as logged out until it signs in. The app follows the approved #292 design; the recipe was wrong.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b",
+  "base": "1c7a6296da37ac393c177a472646cba3a493f174",
+  "head": "3cdf21204b7418024968e4fa49a16e5c1221da9c",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T08:11:02.659Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "3cdf21204b7418024968e4fa49a16e5c1221da9c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T08:11:02.697Z",
+      "text": "no-failing-test: map-only; the recipe is the test (it fails on base, see the base repro)"
+    },
+    {
+      "id": 2,
+      "ref": "head",
+      "kind": "fix",
+      "at": "3cdf21204b7418024968e4fa49a16e5c1221da9c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-settings-usage-recipe-head-map.json",
+          "sha256": "5ff903f813550443e241b7a627888e3d5011e361626da90df9644d21de7d30c1"
+        }
+      ],
+      "addedAt": "2026-11-20T08:11:39.945Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "settings/settings-page",
+        "settings/hide-this-mac",
+        "settings/strip-from-shown-hosts",
+        "settings/long-host-name"
+      ]
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "test",
+      "at": "3cdf21204b7418024968e4fa49a16e5c1221da9c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "2419a52152135eb7d4792f04869cfe0cbd5656d9e39d3c3bfc259a4269a2f4f1"
+        }
+      ],
+      "addedAt": "2026-11-20T08:11:39.984Z",
+      "cmd": "verify/yv map run settings --recipe strip-from-shown-hosts",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1c7a6296da37ac393c177a472646cba3a493f174",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "2baae12102a9c187c6f44892edbe7d357c822b933fc6c6a656af1457740d2c08"
+        }
+      ],
+      "addedAt": "2026-11-20T08:11:49.286Z",
+      "cmd": "verify/yv map run settings --recipe strip-from-shown-hosts",
+      "exit": 1
+    }
+  ]
+}
