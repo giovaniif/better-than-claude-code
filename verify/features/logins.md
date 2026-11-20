@@ -33,6 +33,15 @@ Engine logins lists each engine as not logged in, with its own Log in action.
 yv drive 'hosts' --steps '[{"click":"role:tab:Engine logins"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Codex"},"text":"not logged in"},{"expect":"role:button:Log in"},{"shot":"logged-out"}]'
 ```
 
+### new-session-log-in-fits
+Viewports: both
+The new-session page's notice for a logged-out engine keeps **Log in** on one
+line inside its button, even at phone width where the message wraps.
+
+```sh
+yv drive new --steps '[{"expect":"css:.engine-notice","text":"isn\u0027t logged in"},{"eval":"(() => { const b = [...document.querySelectorAll(\".engine-notice button\")].find(x => x.textContent.trim() === \"Log in\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \",\" + (b.scrollHeight <= b.clientHeight); })()","equals":"1,true"},{"shot":"new-session-notice"}]'
+```
+
 ### codex-device-login
 Log in to Codex: the dialog shows the device code; the fake completes and the
 host shows Codex logged in.
