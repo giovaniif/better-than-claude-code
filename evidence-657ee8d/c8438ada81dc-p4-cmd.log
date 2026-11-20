@@ -1,0 +1,26 @@
+$ verify/yv map run layout --recipe desktop-sidebars-collapse-independently
+# exit 0 after 11362 ms at 657ee8d805b0ce2ca4fa5fcec7ce5469b533e647
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-20T05:28:48.577Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 10512
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

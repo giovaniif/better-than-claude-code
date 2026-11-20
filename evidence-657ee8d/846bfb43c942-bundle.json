@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "claim": "Map-only: on desktop, yv drive's routes and goto steps time out once the sessions sidebar is collapsed; layout.md had no Gotcha saying so",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-25cb",
+  "base": "5425ff6852fbcf4cae3a57e38d2a48324345fdb6",
+  "head": "657ee8d805b0ce2ca4fa5fcec7ce5469b533e647",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T05:27:20.053Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "657ee8d805b0ce2ca4fa5fcec7ce5469b533e647",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T05:27:20.091Z",
+      "text": "no-repro: map-only, a Gotcha for a yv limitation (goto clicks sidebar rows; a collapsed sidebar has none). Observed in patrol 2026-11-20: goto hosts timed out after Collapse sessions sidebar."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "657ee8d805b0ce2ca4fa5fcec7ce5469b533e647",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T05:27:20.130Z",
+      "text": "no-failing-test: the recipe is the test; documentation only, no recipe changed"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "657ee8d805b0ce2ca4fa5fcec7ce5469b533e647",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-layout.json",
+          "sha256": "13e92ac6f6881829303f974abc8be76dd89a0187b29e1fbf1fdb03a06f257194"
+        }
+      ],
+      "addedAt": "2026-11-20T05:28:37.177Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/desktop-sidebars-collapse-independently",
+        "layout/mobile-panels-have-close-controls",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/new-session-send-shares-controls-row",
+        "layout/desktop-sidebar-is-a-column",
+        "layout/workspace-tabs-fit-minimum-width"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "657ee8d805b0ce2ca4fa5fcec7ce5469b533e647",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "c8438ada81dc2c676cb94a8f9027df1385b1a48a7f4d453b73ea8d67fa67a7d6"
+        }
+      ],
+      "addedAt": "2026-11-20T05:28:37.219Z",
+      "cmd": "verify/yv map run layout --recipe desktop-sidebars-collapse-independently",
+      "exit": 0
+    }
+  ]
+}
