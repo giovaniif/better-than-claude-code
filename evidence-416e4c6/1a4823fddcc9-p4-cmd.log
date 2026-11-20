@@ -1,0 +1,21 @@
+$ cd verify && bun test && cd .. && verify/yv selftest
+# exit 0 after 758 ms at 416e4c64c3c46d0b675d5cfecb0a060faf0da085
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "selftest",
+  "ok": true,
+  "unit": {
+    "exit": 0,
+    "pass": 55,
+    "fail": 0
+  },
+  "smoke": null,
+  "problems": []
+}
+
+
+ 55 pass
+ 0 fail
+ 159 expect() calls
+Ran 55 tests across 3 files. [360.00ms]
