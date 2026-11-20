@@ -65,6 +65,16 @@ fake, which confirms 2.5 s later), then the host shows Grok logged in.
 yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"css:.engine-block:nth-child(4) .engine-login"},{"expect":"role:dialog","text":"GROK-1234"},{"expect":"role:dialog","text":"Grok is logged in on iso-host","timeout":15000},{"wait":2500},{"expect":{"css":".engine-block:nth-child(4)","hasText":"logged in as default@grok.example"}}]'
 ```
 
+### gemini-check-login-says-still-logged-out
+Viewports: both
+Gemini logs in from a terminal on the host. **Check login** in its dialog asks
+again; while Gemini is still logged out the dialog says so, instead of looking
+exactly as it did before the click.
+
+```sh
+yv drive hosts --steps '[{"click":"role:tab:Engine logins"},{"click":"css:.engine-block:has-text(\"Gemini\") .engine-login"},{"expect":"role:dialog","text":"Run this in a terminal"},{"click":"role:button:Check login"},{"expect":"role:dialog","text":"Still not logged in on iso-host","timeout":15000},{"expect":"role:button:Check login"},{"shot":"gemini-still-logged-out"}]'
+```
+
 ### opencode-api-key
 Expect at both viewports: Add provider lists OpenCode's providers with a
 filter; picking Fake Provider asks for its API key; saving adds it, and the
