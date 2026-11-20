@@ -63,11 +63,14 @@ yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{
 Viewports: both
 The session menu starts with the current name selected. Save updates the row
 and conversation, and keeps the renamed session after reload. Cancel keeps
-the old name.
+the old name. The seeded names come back at the end: later
+recipes find these sessions by them.
 
 ```sh
 yv drive 'session:{{sid_echo}}' --viewport desktop --steps '[{"click":"role:button:Actions for TEST-say hello"},{"click":"role:menuitem:Rename"},{"expect":"label:Session name","value":"TEST-say hello"},{"eval":"document.activeElement.value === document.activeElement.value.slice(document.activeElement.selectionStart, document.activeElement.selectionEnd)","equals":true},{"fill":"label:Session name","value":"   "},{"expect":"role:button:Save name","enabled":false},{"fill":"label:Session name","value":"  TEST-Release notes  "},{"shot":"rename-dialog"},{"press":"Enter"},{"expect":"role:button:Actions for TEST-Release notes"},{"expect":"role:heading:TEST-Release notes"},{"expect":"css:.thread","text":"Echo: TEST-say hello"},{"reload":true},{"expect":"role:heading:TEST-Release notes"},{"shot":"renamed-session"}]'
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"click":"role:button:Actions for [think] TEST-plan"},{"click":"role:menuitem:Rename"},{"expect":"role:dialog:Rename session","inViewport":true},{"fill":"label:Session name","value":"TEST-Canceled"},{"click":"role:button:Cancel"},{"expect":"role:button:Actions for [think] TEST-plan"},{"click":"role:button:Actions for [think] TEST-plan"},{"click":"role:menuitem:Rename"},{"fill":"label:Session name","value":"TEST-Plan for release"},{"shot":"rename-dialog"},{"click":"role:button:Save name"},{"expect":"role:button:Actions for TEST-Plan for release"},{"click":{"css":".session-row","hasText":"TEST-Plan for release"}},{"expect":"role:heading:TEST-Plan for release"},{"shot":"renamed-session"}]'
+yv api '{"op":"session.rename","sessionId":"{{sid_echo}}","title":"TEST-say hello"}' --wait '{"op":"session","session":{"id":"{{sid_echo}}","title":"TEST-say hello"}}'
+yv api '{"op":"session.rename","sessionId":"{{sid_think}}","title":"[think] TEST-plan the refactor"}' --wait '{"op":"session","session":{"id":"{{sid_think}}","title":"[think] TEST-plan the refactor"}}'
 ```
 
 ### pin-and-unpin
@@ -208,6 +211,20 @@ yv api '{"op":"session.update","sessionId":"{{sid_claude}}","group":"TEST-handof
 yv api '{"op":"session.handoff","sessionId":"{{sid_claude}}","engine":"codex","model":"fake-fast","effort":"low"}' --wait '{"op":"created"}'
 yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-hello from Claude","group":"TEST-handoff"}]}'
 yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-handoff"},"text":"2"}]'
+```
+
+### hand-off-from-a-pinned-session-stays-in-its-group
+Viewports: both
+A hand-off from a pinned, grouped session is not pinned. Its row is listed in
+the group it belongs to, not nested under the pinned parent, so the group's
+count matches the rows under it.
+
+```sh
+yv api '{"op":"session.update","sessionId":"{{sid_echo}}","pinned":true,"group":"TEST-pinned"}' --wait '{"op":"session","session":{"id":"{{sid_echo}}","pinned":true,"group":"TEST-pinned"}}'
+yv api '{"op":"session.handoff","sessionId":"{{sid_echo}}","engine":"codex","model":"fake-deep","effort":"low"}' --wait '{"op":"created"}'
+yv state --expect '{"sessions":[{"engine":"codex","title":"TEST-say hello","model":"fake-deep","group":"TEST-pinned","pinned":false}]}'
+yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasText":"TEST-pinned"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"Fake Deep"}},{"eval":"[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")","equals":false},{"shot":"pinned-handover"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".group-head","hasText":"TEST-pinned"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"Fake Deep"}},{"eval":"[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")","equals":false},{"shot":"pinned-handover"}]'
 ```
 
 ## Gotchas

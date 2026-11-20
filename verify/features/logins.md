@@ -33,6 +33,15 @@ Engine logins lists each engine as not logged in, with its own Log in action.
 yv drive 'hosts' --steps '[{"click":"role:tab:Engine logins"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Codex"},"text":"not logged in"},{"expect":"role:button:Log in"},{"shot":"logged-out"}]'
 ```
 
+### new-session-log-in-fits
+Viewports: both
+The new-session page's notice for a logged-out engine keeps **Log in** on one
+line inside its button, even at phone width where the message wraps.
+
+```sh
+yv drive new --steps '[{"expect":"css:.engine-notice","text":"isn\u0027t logged in"},{"eval":"(() => { const b = [...document.querySelectorAll(\".engine-notice button\")].find(x => x.textContent.trim() === \"Log in\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \",\" + (b.scrollHeight <= b.clientHeight); })()","equals":"1,true"},{"shot":"new-session-notice"}]'
+```
+
 ### codex-device-login
 Log in to Codex: the dialog shows the device code; the fake completes and the
 host shows Codex logged in.
@@ -54,6 +63,16 @@ fake, which confirms 2.5 s later), then the host shows Grok logged in.
 
 ```sh
 yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"css:.engine-block:nth-child(4) .engine-login"},{"expect":"role:dialog","text":"GROK-1234"},{"expect":"role:dialog","text":"Grok is logged in on iso-host","timeout":15000},{"wait":2500},{"expect":{"css":".engine-block:nth-child(4)","hasText":"logged in as default@grok.example"}}]'
+```
+
+### gemini-check-login-says-still-logged-out
+Viewports: both
+Gemini logs in from a terminal on the host. **Check login** in its dialog asks
+again; while Gemini is still logged out the dialog says so, instead of looking
+exactly as it did before the click.
+
+```sh
+yv drive hosts --steps '[{"click":"role:tab:Engine logins"},{"click":"css:.engine-block:has-text(\"Gemini\") .engine-login"},{"expect":"role:dialog","text":"Run this in a terminal"},{"click":"role:button:Check login"},{"expect":"role:dialog","text":"Still not logged in on iso-host","timeout":15000},{"expect":"role:button:Check login"},{"shot":"gemini-still-logged-out"}]'
 ```
 
 ### opencode-api-key

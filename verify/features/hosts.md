@@ -70,6 +70,20 @@ yv drive 'hosts' --steps '[{"expect":"role:button:Select TEST-grid"},{"eval":"((
 yv api '{"op":"host.remove","hostId":"{{grid_id}}"}' --wait '{"op":"hosts"}'
 ```
 
+### selecting-a-host-shows-its-details
+Viewports: both
+On a phone the iPhone setup card and the host rows fill the screen, so the
+inspector starts below the fold. Selecting a host brings its details into view;
+otherwise the tap only moves the row's border. When the details are already in
+view (desktop), the page stays where it is. The click goes through
+`element.click()` so Playwright's own scroll-into-view doesn't hide either case.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-reveal","kind":"direct","url":"ws://127.0.0.1:{{remote_port}}/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-reveal","status":"connected"}]}' --save reveal_id='hosts[name=TEST-reveal].id'
+yv drive 'hosts' --steps '[{"expect":"role:button:Select TEST-reveal"},{"eval":"(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()","equals":true},{"expect":"css:.host-inspector-heading","text":"TEST-reveal"},{"wait":800},{"eval":"(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()","equals":true},{"shot":"selected-in-view"}]'
+yv api '{"op":"host.remove","hostId":"{{reveal_id}}"}' --wait '{"op":"hosts"}'
+```
+
 ### ssh-host-unreachable
 An SSH host that cannot be reached reports an error instead of hanging.
 
@@ -151,7 +165,9 @@ A remote session's Processes tab, open when its host goes away, says the list
 comes back when the host reconnects. Once, it kept saying "Nothing is running
 for this session." (or kept a stale list, with Stop buttons that could only
 fail), and a tab first opened offline said "Loading…" forever. Uses its own
-remote so the area's TEST-remote stays up.
+remote so the area's TEST-remote stays up. While the host is up the tab lists
+the shell of the terminal the workspace opens by default (terminal-first,
+#290), so it is a live table, not "Nothing is running", that must go away.
 
 ```sh
 gone_port="$(yv iso up --name map-hosts-gone --host-name TEST-gone | jq -r .iso.port)"
@@ -159,7 +175,7 @@ gone_work="$(yv var get work --iso map-hosts-gone | jq -er .value)"
 yv api '{"op":"host.add","name":"TEST-gone","kind":"direct","url":"ws://127.0.0.1:'"$gone_port"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-gone","status":"connected"}]}' --save gone_id='hosts[name=TEST-gone].id'
 yv api '{"op":"session.create","host":"{{gone_id}}","engine":"codex","model":"fake-fast","effort":"low","cwd":"'"$gone_work"'","text":"TEST-procs on a host that goes"}' --wait '{"op":"created"}' --save gone_sid=sessionId
 (sleep 8; yv iso down --name map-hosts-gone >/dev/null) &
-yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"click":"role:button:Processes"},{"expect":{"role":"region","name":"Workspace"},"text":"Nothing is running for this session.","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
+yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"expect":"css:.thread","text":"Echo: TEST-procs on a host that goes","timeout":15000},{"click":"role:button:Processes"},{"expect":"css:.proc-table","timeout":10000},{"expect":"css:.bar-host","text":"offline","timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"Processes are available when this host reconnects.","timeout":5000},{"expect":"css:.proc-table","count":0},{"shot":"procs-offline"}]'
 wait
 ```
 

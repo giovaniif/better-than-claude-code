@@ -147,6 +147,8 @@ h1, h2, h3, p { margin: 0; }
 /* A disabled primary button kept full ink and read as one that ignores the click. */
 .btn-primary:disabled { opacity: 0.5; }
 .btn { padding: 0 12px; border: 1px solid var(--line-strong); background: var(--bg); }
+/* An outlined button that cannot be used read exactly like a live one, so a click that did nothing looked broken. */
+.btn:disabled { color: var(--muted); border-color: var(--line); }
 .btn-text { padding: 0 10px; border: 0; background: transparent; color: var(--muted); }
 .btn-text:hover, .btn-quiet:hover, .btn-icon:hover { background: var(--fill); }
 .btn-quiet { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px; margin-left: -8px; border: 0; background: transparent; }
@@ -429,7 +431,6 @@ h1, h2, h3, p { margin: 0; }
 .pr-author { font-size: 12px; font-weight: 500; }
 .pr-body { white-space: pre-wrap; overflow-wrap: anywhere; }
 .pr-foot { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-top: 4px; }
-.pr-foot .btn:disabled { color: var(--muted); }
 
 /* PR links in answers and their hover card */
 .prose a { color: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 2px; }
@@ -619,6 +620,8 @@ h1, h2, h3, p { margin: 0; }
 /* Engine logins */
 .engine-notice { display: flex; align-items: center; gap: 10px; max-width: 680px; margin: 0 auto 8px; padding: 8px 8px 8px 12px; border-radius: 10px; background: var(--fill); font-size: 13px; }
 .new-inner .engine-notice { margin: 14px 0 0; max-width: none; }
+/* The message wraps, not the button: .btn-primary has a fixed height. */
+.engine-notice .btn-primary { flex: none; white-space: nowrap; }
 .engine-notice code { padding: 1px 5px; border-radius: 5px; background: var(--fill-strong); font-family: var(--mono); font-size: 11.5px; user-select: all; }
 .engine-login { margin-left: auto; height: 26px; padding: 0 10px; font-size: 12px; }
 .engine-block { display: flex; flex-direction: column; gap: 6px; }
@@ -884,6 +887,10 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
   .bar { gap: 8px; padding: 8px 16px 8px 12px; }
   /* The title keeps more of the bar than the branch beside it. */
   .bar code { flex-shrink: 4; }
+  /* The two delete choices need most of a phone's bar. For the few seconds
+     they are armed, the branch, PR link and side controls step aside so both
+     stay on screen; the title and Stop remain. */
+  .bar:has(.bar-armed) > :is(code, .session-pr-link, .session-account, .bar-host, .mobile-setup-button, .workspace-toggle) { display: none; }
   .app > .resizer { display: none; }
   .sidebar {
     position: fixed;
@@ -1076,8 +1083,9 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .focused-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 36px 16px; text-align: center; }
 .focused-empty strong { font-weight: 500; }
 .focused-session-row { height: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, .35fr) 80px; gap: 16px; align-items: center; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
-/* A full-width row: drop .btn-quiet's text-aligning -8px. */
-.focused-session-row { margin-left: 0; }
+/* A full-width row: drop .btn-quiet's text-aligning -8px, and its rounded
+   corners, which curved the ends of the divider under each row. */
+.focused-session-row { margin-left: 0; border-radius: 0; }
 .focused-session-row:hover { background: var(--side); }
 .focused-session-identity { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .focused-session-identity strong { font-weight: 500; overflow-wrap: anywhere; }
@@ -1254,7 +1262,11 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .connector-refresh { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
 .connector-refresh svg { flex: none; }
 .connector-accounts { display: grid; gap: 16px; }
-.connectors-card { padding: 0; }
+/* Header, rows and footer each draw their own line, so the card has no gap:
+   the old 10 px one left a framed empty band between them. */
+.connectors-card { padding: 0; gap: 0; }
+.connectors-card-head + .connector-list { border-top: 0; }
+.connectors-card > :is(.connector-filter-controls, .connector-pagination, .connectors-note) { margin-block: 10px; }
 .connectors-card-head { align-items: center; gap: 10px 14px; padding: 14px 16px; background: var(--side); border-bottom: 1px solid var(--line); border-radius: 12px 12px 0 0; }
 .connectors-card-attention { border-color: var(--warn-border); }
 .connectors-card-attention .connectors-card-head { background: var(--warn-fill); }

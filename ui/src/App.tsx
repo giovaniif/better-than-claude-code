@@ -1,7 +1,7 @@
 import { loadDefaults } from "./launchDefaults";
 import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import type { LoginProvider } from "./protocol";
+import type { LoginProvider, LoginState } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { Subscriptions, UsageStrip, type UsageAccount } from "./UsageMeters";
@@ -29,7 +29,7 @@ import { ConnectorsPage } from "./ConnectorsPage";
 import { WidgetFrame } from "./WidgetFrame";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
-import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint } from "./engines";
+import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint, shownEffort } from "./engines";
 import { didNotRun, duration, handoffLinks, layout, sessionSubagents, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
@@ -85,6 +85,14 @@ const gb = (bytes: number) => (bytes / 1024 ** 3).toFixed(bytes > 100 * 1024 ** 
 const pct = (n: number) => `${Math.round(n)}%`;
 export const tilde = (path: string, home: string) => (home && path.startsWith(home) ? "~" + path.slice(home.length) : path);
 const capitalize = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+/** What the phone's Session setup chip shows and says. */
+const setupSettings = (model: string, account: string, effort: string, permission: Permission | undefined) => ({
+  model,
+  effort,
+  label: [model, account, capitalize(effort), (PERMISSIONS.find((p) => p.id === permission) ?? PERMISSIONS[0]).label].filter(Boolean).join(", "),
+  full: permission === "full",
+});
 
 /* ---------- icons ---------- */
 
@@ -985,10 +993,13 @@ function Sidebar({ state, actions, shown, usage, open, hidden, nativeMenu, onImp
   const shownById = new Map(all.map((session) => [session.id, session]));
   const children = new Map<string, SessionMeta[]>();
   const nestedIds = new Set<string>();
+  // A hand-off nests only inside its own section: under a pinned parent an
+  // unpinned child would leave its group's heading counting a row it lacks.
   for (const session of [...active, ...groups.flatMap((group) => group.sessions), ...archived]) {
     const parent = session.parent ? shownById.get(session.parent) : undefined;
     if (!parent || parent.id === session.id || parent.createdAt > session.createdAt ||
-        !!parent.archived !== !!session.archived || (parent.group ?? "") !== (session.group ?? "")) continue;
+        !!parent.archived !== !!session.archived || !!parent.pinned !== !!session.pinned ||
+        (parent.group ?? "") !== (session.group ?? "")) continue;
     const siblings = children.get(parent.id) ?? [];
     siblings.push(session);
     children.set(parent.id, siblings);
@@ -1601,7 +1612,7 @@ export function Composer(props: {
   /** False leaves the draft in place when the endpoint rejects a submission. */
   onSubmit(text: string, attachments: Attachment[]): void | boolean | Promise<void | boolean>;
   /** Hands-free voice mode for a session: what it has to say, numbered. */
-  voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean };
+  voice?: { scope: string; cue: { n: number; cue: Cue } | null; approval: boolean; carry?: boolean };
   settings?: { label: string; model: string; effort: string; full: boolean };
   children: ReactNode;
 }) {
@@ -1798,6 +1809,7 @@ export function Composer(props: {
     submit: () => void submit(),
     cue: props.voice?.cue,
     scope: props.voice?.scope,
+    carry: props.voice?.carry,
   });
   const voiceOn = voice.mode.phase !== "off";
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -2249,8 +2261,8 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
           target={uploadTarget}
           upload={actions.upload}
           onSubmit={start}
-          voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false }}
-          settings={{ model: modelName(models, choice.engine, choice.model), effort: choice.effort, label: `${modelName(models, choice.engine, choice.model)}, ${accountName(accounts, choice.engine, selectedAccount)}, ${capitalize(choice.effort)}, ${PERMISSIONS.find((p) => p.id === permission)?.label ?? ""}`, full: permission === "full" }}
+          voice={{ scope: NEW_TASK_DRAFT, cue: null, approval: false, carry: true }}
+          settings={setupSettings(modelName(models, choice.engine, choice.model), accountName(accounts, choice.engine, selectedAccount), shownEffort(models, choice.engine, choice.model, choice.effort), permission)}
           busy={pending || !online || !choice.model || !cwd || gone}
         >
           <ModelPicker models={models} value={choice} engines={pickerEngines(models, choice.engine)} onChange={choose} speed={{ value: speed, onChange: setSpeed }} />
@@ -2816,7 +2828,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
             upload={actions.upload}
             onSubmit={submit}
             voice={voice}
-            settings={{ model: modelName(models, meta.engine, meta.model), effort: meta.effort, label: `${modelName(models, meta.engine, meta.model)}, ${accountName(accounts, meta.engine, accountOf(meta))}, ${capitalize(meta.effort)}, ${PERMISSIONS.find((p) => p.id === meta.permission)?.label ?? "Ask first"}`, full: meta.permission === "full" }}
+            settings={setupSettings(modelName(models, meta.engine, meta.model), accountName(accounts, meta.engine, accountOf(meta)), shownEffort(models, meta.engine, meta.model, meta.effort), meta.permission)}
           >
             <ModelPicker
               models={models}
@@ -2849,12 +2861,13 @@ function DeleteButton({ worktree, onConfirm }: { worktree: boolean; onConfirm(re
   if (worktree && armed) {
     return (
       <>
-        {/* A phone's bar has room for both choices only with short labels. */}
-        <button className="btn-text bar-choice" onClick={() => onConfirm(false)}>
+        {/* A phone's bar has room for both choices only with short labels,
+            and only once its other controls step aside (bar-armed in styles.css). */}
+        <button className="btn-text bar-choice bar-armed" onClick={() => onConfirm(false)}>
           <span className="label-wide">Delete session</span>
           <span className="label-narrow">Delete</span>
         </button>
-        <button className="btn-text bar-choice" onClick={() => onConfirm(true)}>
+        <button className="btn-text bar-choice bar-armed" onClick={() => onConfirm(true)}>
           <span className="label-wide">Delete and remove worktree</span>
           <span className="label-narrow">Delete + worktree</span>
         </button>
@@ -3612,6 +3625,9 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
   const login = current === before.current ? undefined : current;
   const [code, setCode] = useState("");
   const [copied, setCopied] = useState(false);
+  // The terminal login shown when Check login was pressed: a newer one means
+  // the check came back still logged out, which otherwise looks like nothing happened.
+  const [checkedFrom, setCheckedFrom] = useState<LoginState | undefined>();
   const machine = hostName(state, host);
   const finished = login?.state === "done";
   useEffect(() => {
@@ -3655,7 +3671,20 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
         </div>
         {login.instructions && <p className="muted small">{login.instructions}</p>}
         <p className="muted small">Gemini CLI keeps the login on that machine. After signing in, check it here.</p>
-        <button className="btn-primary" onClick={() => actions.login(host, engine, account)}>Check login</button>
+        {checkedFrom && checkedFrom !== login && (
+          <p className="small warn" role="status">
+            Still not logged in on {machine}. Finish signing in there, then check again.
+          </p>
+        )}
+        <button
+          className="btn-primary"
+          onClick={() => {
+            setCheckedFrom(login);
+            actions.login(host, engine, account);
+          }}
+        >
+          Check login
+        </button>
       </>
     );
   } else if (login.state === "providers") {
@@ -4513,6 +4542,16 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
   const [selected, setSelected] = useState(route?.host ?? "local");
   const id = selected === "local" || state.hosts.some((h) => h.id === selected) ? selected : "local";
   const [login, setLogin] = useState<{ host: string; engine: Engine; account?: string } | null>(null);
+  const page = useRef<HTMLDivElement>(null);
+  // Bumped by a tap on a host row, so tapping the selected host again also reveals it.
+  const [reveal, setReveal] = useState(0);
+  useEffect(() => {
+    if (!reveal) return;
+    // On a phone the setup card and the host rows push the details below the
+    // fold, so a tap on a host only moved its border. Already in view: stay put.
+    const heading = page.current?.querySelector<HTMLElement>(".host-inspector-heading");
+    if (heading && heading.getBoundingClientRect().bottom > window.innerHeight) heading.scrollIntoView({ block: "start" });
+  }, [reveal]);
   const accountActions: AccountActions = {
     login: (engine, account) => setLogin({ host: id, engine, account }),
     add: (engine, name) => actions.addAccount(id, engine, name),
@@ -4532,7 +4571,7 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
         )}
       </header>
       <div className="scroll">
-        <div className="focused-page">
+        <div className="focused-page" ref={page}>
           {/* The session headers' phone shortcut leads here: keep setup first. */}
           <MobileSetup mobile={state.mobile} />
           {adding && (
@@ -4540,7 +4579,16 @@ function Hosts({ state, actions }: { state: State; actions: Actions }) {
           )}
           <div className="focused-hosts" aria-label="Choose a host">
             {["local", ...state.hosts.map((h) => h.id)].map((h) => (
-              <HostSummary key={h} state={state} id={h} selected={h === id} onSelect={() => setSelected(h)} />
+              <HostSummary
+                key={h}
+                state={state}
+                id={h}
+                selected={h === id}
+                onSelect={() => {
+                  setSelected(h);
+                  setReveal((n) => n + 1);
+                }}
+              />
             ))}
           </div>
           <HostInspector
