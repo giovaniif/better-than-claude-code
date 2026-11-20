@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "62d7670b5ccbecf69b20c125402d4c41733d3578",
+    "short": "62d7670",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:25:07.853Z"
+  },
+  "dir": ".verify/evidence/hosts-reveal-r2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3593,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-reveal-r2-head/after-tap-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3024,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-reveal-r2-head/after-tap-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()",
+          "value": true
+        },
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
