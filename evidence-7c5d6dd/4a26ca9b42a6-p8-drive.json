@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "session:s1a1f793eca86",
+  "build": {
+    "sha": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+    "short": "7c5d6dd",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T06:08:24.252Z"
+  },
+  "dir": ".verify/evidence/delete-banner-head-plain",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6075,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/delete-banner-head-plain/after-plain-delete-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
