@@ -356,7 +356,6 @@ function publish(dir: string, a: Args): Result {
   return { ok: true, bundleUrl: urls["bundle.json"], commit: j.commit, markdown: markdown(dir, urls), hint: "put `markdown` in the PR body's Verification section; the verifier fetches bundleUrl" };
 }
 
-/** Downloads a published bundle (bundle.json URL) with its artifacts into dir. */
 /** The published file for one artifact under `prefix`: `<hash>-<name>`. */
 export function pickArtifact<T extends { path: string }>(tree: T[], prefix: string, art: { path: string; sha256: string }): T | undefined {
   const named = tree.filter((t) => t.path.startsWith(prefix) && t.path.endsWith(`-${art.path}`));
@@ -365,6 +364,7 @@ export function pickArtifact<T extends { path: string }>(tree: T[], prefix: stri
   return named.find((t) => t.path === `${prefix}${art.sha256.slice(0, 12)}-${art.path}`) ?? named[0];
 }
 
+/** Downloads a published bundle (bundle.json URL) with its artifacts into dir. */
 async function fetchBundle(url: string, dir: string): Promise<Result> {
   if (!/^https:\/\/raw\.githubusercontent\.com\//.test(url)) throw new Usage("evidence fetch <raw.githubusercontent.com URL of bundle.json> <dir>");
   mkdirSync(dir, { recursive: true });
