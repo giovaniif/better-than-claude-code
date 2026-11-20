@@ -1,0 +1,26 @@
+$ verify/yv map run focused-pages --recipe manage-accounts-opens-logins
+# exit 0 after 9078 ms at dbd48e68a46e1df0191a6cacfc8279438cc79cd6
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-20T11:25:20.188Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 8047
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

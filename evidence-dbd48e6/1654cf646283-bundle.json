@@ -1,0 +1,72 @@
+{
+  "v": 1,
+  "claim": "Feature map drift: focused-pages manage-accounts-opens-logins timed out at mobile on .account-trigger, which #290 moved into the Session setup chip; compact-usage-popover's failure is known product bug #323 with no Gotcha.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-2449",
+  "base": "445d6bcd2b70fd0c1c2046f935332d78355d1169",
+  "head": "dbd48e68a46e1df0191a6cacfc8279438cc79cd6",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T11:24:57.745Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "dbd48e68a46e1df0191a6cacfc8279438cc79cd6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T11:24:57.791Z",
+      "text": "no-repro: map-only change; on base the recipe timed out at mobile on css:.account-trigger (seen in this run's focused-pages map on 445d6bc and e404308)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "dbd48e68a46e1df0191a6cacfc8279438cc79cd6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T11:24:57.834Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "dbd48e68a46e1df0191a6cacfc8279438cc79cd6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-focused-pages-head.json",
+          "sha256": "86cbd476a88976cb7c69801be8033f63bdb4b4d06600a17949fb905914716e39"
+        }
+      ],
+      "addedAt": "2026-11-20T11:25:11.066Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "dbd48e68a46e1df0191a6cacfc8279438cc79cd6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "e6361f0d8b7b35f70d98af19f018115a3bbb4594d4c44f9144fa31165031a087"
+        }
+      ],
+      "addedAt": "2026-11-20T11:25:11.114Z",
+      "cmd": "verify/yv map run focused-pages --recipe manage-accounts-opens-logins",
+      "exit": 0
+    }
+  ]
+}
