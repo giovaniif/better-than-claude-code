@@ -1,0 +1,93 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-20T08:29:52.763Z",
+      "counts": {
+        "pass": 14,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page",
+          "status": "pass",
+          "ms": 4982
+        },
+        {
+          "label": "empty-state-tile",
+          "status": "pass",
+          "ms": 4780
+        },
+        {
+          "label": "sessions-list-collapsed",
+          "status": "pass",
+          "ms": 6504
+        },
+        {
+          "label": "add-direct-host",
+          "status": "pass",
+          "ms": 2753
+        },
+        {
+          "label": "remote-session",
+          "status": "pass",
+          "ms": 7332
+        },
+        {
+          "label": "hosts-grid",
+          "status": "pass",
+          "ms": 5354
+        },
+        {
+          "label": "ssh-host-unreachable",
+          "status": "pass",
+          "ms": 2439
+        },
+        {
+          "label": "remove-host",
+          "status": "pass",
+          "ms": 5929
+        },
+        {
+          "label": "refused-add-keeps-the-form",
+          "status": "pass",
+          "ms": 6993
+        },
+        {
+          "label": "local-name-right-after-start",
+          "status": "pass",
+          "ms": 2250
+        },
+        {
+          "label": "no-memory-limit-says-load-only",
+          "status": "pass",
+          "ms": 5881
+        },
+        {
+          "label": "ip-destination-keeps-the-whole-address",
+          "status": "pass",
+          "ms": 7632
+        },
+        {
+          "label": "install-on-host",
+          "status": "manual",
+          "why": "needs a real SSH server"
+        },
+        {
+          "label": "engine-status-keeps-cards-aligned",
+          "status": "pass",
+          "ms": 7113
+        },
+        {
+          "label": "processes-say-the-host-is-offline",
+          "status": "pass",
+          "ms": 10594
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
