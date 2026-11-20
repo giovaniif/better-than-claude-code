@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "route": "session:s1a1f78f54131",
+  "build": {
+    "sha": "a3b0ba9efbe8099af297d3908ab67ec471a05821",
+    "short": "a3b0ba9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T06:05:27.780Z"
+  },
+  "dir": ".verify/evidence/delete-banner-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6487,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/delete-banner-base-desktop/after-delete-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "error",
+          "for": "term.list",
+          "message": "no such session"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,179 @@
+{
+  "v": 1,
+  "claim": "Deleting a session on desktop lands on New session under a red \"no such session\" error banner: yardd told the open terminal pane to reload the list of the session it was deleting.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-dc11",
+  "base": "78c386e4318aff82f37839feed628bbad6524ea5",
+  "head": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pty.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/worktrees.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T06:05:23.610Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "a3b0ba9efbe8099af297d3908ab67ec471a05821",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "c2a11be0ece165d5e68ed62565ec0dab384266053b2e1476e7edc47cb1988a4a"
+        },
+        {
+          "path": "p1-after-delete-desktop.png",
+          "sha256": "45996d8f3771e68bf5b69e259047fb70cc01cd7a65591ab4598a3387fa69f1c0"
+        }
+      ],
+      "addedAt": "2026-11-20T06:05:35.116Z",
+      "failedApi": [
+        "term.list: no such session"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "a3b0ba9efbe8099af297d3908ab67ec471a05821",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "f0330f74ffe9edcc6498d18d8e6a482e681dab44d7275a3826e528c4072045a5"
+        }
+      ],
+      "addedAt": "2026-11-20T06:05:35.158Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon deleting_a_session_does_not_ask_its_terminal_pane_to_reload",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-2-drive.json",
+          "sha256": "182bf84e7df6e3cd19bba35028450b222c3c1bc4239d29921f88d3f2c1631e0d"
+        },
+        {
+          "path": "p3-2-after-delete-desktop.png",
+          "sha256": "39fdfe0558ed6e96fab0517e6b43028e8bdbbd3f3b0bf52ab592f2bd6d5edeb2"
+        }
+      ],
+      "addedAt": "2026-11-20T06:08:30.079Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-2-drive.json",
+          "sha256": "741d4ba8c04a2f932da331391bddf510ccebe3fb8d0c11c909d2f4b37c8d7d77"
+        },
+        {
+          "path": "p4-2-after-delete-mobile.png",
+          "sha256": "2a9f5b1fa2fccf5a9fb8d0bd1d9dfea3b6c5f5f238267bf2ba1e4289cda26b84"
+        }
+      ],
+      "addedAt": "2026-11-20T06:08:35.936Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "0680e891c99f6dedd63df7e266cf9eef0144bde729c872cf74babee862dd7060"
+        }
+      ],
+      "addedAt": "2026-11-20T06:08:39.099Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "7c5d6dd170fcd88d72873fc59de5ace53d2bbbd0",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-worktrees.json",
+          "sha256": "9734f49487476d58f6e0802dcaee920eabcbe5ceba3f9be6d13dcd73028febb9"
+        }
+      ],
+      "addedAt": "2026-11-20T06:09:26.730Z",
+      "cmd": "verify/yv map run worktrees",
+      "exit": 1,
+      "failingRecipes": [
+        "worktrees/plain-folder-in-place"
+      ],
+      "passingRecipes": [
+        "worktrees/session-gets-worktree",
+        "worktrees/one-writer-per-folder",
+        "worktrees/delete-removes-clean-worktree",
+        "worktrees/dirty-worktree-is-kept"
+      ]
+    },
+    {
+      "id": 7,
+      "ref": "base",
+      "kind": "regression",
+      "at": "a3b0ba9efbe8099af297d3908ab67ec471a05821",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-worktrees.json",
+          "sha256": "c8d815eed5c415e6054b4a5dcb8cf38b7e5e74964a4448df3b3afb4c14612f17"
+        }
+      ],
+      "addedAt": "2026-11-20T06:09:42.098Z",
+      "cmd": "verify/yv map run worktrees",
+      "exit": 1,
+      "failingRecipes": [
+        "worktrees/plain-folder-in-place",
+        "worktrees/delete-removes-clean-worktree"
+      ],
+      "passingRecipes": [
+        "worktrees/session-gets-worktree",
+        "worktrees/one-writer-per-folder",
+        "worktrees/dirty-worktree-is-kept"
+      ]
+    }
+  ]
+}

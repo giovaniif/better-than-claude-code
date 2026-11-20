@@ -1,0 +1,27 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon deleting_a_session_does_not_ask_its_terminal_pane_to_reload
+# exit 101 after 1082 ms at a3b0ba9efbe8099af297d3908ab67ec471a05821
+
+
+running 1 test
+test deleting_a_session_does_not_ask_its_terminal_pane_to_reload ... FAILED
+
+failures:
+
+---- deleting_a_session_does_not_ask_its_terminal_pane_to_reload stdout ----
+
+thread 'deleting_a_session_does_not_ask_its_terminal_pane_to_reload' (3254169) panicked at crates/yardd/tests/daemon.rs:1069:5:
+a deleted session's terminal pane was told to reload its list: [Object {"op": String("term.listChanged"), "sessionId": String("s1a1f78f73a71")}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-3254168-term-delete-0 for inspection
+
+
+failures:
+    deleting_a_session_does_not_ask_its_terminal_pane_to_reload
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 83 filtered out; finished in 0.22s
+
+
+   Compiling yardd v0.16.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-dc11/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 0.82s
+     Running tests/daemon.rs (target/debug/build/yardd/44cb62d01f86425b/out/daemon-44cb62d01f86425b)
+error: test failed, to rerun pass `-p yardd --test daemon`
