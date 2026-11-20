@@ -70,6 +70,20 @@ yv drive 'hosts' --steps '[{"expect":"role:button:Select TEST-grid"},{"eval":"((
 yv api '{"op":"host.remove","hostId":"{{grid_id}}"}' --wait '{"op":"hosts"}'
 ```
 
+### selecting-a-host-shows-its-details
+Viewports: both
+On a phone the iPhone setup card and the host rows fill the screen, so the
+inspector starts below the fold. Selecting a host brings its details into view;
+otherwise the tap only moves the row's border. When the details are already in
+view (desktop), the page stays where it is. The click goes through
+`element.click()` so Playwright's own scroll-into-view doesn't hide either case.
+
+```sh
+yv api '{"op":"host.add","name":"TEST-reveal","kind":"direct","url":"ws://127.0.0.1:{{remote_port}}/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-reveal","status":"connected"}]}' --save reveal_id='hosts[name=TEST-reveal].id'
+yv drive 'hosts' --steps '[{"expect":"role:button:Select TEST-reveal"},{"eval":"(() => { const h = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); window.__wasVisible = h.top >= 0 && h.bottom <= innerHeight; window.__top = document.querySelector(\".hosts .scroll\").scrollTop; document.querySelector(\"[aria-label=\\\"Select TEST-reveal\\\"]\").click(); return true; })()","equals":true},{"expect":"css:.host-inspector-heading","text":"TEST-reveal"},{"wait":800},{"eval":"(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); const still = !window.__wasVisible || document.querySelector(\".hosts .scroll\").scrollTop === window.__top; return r.top >= 0 && r.bottom <= innerHeight && still; })()","equals":true},{"shot":"selected-in-view"}]'
+yv api '{"op":"host.remove","hostId":"{{reveal_id}}"}' --wait '{"op":"hosts"}'
+```
+
 ### ssh-host-unreachable
 An SSH host that cannot be reached reports an error instead of hanging.
 
