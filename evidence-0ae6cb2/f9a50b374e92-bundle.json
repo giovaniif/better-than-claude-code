@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "claim": "A session in a plain folder (not a git repository) gets an error from pr.get on open and every 60 s (\"not a git repository\"), a failed API call in every drive; worktrees/plain-folder-in-place fails on main",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119",
+  "base": "d7ef832683682de2a101abf5f1f667ea2ee842b8",
+  "head": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/pr.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/protocol.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/worktrees.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T07:14:19.027Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "de9bb58ada79be10c292d9d7ca4f2791771982ef",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-plain-folder-pr-no-error-base.json",
+          "sha256": "e15f66fbeb0b9ad675b02c64a88998d4f6c508faef138960dd5d35296dc74d58"
+        },
+        {
+          "path": "p1-plain-session-desktop.png",
+          "sha256": "4dea9e7b7b390b3867543e226175bdbedef6743421b1adffb4f5037a8db78e1b"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:28.404Z",
+      "failedApi": [
+        "pr: not a git repository"
+      ]
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "de9bb58ada79be10c292d9d7ca4f2791771982ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "1676082a7a67003b08760296099d39d54814c922ca462e9580a6f768fd3f7713"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:28.447Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for",
+      "exit": 101
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "de9bb58ada79be10c292d9d7ca4f2791771982ef",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4581ba5578749c0855e9f76a21a62c202e391be8c3e66289e271accaaad47805"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:29.798Z",
+      "cmd": "verify/yv map run worktrees --recipe plain-folder-in-place",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-plain-folder-pr-no-error-head.json",
+          "sha256": "269a8abf85080a65ccd78e58de9bfbf062f62968f85c00a2070bd73dcb515d6e"
+        },
+        {
+          "path": "p4-plain-session-mobile.png",
+          "sha256": "31a728f2041739760c276e954471ddd7950d72e74b47db2465cd18ae94c13a7e"
+        },
+        {
+          "path": "p4-plain-session-desktop.png",
+          "sha256": "3083bc436dc8cfb0aec1fd2d9e878467ec06dd4bbbaec72fc19945b82e2f314d"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:48.483Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "a69f1bfcf03a47493554c88383f81194c0cba39eefa3364fd723537ceb7f1cbd"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:48.524Z",
+      "cmd": "verify/yv map run worktrees --recipe plain-folder-in-place",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "00f15fe26f7fc0fca569fcb7b9087cb9f0e1fa130de1478553c505059657eb9c"
+        }
+      ],
+      "addedAt": "2026-11-20T07:14:55.974Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "f517cadb9d448c6b9f1013d85b21c101e319424b29aba0634219160033da6801"
+        }
+      ],
+      "addedAt": "2026-11-20T07:15:45.245Z",
+      "cmd": "verify/yv design-check --base d7ef83268368",
+      "exit": 0
+    }
+  ]
+}

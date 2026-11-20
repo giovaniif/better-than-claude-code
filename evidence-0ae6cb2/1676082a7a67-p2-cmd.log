@@ -1,0 +1,29 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for
+# exit 101 after 1309 ms at de9bb58ada79be10c292d9d7ca4f2791771982ef
+
+
+running 1 test
+test pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for ... FAILED
+
+failures:
+
+---- pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for stdout ----
+
+thread 'pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for' (3924296) panicked at crates/yardd/tests/daemon.rs:2813:5:
+assertion `left == right` failed: {"op":"pr","pr":{"error":"not a git repository"},"sessionId":"s1a1f7ce86842"}
+  left: Null
+ right: false
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-3924295-pr-detached-0 for inspection
+
+
+failures:
+    pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 83 filtered out; finished in 0.22s
+
+
+   Compiling yardd v0.16.0 (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 1.04s
+     Running tests/daemon.rs (target/debug/build/yardd/44cb62d01f86425b/out/daemon-44cb62d01f86425b)
+error: test failed, to rerun pass `-p yardd --test daemon`

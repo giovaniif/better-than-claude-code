@@ -1,0 +1,60 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f7ceae601",
+  "build": {
+    "sha": "0ae6cb2aec080ae58b90ee9b1600209f3bcba13e",
+    "short": "0ae6cb2",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T07:14:39.669Z"
+  },
+  "dir": ".verify/evidence/plain-folder-pr-no-error-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3869,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/plain-folder-pr-no-error-head/plain-session-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4094,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/plain-folder-pr-no-error-head/plain-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

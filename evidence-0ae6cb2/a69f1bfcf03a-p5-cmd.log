@@ -1,0 +1,26 @@
+$ verify/yv map run worktrees --recipe plain-folder-in-place
+# exit 0 after 4242 ms at 0ae6cb2aec080ae58b90ee9b1600209f3bcba13e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "worktrees",
+      "at": "2026-11-20T07:14:52.762Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "plain-folder-in-place",
+          "status": "pass",
+          "ms": 3386
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
