@@ -1,0 +1,39 @@
+$ verify/yv map run worktrees --recipe plain-folder-in-place
+# exit 1 after 4242 ms at 2d501eb2bcf84622a8d0da441b40772e51b4852f
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "worktrees",
+      "at": "2026-11-20T07:09:55.282Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "plain-folder-in-place",
+          "status": "fail",
+          "ms": 3377,
+          "problems": [
+            {
+              "code": "errors",
+              "msg": "desktop: 0 console, 0 page, 1 API, 0 HTTP errors"
+            }
+          ],
+          "tail": "or\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/think-test-plan-the-refactor-7973\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/data/wt/TEST-demo-app/yard-think-test-plan-the-refactor-7973\",\n      \"updatedAt\": 1795158591407\n    },\n    {\n      \"id\": \"s1a1f7ca47622\",\n      \"title\": \"[fail] TEST-failing turn\",\n      \"status\": \"idle\",\n      \"engine\": \"codex\",\n      \"model\": \"fake-fast\",\n      \"permission\": \"ask\",\n      \"branch\": \"yard/fail-test-failing-turn-74c1\",\n      \"pinned\": false,\n      \"archived\": false,\n      \"group\": null,\n      \"cwd\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/data/wt/TEST-demo-app/yard-fail-test-failing-turn-74c1\",\n      \"updatedAt\": 1795158591336\n    }\n  ],\n  \"host\": null,\n  \"vars\": {\n    \"port\": \"45631\",\n    \"url\": \"http://127.0.0.1:45631\",\n    \"work\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/work\",\n    \"home\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/home\",\n    \"fake\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/fake\",\n    \"data\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/data\",\n    \"repo\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/work/TEST-demo-app\",\n    \"plain\": \"/tmp/yv-map-worktrees-3835247-mwon2pvx/work/TEST-plain-folder\",\n    \"sid_fail\": \"s1a1f7ca47622\",\n    \"sid_think\": \"s1a1f7ca47ab4\",\n    \"sid_echo\": \"s1a1f7ca47f86\",\n    \"sid_edit\": \"s1a1f7ca48448\",\n    \"sid_claude\": \"s1a1f7ca4893a\",\n    \"sid_cmd\": \"s1a1f7ca48dcc\",\n    \"edit_branch\": \"yard/edit-test-fix-the-greeting-82e7\",\n    \"place_sid\": \"s1a1f7ca4955d\"\n  },\n  \"problems\": []\n}\n{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"session:s1a1f7ca4955d\",\n  \"build\": {\n    \"sha\": \"2d501eb2bcf84622a8d0da441b40772e51b4852f\",\n    \"short\": \"2d501eb\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-20T07:09:45.094Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119/.verify/drives/2026-11-20T07-09-52-570Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 2384,\n      \"steps\": 1,\n      \"failed\": null,\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [\n        {\n          \"op\": \"pr\",\n          \"message\": \"not a git repository\"\n        }\n      ],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"errors\",\n      \"msg\": \"desktop: 0 console, 0 page, 1 API, 0 HTTP errors\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "worktrees/plain-folder-in-place",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

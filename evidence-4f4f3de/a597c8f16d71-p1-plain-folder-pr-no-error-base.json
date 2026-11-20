@@ -1,0 +1,43 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "session:s1a1f7ca2faf1",
+  "build": {
+    "sha": "2d501eb2bcf84622a8d0da441b40772e51b4852f",
+    "short": "2d501eb",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T07:09:45.094Z"
+  },
+  "dir": ".verify/evidence/plain-folder-pr-no-error-base",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 3896,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/plain-folder-pr-no-error-base/plain-session-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [
+        {
+          "op": "pr",
+          "message": "not a git repository"
+        }
+      ],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
