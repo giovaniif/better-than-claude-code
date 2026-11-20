@@ -1,0 +1,5 @@
+$ /tmp/patrol-a119-fetchcheck.sh head3
+# exit 0 after 867 ms at be2c1997dfe75bb3b33634324e646bfc7bc37f7c
+
+artifacts ok
+

@@ -1,0 +1,5 @@
+$ /tmp/patrol-a119-fetchcheck.sh base3
+# exit 1 after 1318 ms at cebc148711fecf20aa795b610f2a3f51ced03a48
+
+[{'rule': 'artifacts', 'ok': False, 'msg': 'changed or missing since recorded: p4-cmd.log'}]
+

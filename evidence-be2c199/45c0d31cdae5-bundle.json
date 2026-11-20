@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "claim": "yv evidence fetch takes the first <hash>-<name> file under a bundle's prefix; a bundle published twice then fetches the wrong copy and evidence verify reports a changed artifact that is fine (#315's bundle: p4-cmd.log)",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-a119",
+  "base": "1c7a6296da37ac393c177a472646cba3a493f174",
+  "head": "be2c1997dfe75bb3b33634324e646bfc7bc37f7c",
+  "changed": [
+    {
+      "status": "A",
+      "path": "verify/src/evidence.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/src/evidence.ts"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T07:37:48.490Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "cebc148711fecf20aa795b610f2a3f51ced03a48",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "770438ea52df0a7d47a54bb8025140ecfef668c764e2ff03319c9c3e887a2133"
+        }
+      ],
+      "addedAt": "2026-11-20T07:37:48.539Z",
+      "cmd": "/tmp/patrol-a119-fetchcheck.sh base3",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "cebc148711fecf20aa795b610f2a3f51ced03a48",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "36e6c38dc1ec4ab701bb507f93e293dc35ba2b0582970d0bd820f1508e12ffb9"
+        }
+      ],
+      "addedAt": "2026-11-20T07:37:49.902Z",
+      "cmd": "cd verify && bun test src/evidence.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "be2c1997dfe75bb3b33634324e646bfc7bc37f7c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "098f43e9243660eb91980f2adbba16849381827b868564d6a7e262e3a098689c"
+        }
+      ],
+      "addedAt": "2026-11-20T07:37:49.982Z",
+      "cmd": "/tmp/patrol-a119-fetchcheck.sh head3",
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "be2c1997dfe75bb3b33634324e646bfc7bc37f7c",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "875a69c9bf8943ae4448a6506f6dc27d3dd835eca6477851dc004ffa89fa934e"
+        }
+      ],
+      "addedAt": "2026-11-20T07:37:50.890Z",
+      "cmd": "cd verify && bun test && cd .. && verify/yv selftest",
+      "exit": 0
+    }
+  ]
+}
