@@ -1,7 +1,7 @@
 import { loadDefaults } from "./launchDefaults";
 import { createContext, Fragment, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent as ReactDragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import type { LoginProvider } from "./protocol";
+import type { LoginProvider, LoginState } from "./protocol";
 import type { AccountEntry, Attachment, PendingMessage, ChangedFile, Engine, EngineState, EngineStates, Host, HostEntry, Item, ModelInfo, Models, SessionMeta, Status, ToolItem, Usage } from "./protocol";
 import { ROW_LABEL, type RowState, rowState, useSeen } from "./rowState";
 import { Subscriptions, UsageStrip, type UsageAccount } from "./UsageMeters";
@@ -3625,6 +3625,9 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
   const login = current === before.current ? undefined : current;
   const [code, setCode] = useState("");
   const [copied, setCopied] = useState(false);
+  // The terminal login shown when Check login was pressed: a newer one means
+  // the check came back still logged out, which otherwise looks like nothing happened.
+  const [checkedFrom, setCheckedFrom] = useState<LoginState | undefined>();
   const machine = hostName(state, host);
   const finished = login?.state === "done";
   useEffect(() => {
@@ -3668,7 +3671,20 @@ function LoginDialog(props: { state: State; actions: Actions; host: string; engi
         </div>
         {login.instructions && <p className="muted small">{login.instructions}</p>}
         <p className="muted small">Gemini CLI keeps the login on that machine. After signing in, check it here.</p>
-        <button className="btn-primary" onClick={() => actions.login(host, engine, account)}>Check login</button>
+        {checkedFrom && checkedFrom !== login && (
+          <p className="small warn" role="status">
+            Still not logged in on {machine}. Finish signing in there, then check again.
+          </p>
+        )}
+        <button
+          className="btn-primary"
+          onClick={() => {
+            setCheckedFrom(login);
+            actions.login(host, engine, account);
+          }}
+        >
+          Check login
+        </button>
       </>
     );
   } else if (login.state === "providers") {
