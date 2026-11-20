@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "hosts",
+  "build": {
+    "sha": "a4c77d50045944b4fff0d74405fe22f70b43489e",
+    "short": "a4c77d5",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:17:13.703Z"
+  },
+  "dir": ".verify/evidence/hosts-reveal-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4009,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/hosts-reveal-head/after-tap-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3960,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/hosts-reveal-head/after-tap-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 4,
+          "eval": "(() => { const r = document.querySelector(\".host-inspector-heading\").getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

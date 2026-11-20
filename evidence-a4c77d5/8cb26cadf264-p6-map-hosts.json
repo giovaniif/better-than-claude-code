@@ -1,0 +1,98 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-20T10:18:54.932Z",
+      "counts": {
+        "pass": 15,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page",
+          "status": "pass",
+          "ms": 4921
+        },
+        {
+          "label": "empty-state-tile",
+          "status": "pass",
+          "ms": 4801
+        },
+        {
+          "label": "sessions-list-collapsed",
+          "status": "pass",
+          "ms": 5592
+        },
+        {
+          "label": "add-direct-host",
+          "status": "pass",
+          "ms": 1843
+        },
+        {
+          "label": "remote-session",
+          "status": "pass",
+          "ms": 6043
+        },
+        {
+          "label": "hosts-grid",
+          "status": "pass",
+          "ms": 5476
+        },
+        {
+          "label": "selecting-a-host-shows-its-details",
+          "status": "pass",
+          "ms": 6802
+        },
+        {
+          "label": "ssh-host-unreachable",
+          "status": "pass",
+          "ms": 2151
+        },
+        {
+          "label": "remove-host",
+          "status": "pass",
+          "ms": 6084
+        },
+        {
+          "label": "refused-add-keeps-the-form",
+          "status": "pass",
+          "ms": 6276
+        },
+        {
+          "label": "local-name-right-after-start",
+          "status": "pass",
+          "ms": 2265
+        },
+        {
+          "label": "no-memory-limit-says-load-only",
+          "status": "pass",
+          "ms": 5825
+        },
+        {
+          "label": "ip-destination-keeps-the-whole-address",
+          "status": "pass",
+          "ms": 7640
+        },
+        {
+          "label": "install-on-host",
+          "status": "manual",
+          "why": "needs a real SSH server"
+        },
+        {
+          "label": "engine-status-keeps-cards-aligned",
+          "status": "pass",
+          "ms": 5360
+        },
+        {
+          "label": "processes-say-the-host-is-offline",
+          "status": "pass",
+          "ms": 10550
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

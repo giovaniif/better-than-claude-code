@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run hosts --recipe selecting-a-host-shows-its-details
+# exit 0 after 9569 ms at a4c77d50045944b4fff0d74405fe22f70b43489e
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-20T10:17:31.933Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selecting-a-host-shows-its-details",
+          "status": "pass",
+          "ms": 8193
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [115.00ms]
