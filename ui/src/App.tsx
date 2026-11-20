@@ -985,10 +985,13 @@ function Sidebar({ state, actions, shown, usage, open, hidden, nativeMenu, onImp
   const shownById = new Map(all.map((session) => [session.id, session]));
   const children = new Map<string, SessionMeta[]>();
   const nestedIds = new Set<string>();
+  // A hand-off nests only inside its own section: under a pinned parent an
+  // unpinned child would leave its group's heading counting a row it lacks.
   for (const session of [...active, ...groups.flatMap((group) => group.sessions), ...archived]) {
     const parent = session.parent ? shownById.get(session.parent) : undefined;
     if (!parent || parent.id === session.id || parent.createdAt > session.createdAt ||
-        !!parent.archived !== !!session.archived || (parent.group ?? "") !== (session.group ?? "")) continue;
+        !!parent.archived !== !!session.archived || !!parent.pinned !== !!session.pinned ||
+        (parent.group ?? "") !== (session.group ?? "")) continue;
     const siblings = children.get(parent.id) ?? [];
     siblings.push(session);
     children.set(parent.id, siblings);
