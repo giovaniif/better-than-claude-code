@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "44ad4023f5a1790377d1c30314fad996e462604e",
+    "short": "44ad402",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T08:23:07.904Z"
+  },
+  "dir": ".verify/evidence/btn-disabled-muted-2-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3553,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/btn-disabled-muted-2-head/continue-disabled-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/btn-disabled-muted-2-head/continue-enabled-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3134,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/btn-disabled-muted-2-head/continue-disabled-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/btn-disabled-muted-2-head/continue-enabled-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

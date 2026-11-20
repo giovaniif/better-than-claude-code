@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "route": "connectors",
+  "build": {
+    "sha": "d4d3cdfbeac0acce0bce5d1c1ff205302a2f7e1f",
+    "short": "d4d3cdf",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T08:22:49.410Z"
+  },
+  "dir": ".verify/evidence/btn-disabled-muted-2-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3121,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/btn-disabled-muted-2-base/continue-disabled-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2897,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/btn-disabled-muted-2-base/continue-disabled-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

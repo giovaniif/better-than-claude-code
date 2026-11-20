@@ -1,0 +1,134 @@
+{
+  "v": 1,
+  "claim": "A disabled outlined button (.btn) looks exactly like a live one: same ink text, same border, full opacity. Continue in Add connector's Other address… form, Previous/Next at the ends of the connector pager, New terminal while offline and Always allow while sending all read as clickable, and the click does nothing (#175).",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-592b",
+  "base": "e36762a06b9aaed363bf8fa5c396d25059a15c4e",
+  "head": "44ad4023f5a1790377d1c30314fad996e462604e",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/connectors.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T08:22:45.324Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "d4d3cdfbeac0acce0bce5d1c1ff205302a2f7e1f",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "36343377fd9202e07f8d97abdbe777803763363f9b5423058508ff01575650ca"
+        }
+      ],
+      "addedAt": "2026-11-20T08:22:49.563Z",
+      "cmd": "verify/yv map run connectors --recipe disabled-button-looks-disabled",
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d4d3cdfbeac0acce0bce5d1c1ff205302a2f7e1f",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "45355913b38326473a237c8aa1d19bd5afeb01203f6ceb40b75389f51ff5a331"
+        },
+        {
+          "path": "p2-continue-disabled-mobile.png",
+          "sha256": "a8bad43f0be203bba795526e4cb6e000c0e0989d7048bef3a1c387c419da7594"
+        },
+        {
+          "path": "p2-continue-disabled-desktop.png",
+          "sha256": "924ed7d561c6df55fb6248a1292c2b6a432dcfd28ad2c450f6fa230549bf1a18"
+        }
+      ],
+      "addedAt": "2026-11-20T08:23:03.811Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "44ad4023f5a1790377d1c30314fad996e462604e",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "0124bddd8abfa8e83eff84882673ac3e90dd1757c9bcca816ab6ba8621ef2caa"
+        },
+        {
+          "path": "p3-continue-disabled-mobile.png",
+          "sha256": "248800d5cd91758ac233aeb5df4e78306772bf5eaaeabcd88714975601b5d3c4"
+        },
+        {
+          "path": "p3-continue-enabled-mobile.png",
+          "sha256": "242afc699b27abb3a151ac4212ed1c73b9b4a84db5b623cc242e57cd16045962"
+        },
+        {
+          "path": "p3-continue-disabled-desktop.png",
+          "sha256": "063d4f99771d97bf70106698f4b1d25d990ca80d319ed7f054bc8f557c213037"
+        },
+        {
+          "path": "p3-continue-enabled-desktop.png",
+          "sha256": "6ea64993ddc66dba0b53b11ba7d48f39c4a65b4062a003b184def2b8960c990c"
+        }
+      ],
+      "addedAt": "2026-11-20T08:23:15.245Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "44ad4023f5a1790377d1c30314fad996e462604e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "d969a0d0913124d0801127706d464e4a76b2862fb99057649d97e94731987260"
+        }
+      ],
+      "addedAt": "2026-11-20T08:23:15.289Z",
+      "cmd": "verify/yv map run connectors --recipe disabled-button-looks-disabled && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "44ad4023f5a1790377d1c30314fad996e462604e",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "04fd81b52c4c03e924a2d219eb653c204c3943a566456aa2b45ef0f6b9626bfd"
+        }
+      ],
+      "addedAt": "2026-11-20T08:23:23.211Z",
+      "cmd": "verify/yv design-check --base e36762a06b9a",
+      "exit": 0
+    }
+  ]
+}

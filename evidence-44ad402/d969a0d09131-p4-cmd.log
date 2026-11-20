@@ -1,0 +1,32 @@
+$ verify/yv map run connectors --recipe disabled-button-looks-disabled && (cd ui && bun test)
+# exit 0 after 7879 ms at 44ad4023f5a1790377d1c30314fad996e462604e
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "connectors",
+      "at": "2026-11-20T08:23:23.041Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "disabled-button-looks-disabled",
+          "status": "pass",
+          "ms": 6651
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+bun test v1.4.4 (38afee6c8)
+
+
+ 401 pass
+ 0 fail
+ 993 expect() calls
+Ran 401 tests across 28 files. [120.00ms]
