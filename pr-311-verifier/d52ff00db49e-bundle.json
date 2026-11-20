@@ -1,0 +1,140 @@
+{
+  "v": 1,
+  "claim": "The feature map had no recipe for the Codex speed picker (#296): a speed picked in the UI was not proven to reach the engine's turn. The dropdowns area was not in the README index, and two worktrees Gotchas were out of date.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-verify-311-2026-11-7a17",
+  "base": "1394847a06d6a161625562d5330fc062c14b5f22",
+  "head": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/README.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/models.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/worktrees.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-20T06:42:03.760Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T06:42:03.802Z",
+      "text": "no-repro: map-only PR (verify/features markdown); there is no product behaviour to reproduce on base"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-20T06:42:03.840Z",
+      "text": "no-failing-test: map-only PR. Negative control instead: changing the expected serviceTierForTurn from priority to flex makes codex-speed-reaches-the-turn fail at head"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "8aa221ffa18533e3239f1c26970e3d7f6e84b2f889d8bbc92e5c310d41a5e6e7"
+        },
+        {
+          "path": "p3-speed-menu-desktop.png",
+          "sha256": "1e78515a771c20fe2d12984a6a89738949c6dc29b86a133ac69328c55044855a"
+        },
+        {
+          "path": "p3-speed-after-reload-desktop.png",
+          "sha256": "26a2ce4a9ce528227a506b7e6a9acf35427f08e70d7f01b1c302dcd056061cc6"
+        }
+      ],
+      "addedAt": "2026-11-20T06:42:32.070Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "0bfee327b8ddd3fa7e86b08b733d1e47c463f480943eb3aa55d03e408945cccb"
+        },
+        {
+          "path": "p4-speed-picked-mobile.png",
+          "sha256": "9b02781465b6f9b60275638fc4d5784432c1b8411cd24950dc0adf6eb5c82f41"
+        }
+      ],
+      "addedAt": "2026-11-20T06:42:32.110Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "542aa24dc03f6705bf0a9773428c9aae2f2e44a75116b8b96a8c7860cfbf29cc"
+        }
+      ],
+      "addedAt": "2026-11-20T06:42:32.149Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-models.json",
+          "sha256": "8632e6fe45447b4d74d9a76fd211eee522133ce9b9803733e313710d60efead7"
+        }
+      ],
+      "addedAt": "2026-11-20T06:43:20.638Z",
+      "cmd": "verify/yv map run models",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "models/model-list-scrolls-under-the-header",
+        "models/switch-model-same-engine",
+        "models/effort-is-its-own-chip",
+        "models/permission-mode",
+        "models/hand-off-to-claude",
+        "models/hand-off-notes-link-both-sessions",
+        "models/hand-off-note-links-survive-a-deleted-sibling",
+        "models/codex-speed-reaches-the-turn"
+      ]
+    }
+  ]
+}

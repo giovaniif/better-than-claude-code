@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "session:s1a1f7b0fc70e",
+  "build": {
+    "sha": "4ccaa426cc358f0ded4793d7f5fdc948cc9c0b64",
+    "short": "4ccaa42",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T06:38:41.595Z"
+  },
+  "dir": ".verify/evidence/pr-311-verifier-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 6758,
+      "steps": 15,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-311-verifier-head-desktop/speed-menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/pr-311-verifier-head-desktop/speed-after-reload-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
