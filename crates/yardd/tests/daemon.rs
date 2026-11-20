@@ -2802,13 +2802,14 @@ async fn pr_get_says_when_the_folder_is_a_repository_it_cannot_read_a_pr_for() {
     assert_eq!(reply["pr"]["error"], "no branch is checked out", "{reply}");
     assert_eq!(reply["pr"]["repo"], true, "{reply}");
 
-    // A plain folder has nothing to review.
+    // A plain folder has nothing to review and no PR, and that is an answer,
+    // not a failure: the session header asks every minute (#309).
     let plain = sb.folder("plain");
     let sid = c.create(&plain, "hello", json!({})).await;
     c.wait_turn_done(&sid, 0).await;
     let from = c.mark();
     c.send(json!({ "op": "pr.get", "sessionId": sid })).await;
     let reply = c.wait_after(from, "a pr reply", |m| m["op"] == "pr" && m["sessionId"] == sid).await;
-    assert_eq!(reply["pr"]["error"], "not a git repository", "{reply}");
-    assert!(reply["pr"]["repo"].is_null(), "{reply}");
+    assert_eq!(reply["pr"]["repo"], false, "{reply}");
+    assert!(reply["pr"]["error"].is_null(), "{reply}");
 }
