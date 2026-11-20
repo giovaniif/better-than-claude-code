@@ -53,7 +53,7 @@ prompt).
 | [acp-engines](acp-engines.md) | OpenCode and Grok: listed where installed, sessions, approvals, hand-off rows |
 | [attachments](attachments.md) | Files with a prompt: upload, chips, thumbnails, size cap |
 | [voice](voice.md) | Dictation in the composer, hands-free voice mode (send after a pause, answers read aloud, approvals announced), the unavailable and blocked states |
-| [models](models.md) | Model and effort switches, permission modes, hand-off to another engine |
+| [models](models.md) | Model and effort switches, Codex speed, permission modes, hand-off to another engine |
 | [worktrees](worktrees.md) | A worktree per session, in-place folders, removing a worktree |
 | [notifications](notifications.md) | OS notifications: the switch on the Settings page, when a session or the `notify` op shows one |
 | [settings](settings.md) | The Settings page: notifications, which hosts the sidebar shows, the usage strip from the shown hosts |
@@ -61,6 +61,7 @@ prompt).
 | [import](import.md) | Importing Claude Code sessions from the host, with history and resume |
 | [automations](automations.md) | Scheduled runs: the Automations page, create (daily, interval, weekly), Run now, auto-archive, pin, edit, disable, delete, the working-run dot |
 | [layout](layout.md) | Viewport behaviour: desktop, the narrow pane cut-off, mobile |
+| [dropdowns](dropdowns.md) | Menus inside the viewport: composer options, workspace tabs, custom schedules, connector host, handover under the same agent |
 | [usage](usage.md) | Usage popover, Subscriptions, reset times and separate account/model controls |
 | [accounts](accounts.md) | More than one login per engine: add, log in, pick for a new session, remove |
 | [connectors](connectors.md) | MCP servers per engine account: states, sign-in (claude.ai, pasted redirects, ChatGPT apps), chart widgets in the thread |
