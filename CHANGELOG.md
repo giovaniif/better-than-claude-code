@@ -2,6 +2,13 @@
 
 Each version is a [GitHub release](https://github.com/giovaniif/better-than-claude-code/releases) with the signed Mac app and the Linux packages. The section for a version becomes its release notes.
 
+## 0.16.1 (2026-11-20)
+
+- **Clickable links in bold replies.** Markdown links keep their labels and open the right destination when they appear inside bold text. GitHub PR links keep their hover cards.
+- **More reliable sessions.** Voice mode continues from the new-session screen into the conversation. Deleting a session and opening a session in a plain folder no longer raise spurious errors. Handovers from pinned sessions stay in their groups.
+- **Phone improvements.** Host selection scrolls to the host's details, login actions and delete choices fit their bars, and models without an effort setting no longer display an old effort in Session setup.
+- **Clearer status and layout.** Gemini login checks report when sign-in is still needed. Connectors place account rows directly under their headers, session row dividers align, and disabled outlined buttons show their state.
+
 ## 0.16.0 (2026-11-19)
 
 - **Collapse Sessions and Workspace.** Hide either desktop sidebar and reopen it from its panel button. Switchyard remembers each panel’s width and collapsed state. Reopening Workspace keeps its tab and terminal output. The Sessions drawer also has a close button on phones.
