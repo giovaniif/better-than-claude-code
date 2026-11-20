@@ -1,0 +1,182 @@
+{
+  "v": 1,
+  "claim": "On a phone, the new-session notice for a logged-out engine wraps its Log in button's label onto two lines, and 'in' spills out of the 32 px button",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b",
+  "base": "1416e04fa7fb85908a0dd18860be9b59d6077563",
+  "head": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-20T10:03:12.009Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "bbf566fe75a2764fa90015d66ff01dcbea74501d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "63837e744ba3d659983524b0f7e756f29b645197e13c4b09d5ab7b5bb07d9bc1"
+        },
+        {
+          "path": "p1-fail-mobile-step1.png",
+          "sha256": "2a657574a2a0cbd6f8b5e4b77c2ca47f00d8bb74d8d08f979adce047b8861b5f"
+        },
+        {
+          "path": "p1-notice-desktop.png",
+          "sha256": "2d9c3f8c7625200078e806fb00e0ee5f346a06621484a59c436451b6bbe973bf"
+        },
+        {
+          "path": "p1-2-notice-desktop.png",
+          "sha256": "2d9c3f8c7625200078e806fb00e0ee5f346a06621484a59c436451b6bbe973bf"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:21.041Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "bbf566fe75a2764fa90015d66ff01dcbea74501d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "ccb21418ee5e6ee6c96b694ee70ed7521fb0ddb4b08263820e5e99899bbf4fb2"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:21.085Z",
+      "cmd": "verify/yv map run logins --recipe new-session-log-in-fits",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "bbf566fe75a2764fa90015d66ff01dcbea74501d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-fail-mobile-step1.png",
+          "sha256": "2a657574a2a0cbd6f8b5e4b77c2ca47f00d8bb74d8d08f979adce047b8861b5f"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:30.195Z"
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "ebfd0967ac2cc8a2db0dc0fff1816c0d1b4d2ef349a53055f1ba1b3cd5877e45"
+        },
+        {
+          "path": "p4-notice-mobile.png",
+          "sha256": "e8f29839da85a8ce098d08642d5289fdaaf26d7f94b31e366976ddb6a9172a84"
+        },
+        {
+          "path": "p4-notice-desktop.png",
+          "sha256": "6410d280f0f9cd948270d078dfe29a7ff1b15e58d9c9ea6048d96598df771ab7"
+        },
+        {
+          "path": "p4-2-notice-mobile.png",
+          "sha256": "e8f29839da85a8ce098d08642d5289fdaaf26d7f94b31e366976ddb6a9172a84"
+        },
+        {
+          "path": "p4-2-notice-desktop.png",
+          "sha256": "6410d280f0f9cd948270d078dfe29a7ff1b15e58d9c9ea6048d96598df771ab7"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:44.756Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "030d9c644acc1ed407b2a983836caa8f61a7d99e1f9bf0880c0f73d08a758e08"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:44.798Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run logins --recipe new-session-log-in-fits",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "484bc677caa9180f2013118dc30624103b936ca248c8bed61e43c86743adbfa7"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:50.811Z",
+      "cmd": "verify/yv design-check --base 1416e04fa7fb",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-logins.json",
+          "sha256": "43111de168a3cd6cdf70e7e216574f1629f27eede5cfc95e2888c7e8374e7d22"
+        }
+      ],
+      "addedAt": "2026-11-20T10:03:50.892Z",
+      "cmd": "verify/yv map run logins",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "logins/hosts-page-shows-logged-out",
+        "logins/new-session-log-in-fits",
+        "logins/codex-device-login",
+        "logins/claude-code-login",
+        "logins/grok-device-login",
+        "logins/opencode-api-key",
+        "logins/opencode-device-sign-in"
+      ]
+    }
+  ]
+}

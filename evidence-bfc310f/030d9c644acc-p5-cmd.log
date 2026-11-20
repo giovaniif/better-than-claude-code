@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run logins --recipe new-session-log-in-fits
+# exit 0 after 5967 ms at bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-20T10:03:50.761Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "new-session-log-in-fits",
+          "status": "pass",
+          "ms": 5468
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 403 pass
+ 0 fail
+ 996 expect() calls
+Ran 403 tests across 28 files. [115.00ms]

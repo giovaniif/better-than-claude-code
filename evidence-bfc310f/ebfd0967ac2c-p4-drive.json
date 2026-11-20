@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "bfc310fe68ddf79fd3d62766cd9d106a1d5df5ac",
+    "short": "bfc310f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:03:39.196Z"
+  },
+  "dir": ".verify/evidence/engine-notice-login-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3501,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/engine-notice-login-head/notice-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()",
+          "value": "1,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1369,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/engine-notice-login-head/notice-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()",
+          "value": "1,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,40 @@
+$ verify/yv map run logins --recipe new-session-log-in-fits
+# exit 1 after 5401 ms at bbf566fe75a2764fa90015d66ff01dcbea74501d
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-20T10:03:26.482Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "new-session-log-in-fits",
+          "status": "fail",
+          "ms": 5032,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 1 {\"eval\":\"(() => { const b = [...document.querySelectorAll(\\\".engine-notice button\\\")].find(x => x.textContent.trim() === \\\"Log in\\\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \\\",\\\" + (b.scrollHeight <= b.clientHeight); })()\",\"equals\":\"1,true\"}: eval returned \"2,false\", expected \"1,true\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-03-21-648Z/fail-mobile-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "us 5.5 · High\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- status:\\n  - text: Claude Code isn't logged in on iso-host.\\n  - button \\\"Log in\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const b = [...document.querySelectorAll(\\\".engine-notice button\\\")].find(x => x.textContent.trim() === \\\"Log in\\\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \\\",\\\" + (b.scrollHeight <= b.clientHeight); })()\",\n          \"value\": \"2,false\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    },\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 1407,\n      \"steps\": 3,\n      \"failed\": null,\n      \"captures\": [\n        {\n          \"viewport\": \"desktop\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-03-21-648Z/new-session-notice-desktop.png\",\n          \"size\": {\n            \"width\": 2880,\n            \"height\": 1800\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 1,\n          \"eval\": \"(() => { const b = [...document.querySelectorAll(\\\".engine-notice button\\\")].find(x => x.textContent.trim() === \\\"Log in\\\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \\\",\\\" + (b.scrollHeight <= b.clientHeight); })()\",\n          \"value\": \"1,true\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 1 {\\\"eval\\\":\\\"(() => { const b = [...document.querySelectorAll(\\\\\\\".engine-notice button\\\\\\\")].find(x => x.textContent.trim() === \\\\\\\"Log in\\\\\\\"); const r = document.createRange(); r.selectNodeContents(b); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))).size; return lines + \\\\\\\",\\\\\\\" + (b.scrollHeight <= b.clientHeight); })()\\\",\\\"equals\\\":\\\"1,true\\\"}: eval returned \\\"2,false\\\", expected \\\"1,true\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-4d3b/.verify/drives/2026-11-20T10-03-21-648Z/fail-mobile-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "logins/new-session-log-in-fits",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

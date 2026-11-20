@@ -1,0 +1,77 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "bbf566fe75a2764fa90015d66ff01dcbea74501d",
+    "short": "bbf566f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-20T10:03:15.885Z"
+  },
+  "dir": ".verify/evidence/engine-notice-login-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3057,
+      "steps": 3,
+      "failed": {
+        "step": 1,
+        "action": {
+          "eval": "(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()",
+          "equals": "1,true"
+        },
+        "reason": "eval returned \"2,false\", expected \"1,true\"",
+        "screenshot": ".verify/evidence/engine-notice-login-base/fail-mobile-step1.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"New session\" [level=2]\n  - button \"Subscription usage\": 47%\n  - button \"Connectors\"\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Voice mode\"\n- 'button \"Session setup: Opus 5.5, Default, High, Ask first\"': Opus 5.5 · High\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself\n- status:\n  - text: Claude Code isn't logged in on iso-host.\n  - button \"Log in\""
+      },
+      "captures": [],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()",
+          "value": "2,false"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 1402,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/engine-notice-login-base/notice-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()",
+          "value": "1,true"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 1 {\"eval\":\"(() => { const b=[...document.querySelectorAll('.engine-notice button')].find(x=>x.textContent.trim()==='Log in'); const r=document.createRange(); r.selectNodeContents(b); const lines=new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size; return lines+','+(b.scrollHeight<=b.clientHeight); })()\",\"equals\":\"1,true\"}: eval returned \"2,false\", expected \"1,true\"",
+      "hint": "see .verify/evidence/engine-notice-login-base/fail-mobile-step1.png and the aria snapshot"
+    }
+  ]
+}
