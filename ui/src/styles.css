@@ -1083,8 +1083,9 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .focused-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 36px 16px; text-align: center; }
 .focused-empty strong { font-weight: 500; }
 .focused-session-row { height: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, .35fr) 80px; gap: 16px; align-items: center; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
-/* A full-width row: drop .btn-quiet's text-aligning -8px. */
-.focused-session-row { margin-left: 0; }
+/* A full-width row: drop .btn-quiet's text-aligning -8px, and its rounded
+   corners, which curved the ends of the divider under each row. */
+.focused-session-row { margin-left: 0; border-radius: 0; }
 .focused-session-row:hover { background: var(--side); }
 .focused-session-identity { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .focused-session-identity strong { font-weight: 500; overflow-wrap: anywhere; }
