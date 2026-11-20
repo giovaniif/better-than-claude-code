@@ -71,7 +71,8 @@ yv state --expect '{"sessions":[{"id":"{{sid_edit}}"}]}'
   which `yv drive` counts as a failed API call. Nothing shows (the chip
   renders only a PR with a number). Product fix, not a recipe change: don't
   ask, or answer a plain "no repository", for a session with no git folder.
+  Still failing on 2026-11-20 at `1394847`; finding #309.
 - Deleting a session on desktop showed a "no such session" banner (#307):
   closing its terminals told the open terminal pane to reload a list yardd
   could no longer give. `delete-removes-clean-worktree` catches it as a failed
-  `term.list` call.
+  `term.list` call. Fixed by #308; the recipe passes on 2026-11-20.

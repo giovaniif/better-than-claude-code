@@ -2,7 +2,7 @@
 
 The composer's model button lists the current engine's models (each other
 engine folded into a row of its own) and the current model's efforts.
-Same-engine switches apply from the next turn. Picking another
+Same-engine switches apply from the next turn, and so does a Codex speed. Picking another
 engine's model asks to hand off, then starts a new session in the same folder
 with a brief of the work so far. The permission picker (Ask first, Accept
 edits, Plan only, Full access) changes the session at once.
@@ -109,6 +109,34 @@ yv state --expect '{"sessions":[{"id":"{{handoff_first}}","status":"idle"}]}'
 yv api '{"op":"session.handoff","sessionId":"{{sid_think}}","engine":"claude","model":"claude-sonnet-5-5","effort":"low"}' --wait '{"op":"created"}' --save handoff_second=sessionId
 yv api '{"op":"session.delete","sessionId":"{{handoff_first}}"}' --wait '{"op":"session.deleted"}'
 yv drive new --viewport desktop --steps '[{"click":{"css":".session-row:has-text(\"Fake Fast\")","hasText":"TEST-plan the refactor"}},{"expect":"css:.thread","text":"Handed off to Claude."},{"eval":"[...document.querySelectorAll(\".note\")].filter(n=>n.textContent.startsWith(\"Handed off to\")).map(n=>!!n.querySelector(\".note-link\")).join()","equals":"false,true"},{"click":{"role":"button","name":"Open session","exact":true}},{"expect":"role:button:Sonnet 5.5"}]'
+```
+
+### codex-speed-reaches-the-turn
+Viewports: both
+A Codex model with service tiers (Fake Fast: Fast, Ultrafast) shows a Speed
+button in the model picker's header; Fake Deep has none. A speed picked in a
+session survives a reload and goes to the engine with the next turn
+(`serviceTierForTurn`, read back from the fake's turn log); switching to a
+model without tiers drops it, so the next turn goes at Standard. On the New
+session page the speed picked before Send reaches the first turn. Each
+viewport uses a session of its own.
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-speed desktop"}' --wait '{"op":"created"}' --save speed_desktop=sessionId
+yv drive 'session:{{speed_desktop}}' --viewport desktop --steps '[{"expect":"css:.thread","text":"Echo: TEST-speed desktop"},{"click":"role:button:Model Fake Fast"},{"click":"role:button:Speed Standard"},{"expect":{"role":"menuitemradio","name":"Standard Default speed"},"text":"Standard"},{"shot":"speed-menu"},{"click":"role:menuitemradio:Fast Higher speed"},{"expect":"role:button:Speed Fast"},{"press":"Escape"},{"reload":true},{"click":"role:button:Model Fake Fast"},{"expect":"role:button:Speed Fast"},{"press":"Escape"},{"fill":"label:Message","value":"TEST-fast turn desktop"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-fast turn desktop"},{"click":"role:button:Model Fake Fast"},{"click":{"role":"button","name":"Fake Deep","exact":true}},{"press":"Escape"},{"click":"role:button:Model Fake Deep"},{"expect":"css:.model-panel","text":"Fake Deep"},{"expect":"css:.speed-trigger","count":0},{"press":"Escape"},{"fill":"label:Message","value":"TEST-deep turn desktop"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-deep turn desktop"}]'
+test "$(grep '"TEST-fast turn desktop"' "$(v fake)/turn-inputs.jsonl" | jq -r .serviceTierForTurn)" = priority
+test "$(grep '"TEST-deep turn desktop"' "$(v fake)/turn-inputs.jsonl" | jq -r .serviceTierForTurn)" = null
+```
+
+```sh
+yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{repo}}","worktree":true,"text":"TEST-speed mobile"}' --wait '{"op":"created"}' --save speed_mobile=sessionId
+yv drive 'session:{{speed_mobile}}' --viewport mobile --steps '[{"expect":"css:.thread","text":"Echo: TEST-speed mobile"},{"click":"role:button:Session setup"},{"click":"role:button:Model Fake Fast"},{"click":"role:button:Speed Standard"},{"click":"role:menuitemradio:Ultrafast"},{"expect":"role:button:Speed Ultrafast"},{"shot":"speed-picked"},{"press":"Escape"},{"press":"Escape"},{"fill":"label:Message","value":"TEST-ultrafast turn mobile"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-ultrafast turn mobile"}]'
+test "$(grep '"TEST-ultrafast turn mobile"' "$(v fake)/turn-inputs.jsonl" | jq -r .serviceTierForTurn)" = ultrafast
+```
+
+```sh
+yv drive new --viewport desktop --steps '[{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · Default"}},{"press":"Escape"},{"click":"role:button:Model Fake Fast"},{"click":"role:button:Speed Standard"},{"click":"role:menuitemradio:Ultrafast"},{"expect":"role:button:Speed Ultrafast"},{"press":"Escape"},{"click":"role:button:work"},{"fill":"role:textbox:Folder","value":"{{repo}}"},{"press":"Enter"},{"fill":"label:Message","value":"TEST-ultrafast start"},{"click":"role:button:Send"},{"expect":"css:.thread","text":"Echo: TEST-ultrafast start"},{"click":"role:button:Model Fake Fast"},{"expect":"role:button:Speed Ultrafast"}]'
+test "$(grep '"TEST-ultrafast start"' "$(v fake)/turn-inputs.jsonl" | jq -r .serviceTierForTurn)" = ultrafast
 ```
 
 ### effort-change-claude-mid-session (manual: not built, see ARCHITECTURE "Engines")
