@@ -357,6 +357,11 @@ function publish(dir: string, a: Args): Result {
 }
 
 /** Downloads a published bundle (bundle.json URL) with its artifacts into dir. */
+/** The published file for one artifact under `prefix`: `<hash>-<name>`. */
+export function pickArtifact<T extends { path: string }>(tree: T[], prefix: string, art: { path: string; sha256: string }): T | undefined {
+  return tree.find((t) => t.path.startsWith(prefix) && t.path.endsWith(`-${art.path}`));
+}
+
 async function fetchBundle(url: string, dir: string): Promise<Result> {
   if (!/^https:\/\/raw\.githubusercontent\.com\//.test(url)) throw new Usage("evidence fetch <raw.githubusercontent.com URL of bundle.json> <dir>");
   mkdirSync(dir, { recursive: true });
@@ -375,7 +380,7 @@ async function fetchBundle(url: string, dir: string): Promise<Result> {
   let n = 0;
   for (const p of bundle.proofs)
     for (const art of p.artifacts) {
-      const entry = (tree.tree ?? []).find((t: any) => t.path.startsWith(prefix) && t.path.endsWith(`-${art.path}`));
+      const entry = pickArtifact(tree.tree ?? [], prefix, art);
       if (!entry) continue;
       writeFileSync(join(dir, art.path), await get(`https://raw.githubusercontent.com/${REPO}/${commit}/${entry.path}`));
       n++;
