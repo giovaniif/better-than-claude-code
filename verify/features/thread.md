@@ -313,6 +313,16 @@ yv drive 'session:{{sid_echo}}' --steps '[
 ]'
 ```
 
+### numbered-steps-across-code-blocks
+Viewports: both
+Numbered steps with a code block under each keep their numbers in the answer:
+the step after a code block shows 2, not 1 again.
+
+```sh
+yv api '{"op":"session.send","sessionId":"{{sid_echo}}","text":"TEST-numbered steps\n\n1. Install the deps:\n   \u0060\u0060\u0060sh\n   bun install\n   \u0060\u0060\u0060\n2. Build the UI:\n   \u0060\u0060\u0060sh\n   bunx vite build\n   \u0060\u0060\u0060\n3. Start the daemon."}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv drive 'session:{{sid_echo}}' --steps '[{"expect":{"css":".prose li","hasText":"Start the daemon."}},{"expect":{"css":"pre.code","hasText":"bunx vite build"}},{"eval":"[...document.querySelectorAll(\".prose ol\")].slice(-3).map(o => [o.start, o.textContent])","equals":[[1,"Install the deps:"],[2,"Build the UI:"],[3,"Start the daemon."]]},{"shot":"numbered-steps"}]'
+```
+
 ## Gotchas
 - Recipes share one isolated yardd and run in order, and several send to `sid_echo`: by `reply-to-part-of-answer` its first answer is scrolled out of view at 390 px, so that recipe scrolls the paragraph into view before selecting it (a user only selects what they see).
 - A failed turn leaves the session status `idle` in the sidebar, with the red error line in the thread.
