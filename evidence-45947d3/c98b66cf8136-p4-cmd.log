@@ -1,0 +1,26 @@
+$ verify/yv map run sidebar --recipe menu-on-a-row-below-the-fold
+# exit 0 after 12716 ms at 45947d3745310e55709747597af060531ce48096
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "sidebar",
+      "at": "2026-11-21T01:19:22.596Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "menu-on-a-row-below-the-fold",
+          "status": "pass",
+          "ms": 7924
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
