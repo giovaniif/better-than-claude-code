@@ -1,0 +1,84 @@
+{
+  "v": 1,
+  "claim": "Map drift: three launch-defaults recipes (independent-defaults, effort-menu-stays-on-screen, removed-default-host-keeps-the-model) time out on main because picker menus are portaled to body and phones keep model/effort in the Session setup chip since #290",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35",
+  "base": "afa315ee58564f1e12d79359ec2dc13db9bb1d43",
+  "head": "0d5f1c8cd04bd91c8c5f049903a873ec002d27a5",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/launch-defaults.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/switchy.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T05:16:28.617Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "0d5f1c8cd04bd91c8c5f049903a873ec002d27a5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:16:28.658Z",
+      "text": "no-repro: map-only. On main (afa315e) map run launch-defaults is 2/5: the three recipes wait for menus inside the Settings section that are now portaled to body, and for New session's model button that phones keep in Session setup."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "0d5f1c8cd04bd91c8c5f049903a873ec002d27a5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:16:28.697Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "0d5f1c8cd04bd91c8c5f049903a873ec002d27a5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-patrol-map-ld2.json",
+          "sha256": "c2e3a6dcee4ef0a40339c406d23431a12d7397e1cdd713bc77f12b3fb2c71d25"
+        }
+      ],
+      "addedAt": "2026-11-21T05:16:28.737Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "launch-defaults/independent-defaults",
+        "launch-defaults/effort-menu-stays-on-screen",
+        "launch-defaults/reset-defaults",
+        "launch-defaults/removed-default-host-keeps-the-model",
+        "launch-defaults/offline-host-skips-branch-loading"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "0d5f1c8cd04bd91c8c5f049903a873ec002d27a5",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "2bb098bc77d8b75dcba2992621ca8fb6d35e420a34b4693ebefe542bfa28e6d7"
+        }
+      ],
+      "addedAt": "2026-11-21T05:16:28.780Z",
+      "cmd": "verify/yv map run launch-defaults && verify/yv map run switchy",
+      "exit": 0
+    }
+  ]
+}
