@@ -74,6 +74,9 @@ struct Entry {
     /// The running `ssh` process, so a stop can kill it: `process::exit`
     /// skips the drops that would.
     ssh_pid: Arc<Mutex<Option<u32>>>,
+    /// The host's last snapshot, kept current by its session updates, so a
+    /// page opened while the host is down still lists its sessions (offline).
+    last: Arc<Mutex<Option<Value>>>,
 }
 
 impl Drop for Entry {
@@ -129,10 +132,10 @@ impl Remotes {
         Value::Array(hosts)
     }
 
-    fn lookup(&self, id: &str) -> Option<(watch::Receiver<Conn>, String)> {
+    fn lookup(&self, id: &str) -> Option<(watch::Receiver<Conn>, String, Arc<Mutex<Option<Value>>>)> {
         let entries = self.entries.lock().unwrap();
         let e = entries.iter().find(|e| e.config.id == id)?;
-        Some((e.conn.subscribe(), e.config.name.clone()))
+        Some((e.conn.subscribe(), e.config.name.clone(), e.last.clone()))
     }
 
     fn publish_ids(&self, entries: &[Entry]) {
@@ -209,7 +212,7 @@ fn spawn_host(app: &Arc<App>, config: HostConfig) -> Entry {
         tasks.push(tokio::spawn(tunnel(app.clone(), conn.clone(), destination, port, ssh_pid.clone())));
     }
     tasks.push(tokio::spawn(monitor(app.clone(), conn.clone())));
-    Entry { config, conn, tasks, ssh_pid }
+    Entry { config, conn, tasks, ssh_pid, last: Default::default() }
 }
 
 /// `host.add`: check the fields, save, and start connecting.
@@ -608,11 +611,19 @@ impl Pipe {
 /// Open (and keep reopening) a client's connection to a host. Everything the
 /// host sends goes to `direct`, with ids rewritten.
 pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>) -> Option<Pipe> {
-    let (mut conn, name) = app.remotes.lookup(host_id)?;
+    let (mut conn, name, last) = app.remotes.lookup(host_id)?;
     let (tx, mut rx) = mpsc::unbounded_channel::<Value>();
     let up = Arc::new(AtomicBool::new(false));
     let host = host_id.to_string();
     let flag = up.clone();
+    if conn.borrow().status != "connected" {
+        if let Some(mut snapshot) = last.lock().unwrap().clone() {
+            // Its stats are stale; the host's row says it is offline instead.
+            snapshot["host"] = Value::Null;
+            let _ = direct.send(snapshot.to_string());
+            let _ = direct.send(json!({ "op": "host.down", "hostId": host }).to_string());
+        }
+    }
     let task = tokio::spawn(async move {
         let mut backoff = Backoff::new(Duration::from_secs(10));
         loop {
@@ -628,8 +639,9 @@ pub fn pipe(app: &Arc<App>, host_id: &str, direct: mpsc::UnboundedSender<String>
                     tokio::select! {
                         incoming = stream.next() => match incoming {
                             Some(Ok(Message::Text(text))) => {
-                                if let Some(out) = rewrite_incoming(&host, &name, &text) {
-                                    if direct.send(out).is_err() { return; }
+                                if let Some(out) = rewrite(&host, &name, &text) {
+                                    remember(&last, &out);
+                                    if direct.send(out.to_string()).is_err() { return; }
                                 }
                             }
                             Some(Ok(_)) => {}
@@ -720,9 +732,32 @@ fn rewrite_stats(host: &str, name: &str, stats: &mut Value) {
     }
 }
 
+/// Keep a host's last snapshot in step with the session updates after it.
+fn remember(last: &Mutex<Option<Value>>, msg: &Value) {
+    let mut last = last.lock().unwrap();
+    if msg["op"] == "host.snapshot" {
+        *last = Some(msg.clone());
+        return;
+    }
+    let Some(list) = last.as_mut().and_then(|s| s["sessions"].as_array_mut()) else { return };
+    match msg["op"].as_str() {
+        Some("session") => match list.iter_mut().find(|s| s["id"] == msg["session"]["id"]) {
+            Some(slot) => *slot = msg["session"].clone(),
+            None => list.push(msg["session"].clone()),
+        },
+        Some("session.deleted") => list.retain(|s| s["id"] != msg["sessionId"]),
+        _ => {}
+    }
+}
+
 /// Turn a message from a remote yardd into what the UI expects from a host.
 /// `None` drops it.
-pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
+#[cfg(test)]
+fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
+    rewrite(host, name, text).map(|msg| msg.to_string())
+}
+
+fn rewrite(host: &str, name: &str, text: &str) -> Option<Value> {
     let mut msg: Value = serde_json::from_str(text).ok()?;
     let op = msg["op"].as_str().unwrap_or("").to_string();
     match op.as_str() {
@@ -781,7 +816,7 @@ pub fn rewrite_incoming(host: &str, name: &str, text: &str) -> Option<String> {
             }
         }
     }
-    Some(msg.to_string())
+    Some(msg)
 }
 
 /// Open pipes for hosts a client does not have yet and drop the ones removed.
@@ -873,7 +908,7 @@ mod tests {
 /// A daemon-owned read request, independent of any browser connection. Switchy
 /// must keep collecting if the user closes its tab. Never accepts arbitrary URLs.
 pub async fn request(app: &Arc<App>, host: &str, mut msg: Value) -> Result<Value> {
-    let (conn, _) = app.remotes.lookup(host).context("unknown host")?;
+    let (conn, _, _) = app.remotes.lookup(host).context("unknown host")?;
     let connection = conn.borrow().clone();
     anyhow::ensure!(connection.status == "connected", "host is offline");
     let url = connection.url.context("host has no connection")?;

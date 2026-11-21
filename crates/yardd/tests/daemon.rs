@@ -1180,6 +1180,40 @@ async fn a_hub_runs_sessions_on_a_direct_host() {
 }
 
 #[tokio::test]
+async fn a_page_opened_while_a_host_is_down_still_lists_its_sessions() {
+    let remote_sb = Sandbox::new("remote-down");
+    let remote = remote_sb.start();
+    let hub_sb = Sandbox::new("hub-down");
+    let hub = hub_sb.start();
+    let mut c = hub.client().await;
+
+    c.send(json!({ "op": "host.add", "name": "box", "kind": "direct", "url": remote.url() })).await;
+    let hosts = c
+        .wait_for("the direct host to connect", |m| {
+            m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] == "connected"))
+        })
+        .await;
+    let host = hosts["hosts"][0]["id"].as_str().unwrap().to_string();
+    c.wait_for("the host's snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+    let sid = c.create(&remote_sb.folder("proj"), "hello remote", json!({ "host": host })).await;
+    assert_eq!(c.wait_turn_done(&sid, 0).await["status"], "completed");
+
+    remote.stop();
+    c.wait_for("the host to go offline", |m| {
+        m["op"] == "hosts" && m["hosts"].as_array().is_some_and(|h| h.iter().any(|h| h["status"] != "connected"))
+    })
+    .await;
+
+    // A page opened now (a reload, another window) still lists the host's
+    // sessions, marked offline by the host.down that follows.
+    let mut late = hub.client().await;
+    let snap = late.wait_for("the offline host's last snapshot", |m| m["op"] == "host.snapshot" && m["hostId"] == host).await;
+    let ids: Vec<&str> = snap["sessions"].as_array().unwrap().iter().filter_map(|s| s["id"].as_str()).collect();
+    assert_eq!(ids, [sid.as_str()]);
+    late.wait_for("the host marked down", |m| m["op"] == "host.down" && m["hostId"] == host).await;
+}
+
+#[tokio::test]
 async fn install_sets_up_yardd_on_an_ssh_host() {
     let sb = Sandbox::new("install");
     // A release folder in the shape CI publishes, holding this very yardd.
