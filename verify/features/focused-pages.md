@@ -199,13 +199,12 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button"
 ```
 
 ## Gotchas
-- `usage-popover-leads-with-trigger-account` fails on a known product bug,
-  #323: on a page with no account selected the Usage trigger reads 91%
-  (TEST-Work) but the popover leads with Default and folds TEST-Work under
-  "Other accounts". On New session the popover follows the draft's account by
-  design, so `compact-usage-popover` expects Default there. It expected
-  TEST-Work and failed, with TEST-Work signed out (no percent since #358),
-  until 2026-11-21.
+- On New session the popover follows the draft's account by design
+  (`compact-usage-popover` expects Default there); elsewhere, with no account
+  selected, it opens on the account the trigger reads (`leadRow` in
+  `ui/src/UsageMeters.tsx`, #323). Until 2026-11-21 it led with Default, and
+  `compact-usage-popover` expected TEST-Work on New session with TEST-Work
+  signed out (no percent since #358), so it failed for two reasons.
 - Below 700 px the new-session composer folds the account, model, effort and
   permission pickers into one `Session setup` chip (#290), so a recipe that
   opens the account picker on a phone clicks `role:button:Session setup`
