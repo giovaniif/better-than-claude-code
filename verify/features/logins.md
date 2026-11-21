@@ -33,6 +33,20 @@ Engine logins lists each engine as not logged in, with its own Log in action.
 yv drive 'hosts' --steps '[{"click":"role:tab:Engine logins"},{"expect":{"css":".engine-row","hasText":"Claude Code"},"text":"not logged in"},{"expect":{"css":".engine-row","hasText":"Codex"},"text":"not logged in"},{"expect":"role:button:Log in"},{"shot":"logged-out"}]'
 ```
 
+### usage-trigger-skips-signed-out-account
+Viewports: both
+The sidebar's Usage row (desktop) and the phone's usage pill show no percent
+for an account that needs sign-in, matching the popover's "Sign in to see
+usage". The fake Claude reports 47% when it starts, even logged out, like a
+real account whose last report outlived its sign-in. Until 2026-11-21 the
+trigger read "47% used" while the popover had no number to show. Keep it
+before the recipes that log Claude Code in: after them 47% is right.
+
+```sh
+yv drive new --viewport desktop --steps '[{"wait":2000},{"expect":"css:.usage-trigger","text":"View limits"},{"click":"css:.usage-trigger"},{"expect":"css:.usage-popover","text":"Sign in to see usage"},{"shot":"usage-signed-out"}]'
+yv drive new --viewport mobile --steps '[{"wait":2000},{"eval":"!document.querySelector(\".mobile-usage-trigger\").textContent.includes(\"%\")","equals":true},{"click":"css:.mobile-usage-trigger"},{"expect":"css:.usage-popover","text":"Sign in to see usage"},{"shot":"usage-signed-out"}]'
+```
+
 ### new-session-log-in-fits
 Viewports: both
 The new-session page's notice for a logged-out engine keeps **Log in** on one
