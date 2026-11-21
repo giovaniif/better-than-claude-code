@@ -123,6 +123,16 @@ and checked only that no "Processes" button showed.)
 yv drive 'session:{{sid_cmd}}' --viewport mobile --steps '[{"expect":{"role":"region","name":"Workspace"},"visible":false},{"click":"role:button:Workspace"},{"click":"role:button:Terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 305 & wait\"\n","target":"label:Terminal input"},{"click":"role:button:Processes"},{"expect":{"css":".proc-row","hasText":"sleep 305 & wait"},"timeout":20000},{"expect":{"role":"region","name":"Workspace"},"text":"PID"},{"expect":"css:.proc-row:has-text(\"sleep 305 & wait\") .proc-kill","count":1},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"sheet-processes"},{"click":"css:.proc-row:has-text(\"sleep 305 & wait\") .proc-kill"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 305"},"visible":false,"timeout":10000}]'
 ```
 
+### full-command-on-tap
+Viewports: mobile
+A phone has no hover, so the command cell's tooltip never shows and the column
+clips a command to a few characters. Tapping the command shows all of it,
+wrapped inside the pane; tapping again folds it back to one line.
+
+```sh
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Workspace"},{"click":"role:button:Terminal"},{"wait":"label:Terminal input"},{"type":"sh -c \"sleep 309 & wait\" TEST-the-end-of-a-long-command-line\n","target":"label:Terminal input"},{"click":"role:button:Processes"},{"expect":{"css":".proc-row","hasText":"sleep 309 & wait"},"timeout":20000},{"eval":"(() => { const td=[...document.querySelectorAll(\".proc-row .proc-cmd\")].find((e)=>e.textContent.includes(\"sleep 309\")); const c=td.querySelector(\"code\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\"TEST-the-end-of-a-long-command-line\"); })()","equals":false},{"click":{"css":".proc-row .proc-cmd","hasText":"sleep 309 & wait"}},{"eval":"(() => { const td=[...document.querySelectorAll(\".proc-row .proc-cmd\")].find((e)=>e.textContent.includes(\"sleep 309\")); const c=td.querySelector(\"code\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\"TEST-the-end-of-a-long-command-line\"); })()","equals":true},{"eval":"document.documentElement.scrollWidth <= innerWidth","equals":true},{"shot":"command-open"},{"click":{"css":".proc-row .proc-cmd","hasText":"sleep 309 & wait"}},{"eval":"(() => { const td=[...document.querySelectorAll(\".proc-row .proc-cmd\")].find((e)=>e.textContent.includes(\"sleep 309\")); const c=td.querySelector(\"code\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\"TEST-the-end-of-a-long-command-line\"); })()","equals":false},{"click":"css:.proc-row:has-text(\"sleep 309 & wait\") .proc-kill"},{"click":"role:button:with its children"},{"expect":{"css":".proc-row","hasText":"sleep 309"},"visible":false,"timeout":10000}]'
+```
+
 ## Gotchas
 - Below 1100 px the docked pane is hidden (`@media (max-width: 1100px)`); the Processes view is reached through the header's Workspace button (`.workspace-open`). Mobile recipes open it first.
 - The list is the host sampler's, up to 3 s old, so a process that started a moment ago shows on the next refresh.
