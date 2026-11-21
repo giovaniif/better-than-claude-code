@@ -227,5 +227,24 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".group-head","hasTex
 yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".group-head","hasText":"TEST-pinned"},"text":"1"},{"expect":{"css":".group-zone .session-row","hasText":"Fake Deep"}},{"eval":"[...document.querySelectorAll(\".session-list .drop-zone\")].find(z => z.querySelector(\".list-head\")?.textContent === \"Pinned\").textContent.includes(\"Fake Deep\")","equals":false},{"shot":"pinned-handover"}]'
 ```
 
+### menu-on-a-row-below-the-fold
+With more sessions than the list shows, scrolling down to an older row and
+opening its … menu works at both viewports: the menu opens on screen next to
+its row and its Rename asks for the name. Scrolling
+closes an open row menu on purpose (a fixed menu would drift away from its
+row), so the steps scroll the list first and let it settle before the click.
+
+```sh
+for i in 1 2 3 4 5 6 7 8; do yv api '{"op":"session.create","engine":"codex","model":"fake-fast","effort":"low","cwd":"{{plain}}","text":"TEST-filler '$i'"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'; done
+yv drive new --viewport desktop --steps '[{"expect":{"css":".session-row","hasText":"TEST-filler 8"}},{"eval":"(()=>{const l=document.querySelector(\".session-list\");const b=document.querySelector(\"[aria-label=\\\"Actions for [edit] TEST-fix the greeting\\\"]\");const below=b.getBoundingClientRect().top>=l.getBoundingClientRect().bottom;b.scrollIntoView({block:\"center\"});return below})()","equals":true},{"wait":400},{"click":"role:button:Actions for [edit] TEST-fix the greeting"},{"expect":"role:menuitem:Rename","inViewport":true},{"shot":"menu-below-fold"},{"click":"role:menuitem:Rename"},{"expect":"label:Session name","value":"[edit] TEST-fix the greeting"},{"press":"Escape"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-filler 8"}},{"eval":"(()=>{const l=document.querySelector(\".session-list\");const b=document.querySelector(\"[aria-label=\\\"Actions for [edit] TEST-fix the greeting\\\"]\");const below=b.getBoundingClientRect().top>=l.getBoundingClientRect().bottom;b.scrollIntoView({block:\"center\"});return below})()","equals":true},{"wait":400},{"click":"role:button:Actions for [edit] TEST-fix the greeting"},{"expect":"role:menuitem:Rename","inViewport":true},{"shot":"menu-below-fold"},{"click":"role:menuitem:Rename"},{"expect":"label:Session name","value":"[edit] TEST-fix the greeting"},{"press":"Escape"}]'
+```
+
 ## Gotchas
 - Row menus render on document.body (a portal), so find menu items by role, not inside the row.
+- A click on a row's … button that first has to scroll the row into view
+  (`drive` does that by itself) opens the menu and closes it again at once: the
+  scroll event lands after the click, and scrolling closes row menus on
+  purpose. With more sessions than fit (more than about 9 on a phone), scroll
+  `.session-list` and wait before clicking, as menu-on-a-row-below-the-fold does.
+  Found by the patrol run of 2026-11-21 01:00.
