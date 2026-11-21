@@ -1,0 +1,185 @@
+{
+  "v": 1,
+  "claim": "On a phone, Workspace → Processes clips every command to a few characters (\"bun yard…\", \"/bin/b…\") and its full text is only a hover tooltip, so a touch user cannot read what a row is before stopping it",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-8d2d",
+  "base": "939bf2360d720eccd77b7c5e8af0e304c3e15fce",
+  "head": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/ProcPane.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/processes.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T04:11:06.959Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "19c8d6c1fed2115036c64a63ad1dcd8f3eea98cb",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "d1b59406f9186f532bb469bcb2b1d9321a32086354ae87c2d4d94745720131ec"
+        },
+        {
+          "path": "p1-clipped-mobile.png",
+          "sha256": "801c17b7f9bb204f2f2ab4621d6a5490eb039ed1ac26bf7f0d7cd63f7ebc2d28"
+        },
+        {
+          "path": "p1-after-tap-mobile.png",
+          "sha256": "801c17b7f9bb204f2f2ab4621d6a5490eb039ed1ac26bf7f0d7cd63f7ebc2d28"
+        }
+      ],
+      "addedAt": "2026-11-21T04:11:31.962Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "19c8d6c1fed2115036c64a63ad1dcd8f3eea98cb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "e8cfe211973a47e0df80c3a12a80382417ac0a59f73f8649d8c7459dc0961a69"
+        }
+      ],
+      "addedAt": "2026-11-21T04:11:32.012Z",
+      "cmd": "verify/yv map run processes --recipe full-command-on-tap",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "c33222784726b2323b0477b6cff275cdeb6257069aeadb90f55b6fd30a6986f8"
+        },
+        {
+          "path": "p3-clipped-mobile.png",
+          "sha256": "b45f183c748a50c9e73a8aa18156064bd9b74a74afcc45ed7e006b576dca4dbd"
+        },
+        {
+          "path": "p3-after-tap-mobile.png",
+          "sha256": "c4a04b96d464a5d8436c401ef5b6cfd8b6ca641ed63a894b6bc1245433939199"
+        }
+      ],
+      "addedAt": "2026-11-21T04:14:04.187Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "c8ef7f3f3bfeb7f66308d193e916dc7cf0a1380ba80f1a3dabfcaca50c622d31"
+        },
+        {
+          "path": "p4-clipped-desktop.png",
+          "sha256": "b3d9be4e1f4c09289ae6212515e53c84e80115b6b056f3deacb4f960bb832e81"
+        },
+        {
+          "path": "p4-after-tap-desktop.png",
+          "sha256": "a247eba408a24e3b4c4f7a5846e638eb43d84d43ecc0d16c53bf3038fb51687a"
+        }
+      ],
+      "addedAt": "2026-11-21T04:14:04.233Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "da5a437edcd9d1c0e6368d7cf94e4cb0b811c4787cf36586a5ab4d37600b5351"
+        }
+      ],
+      "addedAt": "2026-11-21T04:14:04.280Z",
+      "cmd": "verify/yv design-check --base 939bf2360d72",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "bb8a2e67da21a83e471ef911fb1cb5515557d4c9bdeb582a8a2e95eb568ae7e7"
+        }
+      ],
+      "addedAt": "2026-11-21T04:14:08.983Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run processes --recipe full-command-on-tap",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-processes.json",
+          "sha256": "19ba9b9253961d7bc61e054771f5ef90cd0328a804257fbbead7b735b470ceae"
+        }
+      ],
+      "addedAt": "2026-11-21T04:14:20.472Z",
+      "cmd": "verify/yv map run processes",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "processes/lists-the-process-tree",
+        "processes/nothing-running",
+        "processes/terminal-shell-is-listed",
+        "processes/stop-a-terminal-command",
+        "processes/force-kill-what-ignores-sigterm",
+        "processes/stop-with-children",
+        "processes/stop-with-children-fits-the-pane",
+        "processes/agent-offers-no-stop",
+        "processes/refused-outside-the-session",
+        "processes/listed-from-the-workspace-sheet",
+        "processes/full-command-on-tap"
+      ]
+    }
+  ]
+}

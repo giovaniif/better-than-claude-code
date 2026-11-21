@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run processes --recipe full-command-on-tap
+# exit 0 after 11436 ms at 1669c2fb2ff224fa3b103d3e21b69a6259ebf4de
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-21T04:14:20.415Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "full-command-on-tap",
+          "status": "pass",
+          "ms": 10398
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 410 pass
+ 0 fail
+ 1006 expect() calls
+Ran 410 tests across 29 files. [166.00ms]

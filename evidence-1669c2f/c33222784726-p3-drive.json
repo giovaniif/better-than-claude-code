@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "session:s1a1fc44576c8",
+  "build": {
+    "sha": "1669c2fb2ff224fa3b103d3e21b69a6259ebf4de",
+    "short": "1669c2f",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T04:13:29.400Z"
+  },
+  "dir": ".verify/evidence/proc-command-tap-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 9144,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/proc-command-tap-head-m/clipped-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/proc-command-tap-head-m/after-tap-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 10,
+          "eval": "(() => { const td=[...document.querySelectorAll(\".proc-row .proc-cmd\")].find((e)=>e.textContent.includes(\"sleep 331\")); const c=td.querySelector(\"code\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\"TEST-the-end-of-a-long-command-line\"); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

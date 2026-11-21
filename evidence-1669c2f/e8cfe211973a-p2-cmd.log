@@ -1,0 +1,40 @@
+$ verify/yv map run processes --recipe full-command-on-tap
+# exit 1 after 10301 ms at 19c8d6c1fed2115036c64a63ad1dcd8f3eea98cb
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "processes",
+      "at": "2026-11-21T04:11:42.310Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "full-command-on-tap",
+          "status": "fail",
+          "ms": 9440,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 8 {\"eval\":\"(() => { const td=[...document.querySelectorAll(\\\".proc-row .proc-cmd\\\")].find((e)=>e.textContent.includes(\\\"sleep 309\\\")); const c=td.querySelector(\\\"code\\\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\\\"TEST-the-end-of-a-long-command-line\\\"); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-8d2d/.verify/drives/2026-11-21T04-11-33-066Z/fail-mobile-step8.png and the aria snapshot"
+            }
+          ],
+          "tail": "and-line 0% 2 MB 4s Stop process 2701314 sh -c sleep 309 & wait TEST-the-end-of-…\\\":\\n        - cell \\\"2701314\\\"\\n        - cell \\\"sh -c sleep 309 & wait TEST-the-end-of-a-long-command-line\\\":\\n          - code: sh -c sleep 309 & wait TEST-the-end-of-a-long-command-line\\n        - cell \\\"0%\\\"\\n        - cell \\\"2 MB\\\"\\n        - cell \\\"4s\\\"\\n        - cell \\\"Stop process 2701314 sh -c sleep 309 & wait TEST-the-end-of-…\\\":\\n          - button \\\"Stop process 2701314 sh -c sleep 309 & wait TEST-the-end-of-…\\\"\\n      - row \\\"2701315 sleep 309 0% 2 MB 4s Stop process 2701315 sleep 309\\\":\\n        - cell \\\"2701315\\\"\\n        - cell \\\"sleep 309\\\":\\n          - code: sleep 309\\n        - cell \\\"0%\\\"\\n        - cell \\\"2 MB\\\"\\n        - cell \\\"4s\\\"\\n        - cell \\\"Stop process 2701315 sleep 309\\\":\\n          - button \\\"Stop process 2701315 sleep 309\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 6,\n          \"eval\": \"(() => { const td=[...document.querySelectorAll(\\\".proc-row .proc-cmd\\\")].find((e)=>e.textContent.includes(\\\"sleep 309\\\")); const c=td.querySelector(\\\"code\\\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\\\"TEST-the-end-of-a-long-command-line\\\"); })()\",\n          \"value\": false\n        },\n        {\n          \"step\": 8,\n          \"eval\": \"(() => { const td=[...document.querySelectorAll(\\\".proc-row .proc-cmd\\\")].find((e)=>e.textContent.includes(\\\"sleep 309\\\")); const c=td.querySelector(\\\"code\\\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\\\"TEST-the-end-of-a-long-command-line\\\"); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 8 {\\\"eval\\\":\\\"(() => { const td=[...document.querySelectorAll(\\\\\\\".proc-row .proc-cmd\\\\\\\")].find((e)=>e.textContent.includes(\\\\\\\"sleep 309\\\\\\\")); const c=td.querySelector(\\\\\\\"code\\\\\\\"); return c.getBoundingClientRect().right <= td.getBoundingClientRect().right + 1 && td.innerText.includes(\\\\\\\"TEST-the-end-of-a-long-command-line\\\\\\\"); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-8d2d/.verify/drives/2026-11-21T04-11-33-066Z/fail-mobile-step8.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "processes/full-command-on-tap",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
