@@ -1,0 +1,43 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "a14f884af6623915020cbdb60f20496b2e883223",
+    "short": "a14f884",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T03:22:39.518Z"
+  },
+  "dir": ".verify/u2-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 13399,
+      "steps": 5,
+      "failed": {
+        "step": 1,
+        "action": {
+          "expect": "css:.usage-trigger",
+          "text": "View limits"
+        },
+        "reason": "expected \"css:.usage-trigger\" to contain \"View limits\", got \"Usage",
+        "screenshot": ".verify/u2-base-desktop/fail-desktop-step1.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"Collapse sessions sidebar\" [expanded]\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - text: No sessions yet.\n  - button \"Subscription usage\": Usage 47% used\n  - button \"iso-host 4% · 46%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Voice mode\"\n- button \"Model Opus 5.5\": Opus 5.5\n- 'button \"Account: Claude, Default\"'\n- button \"Effort High\": High\n- button \"Ask first\"\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself\n- status:\n  - text: Claude Code isn't logged in on iso-host.\n  - button \"Log in\""
+      },
+      "captures": [],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 1 {\"expect\":\"css:.usage-trigger\",\"text\":\"View limits\"}: expected \"css:.usage-trigger\" to contain \"View limits\", got \"Usage",
+      "hint": "see .verify/u2-base-desktop/fail-desktop-step1.png and the aria snapshot"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "a14f884af6623915020cbdb60f20496b2e883223",
+    "short": "a14f884",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T03:22:39.518Z"
+  },
+  "dir": ".verify/u2-base-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4805,
+      "steps": 6,
+      "failed": {
+        "step": 2,
+        "action": {
+          "eval": "!document.querySelector(\".mobile-usage-trigger\").textContent.includes(\"%\")",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": ".verify/u2-base-mobile/fail-mobile-step2.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"New session\" [level=2]\n  - button \"Subscription usage\": 47%\n  - button \"Connectors\"\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Voice mode\"\n- 'button \"Session setup: Opus 5.5, Default, High, Ask first\"': Opus 5.5 · High\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself\n- status:\n  - text: Claude Code isn't logged in on iso-host.\n  - button \"Log in\""
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/u2-base-mobile/header-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "!document.querySelector(\".mobile-usage-trigger\").textContent.includes(\"%\")",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 2 {\"eval\":\"!document.querySelector(\\\".mobile-usage-trigger\\\").textContent.includes(\\\"%\\\")\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see .verify/u2-base-mobile/fail-mobile-step2.png and the aria snapshot"
+    }
+  ]
+}

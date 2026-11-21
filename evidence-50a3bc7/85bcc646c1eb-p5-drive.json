@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "50a3bc793e4de5cf989c9c12ac75b7afcc813e30",
+    "short": "50a3bc7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T03:24:38.936Z"
+  },
+  "dir": ".verify/u2-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4537,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/u2-head-mobile/header-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/u2-head-mobile/usage-signed-out-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "!document.querySelector(\".mobile-usage-trigger\").textContent.includes(\"%\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
