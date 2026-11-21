@@ -1,0 +1,77 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-21T03:14:45.623Z",
+      "counts": {
+        "pass": 8,
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page-shows-logged-out",
+          "status": "pass",
+          "ms": 5545
+        },
+        {
+          "label": "new-session-log-in-fits",
+          "status": "pass",
+          "ms": 4540
+        },
+        {
+          "label": "codex-device-login",
+          "status": "pass",
+          "ms": 2936
+        },
+        {
+          "label": "claude-code-login",
+          "status": "pass",
+          "ms": 5929
+        },
+        {
+          "label": "grok-device-login",
+          "status": "pass",
+          "ms": 6936
+        },
+        {
+          "label": "gemini-check-login-says-still-logged-out",
+          "status": "pass",
+          "ms": 8561
+        },
+        {
+          "label": "opencode-api-key",
+          "status": "pass",
+          "ms": 10931
+        },
+        {
+          "label": "opencode-device-sign-in",
+          "status": "pass",
+          "ms": 5371
+        },
+        {
+          "label": "usage-trigger-skips-signed-out-account",
+          "status": "fail",
+          "ms": 14068,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 1 {\"expect\":\"css:.usage-trigger\",\"text\":\"View limits\"}: expected \"css:.usage-trigger\" to contain \"View limits\", got \"Usage",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-14-31-766Z/fail-desktop-step1.png and the aria snapshot"
+            }
+          ],
+          "tail": "{\n  \"command\": \"drive\",\n  \"ok\": false,\n  \"route\": \"new\",\n  \"build\": {\n    \"sha\": \"dcf1f347114e2abba376fb52f8c0f9a1c77d0dc3\",\n    \"short\": \"dcf1f34\",\n    \"dirty\": false,\n    \"diffHash\": null,\n    \"at\": \"2026-11-21T03:10:41.115Z\"\n  },\n  \"dir\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-14-31-766Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"desktop\",\n      \"ms\": 13548,\n      \"steps\": 5,\n      \"failed\": {\n        \"step\": 1,\n        \"action\": {\n          \"expect\": \"css:.usage-trigger\",\n          \"text\": \"View limits\"\n        },\n        \"reason\": \"expected \\\"css:.usage-trigger\\\" to contain \\\"View limits\\\", got \\\"Usage\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-14-31-766Z/fail-desktop-step1.png\",\n        \"aria\": \"- navigation \\\"Sessions\\\":\\n  - button \\\"Go to session or page\\\": Switchyard Ctrl K\\n  - button \\\"Collapse sessions sidebar\\\" [expanded]\\n  - button \\\"New session\\\"\\n  - button \\\"Switchy\\\"\\n  - button \\\"Automations\\\"\\n  - button \\\"Connectors\\\"\\n  - button \\\"Import\\\"\\n  - button \\\"Settings\\\"\\n  - text: No sessions yet.\\n  - button \\\"Subscription usage\\\": Usage 47% used\\n  - button \\\"iso-host 4% · 45%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- 'button \\\"Account: Claude, Default\\\"'\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 1 {\\\"expect\\\":\\\"css:.usage-trigger\\\",\\\"text\\\":\\\"View limits\\\"}: expected \\\"css:.usage-trigger\\\" to contain \\\"View limits\\\", got \\\"Usage\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-14-31-766Z/fail-desktop-step1.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "logins/usage-trigger-skips-signed-out-account",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+$ cd ui && bun test src/usageMeters.test.ts
+# exit 1 after 88 ms at 5a9748849227412ad3e93c9a60575123ebe436fd
+
+bun test v1.4.4 (38afee6c8)
+
+
+src/usageMeters.test.ts:
+25 |   });
+26 | 
+27 |   test("leaves out an account that needs sign-in, as the popover does", () => {
+28 |     // Meters outlive a lost sign-in; the popover hides them ("Sign in to see usage"),
+29 |     // so the closed trigger must not show their percent either.
+30 |     expect(triggerMeter(subscriptionRows([source(false)], NOW))).toBeUndefined();
+                                                                      ^
+error: expect(received).toBeUndefined()
+
+Received: {
+  key: "five_hour",
+  label: "5-hour",
+  percent: 47,
+  resetsAt: 1800003600000,
+  level: "ok",
+}
+
+      at <anonymous> (/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/ui/src/usageMeters.test.ts:30:66)
+(fail) triggerMeter > leaves out an account that needs sign-in, as the popover does [0.32ms]
+
+ 2 pass
+ 1 fail
+ 3 expect() calls
+Ran 3 tests across 1 file. [81.00ms]
