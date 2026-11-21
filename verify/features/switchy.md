@@ -91,7 +91,7 @@ icon as the menu's All hosts row, not the laptop of this machine's row. It used
 to fall through to the laptop, so the closed chip looked scoped to this machine.
 
 ```sh
-yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.composer-chips .chip","text":"All hosts"},{"eval":"window.__chipIcon = document.querySelector(\".composer-chips .chip svg path\").getAttribute(\"d\"); true","equals":true},{"click":"css:.composer-chips .chip"},{"expect":"css:.chip-popover","inViewport":true},{"eval":"(() => { const rows = [...document.querySelectorAll(\".chip-popover .menu-item\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\"svg path\").getAttribute(\"d\"); return window.__chipIcon === icon(\"All hosts\") && window.__chipIcon !== rows[1].querySelector(\"svg path\").getAttribute(\"d\"); })()","equals":true},{"shot":"all-hosts-chip"}]'
+yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.composer-chips .chip","text":"All hosts"},{"eval":"window.__chipIcon = document.querySelector(\".composer-chips .chip svg path\").getAttribute(\"d\"); true","equals":true},{"click":"css:.composer-chips .chip"},{"expect":"css:.chip-popover","inViewport":true},{"eval":"(() => { const rows = [...document.querySelectorAll(\".chip-popover .menu-item\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\"svg path\").getAttribute(\"d\"); return window.__chipIcon === icon(\"All hosts\") && window.__chipIcon !== icon(\"iso-host\"); })()","equals":true},{"shot":"all-hosts-chip"}]'
 ```
 
 ### shared-composer
