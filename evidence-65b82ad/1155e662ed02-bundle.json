@@ -1,0 +1,77 @@
+{
+  "v": 1,
+  "claim": "Map drift: session-defaults recipes clicked the model/effort/account pickers inline at mobile, but below 700 px they sit in the Session setup chip (#290); both recipes timed out at mobile on main",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19",
+  "base": "875b52305ea73fdd71736782175ab7a82d7c134f",
+  "head": "65b82adfcf53d95a89da73f081ec817aedd950ea",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/session-defaults.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T02:04:26.310Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "65b82adfcf53d95a89da73f081ec817aedd950ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T02:04:26.352Z",
+      "text": "no-repro: map-only. On origin/main both recipes fail at mobile only: remembers-remote-session times out on css:.account-trigger, remembers-changes-in-existing-chat on role:button:Model Fake Fast (map run 2026-11-21T02:02Z); the app is right, the recipes were wrong."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "65b82adfcf53d95a89da73f081ec817aedd950ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T02:04:26.392Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "65b82adfcf53d95a89da73f081ec817aedd950ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-patrol-fe19-head.json",
+          "sha256": "bbb1d5d3034aa8aeb5d11df5c2d40f8ca1e2c5e83ff2d1ebaa032dda69c391ee"
+        }
+      ],
+      "addedAt": "2026-11-21T02:05:15.945Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "session-defaults/remembers-remote-session",
+        "session-defaults/remembers-changes-in-existing-chat"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "65b82adfcf53d95a89da73f081ec817aedd950ea",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "18c56e720d815a9f222079521cfb330ea8ae9498d85d41137c15da553f270775"
+        }
+      ],
+      "addedAt": "2026-11-21T02:05:19.237Z",
+      "cmd": "verify/yv map run session-defaults",
+      "exit": 0
+    }
+  ]
+}

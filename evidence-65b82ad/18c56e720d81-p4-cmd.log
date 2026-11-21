@@ -1,0 +1,31 @@
+$ verify/yv map run session-defaults
+# exit 0 after 45666 ms at 65b82adfcf53d95a89da73f081ec817aedd950ea
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "session-defaults",
+      "at": "2026-11-21T02:06:04.899Z",
+      "counts": {
+        "pass": 2
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "remembers-remote-session",
+          "status": "pass",
+          "ms": 23159
+        },
+        {
+          "label": "remembers-changes-in-existing-chat",
+          "status": "pass",
+          "ms": 21159
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
