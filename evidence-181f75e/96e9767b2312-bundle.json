@@ -1,0 +1,182 @@
+{
+  "v": 1,
+  "claim": "Numbered steps with a code block under each show 1, 1, 1 in an answer: each step after a code block restarts the list",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab",
+  "base": "84fd35871965332a4f8ee11530d9e4ccadb5accf",
+  "head": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/markdown.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/markdown.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/thread.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T00:26:53.259Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "96192d7fadea28eb1d7c827003f6782b25292047",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "306201bb74e3a10747e2f3bae1fd4eb9557cb662e9c4fc6c5b9d3bd8795b7b8d"
+        },
+        {
+          "path": "p1-numbered-mobile.png",
+          "sha256": "bb4df5f98230e8c691fef79283f398a471129c3d33f9c5fa2fdee600af4e0494"
+        },
+        {
+          "path": "p1-numbered-desktop.png",
+          "sha256": "20e3fba5cbed570e8c279270ac18929ca606112636d0d15943a6558b728928e5"
+        }
+      ],
+      "addedAt": "2026-11-21T00:27:02.831Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "96192d7fadea28eb1d7c827003f6782b25292047",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "5399afc8a93d48a3df3e09f6fef1a5e7eb2021d71400e71e5688f66e49023929"
+        }
+      ],
+      "addedAt": "2026-11-21T00:27:02.879Z",
+      "cmd": "verify/yv map run thread --recipe numbered-steps-across-code-blocks",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "a790c9e2d262410c5b9151460ac36ec46276f946aeef13b871a482fffbccc843"
+        },
+        {
+          "path": "p3-numbered-mobile.png",
+          "sha256": "ada4fc4e89a0cc0bb139ec2da2c8e0cf0b8257b765996eda8e2daad80d1532aa"
+        },
+        {
+          "path": "p3-numbered-desktop.png",
+          "sha256": "ec192d17447386cfd15cd3ed5857ea9a154d6ebdcf738b65d55ff34a9006648e"
+        }
+      ],
+      "addedAt": "2026-11-21T00:27:20.063Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "20ad493196af6917788bc92fe3b67d7326279e0eb2374399e84b0583faafc17a"
+        }
+      ],
+      "addedAt": "2026-11-21T00:27:24.315Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "dbcf101393e2af95925e8b2f5ddd1079df1044ae0f795e4db9a114baf470e358"
+        }
+      ],
+      "addedAt": "2026-11-21T00:28:12.399Z",
+      "cmd": "verify/yv design-check --base 84fd35871965",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-thread.json",
+          "sha256": "cf0c0f71e5ce225f2185093ef8a0f58417cb9e74fb310433e62fc880974e06da"
+        }
+      ],
+      "addedAt": "2026-11-21T00:28:12.483Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/web-links-open-outside-the-thread",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/steer-a-selected-queued-message",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/workspace-subagents",
+        "thread/subagent-nests-and-expands",
+        "thread/working-line-stays-in-view",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch",
+        "thread/links-inside-bold-text",
+        "thread/numbered-steps-across-code-blocks"
+      ]
+    }
+  ]
+}

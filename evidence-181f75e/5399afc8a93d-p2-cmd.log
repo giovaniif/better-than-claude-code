@@ -1,0 +1,45 @@
+$ verify/yv map run thread --recipe numbered-steps-across-code-blocks
+# exit 1 after 7603 ms at 96192d7fadea28eb1d7c827003f6782b25292047
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "thread",
+      "at": "2026-11-21T00:27:10.479Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "numbered-steps-across-code-blocks",
+          "status": "fail",
+          "ms": 6751,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 2 {\"eval\":\"[...document.querySelectorAll(\\\".prose ol\\\")].slice(-3).map(o => [o.start, o.textContent])\",\"equals\":[[1,\"Install the deps:\"],[2,\"Build the UI:\"],[3,\"Start the daemon.\"]]}: eval returned [[1,\"Install the deps:\"],[1,\"Build the UI:\"],[1,\"Start the daemon.\"]], expected [[1,\"Install the deps:\"],[2,\"Build the UI:\"],[3,\"Start the daemon.\"]]",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-27-04-055Z/fail-mobile-step2.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"eval\":\"[...document.querySelectorAll(\\\".prose ol\\\")].slice(-3).map(o => [o.start, o.textContent])\",\"equals\":[[1,\"Install the deps:\"],[2,\"Build the UI:\"],[3,\"Start the daemon.\"]]}: eval returned [[1,\"Install the deps:\"],[1,\"Build the UI:\"],[1,\"Start the daemon.\"]], expected [[1,\"Install the deps:\"],[2,\"Build the UI:\"],[3,\"Start the daemon.\"]]",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-27-04-055Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "x \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, Default\\\"'\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Subagents\\\"\\n  - button \\\"Processes\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n    - button \\\"Attach\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"[...document.querySelectorAll(\\\".prose ol\\\")].slice(-3).map(o => [o.start, o.textContent])\",\n          \"value\": [\n            [\n              1,\n              \"Install the deps:\"\n            ],\n            [\n              1,\n              \"Build the UI:\"\n            ],\n            [\n              1,\n              \"Start the daemon.\"\n            ]\n          ]\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 2 {\\\"eval\\\":\\\"[...document.querySelectorAll(\\\\\\\".prose ol\\\\\\\")].slice(-3).map(o => [o.start, o.textContent])\\\",\\\"equals\\\":[[1,\\\"Install the deps:\\\"],[2,\\\"Build the UI:\\\"],[3,\\\"Start the daemon.\\\"]]}: eval returned [[1,\\\"Install the deps:\\\"],[1,\\\"Build the UI:\\\"],[1,\\\"Start the daemon.\\\"]], expected [[1,\\\"Install the deps:\\\"],[2,\\\"Build the UI:\\\"],[3,\\\"Start the daemon.\\\"]]\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-27-04-055Z/fail-mobile-step2.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"eval\\\":\\\"[...document.querySelectorAll(\\\\\\\".prose ol\\\\\\\")].slice(-3).map(o => [o.start, o.textContent])\\\",\\\"equals\\\":[[1,\\\"Install the deps:\\\"],[2,\\\"Build the UI:\\\"],[3,\\\"Start the daemon.\\\"]]}: eval returned [[1,\\\"Install the deps:\\\"],[1,\\\"Build the UI:\\\"],[1,\\\"Start the daemon.\\\"]], expected [[1,\\\"Install the deps:\\\"],[2,\\\"Build the UI:\\\"],[3,\\\"Start the daemon.\\\"]]\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-27-04-055Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "thread/numbered-steps-across-code-blocks",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

@@ -1,0 +1,97 @@
+{
+  "ok": true,
+  "route": "session:s1a1fb6b78d76",
+  "build": {
+    "sha": "181f75eb9d96bc3d7ae7d9944cd94754a6ea7377",
+    "short": "181f75e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T00:27:14.481Z"
+  },
+  "dir": ".verify/evidence/numbered-steps-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2459,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/numbered-steps-head/numbered-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "[...document.querySelectorAll(\".prose ol\")].slice(-3).map(o => [o.start, o.textContent])",
+          "value": [
+            [
+              1,
+              "Install the deps:"
+            ],
+            [
+              2,
+              "Build the UI:"
+            ],
+            [
+              3,
+              "Start the daemon."
+            ]
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 2448,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/numbered-steps-head/numbered-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 1,
+          "eval": "[...document.querySelectorAll(\".prose ol\")].slice(-3).map(o => [o.start, o.textContent])",
+          "value": [
+            [
+              1,
+              "Install the deps:"
+            ],
+            [
+              2,
+              "Build the UI:"
+            ],
+            [
+              3,
+              "Start the daemon."
+            ]
+          ]
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
