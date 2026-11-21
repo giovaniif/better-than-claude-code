@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "session:s1a1fb6b78d76",
+  "build": {
+    "sha": "c7a8a097a37c66a7a1b7372f594756567696834a",
+    "short": "c7a8a09",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T00:10:45.478Z"
+  },
+  "dir": ".verify/evidence/thread-pinned-diagram-up",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4062,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/thread-pinned-diagram-up/scrolled-up-stays-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => new Promise(r => setTimeout(r, 500))).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const el = document.querySelector(\".scroll\"); el.scrollTop = 100; return new Promise(r => setTimeout(r, 200)).then(() => { const d = document.createElement(\"div\"); d.style.height = \"500px\"; document.querySelector(\".scroll .column\").append(d); return new Promise(r => setTimeout(r, 400)); }).then(() => el.scrollTop); })()",
+          "value": 100
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3460,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/thread-pinned-diagram-up/scrolled-up-stays-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => new Promise(r => setTimeout(r, 500))).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const el = document.querySelector(\".scroll\"); el.scrollTop = 100; return new Promise(r => setTimeout(r, 200)).then(() => { const d = document.createElement(\"div\"); d.style.height = \"500px\"; document.querySelector(\".scroll .column\").append(d); return new Promise(r => setTimeout(r, 400)); }).then(() => el.scrollTop); })()",
+          "value": 100
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

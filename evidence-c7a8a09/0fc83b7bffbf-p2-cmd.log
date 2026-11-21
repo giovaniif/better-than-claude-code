@@ -1,0 +1,45 @@
+$ verify/yv map run mermaid --recipe opens-at-latest-reply
+# exit 1 after 8138 ms at 41eaa4c98d9aa04136b281e90da0a38a84c65710
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "mermaid",
+      "at": "2026-11-21T00:10:28.859Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "opens-at-latest-reply",
+          "status": "fail",
+          "ms": 7284,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 3 {\"eval\":\"(() => { const el = document.querySelector(\\\".scroll\\\"); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-10-21-907Z/fail-mobile-step3.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 3 {\"eval\":\"(() => { const el = document.querySelector(\\\".scroll\\\"); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-10-21-907Z/fail-desktop-step3.png and the aria snapshot"
+            }
+          ],
+          "tail": "e notes above the diagram.\\n  - paragraph: Line 29 of the notes above the diagram.\\n  - paragraph: Line 30 of the notes above the diagram.\\n  - text: Mermaid\\n  - button \\\"Show source\\\"\\n  - img \\\"Mermaid diagram\\\"\\n  - paragraph: TEST-latest-line\\n  - list:\\n    - listitem: one\\n    - listitem: two\\n    - listitem: three\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, Default\\\"'\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Subagents\\\"\\n  - button \\\"Processes\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n    - button \\\"Attach\\\"\\n  - textbox \\\"Terminal input\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"Promise.all([...document.querySelectorAll(\\\".mermaid img\\\")].map(i => i.decode())).then(() => new Promise(r => setTimeout(r, 500))).then(() => true)\",\n          \"value\": true\n        },\n        {\n          \"step\": 3,\n          \"eval\": \"(() => { const el = document.querySelector(\\\".scroll\\\"); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 3 {\\\"eval\\\":\\\"(() => { const el = document.querySelector(\\\\\\\".scroll\\\\\\\"); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-10-21-907Z/fail-mobile-step3.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 3 {\\\"eval\\\":\\\"(() => { const el = document.querySelector(\\\\\\\".scroll\\\\\\\"); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab/.verify/drives/2026-11-21T00-10-21-907Z/fail-desktop-step3.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "mermaid/opens-at-latest-reply",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

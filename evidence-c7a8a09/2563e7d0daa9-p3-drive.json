@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "route": "session:s1a1fb6b78d76",
+  "build": {
+    "sha": "c7a8a097a37c66a7a1b7372f594756567696834a",
+    "short": "c7a8a09",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T00:10:45.478Z"
+  },
+  "dir": ".verify/evidence/thread-pinned-diagram-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3460,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/thread-pinned-diagram-head/opened-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => new Promise(r => setTimeout(r, 800))).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const el = document.querySelector(\".scroll\"); return \"px left below the view: \" + (el.scrollHeight - el.scrollTop - el.clientHeight); })()",
+          "value": "px left below the view: 0"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3205,
+      "steps": 5,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/thread-pinned-diagram-head/opened-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 2,
+          "eval": "Promise.all([...document.querySelectorAll(\".mermaid img\")].map(i => i.decode())).then(() => new Promise(r => setTimeout(r, 800))).then(() => true)",
+          "value": true
+        },
+        {
+          "step": 3,
+          "eval": "(() => { const el = document.querySelector(\".scroll\"); return \"px left below the view: \" + (el.scrollHeight - el.scrollTop - el.clientHeight); })()",
+          "value": "px left below the view: 0"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

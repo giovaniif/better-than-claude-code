@@ -1,0 +1,232 @@
+{
+  "v": 1,
+  "claim": "Opening a session with a Mermaid diagram near the end of its thread stops about 366 px above the latest reply, because the browser's scroll adjustment for the growing image unpinned the thread",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-0eab",
+  "base": "7515be9e8b8a79fc61f5c52e3a44163cd60c2542",
+  "head": "c7a8a097a37c66a7a1b7372f594756567696834a",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/thread.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/mermaid.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T00:10:01.041Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "41eaa4c98d9aa04136b281e90da0a38a84c65710",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "adeefc43670e16a31172a796e56aa78392ba2a36aa3d8bc7b25f7ef0c56f3111"
+        },
+        {
+          "path": "p1-opened-mobile.png",
+          "sha256": "355db080fb8a0b45af9b8559475450362586704280c3fbf24fe6e745eb455892"
+        },
+        {
+          "path": "p1-opened-desktop.png",
+          "sha256": "22c76c5bd91be1528c5e0f87dd5a512b0c5b05bbc47a7755fa5c5343f990780f"
+        }
+      ],
+      "addedAt": "2026-11-21T00:10:20.676Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "41eaa4c98d9aa04136b281e90da0a38a84c65710",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "0fc83b7bffbf782fcb00f4d3f67fe54920a608f49ee43f8b5c2708614921e6b7"
+        }
+      ],
+      "addedAt": "2026-11-21T00:10:20.725Z",
+      "cmd": "verify/yv map run mermaid --recipe opens-at-latest-reply",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "2563e7d0daa952dc7dea26374bb4dc5fd6a85d5a23fdd3bf834bf95cbf4f6ad6"
+        },
+        {
+          "path": "p3-opened-mobile.png",
+          "sha256": "03a469dd640a48d022fd4e35c07b09e96e534e64ff70471bc315155bb243a93d"
+        },
+        {
+          "path": "p3-opened-desktop.png",
+          "sha256": "0715d0468163b9faa04fc1c5753d314f9cc8fc9b219df468e4dc5f78f0f63095"
+        }
+      ],
+      "addedAt": "2026-11-21T00:11:14.429Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "b1a1ab74baa48e72617216339c86e662a92e0f6746c6c99ab71cba311e13d730"
+        },
+        {
+          "path": "p4-scrolled-up-stays-mobile.png",
+          "sha256": "72badcf1043a76fea195f9b7692bb78fa23cce34efffce3195a0b8f83b360b27"
+        },
+        {
+          "path": "p4-scrolled-up-stays-desktop.png",
+          "sha256": "cd4e8f368ee7e92e438c142b4484eac6f0a3aa14a706ce12b11756826d6eb03d"
+        }
+      ],
+      "addedAt": "2026-11-21T00:11:14.475Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "8bd5d5d9f716ae2095563aefd19a977e504354569902292c43e3b4bf0155664b"
+        }
+      ],
+      "addedAt": "2026-11-21T00:11:14.522Z",
+      "cmd": "(cd ui && bun test) && CARGO_BUILD_JOBS=4 cargo test -p yardd",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "126490e01e6859f018d97bad0ef951e542ea4475f511639bf1127e9725cf03ef"
+        }
+      ],
+      "addedAt": "2026-11-21T00:12:20.182Z",
+      "cmd": "verify/yv design-check --base 7515be9e8b8a",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-thread.json",
+          "sha256": "3333c62c51ebe8bb86310261be84d8cb580329e89d7ebd549867ee7a5251f707"
+        }
+      ],
+      "addedAt": "2026-11-21T00:12:20.276Z",
+      "cmd": "verify/yv map run thread",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "thread/reply-renders",
+        "thread/markdown-table-renders",
+        "thread/markdown-blocks-without-blank-lines",
+        "thread/web-links-open-outside-the-thread",
+        "thread/thinking-folds",
+        "thread/edit-shows-diff",
+        "thread/failed-turn-shows-error",
+        "thread/follow-up-turn",
+        "thread/claude-session-renders",
+        "thread/reply-to-part-of-answer",
+        "thread/no-reply-on-own-message",
+        "thread/queue-a-message-while-working",
+        "thread/remove-a-queued-message",
+        "thread/steer-a-running-turn",
+        "thread/steer-a-selected-queued-message",
+        "thread/stop-returns-the-queue",
+        "thread/edit-a-queued-message",
+        "thread/edit-a-queued-reply-keeps-its-quotes",
+        "thread/draft-survives-switching-sessions",
+        "thread/workspace-subagents",
+        "thread/subagent-nests-and-expands",
+        "thread/working-line-stays-in-view",
+        "thread/pr-link-hover-card",
+        "thread/pr-link-card-states",
+        "thread/pr-link-card-error",
+        "thread/pr-link-keyboard-and-touch",
+        "thread/links-inside-bold-text"
+      ]
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "c7a8a097a37c66a7a1b7372f594756567696834a",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-mermaid.json",
+          "sha256": "bfb39f3ba051f5871027b7b6a476bd8e6035f5129e74c46b54374c2f200cc00f"
+        }
+      ],
+      "addedAt": "2026-11-21T00:16:08.320Z",
+      "cmd": "verify/yv map run mermaid",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "mermaid/automatic-diagrams",
+        "mermaid/diagram-fallbacks",
+        "mermaid/safe-long-diagram-and-loading",
+        "mermaid/opens-at-latest-reply"
+      ]
+    }
+  ]
+}
