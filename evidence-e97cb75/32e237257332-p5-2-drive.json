@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+    "short": "e97cb75",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T06:16:57.991Z"
+  },
+  "dir": ".verify/evidence/usage-lead-account-head2-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 2391,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-lead-account-head2-desktop/popover-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-lead-account-head2-desktop/others-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

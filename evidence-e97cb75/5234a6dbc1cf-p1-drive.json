@@ -1,0 +1,53 @@
+{
+  "ok": false,
+  "route": "settings",
+  "build": {
+    "sha": "ad713b811e7802c6d57653308b344f4317fa26e4",
+    "short": "ad713b8",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T06:08:46.306Z"
+  },
+  "dir": ".verify/evidence/usage-lead-account-base-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 5334,
+      "steps": 5,
+      "failed": {
+        "step": 4,
+        "action": {
+          "expect": "css:.usage-active[aria-label=\"Claude · TEST-Work\"]",
+          "text": "91% used",
+          "timeout": 3000
+        },
+        "reason": "for: Timeout 3000ms exceeded.",
+        "screenshot": ".verify/evidence/usage-lead-account-base-desktop/fail-desktop-step4.png",
+        "aria": "- navigation \"Sessions\":\n  - button \"Go to session or page\": Switchyard Ctrl K\n  - button \"Collapse sessions sidebar\" [expanded]\n  - button \"New session\"\n  - button \"Switchy\"\n  - button \"Automations\"\n  - button \"Connectors\"\n  - button \"Import\"\n  - button \"Settings\"\n  - button \"[cmd] TEST-run the migration Fake Fast · Idle\"\n  - button \"Actions for [cmd] TEST-run the migration\"\n  - button \"TEST-hello from Claude Haiku 5.5 · Idle · Default\"\n  - button \"Actions for TEST-hello from Claude\"\n  - button \"[edit] TEST-fix the greeting Fake Fast · Idle\"\n  - button \"Actions for [edit] TEST-fix the greeting\"\n  - button \"TEST-say hello Fake Fast · Idle\"\n  - button \"Actions for TEST-say hello\"\n  - button \"[think] TEST-plan the refactor Fake Fast · Idle\"\n  - button \"Actions for [think] TEST-plan the refactor\"\n  - button \"[fail] TEST-failing turn Fake Fast · Idle\"\n  - button \"Actions for [fail] TEST-failing turn\"\n  - button \"Subscription usage\" [expanded]: Usage 91% used\n  - button \"iso-host 6% · 46%\"\n- separator \"Resize the sessions sidebar\"\n- banner:\n  - heading \"Settings\" [level=1]\n- region \"New session defaults\":\n  - heading \"New session defaults\" [level=2]\n  - text: Start new sessions on this host with this model. Existing sessions keep their settings.\n  - group \"New session defaults\":\n    - button \"iso-host\"\n    - button \"Model Opus 5.5\": Opus 5.5\n    - button \"Effort High\": High\n  - button \"Save defaults\"\n- region \"Switchy defaults\":\n  - heading \"Switchy defaults\" [level=2]\n  - text: Use this model and context host when you open Switchy. Inference runs on the local host.\n  - group \"Switchy defaults\":\n    - button \"All hosts\"\n    - button \"Model Fake Fast\": Fake Fast\n    - button \"Effort Low\": Low\n  - button \"Save defaults\"\n- region \"Notifications\":\n  - heading \"Notifications\" [level=2]\n  - text: A banner when a session waits for an approval, fails, or finishes a turn of a minute or more, while you are looking elsewhere.\n  - switch \"Notifications\"\n- region \"Sidebar\":\n  - heading \"Sidebar\" [level=2]\n  - text: The hosts listed at the foot of the sidebar, with CPU and memory. Plan usage there comes from these hosts. iso-host Show in sidebar\n  - switch \"Show iso-host in sidebar\" [checked]\n  - button \"Manage hosts\"\n- text: Kept in this browser.\n- dialog \"Subscription usage\":\n  - strong: Usage\n  - button \"Refresh usage\"\n  - region \"Claude · Default\":\n    - strong: Default\n    - text: Claude Code · Default account 5-hour window\n    - strong: 47% used\n    - progressbar \"5-hour window used\"\n    - text: Resets 5:08 AM · in 1 h 59 min Weekly · all models\n    - strong: 17% used\n    - progressbar \"Weekly · all models used\"\n    - text: Resets Tue, Nov 24, 3:08 AM · in 2 d 23 h\n  - button \"Other accounts 2\"\n  - status: Shared across hosts\n  - button \"Manage accounts\""
+      },
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/usage-lead-account-base-desktop/popover-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "desktop: step 4 {\"expect\":\"css:.usage-active[aria-label=\\\"Claude · TEST-Work\\\"]\",\"text\":\"91% used\",\"timeout\":3000}: for: Timeout 3000ms exceeded.",
+      "hint": "see .verify/evidence/usage-lead-account-base-desktop/fail-desktop-step4.png and the aria snapshot"
+    }
+  ]
+}

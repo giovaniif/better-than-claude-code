@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "route": "settings",
+  "build": {
+    "sha": "f24eb45902a026bff0fa6d041e99d80040759a6c",
+    "short": "f24eb45",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T06:09:38.403Z"
+  },
+  "dir": ".verify/evidence/usage-lead-account-head-mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3458,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-lead-account-head-mobile/popover-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/usage-lead-account-head-mobile/others-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

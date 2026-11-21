@@ -1,0 +1,26 @@
+$ verify/yv map run focused-pages --recipe usage-popover-leads-with-trigger-account
+# exit 0 after 7872 ms at f24eb45902a026bff0fa6d041e99d80040759a6c
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-21T06:12:47.772Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-popover-leads-with-trigger-account",
+          "status": "pass",
+          "ms": 6620
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

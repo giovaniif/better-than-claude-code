@@ -1,0 +1,102 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-21T06:20:32.160Z",
+      "counts": {
+        "pass": 17
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "selected-host-tabs",
+          "status": "pass",
+          "ms": 6252
+        },
+        {
+          "label": "compact-usage-popover",
+          "status": "pass",
+          "ms": 6311
+        },
+        {
+          "label": "usage-popover-leads-with-trigger-account",
+          "status": "pass",
+          "ms": 6079
+        },
+        {
+          "label": "usage-row-lines-up-with-host-rows",
+          "status": "pass",
+          "ms": 6136
+        },
+        {
+          "label": "subscriptions-page",
+          "status": "pass",
+          "ms": 6878
+        },
+        {
+          "label": "account-picker-separate-from-model",
+          "status": "pass",
+          "ms": 5576
+        },
+        {
+          "label": "other-engine-account-and-fixed-session",
+          "status": "pass",
+          "ms": 11266
+        },
+        {
+          "label": "sessions-search-and-archive",
+          "status": "pass",
+          "ms": 7867
+        },
+        {
+          "label": "sessions-visibility-tabs",
+          "status": "pass",
+          "ms": 7001
+        },
+        {
+          "label": "sessions-search-no-match-says-so",
+          "status": "pass",
+          "ms": 4889
+        },
+        {
+          "label": "host-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4639
+        },
+        {
+          "label": "session-rows-line-up-with-the-page",
+          "status": "pass",
+          "ms": 4421
+        },
+        {
+          "label": "session-rows-have-straight-dividers",
+          "status": "pass",
+          "ms": 4701
+        },
+        {
+          "label": "offline-host-and-selection-fallback",
+          "status": "pass",
+          "ms": 10672
+        },
+        {
+          "label": "workspace-widths-and-views",
+          "status": "pass",
+          "ms": 5350
+        },
+        {
+          "label": "manage-accounts-opens-logins",
+          "status": "pass",
+          "ms": 7013
+        },
+        {
+          "label": "sidebar-skips-duplicate-page-links",
+          "status": "pass",
+          "ms": 1806
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

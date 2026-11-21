@@ -1,0 +1,309 @@
+{
+  "v": 1,
+  "claim": "With no account selected (Settings, Hosts, Connectors), the sidebar Usage trigger reads 91% (TEST-Work) but its popover opens on Claude Default at 47% and folds the 91% account under Other accounts, so the number you clicked is not on screen",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-1541",
+  "base": "f3ff2773318b4023b620bb7e459222a9f5fba798",
+  "head": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/usageMeters.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/focused-pages.md"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/settings.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T06:08:52.204Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ad713b811e7802c6d57653308b344f4317fa26e4",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "5234a6dbc1cf44d29f10e208de390e0dbde8559051e056fd79007fa3bd1affdc"
+        },
+        {
+          "path": "p1-popover-desktop.png",
+          "sha256": "0e6f6baf91f4d6c0598f2123b64a2d7f75ac64fb57bce0a594f04b659b8637f8"
+        },
+        {
+          "path": "p1-fail-desktop-step4.png",
+          "sha256": "b0958d2c2c88e50d7f857d08353417831ea7be44626a9f42b7a15ab39b791a65"
+        }
+      ],
+      "addedAt": "2026-11-21T06:09:10.623Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ad713b811e7802c6d57653308b344f4317fa26e4",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "d922733fee42063183653dd2da94e8bea2dde4c7e7ae29b15336c72e128f646c"
+        },
+        {
+          "path": "p2-popover-mobile.png",
+          "sha256": "0cba343e74e27f615948d4ef0f05bde9b960b8626a3caee944bd10e9ff90a6f0"
+        },
+        {
+          "path": "p2-fail-mobile-step5.png",
+          "sha256": "0cba343e74e27f615948d4ef0f05bde9b960b8626a3caee944bd10e9ff90a6f0"
+        }
+      ],
+      "addedAt": "2026-11-21T06:09:10.679Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "ad713b811e7802c6d57653308b344f4317fa26e4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "4adba246cf21e094f50da6e6d5c056e19f4e047c076cd7174311f54841907214"
+        }
+      ],
+      "addedAt": "2026-11-21T06:09:10.728Z",
+      "cmd": "cd ui && bun test src/usageMeters.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "test",
+      "at": "ad713b811e7802c6d57653308b344f4317fa26e4",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "9f1e1b7387555a47a95e30d2e23299468ca84a1beb065e943bb6b41bfe186a3a"
+        }
+      ],
+      "addedAt": "2026-11-21T06:09:10.848Z",
+      "cmd": "verify/yv map run focused-pages --recipe usage-popover-leads-with-trigger-account",
+      "exit": 1
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-2-drive.json",
+          "sha256": "32e23725733205aef2bc771370abaa194b2dd9854b915848bc970c63982069e2"
+        },
+        {
+          "path": "p5-2-popover-desktop.png",
+          "sha256": "498b410f10dd332ece06b7cf989b5458d1acc861838f68b284a58531d026bae7"
+        },
+        {
+          "path": "p5-2-others-desktop.png",
+          "sha256": "76b6325597eb0211586ee18ba91a0ef37628a4a996283f5eb54b9847233944ec"
+        }
+      ],
+      "addedAt": "2026-11-21T06:17:43.931Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-2-drive.json",
+          "sha256": "03b802a2a80e6a1578daa94687605ba8fc9d31e42e7f9b8fa3d0031b85875218"
+        },
+        {
+          "path": "p6-2-popover-mobile.png",
+          "sha256": "70762d5097e800862747b663625b96910f3bea0df4d0d86f22a5afae1ae3f61d"
+        },
+        {
+          "path": "p6-2-others-mobile.png",
+          "sha256": "a64b6a9cb6e63bd10e247188d04f99167715cb98d0f622f26e2d5606b2798761"
+        }
+      ],
+      "addedAt": "2026-11-21T06:17:48.056Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "01b5fd65c4a7a6f27c57ec090a4965f37c47b7064ba24eba3f6a24f43ff6f371"
+        }
+      ],
+      "addedAt": "2026-11-21T06:17:48.103Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "364abebc740d76f611e59b18f67028ec21a4cfde8116f658d85bc7f15a305448"
+        }
+      ],
+      "addedAt": "2026-11-21T06:18:36.106Z",
+      "cmd": "verify/yv map run focused-pages --recipe usage-popover-leads-with-trigger-account",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "0b7297f820fc95934c93b3cd4e6d7fb44202bd1d8c08d69c7074cbf5e8f77aab"
+        }
+      ],
+      "addedAt": "2026-11-21T06:18:43.916Z",
+      "cmd": "verify/yv design-check --base f3ff2773318b",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-focused-pages.json",
+          "sha256": "69647aa50323488cc48c97eea247830f8a8f5bb400e6923ef2b372b5648d4fd3"
+        }
+      ],
+      "addedAt": "2026-11-21T06:18:44.002Z",
+      "cmd": "verify/yv map run focused-pages",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "focused-pages/selected-host-tabs",
+        "focused-pages/compact-usage-popover",
+        "focused-pages/usage-popover-leads-with-trigger-account",
+        "focused-pages/usage-row-lines-up-with-host-rows",
+        "focused-pages/subscriptions-page",
+        "focused-pages/account-picker-separate-from-model",
+        "focused-pages/other-engine-account-and-fixed-session",
+        "focused-pages/sessions-search-and-archive",
+        "focused-pages/sessions-visibility-tabs",
+        "focused-pages/sessions-search-no-match-says-so",
+        "focused-pages/host-rows-line-up-with-the-page",
+        "focused-pages/session-rows-line-up-with-the-page",
+        "focused-pages/session-rows-have-straight-dividers",
+        "focused-pages/offline-host-and-selection-fallback",
+        "focused-pages/workspace-widths-and-views",
+        "focused-pages/manage-accounts-opens-logins",
+        "focused-pages/sidebar-skips-duplicate-page-links"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-settings.json",
+          "sha256": "358ad688faf32461f76dcfe51f882e603c38daf218995f2b180a2669f829404a"
+        }
+      ],
+      "addedAt": "2026-11-21T06:20:32.214Z",
+      "cmd": "verify/yv map run settings",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "settings/settings-page",
+        "settings/hide-this-mac",
+        "settings/strip-from-shown-hosts",
+        "settings/long-host-name"
+      ]
+    },
+    {
+      "id": 12,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e97cb754e953d136f1e19400c96ade95d174e1f9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p12-map-usage.json",
+          "sha256": "2dd44acf43f887e7b5a8b8ca0775d7c827ed21d67eb6641b22b0ba5961741b7d"
+        }
+      ],
+      "addedAt": "2026-11-21T06:21:02.354Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart",
+        "usage/strip-names-every-account",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+$ verify/yv map run focused-pages --recipe usage-popover-leads-with-trigger-account
+# exit 1 after 13480 ms at ad713b811e7802c6d57653308b344f4317fa26e4
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "focused-pages",
+      "at": "2026-11-21T06:09:24.325Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-popover-leads-with-trigger-account",
+          "status": "fail",
+          "ms": 12225,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 2 {\"expect\":\"css:.usage-active[aria-label=\\\"Claude · TEST-Work\\\"]\",\"text\":\"91% used\"}: for: Timeout 10000ms exceeded.",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-1541/.verify/drives/2026-11-21T06-09-12-310Z/fail-desktop-step2.png and the aria snapshot"
+            }
+          ],
+          "tail": "ts\\\":\\n  - heading \\\"New session defaults\\\" [level=2]\\n  - text: Start new sessions on this host with this model. Existing sessions keep their settings.\\n  - group \\\"New session defaults\\\":\\n    - button \\\"iso-host\\\"\\n    - button \\\"Model Opus 5.5\\\": Opus 5.5\\n    - button \\\"Effort High\\\": High\\n  - button \\\"Save defaults\\\"\\n- region \\\"Switchy defaults\\\":\\n  - heading \\\"Switchy defaults\\\" [level=2]\\n  - text: Use this model and context host when you open Switchy. Inference runs on the local host.\\n  - group \\\"Switchy defaults\\\":\\n    - button \\\"All hosts\\\"\\n    - button \\\"Model Fake Fast\\\": Fake Fast\\n    - button \\\"Effort Low\\\": Low\\n  - button \\\"Save defaults\\\"\\n- region \\\"Notifications\\\":\\n  - heading \\\"Notifications\\\" [level=2]\\n  - text: A banner when a session waits for an approval, fails, or finishes a turn of a minute or more, while you are looking elsewhere.\\n  - switch \\\"Notifications\\\"\\n- region \\\"Sidebar\\\":\\n  - heading \\\"Sidebar\\\" [level=2]\\n  - text: The hosts listed at the foot of the sidebar, with CPU and memory. Plan usage there comes from these hosts. iso-host Show in sidebar\\n  - switch \\\"Show iso-host in sidebar\\\" [checked]\\n  - button \\\"Manage hosts\\\"\\n- text: Kept in this browser.\\n- dialog \\\"Subscription usage\\\":\\n  - strong: Usage\\n  - button \\\"Refresh usage\\\"\\n  - region \\\"Claude · Default\\\":\\n    - strong: Default\\n    - text: Claude Code · Default account 5-hour window\\n    - strong: 47% used\\n    - progressbar \\\"5-hour window used\\\"\\n    - text: Resets 4:44 AM · in 1 h 35 min Weekly · all models\\n    - strong: 17% used\\n    - progressbar \\\"Weekly · all models used\\\"\\n    - text: Resets Wed, Nov 25, 5:09 AM · in 4 d 2 h Weekly · Sonnet\\n    - strong: 8% used\\n    - progressbar \\\"Weekly · Sonnet used\\\"\\n    - text: Resets Wed, Nov 25, 5:09 AM · in 4 d 2 h\\n  - button \\\"Other accounts 1 need sign-in\\\"\\n  - status: Shared across hosts\\n  - button \\\"Manage accounts\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 2 {\\\"expect\\\":\\\"css:.usage-active[aria-label=\\\\\\\"Claude · TEST-Work\\\\\\\"]\\\",\\\"text\\\":\\\"91% used\\\"}: for: Timeout 10000ms exceeded.\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-1541/.verify/drives/2026-11-21T06-09-12-310Z/fail-desktop-step2.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "focused-pages/usage-popover-leads-with-trigger-account",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
