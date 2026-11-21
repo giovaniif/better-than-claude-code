@@ -1,0 +1,58 @@
+{
+  "ok": false,
+  "route": "new",
+  "build": {
+    "sha": "7ac729eed29bce5d895f8e7c93bee65ceb98e99d",
+    "short": "7ac729e",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T08:06:12.575Z"
+  },
+  "dir": ".verify/evidence/setup-sheet-long-account-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 2752,
+      "steps": 6,
+      "failed": {
+        "step": 5,
+        "action": {
+          "eval": "(() => { const sheet = document.querySelector(\".setup-options\").getBoundingClientRect(), n = document.querySelector(\".setup-options .account-trigger-name\"), chevron = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\".setup-options button\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()",
+          "equals": true
+        },
+        "reason": "eval returned false, expected true",
+        "screenshot": ".verify/evidence/setup-sheet-long-account-base/fail-mobile-step5.png",
+        "aria": "- banner:\n  - button \"Open sessions\"\n  - heading \"New session\" [level=2]\n  - button \"Subscription usage\": 47%\n  - button \"Connectors\"\n  - button \"Set up iPhone app\"\n- heading \"What should we work on?\" [level=1]\n- textbox \"Message\":\n  - /placeholder: Describe the task\n- button \"Attach files\"\n- button \"Dictate\"\n- button \"Voice mode\"\n- 'button \"Session setup: Fake Fast, TEST-ACME WORLDWIDE ENGINEERING PLATFORM, High, Ask first\" [expanded]': Fake Fast · High\n- button \"Send\" [disabled]\n- button \"iso-host\"\n- button \"work\"\n- text: Works in the folder itself\n- status:\n  - text: Codex (TEST-ACME WORLDWIDE ENGINEERING PLATFORM) isn't logged in on iso-host.\n  - button \"Log in\"\n- dialog \"Session setup\":\n  - strong: Session setup\n  - button \"Model Fake Fast\": Fake Fast\n  - 'button \"Account: Codex, TEST-ACME WORLDWIDE ENGINEERING PLATFORM\"': Codex · TEST-ACME WORLDWIDE ENGINEERING PLATFORM\n  - button \"Effort High\": High\n  - button \"Ask first\""
+      },
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/setup-sheet-long-account-base/sheet-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 5,
+          "eval": "(() => { const sheet = document.querySelector(\".setup-options\").getBoundingClientRect(), n = document.querySelector(\".setup-options .account-trigger-name\"), chevron = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\".setup-options button\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()",
+          "value": false
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": [
+    {
+      "code": "step-failed",
+      "msg": "mobile: step 5 {\"eval\":\"(() => { const sheet = document.querySelector(\\\".setup-options\\\").getBoundingClientRect(), n = document.querySelector(\\\".setup-options .account-trigger-name\\\"), chevron = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\\\".setup-options button\\\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()\",\"equals\":true}: eval returned false, expected true",
+      "hint": "see .verify/evidence/setup-sheet-long-account-base/fail-mobile-step5.png and the aria snapshot"
+    }
+  ]
+}

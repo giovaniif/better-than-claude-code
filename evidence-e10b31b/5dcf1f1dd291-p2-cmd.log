@@ -1,0 +1,40 @@
+$ verify/yv map run accounts --recipe long-account-name-fits-the-setup-sheet
+# exit 1 after 8185 ms at 7ac729eed29bce5d895f8e7c93bee65ceb98e99d
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-21T08:06:28.951Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-account-name-fits-the-setup-sheet",
+          "status": "fail",
+          "ms": 7329,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 7 {\"eval\":\"(() => { const sheet = document.querySelector(\\\".setup-options\\\").getBoundingClientRect(), n = document.querySelector(\\\".setup-options .account-trigger-name\\\"), chevron = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\\\".setup-options button\\\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-f64f/.verify/drives/2026-11-21T08-06-26-022Z/fail-mobile-step7.png and the aria snapshot"
+            }
+          ],
+          "tail": "tton \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- 'button \\\"Session setup: Fake Fast, TEST-ACME WORLDWIDE ENGINEERING PLATFORM, High, Ask first\\\" [expanded]': Fake Fast · High\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- status:\\n  - text: Codex (TEST-ACME WORLDWIDE ENGINEERING PLATFORM) isn't logged in on iso-host.\\n  - button \\\"Log in\\\"\\n- dialog \\\"Session setup\\\":\\n  - strong: Session setup\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, TEST-ACME WORLDWIDE ENGINEERING PLATFORM\\\"': Codex · TEST-ACME WORLDWIDE ENGINEERING PLATFORM\\n  - button \\\"Effort High\\\": High\\n  - button \\\"Ask first\\\"\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"mobile\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-f64f/.verify/drives/2026-11-21T08-06-26-022Z/long-account-sheet-mobile.png\",\n          \"size\": {\n            \"width\": 780,\n            \"height\": 1688\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 7,\n          \"eval\": \"(() => { const sheet = document.querySelector(\\\".setup-options\\\").getBoundingClientRect(), n = document.querySelector(\\\".setup-options .account-trigger-name\\\"), chevron = n.parentElement.querySelector(\\\"svg\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\\\".setup-options button\\\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 7 {\\\"eval\\\":\\\"(() => { const sheet = document.querySelector(\\\\\\\".setup-options\\\\\\\").getBoundingClientRect(), n = document.querySelector(\\\\\\\".setup-options .account-trigger-name\\\\\\\"), chevron = n.parentElement.querySelector(\\\\\\\"svg\\\\\\\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\\\\\\\".setup-options button\\\\\\\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-f64f/.verify/drives/2026-11-21T08-06-26-022Z/fail-mobile-step7.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "accounts/long-account-name-fits-the-setup-sheet",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

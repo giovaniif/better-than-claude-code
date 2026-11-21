@@ -1,0 +1,96 @@
+$ verify/yv map run accounts
+# exit 0 after 83849 ms at e10b31bd5cdaec768ea508e939867af48e2e4c72
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-21T08:08:39.880Z",
+      "counts": {
+        "pass": 15
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "add-account",
+          "status": "pass",
+          "ms": 4606
+        },
+        {
+          "label": "empty-name-add-looks-disabled",
+          "status": "pass",
+          "ms": 2702
+        },
+        {
+          "label": "refused-add-account-keeps-the-form",
+          "status": "pass",
+          "ms": 5442
+        },
+        {
+          "label": "log-in-account",
+          "status": "pass",
+          "ms": 3588
+        },
+        {
+          "label": "pick-account-desktop",
+          "status": "pass",
+          "ms": 5621
+        },
+        {
+          "label": "pick-account-mobile",
+          "status": "pass",
+          "ms": 6012
+        },
+        {
+          "label": "default-has-no-account-row-without-a-choice",
+          "status": "pass",
+          "ms": 2173
+        },
+        {
+          "label": "pick-other-engine-account-switches-engine",
+          "status": "pass",
+          "ms": 10912
+        },
+        {
+          "label": "remove-refused-while-in-use",
+          "status": "pass",
+          "ms": 2709
+        },
+        {
+          "label": "remove-account",
+          "status": "pass",
+          "ms": 3980
+        },
+        {
+          "label": "add-account-stays-at-the-right",
+          "status": "pass",
+          "ms": 4621
+        },
+        {
+          "label": "install-command-stays-at-the-right",
+          "status": "pass",
+          "ms": 13532
+        },
+        {
+          "label": "account-chip-shows-the-whole-name",
+          "status": "pass",
+          "ms": 5860
+        },
+        {
+          "label": "account-chip-chevron-keeps-its-size",
+          "status": "pass",
+          "ms": 5921
+        },
+        {
+          "label": "long-account-name-fits-the-setup-sheet",
+          "status": "pass",
+          "ms": 5310
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

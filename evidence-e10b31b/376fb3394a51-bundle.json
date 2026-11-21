@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "claim": "On a phone, a 40-character account name pushes every row of the Session setup sheet past its right edge: the name is cut off with no ellipsis and the chevrons disappear",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-f64f",
+  "base": "5fd86286a6efacd442b45a8b04c6a887460ebde3",
+  "head": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T08:06:08.056Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7ac729eed29bce5d895f8e7c93bee65ceb98e99d",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "0960f4d3338e3634584b621328f4a9b03898eb63f21e431140d838f5c7846989"
+        },
+        {
+          "path": "p1-sheet-mobile.png",
+          "sha256": "eb04868e65841f9930680b8a22111b5086936e460f4bd8999009029f524a6bee"
+        },
+        {
+          "path": "p1-fail-mobile-step5.png",
+          "sha256": "eb04868e65841f9930680b8a22111b5086936e460f4bd8999009029f524a6bee"
+        }
+      ],
+      "addedAt": "2026-11-21T08:06:20.724Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "7ac729eed29bce5d895f8e7c93bee65ceb98e99d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "5dcf1f1dd29108ecbd5d2a2a515a943bd8022e785719284a31f0c096bb05f5b4"
+        }
+      ],
+      "addedAt": "2026-11-21T08:06:20.770Z",
+      "cmd": "verify/yv map run accounts --recipe long-account-name-fits-the-setup-sheet",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "ce90b595a0159d75df88d3885d4de4750d1224de580a36d22b5bd13b41db5b71"
+        },
+        {
+          "path": "p3-sheet-mobile.png",
+          "sha256": "4434e140787d992c00e7172b212fd7652ba15e7d823cc832d7859e923c9de1d6"
+        }
+      ],
+      "addedAt": "2026-11-21T08:07:13.776Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "0c08adfd0a0e1ac36334333dd1907d5f1dc18edefb95b34686ce05bc58ffb5a3"
+        },
+        {
+          "path": "p4-sheet-compact-desktop.png",
+          "sha256": "585fc4291d2b6b7e4011be34cf0f61f3675226b93c09d4179623eeae84c2035f"
+        }
+      ],
+      "addedAt": "2026-11-21T08:07:15.995Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "bfc0bd156f28b153a5b10a219e3be0af85fe27ad104f0d8261b63d02c8b303ba"
+        }
+      ],
+      "addedAt": "2026-11-21T08:07:16.035Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "0b4223de5c8f5cbc9850017901e253e46b57c95d01b4d03b5bb9585740842290"
+        }
+      ],
+      "addedAt": "2026-11-21T08:08:39.928Z",
+      "cmd": "cd ui && bun test",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "design",
+      "at": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-design.json",
+          "sha256": "b40fc7ecdb8a177ff32832f7699b7c792f4483958c16fe04bd747590601715d3"
+        }
+      ],
+      "addedAt": "2026-11-21T08:08:40.145Z",
+      "cmd": "verify/yv design-check --base 5fd86286a6ef",
+      "exit": 0
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "e10b31bd5cdaec768ea508e939867af48e2e4c72",
+    "short": "e10b31b",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T08:06:48.403Z"
+  },
+  "dir": ".verify/evidence/setup-sheet-long-account-head-d",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1682,
+      "steps": 7,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/setup-sheet-long-account-head-d/sheet-compact-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(() => { const style = document.createElement(\"style\"); style.textContent = \".session-toolbar .picker > button { font-size: 32px; }\"; document.head.append(style); return true; })()",
+          "value": true
+        },
+        {
+          "step": 6,
+          "eval": "(() => { const sheet = document.querySelector(\".setup-options\").getBoundingClientRect(), n = document.querySelector(\".setup-options .account-trigger-name\"), chevron = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\".setup-options button\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
