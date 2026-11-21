@@ -1,0 +1,38 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "76b95e9b71e26162d24a13d88c2253f1f19ee924",
+    "short": "76b95e9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T02:15:01.487Z"
+  },
+  "dir": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19/.verify/offline-head2/mobile",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 1943,
+      "steps": 3,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19/.verify/offline-head2/mobile/offline-host-sessions-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
