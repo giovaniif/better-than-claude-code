@@ -185,6 +185,19 @@ yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{
 yv drive new --viewport mobile --steps '[{"click":"role:button:Session setup"},{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-ACME WORLDWIDE ENGINEERING PLATFORM"}},{"expect":"role:button:Account: Codex, TEST-ACME WORLDWIDE ENGINEERING PLATFORM"},{"expect":"role:dialog:Engine account identity","count":0},{"expect":"role:dialog:Session setup"},{"shot":"long-account-sheet"},{"eval":"(() => { const sheet = document.querySelector(\".setup-options\").getBoundingClientRect(), n = document.querySelector(\".setup-options .account-trigger-name\"), chevron = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\".setup-options button\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()","equals":true}]'
 ```
 
+### long-account-name-wraps-in-the-login-banner
+Viewports: mobile
+On a phone, New session with an added account that is not logged in and
+whose name has no spaces (40 characters, yardd's limit) wraps the name inside
+the "isn't logged in" banner: the banner and its Log in button stay on
+screen. (The banner's message did not wrap an unbroken name, so it pushed
+the Log in button past the right edge of the screen.)
+
+```sh
+yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"role:button:Add Codex account"},{"fill":"label:Account name","value":"TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM"},"text":"not logged in"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Session setup"},{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM"}},{"press":"Escape"},{"expect":"role:dialog:Session setup","count":0},{"expect":{"css":".new-inner .engine-notice","hasText":"TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM"},"text":"logged in on iso-host"},{"shot":"long-account-banner"},{"eval":"(() => { const n = document.querySelector(\".new-inner .engine-notice\").getBoundingClientRect(), b = document.querySelector(\".new-inner .engine-notice .btn-primary\").getBoundingClientRect(); return n.right <= innerWidth + 0.5 && b.left >= n.left && b.right <= n.right + 0.5; })()","equals":true}]'
+```
+
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
