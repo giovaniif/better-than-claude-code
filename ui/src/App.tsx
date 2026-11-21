@@ -3493,7 +3493,7 @@ export function Markdown({ text, quotable }: { text: string; quotable?: boolean 
                 case "ol": {
                   const List = seg.kind;
                   return (
-                    <List key={key}>
+                    <List key={key} start={seg.kind === "ol" ? seg.start : undefined}>
                       {seg.items.map((item, k) => (
                         <li key={k}>{inline(item)}</li>
                       ))}

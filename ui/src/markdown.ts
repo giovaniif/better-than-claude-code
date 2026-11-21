@@ -54,7 +54,9 @@ export interface MdTable {
 export type MdSegment =
   | { kind: "text"; lines: string[] }
   | { kind: "heading"; text: string }
-  | { kind: "ul" | "ol"; items: string[] }
+  | { kind: "ul"; items: string[] }
+  /** `start` when the first item is not 1: steps split by code blocks keep their numbers. */
+  | { kind: "ol"; items: string[]; start?: number }
   | { kind: "table"; table: MdTable };
 
 /** A row's cells: outer pipes dropped, split on pipes that are neither
@@ -122,7 +124,9 @@ export function blockSegments(lines: string[]): MdSegment[] {
     if (bullet || (numbered && (out.length === 0 || inList || numbered[1] === "1"))) {
       const kind = bullet ? "ul" : "ol";
       const text = bullet ? bullet[1] : numbered![2];
+      const start = numbered && !bullet ? Number(numbered[1]) : 1;
       if (prev && prev.kind === kind) prev.items.push(text);
+      else if (kind === "ol" && start !== 1) out.push({ kind, items: [text], start });
       else out.push({ kind, items: [text] });
       i++;
       continue;
