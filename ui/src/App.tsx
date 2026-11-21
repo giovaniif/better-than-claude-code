@@ -2286,7 +2286,10 @@ function NewSession({ state, actions, onUsageAccount }: { state: State; actions:
             <BranchPicker current={branchList.current!} branches={branchList.branches ?? []} value={base} onChange={setBase} />
           )}
           <span className="spacer" />
-          {cwd && branchList && (gone ? (
+          {/* Send is disabled until the host is back; say why rather than leave it grey. */}
+          {target !== "local" && !online ? (
+            <span className="muted small">{hostName(state, target)} is offline</span>
+          ) : cwd && branchList && (gone ? (
             <span className="bad small">This folder no longer exists</span>
           ) : (
             <span className="muted small">{isRepo ? "New worktree" : "Works in the folder itself"}</span>
