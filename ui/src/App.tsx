@@ -30,7 +30,7 @@ import { WidgetFrame } from "./WidgetFrame";
 import { hiddenFromSidebar } from "./automations";
 import { dragHasSession, dropUpdate, SESSION_DRAG_TYPE, type DropTarget } from "./sidebarDrop";
 import { addsProviders, canSteer, ENGINES, ENGINE_ACCOUNT, ENGINE_INSTALL, ENGINE_LABEL, ENGINE_LOGIN, ENGINE_NAME, pickerEngines, queuedHint, shownEffort } from "./engines";
-import { didNotRun, duration, handoffLinks, layout, sessionSubagents, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
+import { didNotRun, duration, handoffLinks, layout, sessionSubagents, stillPinned, summarize, thoughtLine, type Row, type WorkItem } from "./thread";
 import { voiceCue, type Cue } from "./voice";
 import { useVoice } from "./useVoice";
 import { MobileSetup, MobileSetupButton } from "./MobileSetup";
@@ -2651,6 +2651,7 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
   // Stick to the bottom while new items arrive, unless the user scrolled up.
   const scroller = useRef<HTMLDivElement>(null);
   const pinned = useRef(true);
+  const lastTop = useRef(0);
   useEffect(() => {
     const el = scroller.current;
     if (el && pinned.current) el.scrollTop = el.scrollHeight;
@@ -2785,7 +2786,8 @@ function SessionView({ meta, state, actions }: { meta: SessionMeta; state: State
           ref={scroller}
           onScroll={(e) => {
             const el = e.currentTarget;
-            pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+            pinned.current = stillPinned(pinned.current, lastTop.current, el.scrollTop, el.scrollHeight - el.scrollTop - el.clientHeight);
+            lastTop.current = el.scrollTop;
           }}
         >
           <div className="column">
