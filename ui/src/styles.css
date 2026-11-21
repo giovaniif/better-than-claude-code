@@ -628,6 +628,8 @@ h1, h2, h3, p { margin: 0; }
 .new-inner .engine-notice { margin: 14px 0 0; max-width: none; }
 /* The message wraps, not the button: .btn-primary has a fixed height. */
 .engine-notice .btn-primary { flex: none; white-space: nowrap; }
+/* An account name has no spaces when it is a slug or an email: break it anywhere, or it pushes Log in off a phone screen. */
+.engine-notice-text { min-width: 0; overflow-wrap: anywhere; }
 .engine-notice code { padding: 1px 5px; border-radius: 5px; background: var(--fill-strong); font-family: var(--mono); font-size: 11.5px; user-select: all; }
 .engine-login { margin-left: auto; height: 26px; padding: 0 10px; font-size: 12px; }
 .engine-block { display: flex; flex-direction: column; gap: 6px; }

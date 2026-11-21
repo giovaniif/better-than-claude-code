@@ -3606,7 +3606,7 @@ function EngineNotice({ state, host, engine, account = DEFAULT_ACCOUNT, onLogin 
       <span className="dot host-dot-busy" aria-hidden="true" />
       {st.installed ? (
         <>
-          <span>
+          <span className="engine-notice-text">
             {which} isn't logged in on {machine}.
           </span>
           <span className="spacer" />
@@ -3615,7 +3615,7 @@ function EngineNotice({ state, host, engine, account = DEFAULT_ACCOUNT, onLogin 
           </button>
         </>
       ) : (
-        <span>
+        <span className="engine-notice-text">
           {ENGINE_LABEL[engine]} isn't installed on {machine}. Install it there with <code>{ENGINE_INSTALL[engine]}</code>.
         </span>
       )}
