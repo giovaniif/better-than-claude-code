@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "20b60f640f1b3a8f016c3025e61788bff085d2d5",
+    "short": "20b60f6",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T05:06:35.618Z"
+  },
+  "dir": ".verify/evidence/switchy-all-hosts-icon-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3783,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-all-hosts-icon-base/chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-all-hosts-icon-base/menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3332,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-all-hosts-icon-base/chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-all-hosts-icon-base/menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

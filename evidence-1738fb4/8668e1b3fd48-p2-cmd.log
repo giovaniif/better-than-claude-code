@@ -1,0 +1,45 @@
+$ verify/yv map run switchy --recipe all-hosts-chip-icon
+# exit 1 after 7622 ms at 20b60f640f1b3a8f016c3025e61788bff085d2d5
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-21T05:06:51.063Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "all-hosts-chip-icon",
+          "status": "fail",
+          "ms": 6764,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 5 {\"eval\":\"(() => { const rows = [...document.querySelectorAll(\\\".chip-popover .menu-item\\\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); return window.__chipIcon === icon(\\\"All hosts\\\") && window.__chipIcon !== rows[1].querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-06-44-471Z/fail-mobile-step5.png and the aria snapshot"
+            },
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 5 {\"eval\":\"(() => { const rows = [...document.querySelectorAll(\\\".chip-popover .menu-item\\\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); return window.__chipIcon === icon(\\\"All hosts\\\") && window.__chipIcon !== rows[1].querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-06-44-471Z/fail-desktop-step5.png and the aria snapshot"
+            }
+          ],
+          "tail": "Low\\\": Low\\n  - button \\\"Plan only\\\"\\n  - button \\\"Send\\\" [disabled]\\n  - button \\\"All hosts\\\" [expanded]\\n  - paragraph: Context comes from selected hosts. Tools run on iso-host with the access selected above.\\n- dialog \\\"Context hosts\\\":\\n  - button \\\"All hosts\\\"\\n  - button \\\"iso-host\\\"\\n  - button \\\"Add a host…\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"window.__chipIcon = document.querySelector(\\\".composer-chips .chip svg path\\\").getAttribute(\\\"d\\\"); true\",\n          \"value\": true\n        },\n        {\n          \"step\": 5,\n          \"eval\": \"(() => { const rows = [...document.querySelectorAll(\\\".chip-popover .menu-item\\\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); return window.__chipIcon === icon(\\\"All hosts\\\") && window.__chipIcon !== rows[1].querySelector(\\\"svg path\\\").getAttribute(\\\"d\\\"); })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 5 {\\\"eval\\\":\\\"(() => { const rows = [...document.querySelectorAll(\\\\\\\".chip-popover .menu-item\\\\\\\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\\\\\\\"svg path\\\\\\\").getAttribute(\\\\\\\"d\\\\\\\"); return window.__chipIcon === icon(\\\\\\\"All hosts\\\\\\\") && window.__chipIcon !== rows[1].querySelector(\\\\\\\"svg path\\\\\\\").getAttribute(\\\\\\\"d\\\\\\\"); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-06-44-471Z/fail-mobile-step5.png and the aria snapshot\"\n    },\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 5 {\\\"eval\\\":\\\"(() => { const rows = [...document.querySelectorAll(\\\\\\\".chip-popover .menu-item\\\\\\\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\\\\\\\"svg path\\\\\\\").getAttribute(\\\\\\\"d\\\\\\\"); return window.__chipIcon === icon(\\\\\\\"All hosts\\\\\\\") && window.__chipIcon !== rows[1].querySelector(\\\\\\\"svg path\\\\\\\").getAttribute(\\\\\\\"d\\\\\\\"); })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-06-44-471Z/fail-desktop-step5.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "switchy/all-hosts-chip-icon",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+

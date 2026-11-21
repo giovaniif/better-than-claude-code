@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "route": "switchy",
+  "build": {
+    "sha": "1738fb4354b438c856cb472c105dca3bbeca0b92",
+    "short": "1738fb4",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T05:06:59.877Z"
+  },
+  "dir": ".verify/evidence/switchy-all-hosts-icon-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3905,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/chip-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/menu-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/local-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4031,
+      "steps": 9,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/chip-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/menu-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/switchy-all-hosts-icon-head/local-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

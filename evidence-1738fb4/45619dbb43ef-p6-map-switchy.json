@@ -1,0 +1,67 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-21T05:08:57.429Z",
+      "counts": {
+        "pass": 10
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "ask-and-reload",
+          "status": "pass",
+          "ms": 9519
+        },
+        {
+          "label": "context-and-followup",
+          "status": "pass",
+          "ms": 8059
+        },
+        {
+          "label": "removed-host-scope-falls-back",
+          "status": "pass",
+          "ms": 12376
+        },
+        {
+          "label": "answer-names-the-model",
+          "status": "pass",
+          "ms": 7289
+        },
+        {
+          "label": "refusal-notice-is-red",
+          "status": "pass",
+          "ms": 7687
+        },
+        {
+          "label": "stopped-answer-is-quiet",
+          "status": "pass",
+          "ms": 9023
+        },
+        {
+          "label": "all-hosts-chip-icon",
+          "status": "pass",
+          "ms": 5318
+        },
+        {
+          "label": "shared-composer",
+          "status": "pass",
+          "ms": 5919
+        },
+        {
+          "label": "controls-and-approvals",
+          "status": "pass",
+          "ms": 11172
+        },
+        {
+          "label": "voice-roundtrip",
+          "status": "pass",
+          "ms": 12404
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

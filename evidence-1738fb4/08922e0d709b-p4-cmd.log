@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run switchy --recipe all-hosts-chip-icon
+# exit 0 after 7770 ms at 1738fb4354b438c856cb472c105dca3bbeca0b92
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "switchy",
+      "at": "2026-11-21T05:07:27.663Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "all-hosts-chip-icon",
+          "status": "pass",
+          "ms": 6726
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 410 pass
+ 0 fail
+ 1006 expect() calls
+Ran 410 tests across 29 files. [177.00ms]
