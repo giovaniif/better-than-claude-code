@@ -205,6 +205,18 @@ export function thoughtLine(text: string): string {
   return line.length > 140 ? `${line.slice(0, 137)}…` : line;
 }
 
+/** Whether the thread stays pinned to its bottom after a scroll event, given
+ *  the scroll position before and after it and the distance left to the
+ *  bottom. Only a move up unpins. A diagram or thumbnail is inserted before it
+ *  has a height and grows a moment later; the browser then moves `scrollTop`
+ *  down to keep the view steady and fires a scroll event far from the bottom.
+ *  That is not the user leaving, and the resize that follows must still
+ *  bring the bottom back. */
+export function stillPinned(pinned: boolean, before: number, after: number, gap: number): boolean {
+  if (gap < 80) return true;
+  return after < before ? false : pinned;
+}
+
 /** "45s", "1m 12s", "2h 3m". */
 export function duration(ms: number): string {
   const s = Math.max(0, Math.round(ms / 1000));

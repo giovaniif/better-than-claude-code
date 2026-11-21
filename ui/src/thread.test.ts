@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { applyEvent, type AgentEvent, type Item } from "./protocol";
 import type { SessionMeta } from "./protocol";
-import { duration, handoffLinks, layout, summarize, thoughtLine, type ToolItem, type WorkItem } from "./thread";
+import { duration, handoffLinks, layout, stillPinned, summarize, thoughtLine, type ToolItem, type WorkItem } from "./thread";
 
 const fold = (events: AgentEvent[]): Item[] => events.reduce((acc, ev, i) => applyEvent(acc, ev, i), [] as Item[]);
 const shape = (rows: ReturnType<typeof layout>) =>
@@ -308,3 +308,18 @@ describe("summarize, with calls that never ran", () => {
   });
 });
 
+
+describe("stillPinned", () => {
+  test("a scroll the browser makes for growing content keeps the thread pinned", () => {
+    // A diagram image got its height: scrollTop moved down, 366 px from the bottom.
+    expect(stillPinned(true, 183, 286, 366)).toBe(true);
+  });
+  test("scrolling up unpins, and reaching the bottom pins again", () => {
+    expect(stillPinned(true, 900, 600, 300)).toBe(false);
+    expect(stillPinned(false, 600, 700, 200)).toBe(false);
+    expect(stillPinned(false, 700, 880, 20)).toBe(true);
+  });
+  test("a move up that stays near the bottom keeps it pinned", () => {
+    expect(stillPinned(true, 286, 183, 0)).toBe(true);
+  });
+});
