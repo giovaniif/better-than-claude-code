@@ -1,0 +1,96 @@
+{
+  "v": 1,
+  "claim": "The sidebar map had no recipe for opening the … menu of a row below the fold, and a drive click that scrolls a row into view closes its menu at once (deliberate close-on-scroll), which nothing documented",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-8513",
+  "base": "91cee000bd299642ed55e32bbfd44b06fb85b9b1",
+  "head": "a722d07d7b4684199472795fcd57f9cd1b7b5c11",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/sidebar.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T01:19:06.455Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "45947d3745310e55709747597af060531ce48096",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T01:19:06.500Z",
+      "text": "no-repro: map-only change (a new sidebar recipe and a Gotcha); no product code changed. The Gotcha's behaviour was observed on main 91cee00: with 20+ sessions, a direct drive click on a row's … button below the fold left 0 menus open, while the same click on a visible row opened 1."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "45947d3745310e55709747597af060531ce48096",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T01:19:06.544Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "a722d07d7b4684199472795fcd57f9cd1b7b5c11",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-sidebar-map-head2.json",
+          "sha256": "0dee827b79fb3b40087db52383e6314503ebfaf1522fad3650216ff3e5e1c1db"
+        }
+      ],
+      "addedAt": "2026-11-21T01:21:54.847Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "sidebar/rows-show-status",
+        "sidebar/rows-mark-what-needs-you",
+        "sidebar/mark-chat-unread",
+        "sidebar/rename-session",
+        "sidebar/pin-and-unpin",
+        "sidebar/archive-and-restore",
+        "sidebar/archiving-the-open-session-keeps-the-list-closed",
+        "sidebar/delete-keeps-worktree",
+        "sidebar/group-new",
+        "sidebar/group-move-to-existing",
+        "sidebar/group-drag-out-to-ungrouped",
+        "sidebar/group-drag-into-group",
+        "sidebar/group-drag-noop",
+        "sidebar/group-collapse-persists",
+        "sidebar/group-rename",
+        "sidebar/group-remove-from-group",
+        "sidebar/group-ungroup",
+        "sidebar/archived-header-stays-at-bottom",
+        "sidebar/hand-off-keeps-the-group",
+        "sidebar/hand-off-from-a-pinned-session-stays-in-its-group",
+        "sidebar/menu-on-a-row-below-the-fold"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "a722d07d7b4684199472795fcd57f9cd1b7b5c11",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "78498cc6441f2e0080f11c068d5b0d3524ee05b4102cd7d57e94bd5c5dee4846"
+        }
+      ],
+      "addedAt": "2026-11-21T01:21:54.891Z",
+      "cmd": "verify/yv map run sidebar --recipe menu-on-a-row-below-the-fold",
+      "exit": 0
+    }
+  ]
+}
