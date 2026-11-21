@@ -92,6 +92,10 @@ describe("blockSegments: headings and lists without a blank line", () => {
       { kind: "ul", items: ["src/a.ts", "src/b.ts"] },
     ]);
   });
+  test("a numbered list that continues after a code block keeps its number", () => {
+    expect(blockSegments(["2. Build the UI:"])).toEqual([{ kind: "ol", items: ["Build the UI:"], start: 2 }]);
+    expect(blockSegments(["1. Install the deps:"])).toEqual([{ kind: "ol", items: ["Install the deps:"] }]);
+  });
   test("a whole-paragraph list stays one list", () => {
     expect(blockSegments(["1. one", "2. two"])).toEqual([{ kind: "ol", items: ["one", "two"] }]);
   });
