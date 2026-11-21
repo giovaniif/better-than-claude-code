@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "claim": "Map flake: layout/desktop-sidebars-collapse-independently (and mobile-panels-have-close-controls) read document.activeElement once, before the requestAnimationFrame that focuses the opener; the first failed 2 of 3 runs on main with focus landing correctly",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35",
+  "base": "c9ee6a3d5324c237131989b373bf3c3f6e960dac",
+  "head": "5934f5f5dfef55db3153a8ec25ae7f362c043018",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T05:35:30.225Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "5934f5f5dfef55db3153a8ec25ae7f362c043018",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:35:30.265Z",
+      "text": "no-repro: map-only. On main (afa315e) desktop-sidebars-collapse-independently failed 2 of 3 runs at step 31 (eval returned null, expected 'Collapse sessions sidebar'), and mobile-panels-have-close-controls once (activeElement.textContent ''); probe drives of the same steps found focus on the opener each time, so the recipes raced the rAF focus."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "5934f5f5dfef55db3153a8ec25ae7f362c043018",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:35:30.304Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "5934f5f5dfef55db3153a8ec25ae7f362c043018",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-layout-focus-r2-head.json",
+          "sha256": "074ac2ea9567c82dc0827f39424654739d90c9af909565f1c0e14b8b93380715"
+        }
+      ],
+      "addedAt": "2026-11-21T05:36:42.282Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/desktop-sidebars-collapse-independently",
+        "layout/mobile-panels-have-close-controls",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/new-session-send-shares-controls-row",
+        "layout/desktop-sidebar-is-a-column",
+        "layout/workspace-tabs-fit-minimum-width"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "5934f5f5dfef55db3153a8ec25ae7f362c043018",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "f8319b233abe2fd10963b139032fd728e24a951135dc6f38ef09a10bb5076bee"
+        }
+      ],
+      "addedAt": "2026-11-21T05:36:42.332Z",
+      "cmd": "for i in 1 2 3; do verify/yv map run layout --recipe desktop-sidebars-collapse-independently && verify/yv map run layout --recipe mobile-panels-have-close-controls || exit 1; done",
+      "exit": 0
+    }
+  ]
+}
