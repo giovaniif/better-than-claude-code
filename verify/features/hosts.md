@@ -179,5 +179,19 @@ yv drive 'session:{{gone_sid}}' --viewport desktop --allow-errors --steps '[{"ex
 wait
 ```
 
+### new-session-says-the-remembered-host-is-offline
+Viewports: both
+New session keeps a remembered remote host selected while it is offline, with
+Send disabled, and says why next to the chips. Until 2026-11-21 Send was just
+grey: the message could be typed but nothing said the host was offline. Uses
+its own remote, taken down before the page opens.
+
+```sh
+later_port="$(yv iso up --name map-hosts-later --host-name TEST-later | jq -r .iso.port)"
+yv api '{"op":"host.add","name":"TEST-later","kind":"direct","url":"ws://127.0.0.1:'"$later_port"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-later","status":"connected"}]}' --save later_id='hosts[name=TEST-later].id'
+yv iso down --name map-hosts-later
+yv drive new --steps '[{"eval":"(localStorage.setItem(\"yard.host\", \"{{later_id}}\"), true)","equals":true},{"reload":true},{"expect":{"css":".new-chips button","hasText":"TEST-later"}},{"fill":"label:Message","value":"TEST-wait for the host"},{"expect":{"role":"button","name":"Send","exact":true},"enabled":false},{"expect":"css:.new-chips","text":"TEST-later is offline"},{"shot":"remembered-host-offline"}]'
+```
+
 ## Gotchas
 - Isolated environments replace `ssh` with `verify/fakes/ssh`, which always fails like an unreachable host.
