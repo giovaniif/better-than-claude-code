@@ -193,5 +193,24 @@ yv iso down --name map-hosts-later
 yv drive new --steps '[{"eval":"(localStorage.setItem(\"yard.host\", \"{{later_id}}\"), true)","equals":true},{"reload":true},{"expect":{"css":".new-chips button","hasText":"TEST-later"}},{"fill":"label:Message","value":"TEST-wait for the host"},{"expect":{"role":"button","name":"Send","exact":true},"enabled":false},{"expect":"css:.new-chips","text":"TEST-later is offline"},{"shot":"remembered-host-offline"}]'
 ```
 
+### sessions-stay-listed-while-their-host-is-down
+Viewports: both
+A page opened (a reload, another window) while a remote host is down still
+lists that host's sessions, marked Offline, and opening one says the host is
+offline. Until 2026-11-21 the sessions vanished from the sidebar until the
+host came back: yardd only relayed a remote's sessions over a live link.
+Uses its own remote so the area's TEST-remote stays up. Only a hub that saw
+the host since it started knows its sessions.
+
+```sh
+away_port="$(yv iso up --name map-hosts-away --host-name TEST-away | jq -r .iso.port)"
+away_work="$(yv var get work --iso map-hosts-away | jq -er .value)"
+yv api '{"op":"host.add","name":"TEST-away","kind":"direct","url":"ws://127.0.0.1:'"$away_port"'/ws"}' --wait '{"op":"hosts","hosts":[{"name":"TEST-away","status":"connected"}]}' --save away_id='hosts[name=TEST-away].id'
+yv api '{"op":"session.create","host":"{{away_id}}","engine":"codex","model":"fake-fast","effort":"low","cwd":"'"$away_work"'","text":"TEST-listed while away"}' --wait '{"op":"event","event":{"type":"turn_completed"}}'
+yv iso down --name map-hosts-away
+yv drive new --viewport desktop --steps '[{"expect":{"css":".session-row","hasText":"TEST-listed while away"},"text":"Offline","timeout":20000},{"click":{"css":".session-row","hasText":"TEST-listed while away"}},{"expect":"css:.offline-note","text":"is offline"},{"shot":"listed-while-away"}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":{"css":".session-row","hasText":"TEST-listed while away"},"text":"Offline","timeout":20000},{"shot":"listed-while-away"},{"click":{"css":".session-row","hasText":"TEST-listed while away"}},{"expect":"css:.offline-note","text":"is offline"}]'
+```
+
 ## Gotchas
 - Isolated environments replace `ssh` with `verify/fakes/ssh`, which always fails like an unreachable host.
