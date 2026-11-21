@@ -88,9 +88,11 @@ export function subscriptionRows(sources: SubscriptionSource[], now: number) {
   });
 }
 
-/** The meter the closed trigger shows: the fullest one across accounts. */
+/** The meter the closed trigger shows: the fullest one across accounts. An
+ *  account that needs sign-in keeps its last report, but the popover hides it
+ *  behind "Sign in to see usage", so the trigger leaves it out too. */
 export function triggerMeter(rows: ReturnType<typeof subscriptionRows>): Meter | undefined {
-  return rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
+  return rows.filter((r) => r.loggedIn !== false).flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
 }
 
 export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRefresh, compact = false }: {
