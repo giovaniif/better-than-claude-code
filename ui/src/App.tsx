@@ -2358,11 +2358,13 @@ export function HostPicker(props: { state: State; value: string; onChange(host: 
     setOpen(false);
   };
   const remote = state.hosts.find((h) => h.id === value);
+  // "all" is no host id; it wears the cloud like its row in the menu, not this machine's laptop.
+  const allHosts = props.contextScope && value === "all";
   return (
     <ChipMenu
       menuLabel={props.contextScope ? "Context hosts" : "Hosts"}
-      icon={remote ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
-      label={props.contextScope && value === "all" ? "All hosts" : remote ? remote.name : hostName(state, "local")}
+      icon={remote || allHosts ? <Icon d={CLOUD} /> : <Icon d={LAPTOP} />}
+      label={allHosts ? "All hosts" : remote ? remote.name : hostName(state, "local")}
       title={props.contextScope ? "Hosts used for context" : "Where the session runs"}
       open={open}
       setOpen={setOpen}
