@@ -92,7 +92,21 @@ export function subscriptionRows(sources: SubscriptionSource[], now: number) {
  *  account that needs sign-in keeps its last report, but the popover hides it
  *  behind "Sign in to see usage", so the trigger leaves it out too. */
 export function triggerMeter(rows: ReturnType<typeof subscriptionRows>): Meter | undefined {
-  return rows.filter((r) => r.loggedIn !== false).flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
+  return fullest(rows)?.meter;
+}
+
+function fullest(rows: ReturnType<typeof subscriptionRows>) {
+  return rows
+    .filter((r) => r.loggedIn !== false)
+    .flatMap((row) => row.meters.map((meter) => ({ row, meter })))
+    .sort((a, b) => b.meter.percent - a.meter.percent)[0];
+}
+
+/** The account the popover opens on when no session picks one: the one whose
+ *  meter the trigger shows, so the number you clicked is on screen. Default
+ *  sorts first even with nothing reported. */
+export function leadRow(rows: ReturnType<typeof subscriptionRows>) {
+  return fullest(rows)?.row ?? rows[0];
 }
 
 export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRefresh, compact = false }: {
@@ -111,7 +125,7 @@ export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRe
   const chosen = selectedHost && selected
     ? rows.find((row) => row.engine === selected.engine && (row.account ?? "Default").toLowerCase() === selectedName.toLowerCase())
     : undefined;
-  const active = chosen ?? (selectedHost ? undefined : rows[0]);
+  const active = chosen ?? (selectedHost ? undefined : leadRow(rows));
   const others = rows.filter((row) => row !== active);
   const activeLabel = selectedHost && selected ? `${ENGINE_NAME[selected.engine]} · ${selectedName}` : active?.name;
   const activeName = active?.account ?? (selectedHost ? selectedName : "Default");
