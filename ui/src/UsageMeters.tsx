@@ -59,7 +59,7 @@ export type UsageAccount = { host: string; engine: Engine; account: string };
 
 /** Keep the existing cross-host deduplication and freshness rules. Identity
  * and host badges explain which login each report belongs to. */
-function subscriptionRows(sources: SubscriptionSource[], now: number) {
+export function subscriptionRows(sources: SubscriptionSource[], now: number) {
   const groups = stripGroups(sources, [...LIMIT_ENGINES]);
   for (const source of sources)
     for (const engine of LIMIT_ENGINES) {
@@ -86,6 +86,11 @@ function subscriptionRows(sources: SubscriptionSource[], now: number) {
       meters: metersFor(g.engine, g.usage, now),
     };
   });
+}
+
+/** The meter the closed trigger shows: the fullest one across accounts. */
+export function triggerMeter(rows: ReturnType<typeof subscriptionRows>): Meter | undefined {
+  return rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
 }
 
 export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRefresh, compact = false }: {
@@ -119,7 +124,7 @@ export function UsageStrip({ sources, selected, onManageAccounts, onManage, onRe
   const [failure, setFailure] = useState("");
   const [lastRefresh, setLastRefresh] = useState<{ host: string; engine: Engine; account: string; at: number }>();
   const anchor = useRef<HTMLButtonElement>(null);
-  const highest = rows.flatMap((r) => r.meters).sort((a, b) => b.percent - a.percent)[0];
+  const highest = triggerMeter(rows);
   const close = () => { setOpen(false); setShowOthers(false); setFailure(""); };
   const refresh = async () => {
     if (!canRefresh || refreshing || !activeHost || !activeEngine || !accountId) return;
