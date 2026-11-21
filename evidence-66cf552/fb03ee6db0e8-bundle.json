@@ -1,0 +1,200 @@
+{
+  "v": 1,
+  "claim": "A remote host's sessions vanish from the sidebar when a page is opened (reload, new window) while that host is offline; ARCHITECTURE says remote sessions stay listed but offline while their host is down",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19",
+  "base": "0733870a2f7ffda123c9d8d8c9bab3ddfa4f5bb0",
+  "head": "66cf55281392c1e66857def8dda5a93f18e077a2",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T02:27:15.857Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d5924029d9c2cfca35ecac7d8a4bc753edc6cfcb",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-offline-base3-mobile.json",
+          "sha256": "e57adefd1684ec1a9d1810a77c66406b6f6b891cb83361b30ce4178662f33cb8"
+        },
+        {
+          "path": "p1-fail-mobile-step1.png",
+          "sha256": "a3658097b33cd5b0658d83a40981359dc0dff896fd472690cc99e0b82a0987f1"
+        }
+      ],
+      "addedAt": "2026-11-21T02:27:15.897Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "d5924029d9c2cfca35ecac7d8a4bc753edc6cfcb",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-offline-base3-desktop.json",
+          "sha256": "f3c838f7f5f22594c7a3135abb69786b57b8795f76a39ceaa15eef56e4d4dd9f"
+        },
+        {
+          "path": "p2-fail-desktop-step0.png",
+          "sha256": "4694ad54d63b582646bc5fa9864bfa21439fafbbc7902838fb423b37b288662d"
+        }
+      ],
+      "addedAt": "2026-11-21T02:27:15.942Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "d5924029d9c2cfca35ecac7d8a4bc753edc6cfcb",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "48e79a3c48727b85465ded39646d32e685c602cb25e44de77020ce06fc6a4790"
+        }
+      ],
+      "addedAt": "2026-11-21T02:27:16.022Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_page_opened_while_a_host_is_down_still_lists_its_sessions",
+      "exit": 101
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "66cf55281392c1e66857def8dda5a93f18e077a2",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-offline-head3-mobile.json",
+          "sha256": "7aebb75bfa2390de7fbdc1477c28185a77e4bb324ef6c4d3cce1109fae8bd8e0"
+        },
+        {
+          "path": "p4-offline-host-sessions-mobile.png",
+          "sha256": "65b9d5dca8919f65629a6d07362d921a802af4c08f136c18adf918cac9c8a90e"
+        }
+      ],
+      "addedAt": "2026-11-21T02:28:05.221Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "66cf55281392c1e66857def8dda5a93f18e077a2",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-offline-head3-desktop.json",
+          "sha256": "0cf87200c3630489b9b1533263e853cedb187ccdff19871999b94e50c259cac0"
+        },
+        {
+          "path": "p5-offline-host-sessions-desktop.png",
+          "sha256": "2def030385703dd54da3f514de7cd864252a65d874fb8cfc8d220700bb1be762"
+        }
+      ],
+      "addedAt": "2026-11-21T02:28:05.260Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "66cf55281392c1e66857def8dda5a93f18e077a2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "cedfe4116bcb339e477eca53909f3cdb1b05598da44077d29e342d9f4f097a0e"
+        }
+      ],
+      "addedAt": "2026-11-21T02:28:05.307Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "66cf55281392c1e66857def8dda5a93f18e077a2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "7fee336bea8663fcea40446c942909d2749807f317daeade28d836c10cb47cce"
+        }
+      ],
+      "addedAt": "2026-11-21T02:28:53.934Z",
+      "cmd": "verify/yv map run hosts --recipe sessions-stay-listed-while-their-host-is-down",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "66cf55281392c1e66857def8dda5a93f18e077a2",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-hosts.json",
+          "sha256": "3be9634dc180866c154dde7a762791a9fa20918cb62feda24ea7fcbefbf2ebc6"
+        }
+      ],
+      "addedAt": "2026-11-21T02:29:06.352Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/selecting-a-host-shows-its-details",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline",
+        "hosts/sessions-stay-listed-while-their-host-is-down"
+      ]
+    }
+  ]
+}

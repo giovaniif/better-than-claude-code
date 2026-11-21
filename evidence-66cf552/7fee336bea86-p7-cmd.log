@@ -1,0 +1,26 @@
+$ verify/yv map run hosts --recipe sessions-stay-listed-while-their-host-is-down
+# exit 0 after 7642 ms at 66cf55281392c1e66857def8dda5a93f18e077a2
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-21T02:29:01.572Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "sessions-stay-listed-while-their-host-is-down",
+          "status": "pass",
+          "ms": 6404
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
