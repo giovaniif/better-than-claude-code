@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "325d02128c5a3c6125e6e404015c428d8088a268",
+    "short": "325d021",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T03:03:09.386Z"
+  },
+  "dir": ".verify/r2-head-desktop",
+  "runs": [
+    {
+      "viewport": "desktop",
+      "ms": 1672,
+      "steps": 4,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/r2-head-desktop/listed-while-away-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

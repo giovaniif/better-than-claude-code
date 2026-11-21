@@ -1,0 +1,30 @@
+$ CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_page_opened_while_a_host_is_down_still_lists_its_sessions
+# exit 101 after 29688 ms at ea19bc56ec06f48da2254d44fd676a1e042fefc6
+
+
+running 1 test
+test a_page_opened_while_a_host_is_down_still_lists_its_sessions ... FAILED
+
+failures:
+
+---- a_page_opened_while_a_host_is_down_still_lists_its_sessions stdout ----
+
+thread 'a_page_opened_while_a_host_is_down_still_lists_its_sessions' (2064568) panicked at crates/yardd/tests/common/mod.rs:417:27:
+timed out after 20s waiting for the offline host's last snapshot; last messages:
+{"accounts":[],"automations":[],"home":"/tmp/yardd-test-2064567-hub-down-1/home","host":null,"hostName":"giovani","hosts":[{"error":"Connection lost. Retrying.","id":"h1a1fc0d53931","kind":"direct","name":"box","status":"error","url":"ws://127.0.0.1:37391/ws"}],"mobile":{"configured":false,"testFlig
+{"hosts":[{"error":"IO error: Connection refused (os error 111)","id":"h1a1fc0d53931","kind":"direct","name":"box","noDaemon":true,"status":"error","url":"ws://127.0.0.1:37391/ws"}],"op":"hosts"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+kept /tmp/yardd-test-2064567-hub-down-1 for inspection
+kept /tmp/yardd-test-2064567-remote-down-0 for inspection
+
+
+failures:
+    a_page_opened_while_a_host_is_down_still_lists_its_sessions
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 84 filtered out; finished in 20.28s
+
+
+   Compiling yardd v0.16.1 (/home/giovani/.yard/wt/switchyard/pr-353/crates/yardd)
+    Finished `test` profile [unoptimized] target(s) in 9.35s
+     Running tests/daemon.rs (target/debug/build/yardd/f8543b62f976b51d/out/daemon-f8543b62f976b51d)
+error: test failed, to rerun pass `-p yardd --test daemon`

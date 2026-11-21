@@ -1,0 +1,201 @@
+{
+  "v": 1,
+  "claim": "A remote host's sessions vanish from the sidebar when a page is opened (reload, new window) while that host is offline; ARCHITECTURE says remote sessions stay listed but offline while their host is down",
+  "repo": "/home/giovani/.yard/wt/switchyard/pr-353",
+  "base": "d7bc2e45ffca69be917153b02f07966340f5a2fc",
+  "head": "325d02128c5a3c6125e6e404015c428d8088a268",
+  "changed": [
+    {
+      "status": "M",
+      "path": "crates/yardd/src/remote.rs"
+    },
+    {
+      "status": "M",
+      "path": "crates/yardd/tests/daemon.rs"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T03:01:24.737Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "test",
+      "at": "ea19bc56ec06f48da2254d44fd676a1e042fefc6",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p1-cmd.log",
+          "sha256": "e1c40a0039eac9466caf4248f65cf43804fa22fd59f826a33fab4dce3341c67b"
+        }
+      ],
+      "addedAt": "2026-11-21T03:01:24.779Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd --test daemon a_page_opened_while_a_host_is_down_still_lists_its_sessions",
+      "exit": 101
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ea19bc56ec06f48da2254d44fd676a1e042fefc6",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "c03c293f463ac5258fac152b2f4138fb84979d341bb535d8179147421ca49e43"
+        },
+        {
+          "path": "p2-fail-mobile-step1.png",
+          "sha256": "354ac56f42b87edd38f73958ce40d3ab831cd10de2e3014ba8d72362339c4187"
+        }
+      ],
+      "addedAt": "2026-11-21T03:03:02.766Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "repro",
+      "at": "ea19bc56ec06f48da2254d44fd676a1e042fefc6",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "e5bc3baacc4f831b2cf2200fe6951d10e2f6973c55d77f9eac49e216941adc44"
+        },
+        {
+          "path": "p3-fail-desktop-step0.png",
+          "sha256": "a7dcf0414db4680cc49150fc582f4cc97628559a515486be0a76697de4b345b3"
+        }
+      ],
+      "addedAt": "2026-11-21T03:03:02.810Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "325d02128c5a3c6125e6e404015c428d8088a268",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "5fe28037f2e467551bcd1e35fad172da7eb99a94bc57fb07a47c3bb8d2d81d03"
+        },
+        {
+          "path": "p4-listed-while-away-mobile.png",
+          "sha256": "4c3b25dc507b7e7ed0c6ade820fdf7b7d56c9f88ee92643deb03eed3f130179a"
+        }
+      ],
+      "addedAt": "2026-11-21T03:03:23.375Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "325d02128c5a3c6125e6e404015c428d8088a268",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-drive.json",
+          "sha256": "e8058b9f671e228b06f83772bfec7e987d97c34f7bbe9f1d6237840e2803adeb"
+        },
+        {
+          "path": "p5-listed-while-away-desktop.png",
+          "sha256": "8afd86ec5364161c7ff1f8fdace23256a5f7e0ab8c016a5bf952b94ba08e650c"
+        }
+      ],
+      "addedAt": "2026-11-21T03:03:23.418Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "test",
+      "at": "325d02128c5a3c6125e6e404015c428d8088a268",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-cmd.log",
+          "sha256": "2042f3528ef9dafc5b2e06cc396f8f48c740fa89cd20773dbd680670005c5aa5"
+        }
+      ],
+      "addedAt": "2026-11-21T03:03:27.103Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "325d02128c5a3c6125e6e404015c428d8088a268",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "dfe324ce3ecf7cdaf795141f0dffe10a99ffc069a5f0369aa6845deebe7283ee"
+        }
+      ],
+      "addedAt": "2026-11-21T03:04:24.725Z",
+      "cmd": "verify/yv map run hosts --recipe sessions-stay-listed-while-their-host-is-down",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "regression",
+      "at": "325d02128c5a3c6125e6e404015c428d8088a268",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-map-hosts.json",
+          "sha256": "b6eaf4c62e97981d353739d80a20e9e5cdf79399a89ffeab2a5c6342af807de3"
+        }
+      ],
+      "addedAt": "2026-11-21T03:04:32.461Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/selecting-a-host-shows-its-details",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline",
+        "hosts/new-session-says-the-remembered-host-is-offline",
+        "hosts/sessions-stay-listed-while-their-host-is-down"
+      ]
+    }
+  ]
+}
