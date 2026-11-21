@@ -2458,10 +2458,14 @@ export function FolderPicker(props: {
       return [...self, ...children];
     }
     const lower = query.toLowerCase();
+    // A recent folder is browsable like any other, so Tab on the highlighted
+    // one opens it instead of moving focus out of the search. Its git flag
+    // comes from the workspace listing it would otherwise appear in.
+    const gitIn = new Map((projects?.dirs ?? []).map((d) => [joinPath(workspace, d.name), d.git]));
     const recents = recent
       .filter((p) => p.toLowerCase().includes(lower))
       .slice(0, lower ? 12 : 5)
-      .map((p) => ({ path: p, name: baseName(p), detail: tilde(p, home), section: "Recent" }));
+      .map((p) => ({ path: p, name: baseName(p), detail: tilde(p, home), git: gitIn.get(p), browse: true, section: "Recent" }));
     const shown = new Set(recents.map((r) => r.path));
     const inWorkspace = (projects?.dirs ?? [])
       .filter((d) => !d.name.startsWith(".") && d.name.toLowerCase().includes(lower))
