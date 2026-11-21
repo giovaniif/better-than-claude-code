@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run hosts --recipe new-session-says-the-remembered-host-is-offline
+# exit 0 after 8863 ms at 7b6988582d4a1ae54f486b344770ae0736dc5d8d
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "hosts",
+      "at": "2026-11-21T02:23:23.868Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "new-session-says-the-remembered-host-is-offline",
+          "status": "pass",
+          "ms": 7505
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 407 pass
+ 0 fail
+ 1003 expect() calls
+Ran 407 tests across 28 files. [116.00ms]

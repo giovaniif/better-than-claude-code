@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "claim": "New session keeps a remembered remote host selected while it is offline and disables Send, but nothing says why: the user can type a task and Send just stays grey",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19",
+  "base": "0733870a2f7ffda123c9d8d8c9bab3ddfa4f5bb0",
+  "head": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/hosts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T02:22:32.214Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "1fe6009d6db4c4d4dc9a61f1519050c0da1f2d88",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-r3-base.json",
+          "sha256": "62f20ea8d30f946b36483c11f48c6a90191eeb3c4e5d0f6a46b0d88136e81c95"
+        },
+        {
+          "path": "p1-remembered-host-offline-mobile.png",
+          "sha256": "35f0c84044757906b252ed94f5ac7f10ecfd55fdd6051a0167bc9f0d2c5f1d0d"
+        },
+        {
+          "path": "p1-fail-mobile-step7.png",
+          "sha256": "35f0c84044757906b252ed94f5ac7f10ecfd55fdd6051a0167bc9f0d2c5f1d0d"
+        },
+        {
+          "path": "p1-remembered-host-offline-desktop.png",
+          "sha256": "48808eefd7f9cc6d17acb0c02fc26e6329048e73d8dae5e86873bf82f3667ed3"
+        },
+        {
+          "path": "p1-fail-desktop-step7.png",
+          "sha256": "8f4faaa9e655366758b88b1835b9605c6eab397e5d773ac83016185942a5ecc3"
+        }
+      ],
+      "addedAt": "2026-11-21T02:22:32.252Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "1fe6009d6db4c4d4dc9a61f1519050c0da1f2d88",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "76a58a9e8f854f1c2b8369e298e1ebc2965f66eeda0f870d411d50b450cdd794"
+        }
+      ],
+      "addedAt": "2026-11-21T02:22:32.299Z",
+      "cmd": "verify/yv map run hosts --recipe new-session-says-the-remembered-host-is-offline",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-r3-head.json",
+          "sha256": "92b7cf555da80f8808c9d0ea982b95efa090c184d8a5b185897c485e7c01735f"
+        },
+        {
+          "path": "p3-remembered-host-offline-mobile.png",
+          "sha256": "b54310ad98011e5c25d1e13606018d52c40dfd44b986dd53fccbb0f8a8e13305"
+        },
+        {
+          "path": "p3-remembered-host-offline-desktop.png",
+          "sha256": "7fab883082d7c0fe09a649474bfeca3f26b21076b240fc5e244f2cced864bf44"
+        }
+      ],
+      "addedAt": "2026-11-21T02:23:14.966Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "87cf2f9e00d193174b5dc68fbb3d3c1f721dc17e52e36023f03ed0fd2ad67298"
+        }
+      ],
+      "addedAt": "2026-11-21T02:23:15.008Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run hosts --recipe new-session-says-the-remembered-host-is-offline",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "3b9180e62135b077901f939f106cc1c4196b7fb25f4d4c597b6d290f409be39d"
+        }
+      ],
+      "addedAt": "2026-11-21T02:23:23.910Z",
+      "cmd": "verify/yv design-check --base 0733870a2f7f",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-hosts.json",
+          "sha256": "3fb876dc9dbbbb366dc3c394e3d245c6e825b8d936d0eea6373d5fb358ce738b"
+        }
+      ],
+      "addedAt": "2026-11-21T02:23:36.838Z",
+      "cmd": "verify/yv map run hosts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "hosts/hosts-page",
+        "hosts/empty-state-tile",
+        "hosts/sessions-list-collapsed",
+        "hosts/add-direct-host",
+        "hosts/remote-session",
+        "hosts/hosts-grid",
+        "hosts/selecting-a-host-shows-its-details",
+        "hosts/ssh-host-unreachable",
+        "hosts/remove-host",
+        "hosts/refused-add-keeps-the-form",
+        "hosts/local-name-right-after-start",
+        "hosts/no-memory-limit-says-load-only",
+        "hosts/ip-destination-keeps-the-whole-address",
+        "hosts/engine-status-keeps-cards-aligned",
+        "hosts/processes-say-the-host-is-offline",
+        "hosts/new-session-says-the-remembered-host-is-offline"
+      ]
+    }
+  ]
+}

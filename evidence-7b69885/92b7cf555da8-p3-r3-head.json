@@ -1,0 +1,72 @@
+{
+  "command": "drive",
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "7b6988582d4a1ae54f486b344770ae0736dc5d8d",
+    "short": "7b69885",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T02:23:07.691Z"
+  },
+  "dir": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19/.verify/r3-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3551,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19/.verify/r3-head/remembered-host-offline-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(localStorage.setItem(\"yard.host\", \"h1a1fbe6cf1b2\"), true)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3042,
+      "steps": 8,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-20-fe19/.verify/r3-head/remembered-host-offline-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 0,
+          "eval": "(localStorage.setItem(\"yard.host\", \"h1a1fbe6cf1b2\"), true)",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}
