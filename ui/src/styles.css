@@ -210,6 +210,10 @@ h1, h2, h3, p { margin: 0; }
 .proc-table th.num, .proc-table td.num { padding-left: 12px; text-align: right; white-space: nowrap; font-family: var(--mono); }
 .proc-cmd { max-width: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .proc-cmd code { font-size: 12px; }
+.proc-cmd-toggle { display: block; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proc-row.whole .proc-cmd-toggle { white-space: normal; overflow-wrap: anywhere; }
+/* A wrapped command keeps the row's numbers and Stop on its first line. */
+.proc-table .proc-row.whole td { vertical-align: top; }
 .proc-tag { margin-right: 6px; padding: 0 6px; border: 1px solid var(--line); border-radius: 8px; font-size: 11px; color: var(--muted); }
 .proc-table td.proc-act { padding: 2px 0 2px 8px; white-space: nowrap; text-align: right; vertical-align: middle; }
 .proc-act .btn-text, .proc-choices .btn-text { height: 20px; padding: 0 6px; border-radius: 6px; font-size: 12px; }
