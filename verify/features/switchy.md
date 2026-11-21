@@ -55,10 +55,11 @@ yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.com
 ### answer-names-the-model
 Viewports: both
 Each answer's label names the model the way the picker does ("Fake Fast"),
-not by its id ("fake-fast"). It used to show the id (#194).
+not by its id ("fake-fast"). It used to show the id (#194). The picker's
+name is read from its `aria-label`: its text also holds the provider badge ("CX").
 
 ```sh
-yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"fill":"label:Message","value":"TEST-which model answers?"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-which model answers?"},"text":"This is a scripted Switchy answer."},{"eval":"(() => { const label = [...document.querySelectorAll(\".assistant-answer-label .muted\")].at(-1).textContent; const picker = document.querySelector(\".composer .picker > button\").textContent; return label === picker && label === \"Fake Fast\"; })()","equals":true},{"shot":"answer-model-name"}]'
+yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"fill":"label:Message","value":"TEST-which model answers?"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-which model answers?"},"text":"This is a scripted Switchy answer."},{"eval":"(() => { const label = [...document.querySelectorAll(\".assistant-answer-label .muted\")].at(-1).textContent; const picker = document.querySelector(\".composer .picker > button\").getAttribute(\"aria-label\"); return picker === \"Model \" + label && label === \"Fake Fast\"; })()","equals":true},{"shot":"answer-model-name"}]'
 ```
 
 ### refusal-notice-is-red
@@ -81,6 +82,16 @@ render through the error path as `.bad` `role="alert"`.
 
 ```sh
 yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"fill":"label:Message","value":"[slow] TEST-stop this answer"},{"click":"role:button:Send"},{"expect":{"css":".assistant-answer","hasText":"TEST-stop this answer","nth":-1},"text":"Answering"},{"click":"role:button:Stop"},{"expect":{"css":".assistant-answer","hasText":"TEST-stop this answer","nth":-1},"text":"Stopped by you."},{"eval":"(() => { const turn = [...document.querySelectorAll(\".assistant-answer\")].at(-1); const line = [...turn.querySelectorAll(\"p\")].find((p) => p.textContent === \"Stopped by you.\"); return !!line && !turn.querySelector(\".bad, [role=alert]\") && line.matches(\".muted\"); })()","equals":true},{"shot":"stopped-answer"}]'
+```
+
+### all-hosts-chip-icon
+Viewports: both
+With the scope on All hosts, the chip under the composer shows the same cloud
+icon as the menu's All hosts row, not the laptop of this machine's row. It used
+to fall through to the laptop, so the closed chip looked scoped to this machine.
+
+```sh
+yv drive switchy --steps '[{"expect":"role:heading:Switchy"},{"expect":"css:.composer-chips .chip","text":"All hosts"},{"eval":"window.__chipIcon = document.querySelector(\".composer-chips .chip svg path\").getAttribute(\"d\"); true","equals":true},{"click":"css:.composer-chips .chip"},{"expect":"css:.chip-popover","inViewport":true},{"eval":"(() => { const rows = [...document.querySelectorAll(\".chip-popover .menu-item\")]; const icon = (text) => rows.find((r) => r.textContent.trim() === text).querySelector(\"svg path\").getAttribute(\"d\"); return window.__chipIcon === icon(\"All hosts\") && window.__chipIcon !== rows[1].querySelector(\"svg path\").getAttribute(\"d\"); })()","equals":true},{"shot":"all-hosts-chip"}]'
 ```
 
 ### shared-composer
