@@ -1207,7 +1207,9 @@ a.btn-primary.btn-small { color: var(--bg); justify-content: center; }
 .composer-setup > svg { flex: none; }
 .setup-model { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .setup-effort { color: var(--muted); }
-.setup-options { display: grid; gap: 4px; }
+/* minmax(0, …): an auto column grows to the longest name's full width and
+   pushes every row past the sheet; this one lets the account name ellipsize. */
+.setup-options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .setup-options .picker > button { display: flex; justify-content: flex-start; width: 100%; max-width: 100%; padding: 0 8px; height: 40px; }
 .setup-options .picker > button > svg:last-child, .setup-options .picker > button > .muted:last-child { margin-left: auto; flex: none; }
 .setup-options .account-trigger-name { min-width: 0; }
