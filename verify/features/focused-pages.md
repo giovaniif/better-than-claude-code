@@ -12,6 +12,8 @@ yv iso up
 yv iso seed
 yv api '{"op":"account.add","engine":"claude","name":"TEST-Work"}' --wait '{"op":"accounts"}' --save work_acct='accounts[name=TEST-Work].id'
 yv api '{"op":"account.add","engine":"codex","name":"TEST-Codex"}' --wait '{"op":"accounts"}' --save codex_acct='accounts[name=TEST-Codex].id'
+yv api '{"op":"login.start","engine":"claude","account":"{{work_acct}}"}' --wait '{"op":"login"}'
+yv api '{"op":"login.code","engine":"claude","account":"{{work_acct}}","code":"good-code"}' --wait '{"op":"engines","accounts":{"{{work_acct}}":{"loggedIn":true}}}' --timeout 20000
 ```
 
 ## Cleanup
@@ -32,11 +34,27 @@ yv drive 'hosts' --steps '[{"expect":"role:button:Select iso-host"},{"expect":"c
 
 ### compact-usage-popover
 Viewports: both
-Usage takes one footer row. The popover shows every reported account, is contained by the viewport and closes on Escape, restoring focus.
+Usage takes one footer row. On New session the popover opens on the draft's
+account (Claude · Default, 47%) and lists the others, TEST-Work's 91% included,
+under Other accounts. It is contained by the viewport and closes on Escape,
+restoring focus. Setup signs TEST-Work in: an account that needs sign-in shows
+no percent (#358).
 
 ```sh
-yv drive 'new' --viewport desktop --steps '[{"expect":"role:button:Subscription usage"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage","text":"Claude · TEST-Work"},{"expect":"role:dialog:Subscription usage","text":"91%"},{"expect":"role:dialog:Subscription usage","text":"Codex · Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
-yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"role:dialog:Subscription usage","text":"Claude · TEST-Work"},{"expect":"role:dialog:Subscription usage","text":"91%"},{"expect":"role:dialog:Subscription usage","text":"Codex · Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+yv drive 'new' --viewport desktop --steps '[{"expect":"role:button:Subscription usage","text":"91% used"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"css:.usage-active[aria-label=\"Claude \u00b7 Default\"]","text":"47% used"},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 TEST-Work","text":"91%"},{"expect":"role:region:Codex \u00b7 Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+yv drive 'new' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage","text":"91% used"},{"eval":"document.querySelector(\".usage-dock\").getBoundingClientRect().height <= 48","equals":true},{"click":"role:button:Subscription usage"},{"expect":"css:.usage-active[aria-label=\"Claude \u00b7 Default\"]","text":"47% used"},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 TEST-Work","text":"91%"},{"expect":"role:region:Codex \u00b7 Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"usage-popover"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+```
+
+### usage-popover-leads-with-trigger-account
+Viewports: both
+With no account selected (Settings, Hosts, Connectors) the popover opens on the
+account whose meter the trigger shows: TEST-Work's 91%, with Default's 47%
+under Other accounts. Until #323 it led with Default, so the number you
+clicked was folded away.
+
+```sh
+yv drive 'settings' --viewport desktop --steps '[{"expect":"role:button:Subscription usage","text":"91% used"},{"click":"role:button:Subscription usage"},{"expect":"css:.usage-active[aria-label=\"Claude \u00b7 TEST-Work\"]","text":"91% used"},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 Default","text":"47%"},{"expect":"role:region:Codex \u00b7 Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"lead-account"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
+yv drive 'settings' --viewport mobile --steps '[{"click":"role:button:Open sessions"},{"expect":"role:button:Subscription usage","text":"91% used"},{"click":"role:button:Subscription usage"},{"expect":"css:.usage-active[aria-label=\"Claude \u00b7 TEST-Work\"]","text":"91% used"},{"click":"role:button:Other accounts"},{"expect":"role:region:Claude \u00b7 Default","text":"47%"},{"expect":"role:region:Codex \u00b7 Default"},{"eval":"(() => { const r=document.querySelector(\".anchored-popover\").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })()","equals":true},{"shot":"lead-account"},{"press":"Escape"},{"expect":"role:dialog:Subscription usage","count":0},{"eval":"document.activeElement?.getAttribute(\"aria-label\")","equals":"Subscription usage"}]'
 ```
 
 ### usage-row-lines-up-with-host-rows
@@ -181,10 +199,13 @@ yv drive new --viewport desktop --steps '[{"expect":{"css":".sidebar-top button"
 ```
 
 ## Gotchas
-- `compact-usage-popover` fails on a known product bug, #323: the Usage
-  trigger reads 91% (TEST-Work) but the popover leads with the Default
-  account and folds TEST-Work under "Other accounts". Keep the recipe as it
-  is until #323 is fixed.
+- `usage-popover-leads-with-trigger-account` fails on a known product bug,
+  #323: on a page with no account selected the Usage trigger reads 91%
+  (TEST-Work) but the popover leads with Default and folds TEST-Work under
+  "Other accounts". On New session the popover follows the draft's account by
+  design, so `compact-usage-popover` expects Default there. It expected
+  TEST-Work and failed, with TEST-Work signed out (no percent since #358),
+  until 2026-11-21.
 - Below 700 px the new-session composer folds the account, model, effort and
   permission pickers into one `Session setup` chip (#290), so a recipe that
   opens the account picker on a phone clicks `role:button:Session setup`
