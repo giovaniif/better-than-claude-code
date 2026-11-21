@@ -1,0 +1,26 @@
+$ verify/yv map run logins --recipe usage-trigger-skips-signed-out-account
+# exit 0 after 9356 ms at 63ab2924b0488142e4f0fa9a85f64f152f925ea9
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-21T03:18:32.693Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-trigger-skips-signed-out-account",
+          "status": "pass",
+          "ms": 8989
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

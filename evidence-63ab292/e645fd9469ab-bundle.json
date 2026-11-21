@@ -1,0 +1,280 @@
+{
+  "v": 1,
+  "claim": "The sidebar Usage row and the phone usage pill show a percent (\"47% used\") for an account that needs sign-in, while the Usage popover says it cannot read that account's limits",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25",
+  "base": "d7bc2e45ffca69be917153b02f07966340f5a2fc",
+  "head": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/UsageMeters.tsx"
+    },
+    {
+      "status": "A",
+      "path": "ui/src/usageMeters.test.ts"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/logins.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T03:10:14.473Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "5a9748849227412ad3e93c9a60575123ebe436fd",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "9149bf8b0331c5df61206e83d36aebf0658c52dbeecf33bc84621c5dcc2efd64"
+        },
+        {
+          "path": "p1-header-mobile.png",
+          "sha256": "e8f29839da85a8ce098d08642d5289fdaaf26d7f94b31e366976ddb6a9172a84"
+        },
+        {
+          "path": "p1-fail-mobile-step2.png",
+          "sha256": "e8f29839da85a8ce098d08642d5289fdaaf26d7f94b31e366976ddb6a9172a84"
+        }
+      ],
+      "addedAt": "2026-11-21T03:10:33.750Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "repro",
+      "at": "5a9748849227412ad3e93c9a60575123ebe436fd",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p2-drive.json",
+          "sha256": "20d66b0584309ed0b55a7c7b0192975dc044662d20028084ba7fbb9bba48914e"
+        },
+        {
+          "path": "p2-fail-desktop-step1.png",
+          "sha256": "712e213c736b36c6d5d04ab6673fb90e58d81e7377b5b05572b1d9714b059774"
+        }
+      ],
+      "addedAt": "2026-11-21T03:10:33.793Z",
+      "failedApi": []
+    },
+    {
+      "id": 3,
+      "ref": "base",
+      "kind": "test",
+      "at": "5a9748849227412ad3e93c9a60575123ebe436fd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-cmd.log",
+          "sha256": "983d32b2a10afdb19290d8554b14462e5802b0c7d4fcb97d1d23a6feb6a26e90"
+        }
+      ],
+      "addedAt": "2026-11-21T03:10:33.844Z",
+      "cmd": "cd ui && bun test src/usageMeters.test.ts",
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "ref": "base",
+      "kind": "regression",
+      "at": "5a9748849227412ad3e93c9a60575123ebe436fd",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-map-usage.json",
+          "sha256": "e8c12f135f0314aef54384f51848fc47c30545ca82295b06c7caf3719f6f65af"
+        }
+      ],
+      "addedAt": "2026-11-21T03:15:35.478Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 1,
+      "failingRecipes": [
+        "usage/meters-zero-after-reset",
+        "usage/strip-names-every-account"
+      ],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/claude-usage-after-restart",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "fix",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p5-2-drive.json",
+          "sha256": "e812d8521ca4dc2e30c096ef4af907ee818d84079a1eb34c3ad675e81bc5317e"
+        },
+        {
+          "path": "p5-header-mobile.png",
+          "sha256": "7b8e256846cdbad8f9d029f7eeea445ba62ee025ccd0a29c0367703d38bdd37b"
+        },
+        {
+          "path": "p5-usage-signed-out-mobile.png",
+          "sha256": "e9c17b7aa78de33a8f362f2930471df3ee63cdf292b247bed41de3f7d98cadfa"
+        }
+      ],
+      "addedAt": "2026-11-21T03:17:31.315Z",
+      "failedApi": []
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "fix",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p6-drive.json",
+          "sha256": "49da4841bf4464cc0ba4b0cd2fa9e5a113c3864b18f516150cc0db30505e15a9"
+        },
+        {
+          "path": "p6-usage-signed-out-desktop.png",
+          "sha256": "18e419cd8000483d25a11016df79a324eaeed6530ee1d6a6c489cc03337357b2"
+        }
+      ],
+      "addedAt": "2026-11-21T03:17:31.356Z",
+      "failedApi": []
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "test",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-cmd.log",
+          "sha256": "9e9ae4e565ab007c4bafc318bd4b09f508a901d131241ff2a819e3e8612df9fc"
+        }
+      ],
+      "addedAt": "2026-11-21T03:17:35.115Z",
+      "cmd": "CARGO_BUILD_JOBS=4 cargo test -p yardd && (cd ui && bun test)",
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "ref": "head",
+      "kind": "test",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p8-cmd.log",
+          "sha256": "b407c578e0579ade97ff9e698ab782984899b4b201458b4953fd4ec488e41cb0"
+        }
+      ],
+      "addedAt": "2026-11-21T03:18:23.339Z",
+      "cmd": "verify/yv map run logins --recipe usage-trigger-skips-signed-out-account",
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "ref": "head",
+      "kind": "design",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p9-design.json",
+          "sha256": "7effbfac5ac030398002341d666c92cc67e9a2d4f234d788faf6b0232b66f701"
+        }
+      ],
+      "addedAt": "2026-11-21T03:18:32.739Z",
+      "cmd": "verify/yv design-check --base d7bc2e45ffca",
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "ref": "head",
+      "kind": "regression",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p10-map-usage.json",
+          "sha256": "b7d1d197173018988460f22901d234c2e097f3c301d7a8fd539f680b1ab3d7fd"
+        }
+      ],
+      "addedAt": "2026-11-21T03:18:32.822Z",
+      "cmd": "verify/yv map run usage",
+      "exit": 1,
+      "failingRecipes": [
+        "usage/meters-zero-after-reset",
+        "usage/strip-names-every-account"
+      ],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/claude-usage-after-restart",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    },
+    {
+      "id": 11,
+      "ref": "head",
+      "kind": "regression",
+      "at": "63ab2924b0488142e4f0fa9a85f64f152f925ea9",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p11-map-logins.json",
+          "sha256": "44d8da17b6cd856f81149208d56b2ce4df86510f8d843f9b38eb3453fa31d648"
+        }
+      ],
+      "addedAt": "2026-11-21T03:20:08.329Z",
+      "cmd": "verify/yv map run logins",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "logins/hosts-page-shows-logged-out",
+        "logins/usage-trigger-skips-signed-out-account",
+        "logins/new-session-log-in-fits",
+        "logins/codex-device-login",
+        "logins/claude-code-login",
+        "logins/grok-device-login",
+        "logins/gemini-check-login-says-still-logged-out",
+        "logins/opencode-api-key",
+        "logins/opencode-device-sign-in"
+      ]
+    }
+  ]
+}

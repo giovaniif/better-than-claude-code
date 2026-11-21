@@ -1,0 +1,62 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "logins",
+      "at": "2026-11-21T03:21:08.573Z",
+      "counts": {
+        "pass": 9
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "hosts-page-shows-logged-out",
+          "status": "pass",
+          "ms": 5485
+        },
+        {
+          "label": "usage-trigger-skips-signed-out-account",
+          "status": "pass",
+          "ms": 9661
+        },
+        {
+          "label": "new-session-log-in-fits",
+          "status": "pass",
+          "ms": 4027
+        },
+        {
+          "label": "codex-device-login",
+          "status": "pass",
+          "ms": 2949
+        },
+        {
+          "label": "claude-code-login",
+          "status": "pass",
+          "ms": 5938
+        },
+        {
+          "label": "grok-device-login",
+          "status": "pass",
+          "ms": 6923
+        },
+        {
+          "label": "gemini-check-login-says-still-logged-out",
+          "status": "pass",
+          "ms": 8642
+        },
+        {
+          "label": "opencode-api-key",
+          "status": "pass",
+          "ms": 10874
+        },
+        {
+          "label": "opencode-device-sign-in",
+          "status": "pass",
+          "ms": 5376
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

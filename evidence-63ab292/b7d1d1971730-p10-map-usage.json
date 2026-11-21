@@ -1,0 +1,95 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-21T03:20:08.278Z",
+      "counts": {
+        "pass": 8,
+        "fail": 2
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "usage-strip-in-sidebar",
+          "status": "pass",
+          "ms": 7170
+        },
+        {
+          "label": "usage-strip-claude",
+          "status": "pass",
+          "ms": 5575
+        },
+        {
+          "label": "picker-has-no-meters",
+          "status": "pass",
+          "ms": 6640
+        },
+        {
+          "label": "picker-other-engine-collapsed",
+          "status": "pass",
+          "ms": 3215
+        },
+        {
+          "label": "picker-current-model-marked",
+          "status": "pass",
+          "ms": 3037
+        },
+        {
+          "label": "meters-zero-after-reset",
+          "status": "fail",
+          "ms": 44466,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 8 {\"expect\":\"role:region:Claude · Default\",\"text\":\"17%\"}: expected \"role:region:Claude · Default\" to contain \"17%\", got \"CC",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-18-59-484Z/fail-desktop-step8.png and the aria snapshot"
+            }
+          ],
+          "tail": "st · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\" [expanded]: Usage 34% used\\n  - button \\\"iso-host 7% · 46%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- main:\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-00d5\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Collapse workspace\\\" [expanded]\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - button \\\"Model Fake Fast\\\": Fake Fast\\n  - 'button \\\"Account: Codex, Default\\\"'\\n  - button \\\"Effort Low\\\": Low\\n  - button \\\"Ask first\\\"\\n  - button \\\"Send\\\" [disabled]\\n- region \\\"Workspace\\\":\\n  - separator \\\"Resize the workspace pane\\\"\\n  - button \\\"Terminal\\\" [pressed]\\n  - button \\\"Subagents\\\"\\n  - button \\\"Processes\\\"\\n  - tablist \\\"Terminals\\\":\\n    - tab \\\"1\\\" [selected]\\n    - button \\\"Close terminal\\\"\\n    - button \\\"New terminal\\\"\\n    - button \\\"Attach\\\"\\n  - textbox \\\"Terminal input\\\"\\n- dialog \\\"Subscription usage\\\":\\n  - strong: Usage\\n  - button \\\"Refresh usage\\\"\\n  - region \\\"Codex · Default\\\":\\n    - strong: Default\\n    - text: Codex · Default account 5-hour window\\n    - strong: 0% used\\n    - progressbar \\\"5-hour window used\\\"\\n    - text: Reset time not reported Weekly · all models\\n    - strong: 34% used\\n    - progressbar \\\"Weekly · all models used\\\"\\n    - text: Resets Tue, Nov 24, 4:19 AM · in 3 d\\n  - button \\\"Other accounts 1\\\" [expanded]\\n  - region \\\"Claude · Default\\\":\\n    - strong: Claude · Default\\n    - text: 0% of 5-hour\\n  - status: Shared across hosts\\n  - button \\\"Manage accounts\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [\n        {\n          \"step\": 2,\n          \"eval\": \"(() => { const real=Date.now; Date.now=() => real()+3*3600*1000; return true; })()\",\n          \"value\": true\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 8 {\\\"expect\\\":\\\"role:region:Claude · Default\\\",\\\"text\\\":\\\"17%\\\"}: expected \\\"role:region:Claude · Default\\\" to contain \\\"17%\\\", got \\\"CC\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-18-59-484Z/fail-desktop-step8.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "claude-usage-after-restart",
+          "status": "pass",
+          "ms": 5266
+        },
+        {
+          "label": "strip-names-every-account",
+          "status": "fail",
+          "ms": 12454,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "desktop: step 4 {\"expect\":\"role:region:Claude · TEST-Work\",\"text\":\"91%\"}: expected \"role:region:Claude · TEST-Work\" to contain \"91%\", got \"CC",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-19-49-302Z/fail-desktop-step4.png and the aria snapshot"
+            }
+          ],
+          "tail": "efault\\\"\\n  - button \\\"Actions for TEST-hello from Claude\\\"\\n  - button \\\"[edit] TEST-fix the greeting Fake Fast · Idle\\\"\\n  - button \\\"Actions for [edit] TEST-fix the greeting\\\"\\n  - button \\\"TEST-say hello Fake Fast · Idle\\\"\\n  - button \\\"Actions for TEST-say hello\\\"\\n  - button \\\"[think] TEST-plan the refactor Fake Fast · Idle\\\"\\n  - button \\\"Actions for [think] TEST-plan the refactor\\\"\\n  - button \\\"[fail] TEST-failing turn Fake Fast · Idle\\\"\\n  - button \\\"Actions for [fail] TEST-failing turn\\\"\\n  - button \\\"Subscription usage\\\" [expanded]: Usage 47% used\\n  - button \\\"iso-host 5% · 46%\\\"\\n- separator \\\"Resize the sessions sidebar\\\"\\n- banner:\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- button \\\"Model Opus 5.5\\\": Opus 5.5\\n- 'button \\\"Account: Claude, Default\\\"'\\n- button \\\"Effort High\\\": High\\n- button \\\"Ask first\\\"\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- dialog \\\"Subscription usage\\\":\\n  - strong: Usage\\n  - button \\\"Refresh usage\\\"\\n  - region \\\"Claude · Default\\\":\\n    - strong: Default\\n    - text: Claude Code · Default account 5-hour window\\n    - strong: 47% used\\n    - progressbar \\\"5-hour window used\\\"\\n    - text: Resets 2:19 AM · in 1 h 59 min Weekly · all models\\n    - strong: 17% used\\n    - progressbar \\\"Weekly · all models used\\\"\\n    - text: Resets Tue, Nov 24, 12:19 AM · in 2 d 23 h\\n  - button \\\"Other accounts 1 need sign-in\\\" [expanded]\\n  - region \\\"Claude · TEST-Work\\\":\\n    - strong: Claude · TEST-Work\\n    - button \\\"Sign in — Claude · TEST-Work\\\": Sign in\\n  - region \\\"Codex · Default\\\":\\n    - strong: Codex · Default\\n    - text: 12% of 5-hour\\n  - status: Shared across hosts\\n  - button \\\"Manage accounts\\\"\"\n      },\n      \"captures\": [],\n      \"notes\": [],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"desktop: step 4 {\\\"expect\\\":\\\"role:region:Claude · TEST-Work\\\",\\\"text\\\":\\\"91%\\\"}: expected \\\"role:region:Claude · TEST-Work\\\" to contain \\\"91%\\\", got \\\"CC\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-cf25/.verify/drives/2026-11-21T03-19-49-302Z/fail-desktop-step4.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "picker-names-the-account",
+          "status": "pass",
+          "ms": 2309
+        },
+        {
+          "label": "subscriptions-note-names-every-silent-engine",
+          "status": "pass",
+          "ms": 4474
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "usage/meters-zero-after-reset",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    },
+    {
+      "code": "recipe-failed",
+      "msg": "usage/strip-names-every-account",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
