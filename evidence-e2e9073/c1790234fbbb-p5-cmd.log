@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run accounts --recipe long-account-name-wraps-in-the-login-banner
+# exit 0 after 8335 ms at e2e9073b2020ea55d59ffc89f62b9e62e0ccad52
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-21T09:03:51.191Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-account-name-wraps-in-the-login-banner",
+          "status": "pass",
+          "ms": 7273
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 413 pass
+ 0 fail
+ 1013 expect() calls
+Ran 413 tests across 29 files. [177.00ms]

@@ -1,0 +1,178 @@
+{
+  "v": 1,
+  "claim": "On a phone, New session with a not-logged-in account whose name has no spaces (40 chars, yardd's limit) pushes the banner's Log in button off the right edge of the screen: the message did not wrap the name.",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-7755",
+  "base": "473e3731e51d358bffda748b965c4ba41fa2ffad",
+  "head": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "ui/src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/accounts.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T09:03:15.392Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "7723f0f8b7041e544dc1883aebcdae718316d864",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "74c8668604ec3985d0baa5b3506af7619300a0159d4f6c027f3d73fa56e57f33"
+        },
+        {
+          "path": "p1-banner-mobile.png",
+          "sha256": "c7640dd33d6d9855b5d06205ad063622f5846885e64c2c3d56dcb060d304fda1"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:23.712Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "7723f0f8b7041e544dc1883aebcdae718316d864",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "6a3a1bb1d7d7232e167b2325a3a840f161f3b900ae71cc18e6ac5bdbdf130497"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:23.789Z",
+      "cmd": "verify/yv map run accounts --recipe long-account-name-wraps-in-the-login-banner",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+      "dirty": false,
+      "viewports": [
+        "mobile"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "72caa314942985b5cde9d9af5fa39ce207f52f3d57bbf32980a84efda8e0e0e0"
+        },
+        {
+          "path": "p3-banner-mobile.png",
+          "sha256": "a04975b02a7ede430262782ac251faeb1b423c2450b40ecc2d5b515059f68211"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:42.705Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "fix",
+      "at": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+      "dirty": false,
+      "viewports": [
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p4-drive.json",
+          "sha256": "0ebd05ceb7ff811c48d4f1d70a9ef354906bb149554456f801e1d2d74783d2a5"
+        },
+        {
+          "path": "p4-banner-desktop.png",
+          "sha256": "2ca30bb3405b1e32ab0c73328e40a928d8015b37b6910e000b9a20b30945cfe8"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:42.781Z",
+      "failedApi": []
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "test",
+      "at": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-cmd.log",
+          "sha256": "c1790234fbbb5ca115ca7745b014724eaab005f271c1d2e814b783d2d3da8068"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:42.858Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run accounts --recipe long-account-name-wraps-in-the-login-banner",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "design",
+      "at": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-design.json",
+          "sha256": "a699fd0dfec54d48f3522682667c0b315bbfcde6cd37fc3762387019528d9eeb"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:51.266Z",
+      "cmd": "verify/yv design-check --base 473e3731e51d",
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "ref": "head",
+      "kind": "regression",
+      "at": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p7-map-accounts.json",
+          "sha256": "891a3871c43f5a7226287106de15c060539982cdc4cecdec2d403f595fd37621"
+        }
+      ],
+      "addedAt": "2026-11-21T09:03:51.383Z",
+      "cmd": "verify/yv map run accounts",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "accounts/add-account",
+        "accounts/empty-name-add-looks-disabled",
+        "accounts/refused-add-account-keeps-the-form",
+        "accounts/log-in-account",
+        "accounts/pick-account-desktop",
+        "accounts/pick-account-mobile",
+        "accounts/default-has-no-account-row-without-a-choice",
+        "accounts/pick-other-engine-account-switches-engine",
+        "accounts/remove-refused-while-in-use",
+        "accounts/remove-account",
+        "accounts/add-account-stays-at-the-right",
+        "accounts/install-command-stays-at-the-right",
+        "accounts/account-chip-shows-the-whole-name",
+        "accounts/account-chip-chevron-keeps-its-size",
+        "accounts/long-account-name-fits-the-setup-sheet",
+        "accounts/long-account-name-wraps-in-the-login-banner"
+      ]
+    }
+  ]
+}

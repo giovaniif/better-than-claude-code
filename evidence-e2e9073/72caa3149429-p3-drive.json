@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "e2e9073b2020ea55d59ffc89f62b9e62e0ccad52",
+    "short": "e2e9073",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T09:03:36.409Z"
+  },
+  "dir": ".verify/evidence/engine-notice-long-name-head-m",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3473,
+      "steps": 6,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/engine-notice-long-name-head-m/banner-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

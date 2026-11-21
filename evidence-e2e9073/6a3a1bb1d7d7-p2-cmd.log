@@ -1,0 +1,40 @@
+$ verify/yv map run accounts --recipe long-account-name-wraps-in-the-login-banner
+# exit 1 after 8242 ms at 7723f0f8b7041e544dc1883aebcdae718316d864
+
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "accounts",
+      "at": "2026-11-21T09:03:32.027Z",
+      "counts": {
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "long-account-name-wraps-in-the-login-banner",
+          "status": "fail",
+          "ms": 7382,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 7 {\"eval\":\"(() => { const n = document.querySelector(\\\".new-inner .engine-notice\\\").getBoundingClientRect(), b = document.querySelector(\\\".new-inner .engine-notice .btn-primary\\\").getBoundingClientRect(); return n.right <= innerWidth + 0.5 && b.left >= n.left && b.right <= n.right + 0.5; })()\",\"equals\":true}: eval returned false, expected true",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-7755/.verify/drives/2026-11-21T09-03-29-024Z/fail-mobile-step7.png and the aria snapshot"
+            }
+          ],
+          "tail": "ft && b.right <= n.right + 0.5; })()\",\n          \"equals\": true\n        },\n        \"reason\": \"eval returned false, expected true\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-7755/.verify/drives/2026-11-21T09-03-29-024Z/fail-mobile-step7.png\",\n        \"aria\": \"- banner:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"New session\\\" [level=2]\\n  - button \\\"Subscription usage\\\": 47%\\n  - button \\\"Connectors\\\"\\n  - button \\\"Set up iPhone app\\\"\\n- heading \\\"What should we work on?\\\" [level=1]\\n- textbox \\\"Message\\\":\\n  - /placeholder: Describe the task\\n- button \\\"Attach files\\\"\\n- button \\\"Dictate\\\"\\n- button \\\"Voice mode\\\"\\n- 'button \\\"Session setup: Fake Fast, TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM, High, Ask first\\\"': Fake Fast · High\\n- button \\\"Send\\\" [disabled]\\n- button \\\"iso-host\\\"\\n- button \\\"work\\\"\\n- text: Works in the folder itself\\n- status:\\n  - text: Codex (TEST-ACME_WORLDWIDE_ENGINEERING_PLATFORM) isn't logged in on iso-host.\\n  - button \\\"Log in\\\"\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"mobile\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-7755/.verify/drives/2026-11-21T09-03-29-024Z/long-account-banner-mobile.png\",\n          \"size\": {\n            \"width\": 780,\n            \"height\": 1688\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 7,\n          \"eval\": \"(() => { const n = document.querySelector(\\\".new-inner .engine-notice\\\").getBoundingClientRect(), b = document.querySelector(\\\".new-inner .engine-notice .btn-primary\\\").getBoundingClientRect(); return n.right <= innerWidth + 0.5 && b.left >= n.left && b.right <= n.right + 0.5; })()\",\n          \"value\": false\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 7 {\\\"eval\\\":\\\"(() => { const n = document.querySelector(\\\\\\\".new-inner .engine-notice\\\\\\\").getBoundingClientRect(), b = document.querySelector(\\\\\\\".new-inner .engine-notice .btn-primary\\\\\\\").getBoundingClientRect(); return n.right <= innerWidth + 0.5 && b.left >= n.left && b.right <= n.right + 0.5; })()\\\",\\\"equals\\\":true}: eval returned false, expected true\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-7755/.verify/drives/2026-11-21T09-03-29-024Z/fail-mobile-step7.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "accounts/long-account-name-wraps-in-the-login-banner",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}
+
