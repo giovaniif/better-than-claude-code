@@ -1,0 +1,48 @@
+$ verify/yv map run usage --recipe strip-names-every-account && verify/yv map run usage --recipe meters-zero-after-reset
+# exit 0 after 146275 ms at beab91159ed656f21815700c817ff783fe84e324
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-21T04:32:45.720Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "strip-names-every-account",
+          "status": "pass",
+          "ms": 5554
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "usage",
+      "at": "2026-11-21T04:35:05.579Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "meters-zero-after-reset",
+          "status": "pass",
+          "ms": 138997
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

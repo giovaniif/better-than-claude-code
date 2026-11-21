@@ -1,0 +1,85 @@
+{
+  "v": 1,
+  "claim": "Map drift: usage/strip-names-every-account and usage/meters-zero-after-reset fail on main because they expect meters in Other accounts rows that the approved Usage design (#292) reduced to Sign in or one meter",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-8d2d",
+  "base": "c8e58466523cabd670da546024fa9b51d1db93cd",
+  "head": "beab91159ed656f21815700c817ff783fe84e324",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/usage.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T04:29:32.457Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "beab91159ed656f21815700c817ff783fe84e324",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T04:29:32.502Z",
+      "text": "no-repro: map-only change (verify/features/usage.md); on main both recipes fail at desktop, e.g. expected \"role:region:Claude · TEST-Work\" to contain \"91%\" (see #357)"
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "beab91159ed656f21815700c817ff783fe84e324",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T04:29:32.548Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "beab91159ed656f21815700c817ff783fe84e324",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-usage-head2.json",
+          "sha256": "1ea5ab06774756cc33b0a9bba3b493bff9551c8d5489d7287ed24ae83ff2513e"
+        }
+      ],
+      "addedAt": "2026-11-21T04:32:39.263Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "usage/usage-strip-in-sidebar",
+        "usage/usage-strip-claude",
+        "usage/picker-has-no-meters",
+        "usage/picker-other-engine-collapsed",
+        "usage/picker-current-model-marked",
+        "usage/meters-zero-after-reset",
+        "usage/claude-usage-after-restart",
+        "usage/strip-names-every-account",
+        "usage/picker-names-the-account",
+        "usage/subscriptions-note-names-every-silent-engine"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "beab91159ed656f21815700c817ff783fe84e324",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "27de8e8eee12b1d35b1a0b6c63f68d967a08f8aa99e1f85d71ace37cc169d5f9"
+        }
+      ],
+      "addedAt": "2026-11-21T04:32:39.308Z",
+      "cmd": "verify/yv map run usage --recipe strip-names-every-account && verify/yv map run usage --recipe meters-zero-after-reset",
+      "exit": 0
+    }
+  ]
+}
