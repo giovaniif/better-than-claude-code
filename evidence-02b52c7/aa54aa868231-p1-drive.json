@@ -1,0 +1,97 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "b59c9d9b40fe74efd84488d447f4f3515fa0c74b",
+    "short": "b59c9d9",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T07:07:51.621Z"
+  },
+  "dir": ".verify/evidence/folder-recent-tab-base",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 3474,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-recent-tab-base/before-tab-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-recent-tab-base/after-tab-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 7,
+          "eval": "document.activeElement !== document.querySelector(\".menu-search\") && document.querySelector(\".menu-search\").value === \"TEST-demo\"",
+          "value": true
+        },
+        {
+          "step": 8,
+          "eval": "document.activeElement.textContent.trim() || document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Browse folders…"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 3481,
+      "steps": 10,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-recent-tab-base/before-tab-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-recent-tab-base/after-tab-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 7,
+          "eval": "document.activeElement !== document.querySelector(\".menu-search\") && document.querySelector(\".menu-search\").value === \"TEST-demo\"",
+          "value": true
+        },
+        {
+          "step": 8,
+          "eval": "document.activeElement.textContent.trim() || document.activeElement.getAttribute(\"aria-label\")",
+          "value": "Browse folders…"
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

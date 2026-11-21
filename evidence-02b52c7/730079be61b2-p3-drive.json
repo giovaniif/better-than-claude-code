@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "route": "new",
+  "build": {
+    "sha": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+    "short": "02b52c7",
+    "dirty": false,
+    "diffHash": null,
+    "at": "2026-11-21T07:08:47.012Z"
+  },
+  "dir": ".verify/evidence/folder-recent-tab-head",
+  "runs": [
+    {
+      "viewport": "mobile",
+      "ms": 4790,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-recent-tab-head/menu-open-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-recent-tab-head/before-tab-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        },
+        {
+          "viewport": "mobile",
+          "file": ".verify/evidence/folder-recent-tab-head/after-tab-mobile.png",
+          "size": {
+            "width": 780,
+            "height": 1688
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".folder-row.cursor svg path\").getAttribute(\"d\").startsWith(\"M6 3v12\")",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.activeElement === document.querySelector(\".menu-search\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    },
+    {
+      "viewport": "desktop",
+      "ms": 4582,
+      "steps": 14,
+      "failed": null,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-recent-tab-head/menu-open-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-recent-tab-head/before-tab-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        },
+        {
+          "viewport": "desktop",
+          "file": ".verify/evidence/folder-recent-tab-head/after-tab-desktop.png",
+          "size": {
+            "width": 2880,
+            "height": 1800
+          }
+        }
+      ],
+      "notes": [
+        {
+          "step": 6,
+          "eval": "document.querySelector(\".folder-row.cursor svg path\").getAttribute(\"d\").startsWith(\"M6 3v12\")",
+          "value": true
+        },
+        {
+          "step": 10,
+          "eval": "document.activeElement === document.querySelector(\".menu-search\")",
+          "value": true
+        }
+      ],
+      "video": null,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedApi": [],
+      "httpFailures": []
+    }
+  ],
+  "problems": []
+}

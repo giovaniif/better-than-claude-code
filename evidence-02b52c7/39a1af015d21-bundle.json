@@ -1,0 +1,184 @@
+{
+  "v": 1,
+  "claim": "On New session, Tab on the highlighted Recent folder in the folder menu did nothing for that folder and moved focus out of the search box to another row's open button; Recent rows had no open button and no branch icon",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-2b49",
+  "base": "00b85fda6de3489a496af69119607b59b86550ad",
+  "head": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+  "changed": [
+    {
+      "status": "M",
+      "path": "ui/src/App.tsx"
+    },
+    {
+      "status": "M",
+      "path": "verify/features/new-session.md"
+    }
+  ],
+  "ui": true,
+  "createdAt": "2026-11-21T07:07:47.590Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "repro",
+      "at": "b59c9d9b40fe74efd84488d447f4f3515fa0c74b",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p1-drive.json",
+          "sha256": "aa54aa8682316573ea1a70eac037c05177b2df52fe915cbc6a8eb5e184d140bf"
+        },
+        {
+          "path": "p1-before-tab-mobile.png",
+          "sha256": "438389818dd13ef6699b5c9a655272ba200537147e8274a748eda1c61c2bb0de"
+        },
+        {
+          "path": "p1-after-tab-mobile.png",
+          "sha256": "df95341fe7ab4e116ef258dfc0a6314751a7078e32b7d75e4a93850a6dd9715a"
+        },
+        {
+          "path": "p1-before-tab-desktop.png",
+          "sha256": "05650660baafbd0731e46eb37450be98772fdd0615d75714d285dc5933350f6d"
+        },
+        {
+          "path": "p1-after-tab-desktop.png",
+          "sha256": "911db4ff685ec06f18d90821d86d293002e9eebe3bbdeff5b17866b2bdf7b859"
+        }
+      ],
+      "addedAt": "2026-11-21T07:08:11.175Z",
+      "failedApi": []
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "test",
+      "at": "b59c9d9b40fe74efd84488d447f4f3515fa0c74b",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p2-cmd.log",
+          "sha256": "8b56d66fad3335be6a3e534356189eba4eab79aa9e1450191083c669eceee1a9"
+        }
+      ],
+      "addedAt": "2026-11-21T07:08:11.226Z",
+      "cmd": "verify/yv map run new-session --recipe recent-folder-opens-with-tab",
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+      "dirty": false,
+      "viewports": [
+        "mobile",
+        "desktop"
+      ],
+      "artifacts": [
+        {
+          "path": "p3-drive.json",
+          "sha256": "730079be61b2d9aab6665ef472a9603b74e1976006064ceca37f5824dd0befd4"
+        },
+        {
+          "path": "p3-menu-open-mobile.png",
+          "sha256": "b586e274a6190c70ea0f15fcdcaad6660e2e6da0a2d344f8a4ff7a00527bb74d"
+        },
+        {
+          "path": "p3-before-tab-mobile.png",
+          "sha256": "2b4f858b0d740901aae907796a90a1a5681abd5b8f8322306ccbd055221c0352"
+        },
+        {
+          "path": "p3-after-tab-mobile.png",
+          "sha256": "4c87cab878c64b4fa24267f0448dd30cec8689d04005a562cbc55898b1235f87"
+        },
+        {
+          "path": "p3-menu-open-desktop.png",
+          "sha256": "4f8362df174fd2fd3a874159e0d33f1060da3e929a74956ecb8f47f5ea8d4f77"
+        },
+        {
+          "path": "p3-before-tab-desktop.png",
+          "sha256": "1a5bfc0ad5b6f77115c388eccd61186f7d88a77feb2fe6d31c5aa67b976fb63e"
+        },
+        {
+          "path": "p3-after-tab-desktop.png",
+          "sha256": "6b4a20f8fcd8bd0aecd07805bbca62538757218ea4cd1ec0bd516252dec8822c"
+        }
+      ],
+      "addedAt": "2026-11-21T07:09:15.489Z",
+      "failedApi": []
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "38f695ebc99bb5a9135f8b8a9185ff14fa23c4761f59f3adc7288ab1a0a0e483"
+        }
+      ],
+      "addedAt": "2026-11-21T07:09:18.104Z",
+      "cmd": "(cd ui && bun test) && verify/yv map run new-session --recipe recent-folder-opens-with-tab",
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "ref": "head",
+      "kind": "design",
+      "at": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p5-design.json",
+          "sha256": "34974e238411d4c512754c55d70908a0377727da793e528a97e810e6b526e3ba"
+        }
+      ],
+      "addedAt": "2026-11-21T07:09:26.066Z",
+      "cmd": "verify/yv design-check --base 00b85fda6de3",
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "ref": "head",
+      "kind": "regression",
+      "at": "02b52c70be4e258f5dba7c6ffe93621cb5406712",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p6-map-new-session.json",
+          "sha256": "466dca6ccd944a4fcec130588734f03daa58c3a405655d39d2d92124bf9bec68"
+        }
+      ],
+      "addedAt": "2026-11-21T07:09:28.324Z",
+      "cmd": "verify/yv map run new-session",
+      "exit": 0,
+      "failingRecipes": [],
+      "passingRecipes": [
+        "new-session/page-renders",
+        "new-session/send-creates-session",
+        "new-session/long-prompt-titled-at-a-word",
+        "new-session/long-second-word-is-cut-not-dropped",
+        "new-session/empty-prompt-cannot-send",
+        "new-session/worktree-note",
+        "new-session/base-branch-picker",
+        "new-session/typed-path-with-no-match-says-so",
+        "new-session/remembered-folder-that-is-gone-says-so",
+        "new-session/long-folder-keeps-its-chip-icon",
+        "new-session/folder-menu-stays-on-screen",
+        "new-session/recent-folder-opens-with-tab",
+        "new-session/refused-send-names-the-session-in-the-way",
+        "new-session/task-draft-survives-opening-a-session"
+      ]
+    }
+  ]
+}

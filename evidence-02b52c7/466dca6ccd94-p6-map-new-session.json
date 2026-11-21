@@ -1,0 +1,93 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-21T07:11:03.605Z",
+      "counts": {
+        "pass": 14,
+        "manual": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "page-renders",
+          "status": "pass",
+          "ms": 3833
+        },
+        {
+          "label": "send-creates-session",
+          "status": "pass",
+          "ms": 5902
+        },
+        {
+          "label": "long-prompt-titled-at-a-word",
+          "status": "pass",
+          "ms": 6135
+        },
+        {
+          "label": "long-second-word-is-cut-not-dropped",
+          "status": "pass",
+          "ms": 7008
+        },
+        {
+          "label": "empty-prompt-cannot-send",
+          "status": "pass",
+          "ms": 3575
+        },
+        {
+          "label": "worktree-note",
+          "status": "pass",
+          "ms": 4129
+        },
+        {
+          "label": "base-branch-picker",
+          "status": "pass",
+          "ms": 5743
+        },
+        {
+          "label": "typed-path-with-no-match-says-so",
+          "status": "pass",
+          "ms": 7320
+        },
+        {
+          "label": "remembered-folder-that-is-gone-says-so",
+          "status": "pass",
+          "ms": 7079
+        },
+        {
+          "label": "long-folder-keeps-its-chip-icon",
+          "status": "pass",
+          "ms": 7467
+        },
+        {
+          "label": "folder-menu-stays-on-screen",
+          "status": "pass",
+          "ms": 7281
+        },
+        {
+          "label": "recent-folder-opens-with-tab",
+          "status": "pass",
+          "ms": 5726
+        },
+        {
+          "label": "refused-send-names-the-session-in-the-way",
+          "status": "pass",
+          "ms": 10441
+        },
+        {
+          "label": "task-draft-survives-opening-a-session",
+          "status": "pass",
+          "ms": 12784
+        },
+        {
+          "label": "folder-picker-lists-folders",
+          "status": "manual",
+          "why": "the Finder dialog only exists in the desktop app"
+        }
+      ]
+    }
+  ],
+  "problems": []
+}

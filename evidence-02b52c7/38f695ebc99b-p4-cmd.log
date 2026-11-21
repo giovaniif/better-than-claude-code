@@ -1,0 +1,32 @@
+$ (cd ui && bun test) && verify/yv map run new-session --recipe recent-folder-opens-with-tab
+# exit 0 after 7911 ms at 02b52c70be4e258f5dba7c6ffe93621cb5406712
+
+bun test v1.4.4 (38afee6c8)
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "new-session",
+      "at": "2026-11-21T07:09:26.011Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "recent-folder-opens-with-tab",
+          "status": "pass",
+          "ms": 6882
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+
+
+ 413 pass
+ 0 fail
+ 1013 expect() calls
+Ran 413 tests across 29 files. [176.00ms]
