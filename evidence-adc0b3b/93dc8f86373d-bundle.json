@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "claim": "Map flake: layout/desktop-sidebars-collapse-independently reads document.activeElement once, before the requestAnimationFrame that focuses the collapse button, and failed 2 of 3 runs on main with focus landing correctly",
+  "repo": "/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35",
+  "base": "afa315ee58564f1e12d79359ec2dc13db9bb1d43",
+  "head": "adc0b3b33ff4cd14c846c070819f0418721d0cdc",
+  "changed": [
+    {
+      "status": "M",
+      "path": "verify/features/layout.md"
+    }
+  ],
+  "ui": false,
+  "createdAt": "2026-11-21T05:25:02.620Z",
+  "proofs": [
+    {
+      "id": 1,
+      "ref": "base",
+      "kind": "note",
+      "at": "76c51975e66ec6814e9660392dd692a3d0d643ed",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:25:02.670Z",
+      "text": "no-repro: map-only. On main (afa315e) the recipe failed 2 of 3 runs at step 31 (eval returned null, expected 'Collapse sessions sidebar'); three probe drives of the same steps found focus on the collapse button each time, so the recipe raced the rAF focus."
+    },
+    {
+      "id": 2,
+      "ref": "base",
+      "kind": "note",
+      "at": "76c51975e66ec6814e9660392dd692a3d0d643ed",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [],
+      "addedAt": "2026-11-21T05:25:02.708Z",
+      "text": "no-failing-test: the recipe is the test"
+    },
+    {
+      "id": 3,
+      "ref": "head",
+      "kind": "fix",
+      "at": "adc0b3b33ff4cd14c846c070819f0418721d0cdc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p3-map-layout-focus-head2.json",
+          "sha256": "65590fb0d60510bb7976d69eba490b5947d4db5d45058d3af7e9d1a7b5fa94e2"
+        }
+      ],
+      "addedAt": "2026-11-21T05:28:32.556Z",
+      "failedApi": [],
+      "failingRecipes": [],
+      "passingRecipes": [
+        "layout/desktop-three-columns",
+        "layout/narrow-hides-pane",
+        "layout/desktop-sidebars-collapse-independently",
+        "layout/mobile-panels-have-close-controls",
+        "layout/mobile-main-column-usable",
+        "layout/mobile-hosts-page",
+        "layout/mobile-drawer-opens-and-closes",
+        "layout/mobile-menu-on-every-page",
+        "layout/mobile-delete-confirm-fits-the-bar",
+        "layout/mobile-delete-confirm-fits-the-bar-without-worktree",
+        "layout/send-stays-at-the-right",
+        "layout/new-session-send-shares-controls-row",
+        "layout/desktop-sidebar-is-a-column",
+        "layout/workspace-tabs-fit-minimum-width"
+      ]
+    },
+    {
+      "id": 4,
+      "ref": "head",
+      "kind": "test",
+      "at": "adc0b3b33ff4cd14c846c070819f0418721d0cdc",
+      "dirty": false,
+      "viewports": [],
+      "artifacts": [
+        {
+          "path": "p4-cmd.log",
+          "sha256": "21aebecc22af6602ee8424ebb47048569784ac0b298e3133f64d461b849c16e6"
+        }
+      ],
+      "addedAt": "2026-11-21T05:28:32.601Z",
+      "cmd": "for i in 1 2 3; do verify/yv map run layout --recipe desktop-sidebars-collapse-independently && verify/yv map run layout --recipe mobile-panels-have-close-controls || exit 1; done",
+      "exit": 0
+    }
+  ]
+}

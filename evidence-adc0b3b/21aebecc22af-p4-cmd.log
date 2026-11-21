@@ -1,0 +1,136 @@
+$ for i in 1 2 3; do verify/yv map run layout --recipe desktop-sidebars-collapse-independently && verify/yv map run layout --recipe mobile-panels-have-close-controls || exit 1; done
+# exit 0 after 54918 ms at adc0b3b33ff4cd14c846c070819f0418721d0cdc
+
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:28:43.107Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 9623
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:28:50.346Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-panels-have-close-controls",
+          "status": "pass",
+          "ms": 6378
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:29:01.718Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 10518
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:29:08.935Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-panels-have-close-controls",
+          "status": "pass",
+          "ms": 6365
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:29:20.357Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 10555
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:29:27.514Z",
+      "counts": {
+        "pass": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "mobile-panels-have-close-controls",
+          "status": "pass",
+          "ms": 6295
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
+

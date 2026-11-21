@@ -1,0 +1,102 @@
+{
+  "command": "map run",
+  "ok": false,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:26:10.955Z",
+      "counts": {
+        "pass": 13,
+        "fail": 1
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-three-columns",
+          "status": "pass",
+          "ms": 3704
+        },
+        {
+          "label": "narrow-hides-pane",
+          "status": "pass",
+          "ms": 2896
+        },
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 9147
+        },
+        {
+          "label": "mobile-panels-have-close-controls",
+          "status": "fail",
+          "ms": 4771,
+          "problems": [
+            {
+              "code": "step-failed",
+              "msg": "mobile: step 13 {\"eval\":\"document.activeElement.textContent\",\"equals\":\"Workspace\"}: eval returned \"\", expected \"Workspace\"",
+              "hint": "see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z/fail-mobile-step13.png and the aria snapshot"
+            }
+          ],
+          "tail": "patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z\",\n  \"runs\": [\n    {\n      \"viewport\": \"mobile\",\n      \"ms\": 4220,\n      \"steps\": 16,\n      \"failed\": {\n        \"step\": 13,\n        \"action\": {\n          \"eval\": \"document.activeElement.textContent\",\n          \"equals\": \"Workspace\"\n        },\n        \"reason\": \"eval returned \\\"\\\", expected \\\"Workspace\\\"\",\n        \"screenshot\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z/fail-mobile-step13.png\",\n        \"aria\": \"- main:\\n  - button \\\"Open sessions\\\"\\n  - heading \\\"TEST-say hello\\\" [level=1]\\n  - code: yard/test-say-hello-1135\\n  - button \\\"Set up iPhone app\\\"\\n  - button \\\"Workspace\\\"\\n  - button \\\"Delete\\\"\\n  - text: TEST-say hello\\n  - paragraph: \\\"Echo: TEST-say hello\\\"\\n  - textbox \\\"Message\\\":\\n    - /placeholder: Reply\\n  - button \\\"Attach files\\\"\\n  - button \\\"Dictate\\\"\\n  - button \\\"Voice mode\\\"\\n  - 'button \\\"Session setup: Fake Fast, Default, Low, Ask first\\\"': Fake Fast · Low\\n  - button \\\"Send\\\" [disabled]\"\n      },\n      \"captures\": [\n        {\n          \"viewport\": \"mobile\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z/sessions-drawer-close-mobile.png\",\n          \"size\": {\n            \"width\": 780,\n            \"height\": 1688\n          }\n        },\n        {\n          \"viewport\": \"mobile\",\n          \"file\": \"/home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z/workspace-close-mobile.png\",\n          \"size\": {\n            \"width\": 780,\n            \"height\": 1688\n          }\n        }\n      ],\n      \"notes\": [\n        {\n          \"step\": 6,\n          \"eval\": \"document.activeElement.getAttribute(\\\"aria-label\\\")\",\n          \"value\": \"Open sessions\"\n        },\n        {\n          \"step\": 13,\n          \"eval\": \"document.activeElement.textContent\",\n          \"value\": \"\"\n        }\n      ],\n      \"video\": null,\n      \"consoleErrors\": [],\n      \"pageErrors\": [],\n      \"failedApi\": [],\n      \"httpFailures\": []\n    }\n  ],\n  \"problems\": [\n    {\n      \"code\": \"step-failed\",\n      \"msg\": \"mobile: step 13 {\\\"eval\\\":\\\"document.activeElement.textContent\\\",\\\"equals\\\":\\\"Workspace\\\"}: eval returned \\\"\\\", expected \\\"Workspace\\\"\",\n      \"hint\": \"see /home/giovani/.yard/wt/switchyard/yard-loop-patrol-2026-11-21-3a35/.verify/drives/2026-11-21T05-25-23-887Z/fail-mobile-step13.png and the aria snapshot\"\n    }\n  ]\n}\n"
+        },
+        {
+          "label": "mobile-main-column-usable",
+          "status": "pass",
+          "ms": 2829
+        },
+        {
+          "label": "mobile-hosts-page",
+          "status": "pass",
+          "ms": 2297
+        },
+        {
+          "label": "mobile-drawer-opens-and-closes",
+          "status": "pass",
+          "ms": 5976
+        },
+        {
+          "label": "mobile-menu-on-every-page",
+          "status": "pass",
+          "ms": 3694
+        },
+        {
+          "label": "mobile-delete-confirm-fits-the-bar",
+          "status": "pass",
+          "ms": 3354
+        },
+        {
+          "label": "mobile-delete-confirm-fits-the-bar-without-worktree",
+          "status": "pass",
+          "ms": 3446
+        },
+        {
+          "label": "send-stays-at-the-right",
+          "status": "pass",
+          "ms": 8851
+        },
+        {
+          "label": "new-session-send-shares-controls-row",
+          "status": "pass",
+          "ms": 4418
+        },
+        {
+          "label": "desktop-sidebar-is-a-column",
+          "status": "pass",
+          "ms": 2688
+        },
+        {
+          "label": "workspace-tabs-fit-minimum-width",
+          "status": "pass",
+          "ms": 4964
+        }
+      ]
+    }
+  ],
+  "problems": [
+    {
+      "code": "recipe-failed",
+      "msg": "layout/mobile-panels-have-close-controls",
+      "hint": "map drift: fix the recipe to match the app; product bug: keep it failing, add a Gotcha, queue a finding"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "command": "map run",
+  "ok": true,
+  "records": [
+    {
+      "area": "layout",
+      "at": "2026-11-21T05:28:32.476Z",
+      "counts": {
+        "pass": 14
+      },
+      "setupFailed": null,
+      "results": [
+        {
+          "label": "desktop-three-columns",
+          "status": "pass",
+          "ms": 3642
+        },
+        {
+          "label": "narrow-hides-pane",
+          "status": "pass",
+          "ms": 2774
+        },
+        {
+          "label": "desktop-sidebars-collapse-independently",
+          "status": "pass",
+          "ms": 10107
+        },
+        {
+          "label": "mobile-panels-have-close-controls",
+          "status": "pass",
+          "ms": 6020
+        },
+        {
+          "label": "mobile-main-column-usable",
+          "status": "pass",
+          "ms": 3115
+        },
+        {
+          "label": "mobile-hosts-page",
+          "status": "pass",
+          "ms": 2549
+        },
+        {
+          "label": "mobile-drawer-opens-and-closes",
+          "status": "pass",
+          "ms": 5555
+        },
+        {
+          "label": "mobile-menu-on-every-page",
+          "status": "pass",
+          "ms": 3883
+        },
+        {
+          "label": "mobile-delete-confirm-fits-the-bar",
+          "status": "pass",
+          "ms": 3671
+        },
+        {
+          "label": "mobile-delete-confirm-fits-the-bar-without-worktree",
+          "status": "pass",
+          "ms": 3516
+        },
+        {
+          "label": "send-stays-at-the-right",
+          "status": "pass",
+          "ms": 9021
+        },
+        {
+          "label": "new-session-send-shares-controls-row",
+          "status": "pass",
+          "ms": 4347
+        },
+        {
+          "label": "desktop-sidebar-is-a-column",
+          "status": "pass",
+          "ms": 2655
+        },
+        {
+          "label": "workspace-tabs-fit-minimum-width",
+          "status": "pass",
+          "ms": 5278
+        }
+      ]
+    }
+  ],
+  "problems": []
+}
