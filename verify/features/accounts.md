@@ -146,26 +146,46 @@ yv drive hosts --steps '[{"click":"role:tab:Engine logins"},{"expect":"role:butt
 
 ### account-chip-shows-the-whole-name
 Viewports: both
-The account chip under a session's composer shows "Codex · Default" in full
-when the row has room for it, and a long account name stops at 230 px with an
-ellipsis instead of pushing the row wider. (`.account-trigger { max-width: 100% }`
-resolved against the picker's own shrink-to-fit width, so at desktop the chip
-clipped itself to "Codex · Def…" next to free space.)
+The account chip names the whole account wherever it shows one. In a
+session's desktop toolbar the chip is the approved avatar badge ("D") and its
+title and accessible name carry "Codex · Default" (the name itself is hidden
+there since #290). On a phone the Session setup sheet shows "Codex · Default"
+in full, and a long account name ends in an ellipsis inside the sheet instead
+of pushing the page wider. A long name never widens the desktop badge. (Before
+#262, `.account-trigger { max-width: 100% }` resolved against the picker's own
+shrink-to-fit width and clipped the chip to "Codex · Def…" next to free space.)
 
 ```sh
-yv drive 'session:{{sid_edit}}' --steps '[{"expect":"css:.composer .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()","equals":true},{"shot":"account-chip"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), row = document.querySelector(\".composer-row\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.width <= 230.5 && b.right <= row.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()","equals":true}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"expect":"role:button:Account: Codex, Default"},{"eval":"(() => { const b = document.querySelector(\".composer .account-trigger\"); return [b.title, b.querySelector(\".account-avatar\").textContent].join(\"|\"); })()","equals":"Codex · Default|D"},{"shot":"account-chip"},{"eval":"(() => { const b = document.querySelector(\".composer .account-trigger\"), w = b.getBoundingClientRect().width; b.querySelector(\".account-trigger-name\").textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); return b.getBoundingClientRect().width === w && document.documentElement.scrollWidth <= innerWidth; })()","equals":true}]'
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Session setup"},{"expect":"css:.setup-options .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".setup-options .account-trigger-name\"); return n.scrollWidth <= n.clientWidth; })()","equals":true},{"shot":"account-chip"},{"eval":"(() => { const n = document.querySelector(\".setup-options .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const b = n.parentElement.getBoundingClientRect(), sheet = document.querySelector(\".setup-options\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && b.right <= sheet.right + 0.5 && document.documentElement.scrollWidth <= innerWidth; })()","equals":true}]'
 ```
 
 ### account-chip-chevron-keeps-its-size
 Viewports: both
-A long account name ends in an ellipsis, and the chip's chevron stays its full
-12 px after it, so the chip still reads as a menu. (The chevron was a flex item
-that could shrink, and a long name squeezed it to a dot at 390 px.)
+The chip's chevron stays its full 12 px, so the chip still reads as a menu: in
+the desktop toolbar next to the badge, and on a phone after a long account
+name that ends in an ellipsis. (The chevron was a flex item that could shrink,
+and a long name squeezed it to a dot at 390 px.)
 
 ```sh
-yv drive 'session:{{sid_edit}}' --steps '[{"expect":"css:.composer .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".composer .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const s = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()","equals":true},{"shot":"account-chip-long"}]'
+yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"expect":"role:button:Account: Codex, Default"},{"eval":"(() => { const b = document.querySelector(\".composer .account-trigger\"); b.querySelector(\".account-trigger-name\").textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); return Math.round(b.querySelector(\"svg\").getBoundingClientRect().width) === 12; })()","equals":true},{"shot":"account-chip-long"}]'
+yv drive 'session:{{sid_edit}}' --viewport mobile --steps '[{"click":"role:button:Session setup"},{"expect":"css:.setup-options .account-trigger-name","text":"Codex · Default"},{"eval":"(() => { const n = document.querySelector(\".setup-options .account-trigger-name\"); n.textContent = \"Codex · \" + \"TEST-averyverylongaccountname\".repeat(4); const s = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && Math.round(s.width) === 12; })()","equals":true},{"shot":"account-chip-long"}]'
+```
+
+### long-account-name-fits-the-setup-sheet
+Viewports: mobile
+On a phone, an account name as long as yardd allows (40 characters) ends
+in an ellipsis inside the Session setup sheet: every row of the sheet, the account chip and
+its chevron included, stays within its edges. (The sheet's grid column sized
+to the name's full width, so one long name pushed every row and chevron past
+the sheet's right edge and the name was cut off mid-word.)
+
+```sh
+yv drive hosts --viewport desktop --steps '[{"click":"role:tab:Engine logins"},{"click":"role:button:Add Codex account"},{"fill":"label:Account name","value":"TEST-ACME WORLDWIDE ENGINEERING PLATFORM"},{"press":"Enter"},{"expect":{"css":".account-row","hasText":"TEST-ACME WORLDWIDE ENGINEERING PLATFORM"}}]'
+yv drive new --viewport mobile --steps '[{"click":"role:button:Session setup"},{"click":"css:.account-trigger"},{"click":{"role":"menuitemradio","name":"Codex · TEST-ACME WORLDWIDE ENGINEERING PLATFORM"}},{"expect":"role:button:Account: Codex, TEST-ACME WORLDWIDE ENGINEERING PLATFORM"},{"expect":"role:dialog:Engine account identity","count":0},{"expect":"role:dialog:Session setup"},{"shot":"long-account-sheet"},{"eval":"(() => { const sheet = document.querySelector(\".setup-options\").getBoundingClientRect(), n = document.querySelector(\".setup-options .account-trigger-name\"), chevron = n.parentElement.querySelector(\"svg\").getBoundingClientRect(); return n.scrollWidth > n.clientWidth && chevron.right <= sheet.right + 0.5 && [...document.querySelectorAll(\".setup-options button\")].every((b) => b.getBoundingClientRect().right <= sheet.right + 0.5); })()","equals":true}]'
 ```
 
 ## Gotchas
 - An account's folder is deleted with it, login included. There is no "log out" separate from Remove.
 - The account of a session cannot be changed after it starts.
+- The session toolbar shows the account as an avatar badge only (approved design, #290); the full name is in the chip's title and accessible name, and in the phone's Session setup sheet. `account-chip-*` expected the visible name in `.composer` until 2026-11-21.
