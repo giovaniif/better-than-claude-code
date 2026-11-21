@@ -98,14 +98,14 @@ yv drive 'session:{{sid_echo}}' --viewport mobile --steps '[
   {"shot":"sessions-drawer-close"},
   {"click":"role:button:Close sessions"},
   {"expect":"role:navigation:Sessions","visible":false},
-  {"eval":"document.activeElement.getAttribute(\"aria-label\")","equals":"Open sessions"},
+  {"expect":"css:button[aria-label=\"Open sessions\"]:focus"},
   {"click":{"role":"button","name":"Workspace","exact":true}},
   {"click":"role:button:Processes"},
   {"expect":"role:button:Back to conversation","inViewport":true},
   {"shot":"workspace-close"},
   {"click":"role:button:Back to conversation"},
   {"expect":"role:region:Workspace","visible":false},
-  {"eval":"document.activeElement.textContent","equals":"Workspace"},
+  {"expect":"css:button.workspace-toggle:focus","text":"Workspace"},
   {"click":{"role":"button","name":"Workspace","exact":true}},
   {"expect":"css:.workspace-tabs .tab[aria-pressed=true]","text":"Processes"}
 ]'
@@ -213,4 +213,4 @@ yv drive 'session:{{sid_edit}}' --viewport desktop --steps '[{"eval":"localStora
 - Below 700 px the sidebar is a closed drawer, so a recipe that clicks or reads something in it at mobile opens it first (`{"click":"role:button:Open sessions"}`); `yv drive`'s routes do that themselves. At both viewports with one step list, split the recipe per viewport: the menu button is hidden on desktop.
 - On desktop, `yv drive`'s routes and `goto` steps reach a page by clicking the sidebar, and they do not expand a collapsed one: after `{"click":"role:button:Collapse sessions sidebar"}` a `goto` times out (`goto hosts` waited 30 s on `.host-row`, 2026-11-20). Expand it first (`{"click":"role:button:Expand sessions sidebar"}`), or change pages with `{"eval":"(location.hash=\"#/hosts\", true)"}`. The collapse is kept in `localStorage` (`yard.sidebarCollapsed`), so a recipe that collapses it expands it again before it ends.
 - Fixed 2026-11-16 (#8): there was no layout below ~700 px; the 248 px sidebar left the session column about 140 px wide at 390 px.
-- The sidebar and drawer toggles move focus in a `requestAnimationFrame` after the click. An `eval` of `document.activeElement` straight after a step that is already satisfied (such as `{"expect":"role:region:Workspace","visible":false}` while it is hidden) can run before that frame. `desktop-sidebars-collapse-independently` failed 2 of 3 map runs that way on 2026-11-21 (`activeElement` was not yet the button), while focus did land in every probe. Wait for focus instead: `{"expect":"css:button[aria-label=\"…\"]:focus"}`.
+- The sidebar and drawer toggles move focus in a `requestAnimationFrame` after the click. An `eval` of `document.activeElement` straight after a step that is already satisfied (such as `{"expect":"role:region:Workspace","visible":false}` while it is hidden) can run before that frame. `desktop-sidebars-collapse-independently` failed 2 of 3 map runs that way on 2026-11-21, and `mobile-panels-have-close-controls` once (`activeElement` was not yet the button), while focus did land in every probe. Wait for focus instead: `{"expect":"css:button[aria-label=\"…\"]:focus"}`.
